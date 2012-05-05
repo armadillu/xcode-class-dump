@@ -3,11 +3,13 @@
 require 'fileutils'
 
 xcode_locations = [
-  "/Developer/Library/PrivateFrameworks/DVTFoundation.framework/Versions/A/DVTFoundation",
-  "/Developer/Library/PrivateFrameworks/DVTKit.framework/Versions/A/DVTKit",
-  "/Developer/Library/PrivateFrameworks/IDEFoundation.framework/Versions/A/IDEFoundation",
-  "/Developer/Library/PrivateFrameworks/IDEKit.framework/Versions/A/IDEKit",
-  "/Developer/Library/Xcode/PrivatePlugIns/"]
+  "/Applications/Xcode.app/Contents/SharedFrameworks/DVTFoundation.framework/Versions/A/DVTFoundation",
+  "/Applications/Xcode.app/Contents/SharedFrameworks/DVTKit.framework/Versions/A/DVTKit",
+  "/Applications/Xcode.app/Contents/SharedFrameworks/DTGraphKit.framework/Versions/A/DTGraphKit",
+  "/Applications/Xcode.app/Contents/SharedFrameworks/DVTDeveloperModeHelper.framework/Versions/A/DVTDeveloperModeHelper",
+  "/Applications/Xcode.app/Contents/Frameworks/IDEFoundation.framework/Versions/A/IDEFoundation",
+  "/Applications/Xcode.app/Contents/Frameworks/IDEKit.framework/Versions/A/IDEKit",
+  "/Applications/Xcode.app/Contents/PlugIns/"]
 
 FileUtils.mkdir_p("docs")
 
