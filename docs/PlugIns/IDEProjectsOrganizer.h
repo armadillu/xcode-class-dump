@@ -30,9 +30,9 @@ struct _NSRange {
 
 /*
  * File: /Applications/Xcode.app/Contents/PlugIns/IDEProjectsOrganizer.ideplugin/Contents/MacOS/IDEProjectsOrganizer
- * UUID: F3D128D3-958C-394C-824D-AAB97B225861
+ * UUID: 45FB9709-5547-3579-9DCD-2E718C52CADB
  * Arch: Intel x86-64 (x86_64)
- *       Current version: 1165.0.0, Compatibility version: 1.0.0
+ *       Current version: 2052.0.0, Compatibility version: 1.0.0
  *       Minimum Mac OS X version: 10.7.0
  *
  *       Objective-C Garbage Collection: Required
@@ -73,6 +73,7 @@ struct _NSRange {
 @optional
 - (struct _NSRange)outlineView:(id)arg1 initialSelectionRangeForCell:(id)arg2 proposedRange:(struct _NSRange)arg3;
 - (BOOL)outlineView:(id)arg1 shouldShowOutlineCellForItem:(id)arg2 hasUserFocus:(BOOL)arg3;
+- (id)trayItemsForNavigableItem:(id)arg1;
 - (id)outlineView:(id)arg1 childItemsForItem:(id)arg2;
 - (BOOL)outlineView:(id)arg1 isGroupHeaderItem:(id)arg2;
 @end
@@ -80,6 +81,7 @@ struct _NSRange {
 @protocol IDEOrganizerSource <NSObject, DVTStatefulObject>
 
 @optional
+- (void)organizerSourceWillCloseInWindowController:(id)arg1;
 - (void)organizerSourceWillAppearInWindowController:(id)arg1;
 - (void)openFileURL:(id)arg1 withFileType:(id)arg2;
 - (void)searchWithString:(id)arg1;
@@ -117,6 +119,9 @@ struct _NSRange {
 - (Class)superclass;
 - (unsigned long long)hash;
 - (BOOL)isEqual:(id)arg1;
+
+@optional
+- (id)debugDescription;
 @end
 
 @protocol NSOutlineViewDelegate <NSControlTextEditingDelegate>
@@ -177,6 +182,16 @@ struct _NSRange {
 - (BOOL)splitView:(id)arg1 canCollapseSubview:(id)arg2;
 @end
 
+@protocol __ARCLiteIndexedSubscripting__
+- (void)setObject:(id)arg1 atIndexedSubscript:(unsigned long long)arg2;
+- (id)objectAtIndexedSubscript:(unsigned long long)arg1;
+@end
+
+@protocol __ARCLiteKeyedSubscripting__
+- (void)setObject:(id)arg1 forKeyedSubscript:(id)arg2;
+- (id)objectForKeyedSubscript:(id)arg1;
+@end
+
 @interface IDEProjectsOrganizerViewController : IDEViewController <NSSplitViewDelegate, IDENavigatorOutlineViewDelegate, DVTReplacementViewDelegate, IDEOrganizerSource>
 {
     IDENavigatorOutlineView *_outlineView;
@@ -211,7 +226,7 @@ struct _NSRange {
 - (id)_projectsCurrentlyOpened;
 - (void)_rebuildProjectsList;
 - (void)_updateProjectItemOpenState;
-- (id)_existingProjectItemMatchingProjectItem:(id)arg1;
+- (id)_existingMatchingItemOrProjectItem:(id)arg1;
 - (id)_navigableItemWithProjectItem:(id)arg1;
 - (BOOL)splitView:(id)arg1 shouldAdjustSizeOfSubview:(id)arg2;
 - (double)splitView:(id)arg1 constrainMaxCoordinate:(double)arg2 ofSubviewAt:(long long)arg3;
@@ -227,7 +242,7 @@ struct _NSRange {
 - (id)outlineView:(id)arg1 dataCellForTableColumn:(id)arg2 item:(id)arg3;
 - (BOOL)outlineView:(id)arg1 isGroupHeaderItem:(id)arg2;
 @property(readonly) NSPredicate *filterPredicate;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)_configureDetailView;
 - (void)_configureEmptyView;
 - (void)replacementView:(id)arg1 didInstallViewController:(id)arg2;

@@ -25,7 +25,7 @@ struct CGSize {
 
 /*
  * File: /Applications/Xcode.app/Contents/PlugIns/GPUDebuggerKit.ideplugin/Contents/MacOS/GPUDebuggerKit
- * UUID: 660E4DEC-8805-3447-A3B8-7FEF19D09CF4
+ * UUID: 32814E99-5F0D-315A-9E6B-CF0AD3FD6518
  * Arch: Intel x86-64 (x86_64)
  *       Current version: 1.0.0, Compatibility version: 1.0.0
  *       Minimum Mac OS X version: 10.7.0
@@ -43,11 +43,6 @@ struct CGSize {
 @protocol IDEDebugNavigableModel <NSObject>
 @property(readonly) IDELaunchSession *launchSession;
 @property(readonly) NSString *associatedProcessUUID;
-@end
-
-@protocol IDEGeniusResultNavigableRepresentedObject <NSObject>
-- (id)geniusResult_identifierForGeniusCategory;
-- (id)geniusResult_identifierForManualCategory;
 @end
 
 @protocol NSObject
@@ -70,15 +65,31 @@ struct CGSize {
 - (Class)superclass;
 - (unsigned long long)hash;
 - (BOOL)isEqual:(id)arg1;
+
+@optional
+- (id)debugDescription;
+@end
+
+@protocol __ARCLiteIndexedSubscripting__
+- (void)setObject:(id)arg1 atIndexedSubscript:(unsigned long long)arg2;
+- (id)objectAtIndexedSubscript:(unsigned long long)arg1;
+@end
+
+@protocol __ARCLiteKeyedSubscripting__
+- (void)setObject:(id)arg1 forKeyedSubscript:(id)arg2;
+- (id)objectForKeyedSubscript:(id)arg1;
 @end
 
 @interface GPUTraceGroupNavigableItem : IDEKeyDrivenNavigableItem
 {
     BOOL _showOnlyInterestingTrace;
+    BOOL _hideEmptyMarkerGroups;
     NSMutableArray *_cachedChildRepresentedObjects;
 }
 
+@property BOOL hideEmptyMarkerGroups; // @synthesize hideEmptyMarkerGroups=_hideEmptyMarkerGroups;
 @property BOOL showOnlyInterestingTrace; // @synthesize showOnlyInterestingTrace=_showOnlyInterestingTrace;
+- (BOOL)setShowOnlyInterestingTrace:(BOOL)arg1 hideEmptyMarkerGroups:(BOOL)arg2;
 - (void)invalidateChildItems;
 - (id)childRepresentedObjects;
 - (void)_filterGroup:(id)arg1;
@@ -95,10 +106,10 @@ struct CGSize {
     int _direction;
 }
 
-@property(readonly) int direction; // @synthesize direction=_direction;
-@property(readonly) id sender; // @synthesize sender=_sender;
-@property(readonly) unsigned long long drawLocation; // @synthesize drawLocation=_drawLocation;
-@property(readonly) IDEWorkspaceTabController *tabController; // @synthesize tabController=_tabController;
+@property(readonly, nonatomic) int direction; // @synthesize direction=_direction;
+@property(readonly, nonatomic) id sender; // @synthesize sender=_sender;
+@property(readonly, nonatomic) unsigned long long drawLocation; // @synthesize drawLocation=_drawLocation;
+@property(readonly, nonatomic) IDEWorkspaceTabController *tabController; // @synthesize tabController=_tabController;
 - (id)initWithSender:(id)arg1 workspaceTabController:(id)arg2 drawLocation:(unsigned long long)arg3 direction:(int)arg4;
 
 @end
@@ -170,7 +181,7 @@ struct CGSize {
 - (id)compressStackFrames:(id)arg1 level:(unsigned long long)arg2;
 - (unsigned long long)defaultCompressionLevel;
 - (unsigned long long)maxCompressionLevel;
-- (id)initInternal;
+- (id)_initInternal;
 - (id)init;
 
 @end
@@ -180,13 +191,13 @@ struct CGSize {
     NSColor *_color;
 }
 
-+ (id)sharedInstance;
 @property(copy) NSColor *color; // @synthesize color=_color;
 - (void)drawInteriorWithFrame:(struct CGRect)arg1 inView:(id)arg2;
 - (id)copyWithZone:(struct _NSZone *)arg1;
 - (id)initWithCoder:(id)arg1;
 - (id)initImageCell:(id)arg1;
 - (id)initTextCell:(id)arg1;
+- (id)init;
 - (void)_ide_commonInit;
 
 @end
@@ -201,76 +212,6 @@ struct CGSize {
 - (id)newImage;
 - (id)fileURL;
 - (id)_stackFrame;
-
-@end
-
-@interface GPUTraceOutlineDomainProvider : IDENavigableItemDomainProvider
-{
-}
-
-+ (id)navigableItemImageForDocumentURL:(id)arg1;
-+ (id)navigableItemNameForDocumentURL:(id)arg1;
-+ (id)domainObjectForWorkspace:(id)arg1;
-
-@end
-
-@interface GPUSharedUIState : NSObject
-{
-    struct dispatch_queue_s *_queue;
-    NSString *_identifier;
-    DVTMapTable *_stateTable;
-}
-
-@property(readonly) NSString *identifier; // @synthesize identifier=_identifier;
-- (void)setState:(id)arg1 ForKey:(id)arg2;
-- (id)stateForKey:(id)arg1;
-- (void)dealloc;
-- (id)initWithIdentifer:(id)arg1;
-
-@end
-
-@interface GPUSharedEditorUIState : GPUSharedUIState
-{
-}
-
-@end
-
-@interface GPUSharedTabUIState : GPUSharedUIState
-{
-    IDEEditorDocument *_currentTraceDocument;
-    GPUTraceSession *_currentTraceSession;
-    GPUTraceDocumentLocation *_currentMainEditorLocation;
-    BOOL _loadingNewResources;
-}
-
-@property(readonly) BOOL loadingNewResources; // @synthesize loadingNewResources=_loadingNewResources;
-@property(retain) GPUTraceDocumentLocation *currentMainEditorLocation; // @synthesize currentMainEditorLocation=_currentMainEditorLocation;
-@property __weak GPUTraceSession *currentTraceSession; // @synthesize currentTraceSession=_currentTraceSession;
-@property BOOL currentLocationIsDrawItem; // @dynamic currentLocationIsDrawItem;
-- (id)currentStateMirror;
-- (id)currentMainEditorItem;
-
-@end
-
-@interface GPUSharedWorkspaceUIState : GPUSharedUIState
-{
-}
-
-@end
-
-@interface GPUSharedUIStateManager : NSObject
-{
-    struct dispatch_queue_s *_queue;
-    DVTMapTable *_sharedStateMapTable;
-}
-
-+ (id)sharedUIStateManager;
-- (id)sharedStateForEditor:(id)arg1;
-- (id)sharedStateForWorkspaceTabController:(id)arg1;
-- (id)sharedStateForWorkspace:(id)arg1;
-- (void)dealloc;
-- (id)_init;
-- (id)init;
 
 @end
 
@@ -291,7 +232,13 @@ struct CGSize {
 @end
 
 @interface GPUTraceAPIItem (GPUTraceOutlineItemNavigableItemPropertySupport)
++ (id)keyPathsForValuesAffectingNavigableItem_name;
 @property(readonly) NSString *navigableItem_name;
+@end
+
+@interface GPUTraceGroupItem (GPUTraceOutlineItemNavigableItemPropertySupport)
+- (id)navigableItem_subtitle;
+- (id)navigableItem_name;
 @end
 
 @interface GPUTraceResources (GPUTraceOutlineItemNavigableItemPropertySupport)
@@ -311,12 +258,22 @@ struct CGSize {
 - (id)ideModelObjectTypeIdentifier;
 @end
 
-@interface GPUTraceDocumentLocation (GPUTraceDocumentLocationNavigableItemSupport) <IDEGeniusResultNavigableRepresentedObject>
-- (id)geniusResult_identifierForGeniusCategory;
-- (id)geniusResult_identifierForManualCategory;
+@interface GPUExpertGroupItem (GPUTraceOutlineItemNavigableItemPropertySupport)
+- (id)navigableItem_image;
+- (id)navigableItem_documentType;
+- (id)ideModelObjectTypeIdentifier;
+
+// Remaining properties
+@property(readonly) NSString *navigableItem_subtitle; // @dynamic navigableItem_subtitle;
 @end
 
-@interface DYStackFrame (GPUTraceOutlineItemNavigableItemPropertySupport)
+@interface GPUExpertReportItem (GPUTraceOutlineItemNavigableItemPropertySupport)
+- (id)navigableItem_image;
+- (id)navigableItem_documentType;
+- (id)ideModelObjectTypeIdentifier;
+@end
+
+@interface GPUStackFrame (GPUTraceOutlineItemNavigableItemPropertySupport)
 - (id)contentDelegateUIExtensionIdentifier;
 - (id)associatedProcessUUID;
 @property(readonly) DVTDocumentLocation *navigableItem_contentDocumentLocation;

@@ -7,18 +7,18 @@
 #pragma mark Named Structures
 
 struct CGPoint {
-    double x;
-    double y;
+    double _field1;
+    double _field2;
 };
 
 struct CGRect {
-    struct CGPoint origin;
-    struct CGSize size;
+    struct CGPoint _field1;
+    struct CGSize _field2;
 };
 
 struct CGSize {
-    double width;
-    double height;
+    double _field1;
+    double _field2;
 };
 
 struct DVTBitSet {
@@ -159,17 +159,41 @@ typedef struct {
 } CDStruct_70511ce9;
 
 typedef struct {
+    unsigned short *_field1;
+    long long _field2;
+} CDStruct_f444e920;
+
+typedef struct {
+    double loadFactor;
+    long long numberOfHashFunctions;
+    long long windowWidth;
+} CDStruct_fd921134;
+
+typedef struct {
+    long long expectedNumberOfInsertions;
+    double loadFactor;
+    long long numberOfHashFunctions;
+} CDStruct_d703e233;
+
+typedef struct {
     long long location;
     long long length;
 } CDStruct_627e0f85;
 
 typedef struct {
     int tokenType;
+    int tokenAltType;
     CDStruct_627e0f85 charRange;
     char *lexeme;
     int lexemeLength;
     int outOfBand;
-} CDStruct_1719765d;
+} CDStruct_341fcc3f;
+
+typedef struct {
+    CDStruct_d703e233 bloomFilterSpecification;
+    long long windowWidth;
+    double timestamp;
+} CDStruct_26ab8ed5;
 
 #pragma mark Typedef'd Unions
 
@@ -186,9 +210,9 @@ typedef union {
 
 /*
  * File: /Applications/Xcode.app/Contents/SharedFrameworks/DVTFoundation.framework/Versions/A/DVTFoundation
- * UUID: A178827B-5660-3F43-8520-332A5BAC53B4
+ * UUID: B1FA36C2-A17C-39CA-AB23-CCF16E32CA18
  * Arch: Intel x86-64 (x86_64)
- *       Current version: 1193.0.0, Compatibility version: 1.0.0
+ *       Current version: 2086.0.0, Compatibility version: 1.0.0
  *       Minimum Mac OS X version: 10.7.0
  *
  *       Objective-C Garbage Collection: Required
@@ -201,7 +225,7 @@ typedef union {
 - (void)handleFailureInMethod:(SEL)arg1 object:(id)arg2 fileName:(id)arg3 lineNumber:(long long)arg4 messageFormat:(id)arg5 arguments:(struct __va_list_tag [1])arg6;
 @end
 
-@protocol DVTCancellableToken <NSObject>
+@protocol DVTCancellable <NSObject>
 @property(readonly, getter=isCancelled) BOOL cancelled;
 - (void)cancel;
 @end
@@ -233,10 +257,19 @@ typedef union {
 + (id)fileURL:(id)arg1 matchesFileDataTypeDetectorForExtension:(id)arg2 error:(id *)arg3;
 @end
 
+@protocol DVTFileSystemRepresentationProviding
+- (void)dvt_provideFileSystemRepresentationToBlock:(id)arg1;
+@end
+
 @protocol DVTInvalidation <NSObject>
 @property(readonly) DVTStackBacktrace *invalidationBacktrace;
 @property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (void)invalidate;
+@end
+
+@protocol DVTInvalidation_New <DVTInvalidation>
+@property(retain) DVTStackBacktrace *creationBacktrace;
+- (void)primitiveInvalidate;
 @end
 
 @protocol DVTMacroExpansion <NSCopying>
@@ -252,7 +285,7 @@ typedef union {
 @property(readonly, nonatomic) DVTModelObjectGraph *objectGraph;
 @end
 
-@protocol DVTObservingToken <DVTCancellableToken>
+@protocol DVTObservingToken <DVTCancellable>
 @end
 
 @protocol DVTPerformanceTestParser
@@ -267,6 +300,14 @@ typedef union {
 - (void)encodeIntoPropertyList:(id)arg1;
 - (void)awakeWithPropertyList:(id)arg1;
 - (id)initWithPropertyList:(id)arg1 owner:(id)arg2;
+@end
+
+@protocol DVTRegistrable <NSObject>
+@property(readonly) NSString *identifier;
+
+@optional
+@property(readonly) NSString *displayDescription;
+@property(readonly) NSString *displayName;
 @end
 
 @protocol DVTSelfInstrumentationSession <NSObject>
@@ -286,7 +327,12 @@ typedef union {
 - (BOOL)replaceFindResults:(id)arg1 withString:(id)arg2 withError:(id *)arg3;
 
 @optional
+- (BOOL)replaceFindResults:(id)arg1 inSelection:(struct _NSRange)arg2 withString:(id)arg3 withError:(id *)arg4;
 - (BOOL)replaceTextWithContentsOfURL:(id)arg1 error:(id *)arg2;
+@end
+
+@protocol DVTTextlikeFindDescriptor <NSObject>
+@property(readonly) int matchStyle;
 @end
 
 @protocol DVTXMLUnarchiving <NSObject>
@@ -345,6 +391,31 @@ typedef union {
 - (Class)superclass;
 - (unsigned long long)hash;
 - (BOOL)isEqual:(id)arg1;
+
+@optional
+- (id)debugDescription;
+@end
+
+@protocol NSUserNotificationCenterDelegate <NSObject>
+
+@optional
+- (BOOL)userNotificationCenter:(id)arg1 shouldPresentNotification:(id)arg2;
+- (void)userNotificationCenter:(id)arg1 didActivateNotification:(id)arg2;
+- (void)userNotificationCenter:(id)arg1 didDeliverNotification:(id)arg2;
+@end
+
+@protocol _DVTCancellableObservingToken <NSObject>
+- (void)_primitiveCancelObservation;
+@end
+
+@protocol __ARCLiteIndexedSubscripting__
+- (void)setObject:(id)arg1 atIndexedSubscript:(unsigned long long)arg2;
+- (id)objectAtIndexedSubscript:(unsigned long long)arg1;
+@end
+
+@protocol __ARCLiteKeyedSubscripting__
+- (void)setObject:(id)arg1 forKeyedSubscript:(id)arg2;
+- (id)objectForKeyedSubscript:(id)arg1;
 @end
 
 @interface DVTLogger : NSObject
@@ -431,7 +502,7 @@ typedef union {
 @property(readonly) NSString *version; // @synthesize version=_version;
 @property(readonly) NSString *identifier; // @synthesize identifier=_identifier;
 - (id)_localizedStringForString:(id)arg1;
-- (void)_fireExtensionFault;
+- (BOOL)_fireExtensionFault:(id *)arg1;
 - (void)_adjustClassReferencesInParameterData:(id)arg1 usingSchema:(id)arg2;
 - (void)_adjustElementClassAttributes:(id)arg1 forKey:(id)arg2 inParameterData:(id)arg3;
 - (void)_adjustClassAttribute:(id)arg1 forKey:(id)arg2 inParameterData:(id)arg3;
@@ -440,8 +511,9 @@ typedef union {
 - (BOOL)_adjustParameterData:(id)arg1 usingSchema:(id)arg2;
 - (BOOL)hasValueForKey:(id)arg1;
 - (BOOL)_hasValueForKey:(id)arg1 inParameterData:(id)arg2 usingSchema:(id)arg3;
+- (id)valueForKey:(id)arg1 error:(id *)arg2;
 - (id)valueForKey:(id)arg1;
-- (id)_valueForKey:(id)arg1 inParameterData:(id)arg2 usingSchema:(id)arg3;
+- (id)_valueForKey:(id)arg1 inParameterData:(id)arg2 usingSchema:(id)arg3 error:(id *)arg4;
 @property(readonly) NSXMLElement *extensionElement;
 @property(readonly, getter=isValid) BOOL valid;
 @property(readonly) NSBundle *bundle;
@@ -609,10 +681,13 @@ typedef union {
 - (id)_invalidExtensionWithIdentifier:(id)arg1;
 - (id)_plugInCachePath;
 - (id)_applicationCachesPath;
+- (id)_toolsBuild;
 - (id)_toolsVersionName;
 - (id)_secureCachePath;
 - (void)_createPlugInObjectsFromCache;
 - (BOOL)_savePlugInCacheWithScanRecords:(id)arg1 error:(id *)arg2;
+- (BOOL)_removePlugInCacheAndReturnError:(id *)arg1;
+- (BOOL)_removePlugInCacheAtPath:(id)arg1 error:(id *)arg2;
 - (id)_plugInCacheSaveFailedErrorWithUnderlyingError:(id)arg1;
 - (BOOL)_loadPlugInCache:(id *)arg1;
 - (BOOL)_cacheCoversPlugInsWithScanRecords:(id)arg1;
@@ -757,7 +832,7 @@ typedef union {
 {
     _DVTFilePathAssoc *next;
     NSString *role;
-    id object;
+    id _object_dvtWeak;
     BOOL recursiveObserver;
     id block;
     struct dispatch_queue_s *dispatchQueue;
@@ -765,13 +840,15 @@ typedef union {
 }
 
 - (id)description;
+- (void)dealloc;
 - (void)finalize;
 - (id)initWithRole:(id)arg1 object:(id)arg2 observingDidChangeRecursively:(BOOL)arg3 onOperationQueue:(id)arg4 block:(id)arg5;
 - (id)initWithRole:(id)arg1 object:(id)arg2 observingDidChangeRecursively:(BOOL)arg3 onDispatchQueue:(struct dispatch_queue_s *)arg4 block:(id)arg5;
+@property __weak id object;
 
 @end
 
-@interface DVTFilePath : NSObject
+@interface DVTFilePath : NSObject <NSCopying, DVTFileSystemRepresentationProviding>
 {
     DVTFilePath *_parentPath;
     DVTPointerArray *_childPaths;
@@ -803,6 +880,7 @@ typedef union {
 + (void)initialize;
 - (id)_descriptionOfAssociates;
 - (id)description;
+- (void)dvt_provideFileSystemRepresentationToBlock:(id)arg1;
 - (void)removeAllAssociates;
 - (void)removeAssociate:(id)arg1;
 - (void)removeAssociatesWithRole:(id)arg1;
@@ -837,6 +915,7 @@ typedef union {
 - (BOOL)_hasResolvedVnode;
 - (id)_locked_vnode;
 - (id)_locked_vnodeKnownDoesNotExist:(BOOL)arg1;
+- (void)_invalidateFilePathAndChildrenIncludingEquivalents;
 - (void)_invalidateFilePathAndChildren;
 - (void)invalidateFilePath;
 - (void)_invalidateKnownDoesNotExist:(BOOL)arg1 explicitlyInvalidateChildren:(BOOL)arg2;
@@ -849,7 +928,10 @@ typedef union {
 - (BOOL)_getFSRepIntoBuffer:(char **)arg1 ofLength:(unsigned long long)arg2 requiredLength:(unsigned long long)arg3 endPtr:(char **)arg4 allowAllocation:(BOOL)arg5;
 @property(readonly) NSString *fileName;
 @property(readonly) NSURL *fileURL;
+@property(readonly) NSArray *pathComponents;
 @property(readonly) NSString *pathString;
+- (id)filePathForUniqueRelativeDirectoryWithPrefix:(id)arg1 error:(id *)arg2;
+- (id)filePathForUniqueRelativeFileWithPrefix:(id)arg1 error:(id *)arg2;
 - (id)filePathForRelativePathString:(id)arg1;
 - (id)filePathForRelativeFileSystemRepresentation:(const char *)arg1;
 - (id)filePathForRelativeFileSystemRepresentation:(const char *)arg1 length:(unsigned long long)arg2;
@@ -897,7 +979,7 @@ typedef union {
 @interface DVTXMLArchiver : NSObject
 {
     DVTSimpleXMLWriter *_writer;
-    NSMutableDictionary *_classesToElementNames;
+    DVTMapTable *_classesToElementNames;
     id _delegate;
     id _context;
     NSArray *_extraAttributes;
@@ -956,6 +1038,7 @@ typedef union {
     BOOL _rootObjectPropertiesSet;
     BOOL _hasReadArchive;
     BOOL _archiveContainedUnsupportedNodes;
+    NSError *_xmlParserError;
 }
 
 + (BOOL)unarchiveData:(id)arg1 withRootObject:(id)arg2 error:(id *)arg3;
@@ -964,6 +1047,7 @@ typedef union {
 + (Class)classForElementName:(id)arg1;
 + (void)setClass:(Class)arg1 forElementName:(id)arg2;
 + (void)initialize;
+@property(copy) NSError *xmlParserError; // @synthesize xmlParserError=_xmlParserError;
 @property(copy) NSError *decodingError; // @synthesize decodingError=_decodingError;
 @property(retain, nonatomic) id <DVTXMLUnarchiverDelegate> delegate; // @synthesize delegate=_delegate;
 @property BOOL archiveContainedUnsupportedNodes; // @synthesize archiveContainedUnsupportedNodes=_archiveContainedUnsupportedNodes;
@@ -1130,36 +1214,46 @@ typedef union {
 
 @end
 
-@interface DVTObservingToken : NSObject
+@interface DVTObservingToken : NSObject <DVTObservingToken, _DVTCancellableObservingToken>
 {
-    id _target;
+    id _object;
+    id _target_dvtWeak;
+    NSString *_keyPath;
+    BOOL _isCancelled;
 }
 
+@property(retain) id object; // @synthesize object=_object;
 - (void)observeValueForKeyPath:(id)arg1 ofObject:(id)arg2 change:(id)arg3 context:(void *)arg4;
-- (void)clearTarget;
-- (id)target;
+- (void)_primitiveCancelObservation;
+- (BOOL)isCancelled;
+- (void)cancel;
 - (id)description;
-- (id)initWithTarget:(id)arg1;
+- (void)dealloc;
+- (id)initWithTarget:(id)arg1 object:(id)arg2 keyPath:(id)arg3;
+- (void)setTarget:(id)arg1;
+- (id)target;
 
 @end
 
-@interface DVTObservingBlockToken : NSObject <DVTObservingToken>
+@interface DVTObservingBlockToken : NSObject <DVTObservingToken, _DVTCancellableObservingToken>
 {
-    id _observedObject;
     id _owner;
+    id _observedObject;
     id _handlerBlock;
     NSString *_keyPath;
-    BOOL _inSetupObserving;
-    BOOL _stopRequestedWhileInSetupObserving;
+    BOOL _isCancelled;
 }
 
+@property(retain) id owner; // @synthesize owner=_owner;
 - (void)observeValueForKeyPath:(id)arg1 ofObject:(id)arg2 change:(id)arg3 context:(void *)arg4;
 - (void)setHandlerBlock:(id)arg1 forKeyPath:(void)arg2 options:(id)arg3;
 - (void)_tearDownObserving;
 - (void)_setupObservingWithOptions:(unsigned long long)arg1;
 - (id)description;
 - (void)cancel;
-@property(readonly, getter=isCancelled) BOOL cancelled;
+- (void)_primitiveCancelObservation;
+- (BOOL)isCancelled;
+- (void)dealloc;
 - (id)initWithObservedObject:(id)arg1 owner:(id)arg2;
 
 @end
@@ -1176,13 +1270,16 @@ typedef union {
 
 @interface DVTSharedObserver : NSObject
 {
-    NSMapTable *_registeredObservers;
+    NSString *_keyPath;
+    id _object;
+    DVTMapTable *_registeredObservers;
 }
 
 - (void)_removeObserver:(id)arg1 forName:(id)arg2;
 - (void)_setObserver:(id)arg1 forName:(id)arg2 handlerBlock:(id)arg3;
 - (void)observeValueForKeyPath:(id)arg1 ofObject:(id)arg2 change:(id)arg3 context:(void *)arg4;
 - (id)_handlerInfoForObserver:(id)arg1;
+- (void)dealloc;
 - (id)_initWithObservedObject:(id)arg1 keyPath:(id)arg2;
 
 @end
@@ -1204,24 +1301,34 @@ typedef union {
     NSString *_name;
     NSOperationQueue *_asyncQueue;
     NSOperationQueue *_changeQueue;
+    struct dispatch_queue_s *_asyncDispatchQueue;
+    struct dispatch_queue_s *_changeDispatchQueue;
     NSMutableSet *_insertedObjects;
     NSMutableSet *_updatedObjects;
     NSMutableSet *_deletedObjects;
     BOOL _coalescePending;
+    BOOL _changeNotificationsAreSuspended;
+    BOOL _postingChangeNotification;
+    BOOL _additionalChangesPending;
 }
 
+@property BOOL changeNotificationsAreSuspended; // @synthesize changeNotificationsAreSuspended=_changeNotificationsAreSuspended;
+@property(readonly) struct dispatch_queue_s *changeDispatchQueue; // @synthesize changeDispatchQueue=_changeDispatchQueue;
+@property(readonly) struct dispatch_queue_s *asyncDispatchQueue; // @synthesize asyncDispatchQueue=_asyncDispatchQueue;
 @property(readonly) NSOperationQueue *changeQueue; // @synthesize changeQueue=_changeQueue;
 @property(readonly) NSOperationQueue *asyncQueue; // @synthesize asyncQueue=_asyncQueue;
 @property(readonly) NSString *name; // @synthesize name=_name;
 - (void)didDeleteModelObject:(id)arg1;
 - (void)didUpdateModelObject:(id)arg1;
 - (void)didInsertModelObject:(id)arg1;
+- (void)performBlockCoalescingModelChanges:(id)arg1;
 - (void)_processPendingChanges;
 - (void)_locked_coalesceUpdates;
 - (void)_coalescingTick;
 - (void)_disassociateModelObject:(id)arg1;
 - (void)_associateModelObject:(id)arg1;
 - (id)description;
+- (id)initWithName:(id)arg1 asyncDispatchQueue:(struct dispatch_queue_s *)arg2 changeDispatchQueue:(struct dispatch_queue_s *)arg3;
 - (id)initWithName:(id)arg1 asyncQueue:(id)arg2 changeQueue:(id)arg3;
 
 @end
@@ -1232,15 +1339,16 @@ typedef union {
     NSOperationQueue *_queue;
     NSMutableArray *_suboperations;
     NSMutableArray *_suboperationSchedulers;
-    NSMapTable *_suboperationObservations;
+    DVTMapTable *_suboperationObservations;
     unsigned long long _groupState;
-    NSHashTable *_incompleteSuboperations;
+    DVTHashTable *_incompleteSuboperations;
     int _addedSuboperations;
     int _completedSuboperations;
 }
 
 + (id)operationGroupWithSuboperations:(id)arg1;
 @property(readonly) NSArray *suboperations; // @synthesize suboperations=_suboperations;
+- (id)description;
 - (void)cancel;
 - (void)start;
 - (BOOL)isFinished;
@@ -1272,7 +1380,10 @@ typedef union {
 - (void)_adjustClassReferencesInParameterData;
 - (BOOL)_adjustParameterData;
 - (BOOL)hasValueForKey:(id)arg1;
+- (id)valueForKey:(id)arg1 error:(id *)arg2;
 - (id)valueForKey:(id)arg1;
+- (id)debugDescription;
+- (id)description;
 - (id)initWithParameterData:(id)arg1 usingSchema:(id)arg2 forExtension:(id)arg3;
 
 @end
@@ -1292,6 +1403,7 @@ typedef union {
 - (void)afterTimeInterval:(double)arg1 asyncPerformLockedBlock:(id)arg2;
 - (void)asyncPerformLockedBlock:(id)arg1;
 - (void)performLockedBlock:(id)arg1;
+- (void)dealloc;
 - (void)finalize;
 - (id)init;
 - (id)initWithDebugName:(id)arg1 isRecursive:(BOOL)arg2;
@@ -1304,7 +1416,7 @@ typedef union {
     DVTStateRepository *_parentRepository;
     DVTStateToken *_parentToken;
     NSMutableDictionary *_currentState;
-    NSMapTable *_tokenByIdentifierMapping;
+    DVTMapTable *_tokenByIdentifierMapping;
     id <DVTStateRepositoryDelegate> _delegate;
 }
 
@@ -1339,25 +1451,31 @@ typedef union {
 - (id)_parentRepository;
 - (id)_tokenMapping;
 - (id)identifier;
+- (void)finalize;
 - (id)initWithIdentifier:(id)arg1 inParentRepository:(id)arg2;
 - (id)initWithIdentifier:(id)arg1 inParentStateToken:(id)arg2;
 
 @end
 
-@interface DVTStateToken : NSObject <DVTInvalidation>
+@interface DVTStateToken : NSObject <DVTInvalidation_New>
 {
-    id _statefulObject;
+    id <DVTStatefulObject> _statefulObject_dvtWeak;
     DVTStateRepository *_repository;
     DVTStateRepository *_childRepository;
     NSString *_identifier;
     NSDictionary *_stateSavingObjectPersistenceByName;
-    DVTStackBacktrace *_invalidationBacktrace;
-    BOOL _isInvalidated;
     BOOL _isRestoringState;
     BOOL _canPullFromRepository;
     BOOL _checkCanPullFromRepositoryAgain;
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 - (void)_deleteStateFromRepositoryForObjectWithIdentifier:(id)arg1;
 - (void)deleteStateFromRepository;
@@ -1375,12 +1493,15 @@ typedef union {
 - (id)_stateSavingObjectPersistenceByName;
 - (id)identifier;
 - (id)repository;
-- (id)statefulObject;
 - (id)_childRepository;
 - (void)_updateCanPullFromRepositoryAndCheckAgain:(BOOL)arg1;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (id)initWithStatefulObject:(id)arg1 identifier:(id)arg2 inRepository:(id)arg3;
+- (void)setStatefulObject:(id)arg1;
+- (id)statefulObject;
 
 @end
 
@@ -1459,6 +1580,7 @@ typedef union {
 - (BOOL)isUnknownType;
 - (BOOL)isDynamicType;
 - (BOOL)isDeclaredType;
+- (id)fileConversionTypeForFilePath:(id)arg1;
 - (id)secondaryFileDataTypes;
 - (id)primaryFileDataType;
 - (BOOL)isGenericFileDataType;
@@ -1599,16 +1721,19 @@ typedef union {
 {
 }
 
++ (id)keyPathsForValuesAffectingDisplayAttributedString;
 - (id)firstMatchingResultInString:(id)arg1 backwards:(BOOL)arg2 inRange:(struct _NSRange)arg3 withWordFindingBlock:(id)arg4 docLocationCreationBlock:(void)arg5;
 - (id)firstMatchingResultInString:(id)arg1 backwards:(BOOL)arg2 inRange:(struct _NSRange)arg3 docLocationCreationBlock:(id)arg4;
+@property(readonly) BOOL caseSensitive;
 @property(readonly) NSString *displayString;
+@property(readonly) NSAttributedString *displayAttributedString;
 - (id)copyWithZone:(struct _NSZone *)arg1;
 - (void)encodeWithCoder:(id)arg1;
 - (id)initWithCoder:(id)arg1;
 
 @end
 
-@interface DVTFindTextualDescriptor : DVTFindDescriptor
+@interface DVTFindTextualDescriptor : DVTFindDescriptor <DVTTextlikeFindDescriptor>
 {
     NSString *_findString;
     int _matchStyle;
@@ -1616,7 +1741,7 @@ typedef union {
 }
 
 @property(readonly) int matchStyle; // @synthesize matchStyle=_matchStyle;
-@property(readonly) BOOL caseSensitive; // @synthesize caseSensitive=_caseSensitive;
+- (BOOL)caseSensitive;
 @property(readonly) NSString *findString; // @synthesize findString=_findString;
 - (id)firstMatchingResultInString:(id)arg1 backwards:(BOOL)arg2 inRange:(struct _NSRange)arg3 withWordFindingBlock:(id)arg4 docLocationCreationBlock:(void)arg5;
 - (struct _NSRange)_wordBoundaryAtIndex:(unsigned long long)arg1 forString:(id)arg2;
@@ -1639,6 +1764,7 @@ typedef union {
 @property(readonly) DVTRegularExpression *regularExpression; // @synthesize regularExpression=_regularExpression;
 - (id)firstMatchingResultInString:(id)arg1 backwards:(BOOL)arg2 inRange:(struct _NSRange)arg3 withWordFindingBlock:(id)arg4 docLocationCreationBlock:(void)arg5;
 - (struct _NSRange)_first:(BOOL)arg1 matchOnLine:(id)arg2 withLineRange:(struct _NSRange)arg3 clippedByRange:(struct _NSRange)arg4 match:(id *)arg5;
+- (BOOL)caseSensitive;
 - (id)displayString;
 - (BOOL)isEqual:(id)arg1;
 - (unsigned long long)hash;
@@ -1697,6 +1823,7 @@ typedef union {
 - (unsigned long long)hash;
 - (BOOL)isEqual:(id)arg1;
 - (id)copyWithZone:(struct _NSZone *)arg1;
+- (void)dealloc;
 - (void)finalize;
 @property(readonly) unsigned long long groupCount;
 - (id)initWithExpressionString:(id)arg1 options:(int)arg2 error:(id *)arg3;
@@ -2161,6 +2288,9 @@ typedef union {
 @property(retain) DVTCharStream *inputStream; // @synthesize inputStream=_inputStream;
 @property(retain) id <DVTSourceBufferProvider> sourceBufferProvider; // @synthesize sourceBufferProvider=_sourceBufferProvider;
 - (id)objCMethodNameForItem:(id)arg1 nameRanges:(id *)arg2;
+- (BOOL)isItemDictionaryLiteral:(id)arg1;
+- (BOOL)isItemObjectLiteral:(id)arg1;
+- (BOOL)isItemForStatement:(id)arg1;
 - (BOOL)isItemSemanticBlock:(id)arg1;
 - (BOOL)isItemBracketExpression:(id)arg1;
 - (BOOL)isItemAngleExpression:(id)arg1;
@@ -2207,6 +2337,8 @@ typedef union {
 - (id)builtUpNameForItem:(id)arg1 nameRanges:(id *)arg2;
 - (id)_builtUpNameForItem:(id)arg1 mutableNameRanges:(id)arg2;
 - (id)_builtUpNameForSubTree:(id)arg1 mutableNameRanges:(id)arg2;
+- (id)objectLiteralItemAtLocation:(unsigned long long)arg1;
+- (id)parenItemAtLocation:(unsigned long long)arg1;
 - (id)parenLikeItemAtLocation:(unsigned long long)arg1;
 - (id)foldableBlockItemForLocation:(unsigned long long)arg1;
 - (id)foldableBlockItemForLineAtLocation:(unsigned long long)arg1;
@@ -2245,7 +2377,7 @@ typedef union {
 + (id)sourceModelItemWithRange:(struct _NSRange)arg1 language:(long long)arg2 token:(long long)arg3 nodeType:(short)arg4;
 @property struct _NSRange relativeLocation; // @synthesize relativeLocation=_relativeLocation;
 @property(retain, nonatomic) NSMutableArray *children; // @synthesize children=_children;
-@property(retain, nonatomic) DVTSourceModelItem *parent; // @synthesize parent=_parent;
+@property(nonatomic) DVTSourceModelItem *parent; // @synthesize parent=_parent;
 @property long long token; // @synthesize token=_token;
 @property long long langId; // @synthesize langId=_langId;
 - (void)enumerateIdentifierItemsInRelativeRange:(struct _NSRange)arg1 usingBlock:(id)arg2;
@@ -2503,7 +2635,7 @@ typedef union {
 @interface DVTMutableOrderedDictionary : NSMutableDictionary
 {
     DVTMutableOrderedSet *set;
-    NSMapTable *backingMapTable;
+    DVTMapTable *backingMapTable;
 }
 
 - (id)mutableCopyWithZone:(struct _NSZone *)arg1;
@@ -2528,7 +2660,7 @@ typedef union {
 
 @end
 
-@interface DVTSourceCodeLanguage : NSObject
+@interface DVTSourceCodeLanguage : NSObject <NSCopying>
 {
     NSString *_identifier;
     NSString *_languageName;
@@ -2588,9 +2720,12 @@ typedef union {
 @property(readonly) BOOL canRunMultipleInstancesPerApp;
 @property(readonly) BOOL runsRemoteFromHostLauncher;
 @property(readonly) BOOL supportsWatchpoints;
+@property(readonly) BOOL supportsDebugAsDifferentUser;
 @property(readonly) BOOL supportsDebuggingDocumentVersioning;
 @property(readonly) BOOL supportsResumeAndTurningItOnOrOff;
 @property(readonly) BOOL supportsCustomWorkingDirectory;
+@property(readonly) BOOL supportsDisplayScaleOption;
+@property(readonly) BOOL supportsRoutingCoverageFile;
 @property(readonly) BOOL supportsLocationSimulation;
 @property(readonly) NSString *deviceIdentifierForGPUTracing;
 @property(readonly) BOOL supportsApplicationDataUploading;
@@ -2616,7 +2751,7 @@ typedef union {
 @interface DVTDeviceManager : NSObject
 {
     NSMutableDictionary *_locatorTrackers;
-    NSMapTable *_observingTokens;
+    DVTMapTable *_observingTokens;
     NSMutableSet *_availableDevices;
     DVTDevice *_localComputer;
 }
@@ -2732,6 +2867,7 @@ typedef union {
 + (void)initialize;
 - (BOOL)canRunMultipleInstancesPerApp;
 - (BOOL)supportsWatchpoints;
+- (BOOL)supportsDebugAsDifferentUser;
 - (BOOL)supportsDebuggingDocumentVersioning;
 - (BOOL)supportsResumeAndTurningItOnOrOff;
 - (BOOL)supportsCustomWorkingDirectory;
@@ -2859,6 +2995,7 @@ typedef union {
     NSNumber *_isBaseSDK;
     DVTSearchPath *_commandLineToolSearchPath;
     NSArray *_toolchains;
+    NSArray *_toolchainNames;
 }
 
 + (id)sdksInDirectory:(id)arg1 forPlatform:(id)arg2;
@@ -2877,6 +3014,7 @@ typedef union {
 + (void)_setSDK:(id)arg1 forResolvedAbsolutePath:(id)arg2;
 + (id)knownSDKs;
 + (void)initialize;
+@property(readonly) NSArray *toolchainNames; // @synthesize toolchainNames=_toolchainNames;
 @property(readonly) NSDictionary *defaultProperties; // @synthesize defaultProperties=_defaultProperties;
 @property(readonly) NSArray *toolchains; // @synthesize toolchains=_toolchains;
 @property(readonly) NSURL *docSetFeedURL; // @synthesize docSetFeedURL=_docSetFeedURL;
@@ -2917,7 +3055,7 @@ typedef union {
 
 @end
 
-@interface DVTSourceCodeSymbolKind : NSObject
+@interface DVTSourceCodeSymbolKind : NSObject <NSCopying>
 {
     NSString *_identifier;
     NSString *_localizedDescription;
@@ -2961,6 +3099,7 @@ typedef union {
 + (id)classSymbolKind;
 + (id)classMethodSymbolKind;
 + (id)categorySymbolKind;
++ (id)builtinTypeSymbolKind;
 + (id)memberContainerSymbolKind;
 + (id)memberSymbolKind;
 + (id)callableSymbolKind;
@@ -2978,17 +3117,19 @@ typedef union {
 
 @end
 
-@interface _DVTAsynchronousRequest : NSObject <DVTCancellableToken>
+@interface _DVTAsynchronousRequest : NSObject <DVTCancellable>
 {
+    long long _type;
     id _block;
 }
 
++ (id)_scheduledRequestWithOrder:(long long)arg1 modes:(id)arg2 block:(id)arg3;
 + (id)_scheduledRequestWithDelay:(double)arg1 block:(id)arg2;
 + (id)_scheduledRequestWithDelay:(double)arg1 modes:(id)arg2 block:(id)arg3;
 - (void)cancel;
 @property(readonly, getter=isCancelled) BOOL cancelled;
-- (void)_invokeBlock;
-- (id)_initWithBlock:(id)arg1;
+- (void)_invokeBlock:(id)arg1;
+- (id)_initWithBlock:(id)arg1 type:(void)arg2;
 
 @end
 
@@ -3008,18 +3149,7 @@ typedef union {
 
 @end
 
-@interface _DVTDiffDescriptorDataSource : DVTDiffDataSource
-{
-}
-
-+ (void)initialize;
-- (long long)numberOfDiffTokensInDiffDescriptor:(id)arg1;
-- (void)getDiffTokens:(struct _DVTDiffToken *)arg1 inDiffDescriptor:(id)arg2 inRange:(struct _NSRange)arg3;
-- (struct _DVTDiffToken)diffTokenInDiffDescriptor:(id)arg1 atIndex:(long long)arg2;
-
-@end
-
-@interface DVTDiffContext : NSObject <DVTInvalidation>
+@interface DVTDiffContext : NSObject <DVTInvalidation_New>
 {
     DVTDiffDataSource *_originalDataSource;
     DVTDiffDataSource *_modifiedDataSource;
@@ -3029,17 +3159,24 @@ typedef union {
     NSMutableArray *_tmpDiffDescriptors;
     NSOperationQueue *_diffQueue;
     unsigned long long _timestamp;
-    DVTStackBacktrace *_invalidationBacktrace;
     int _needsUpdate;
     struct _DVTDiffContextFlags _dcFlags;
     int _defaultDiffMergeDirection;
-    BOOL _isInvalidated;
     BOOL _shouldGenerateSubdiffDescriptors;
+    BOOL _isRestoringState;
+    BOOL _updatingChangedDescriptor;
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
++ (BOOL)automaticallyNotifiesObserversOfValue;
 + (void)initialize;
 + (id)performanceLogAspect;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
+@property BOOL isRestoringState; // @synthesize isRestoringState=_isRestoringState;
 @property(retain) NSMutableArray *tmpDiffDescriptors; // @synthesize tmpDiffDescriptors=_tmpDiffDescriptors;
 @property unsigned long long timestamp; // @synthesize timestamp=_timestamp;
 - (void)_dumpDataSources;
@@ -3077,11 +3214,15 @@ typedef union {
 - (BOOL)_setModifiedDataSource:(id)arg1;
 @property(retain) DVTDiffDataSource *originalDataSource;
 - (BOOL)_setOriginalDataSource:(id)arg1;
+- (void)setUpdatingChangedDescriptor:(BOOL)arg1;
+- (BOOL)updatingChangedDescriptor;
 - (void)setDiffQueue:(id)arg1;
 - (id)diffQueue;
 - (id)_observeDataSource:(id)arg1;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (id)init;
 - (id)initWithOriginalDataSource:(id)arg1 modifiedDataSource:(id)arg2;
 - (id)initWithOriginalDataSource:(id)arg1 modifiedDataSource:(id)arg2 updatesDescriptorsImmediately:(BOOL)arg3;
@@ -3247,6 +3388,7 @@ typedef union {
 - (id)toolchainSearchPath;
 - (id)embeddedApplicationsDirectory;
 - (id)xcodeApplicationFilePath;
+- (id)developerAppleInternalXcodeDirectory;
 - (id)developerApplicationsDirectory;
 - (id)userDataDirectoryForCurrentApplication;
 - (id)dataDirectoryForCurrentApplication;
@@ -3301,6 +3443,10 @@ typedef union {
 }
 
 + (id)versionWithMajor:(unsigned long long)arg1 minor:(unsigned long long)arg2 update:(unsigned long long)arg3;
++ (id)version4_6_0;
++ (id)version4_5_0;
++ (id)version4_4_0;
++ (id)version4_3_3;
 + (id)version4_3_2;
 + (id)version4_3_1;
 + (id)version4_3_0;
@@ -3327,6 +3473,7 @@ typedef union {
 + (id)versionWithString:(id)arg1;
 + (id)allKnownVersions;
 + (id)currentVersion;
+- (id)description;
 - (unsigned long long)versionUpdateComponent;
 - (unsigned long long)versionMinorComponent;
 - (unsigned long long)versionMajorComponent;
@@ -3357,11 +3504,11 @@ typedef union {
 + (id)localeWithLocaleIdentifier:(id)arg1;
 + (id)preferredLocales;
 + (id)availableLocales;
++ (id)baseLocale;
 + (id)autoupdatingCurrentLocale;
 + (id)currentLocale;
 + (id)_xcodeLocale;
 + (id)systemLocale;
-@property(readonly) NSString *localeIdentifier; // @synthesize localeIdentifier=_localeIdentifier;
 @property(readonly) NSString *displayName; // @synthesize displayName=_displayName;
 - (unsigned long long)hash;
 - (BOOL)isEqual:(id)arg1;
@@ -3371,6 +3518,7 @@ typedef union {
 - (id)copyWithZone:(struct _NSZone *)arg1;
 - (id)rootLanguage;
 - (id)localeComponents;
+@property(readonly) NSString *localeIdentifier; // @synthesize localeIdentifier=_localeIdentifier;
 - (id)initWithLocaleIdentifier:(id)arg1 displayName:(id)arg2;
 - (id)initWithLocaleIdentifier:(id)arg1;
 
@@ -3412,25 +3560,30 @@ typedef union {
 
 @end
 
-@interface DVTDirectoryBasedCustomDataStore : NSObject <DVTCustomDataStoring, DVTInvalidation>
+@interface DVTDirectoryBasedCustomDataStore : NSObject <DVTCustomDataStoring, DVTInvalidation_New>
 {
     DVTFilePath *_rootDirectoryPath;
     DVTFilePath *_customDataPath;
     DVTFilePath *_sharedDataPath;
     NSString *_perUserSubfolderName;
     NSString *_sharedSubfolderName;
-    DVTStackBacktrace *_invalidationBacktrace;
     id <DVTDirectoryBasedCustomDataStoreDelegate> _delegate;
     BOOL _mayCreateRootDirectoryIfNeeded;
     BOOL _supportsCurrentUserOnly;
-    BOOL _isInvalidated;
     BOOL _delegateUnlocks;
     BOOL _delegateWrites;
     BOOL _delegateRemoves;
     BOOL _delegateMoves;
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
 + (id)customDataStoreWithRootDirectoryPath:(id)arg1 perUserSubfolderName:(id)arg2 sharedSubfolderName:(id)arg3 supportCurrentUserOnly:(BOOL)arg4;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 @property BOOL mayCreateRootDirectoryIfNeeded; // @synthesize mayCreateRootDirectoryIfNeeded=_mayCreateRootDirectoryIfNeeded;
 @property(readonly) NSString *sharedSubfolderName; // @synthesize sharedSubfolderName=_sharedSubfolderName;
@@ -3455,7 +3608,9 @@ typedef union {
 - (void)setUnlockingDelegate:(id)arg1;
 @property(retain) id <DVTDirectoryBasedCustomDataStoreDelegate> delegate;
 - (id)description;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
 @property(readonly, nonatomic, getter=isValid) BOOL valid;
 
 @end
@@ -3528,14 +3683,14 @@ typedef union {
 
 @interface DVTObservableObjectProxy : NSObject
 {
-    id _realObject;
+    id _representedObject_dvtWeak;
     DVTMapTable *_observationInfo;
     NSCountedSet *_uniqueObservedKeyPaths;
 }
 
-@property(nonatomic) __weak id representedObject; // @synthesize representedObject=_realObject;
 - (id)valueForUndefinedKey:(id)arg1;
 - (id)registeredKeyPaths;
+@property(nonatomic) __weak id representedObject;
 - (void)removeObserver:(id)arg1 forKeyPath:(id)arg2;
 - (void)removeObserver:(id)arg1 forKeyPath:(id)arg2 context:(void *)arg3;
 - (void)addObserver:(id)arg1 forKeyPath:(id)arg2 options:(unsigned long long)arg3 context:(void *)arg4;
@@ -3543,21 +3698,29 @@ typedef union {
 - (void)removeObservedKeyPath:(id)arg1;
 - (void)addObservedKeyPath:(id)arg1;
 - (void)forgetObservationInfoForObserver:(id)arg1;
+- (void)setObservationInfo:(id)arg1 forObserver:(id)arg2;
 - (id)observationInfoForObserver:(id)arg1;
 - (id)init;
 
 @end
 
-@interface DVTInvalidationCallbackObservingToken : NSObject <DVTInvalidation>
+@interface DVTInvalidationCallbackObservingToken : NSObject <DVTInvalidation_New>
 {
+    id _callbackBlock;
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
     DVTStackBacktrace *_invalidationBacktrace;
     DVTStackBacktrace *_creationBacktrace;
-    id _callbackBlock;
 }
 
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (id)initWithCallbackBlock:(id)arg1;
 
 @end
@@ -3596,7 +3759,7 @@ typedef union {
 - (unsigned long long)readUnsignedAsciiInteger;
 - (unsigned long long)peekUTF8StringLength;
 - (id)readString;
-- (const char *)readUTF8String;
+- (id)readUTF8String;
 - (long long)readLEB128;
 - (unsigned long long)readUnsignedLEB128;
 - (long long)readInt64;
@@ -3618,6 +3781,7 @@ typedef union {
 - (const char *)bytes;
 - (BOOL)isClosed;
 - (void)close;
+- (void)finalize;
 - (id)init;
 - (id)initWithCapacity:(unsigned long long)arg1;
 - (id)initWithBytesNoCopy:(void *)arg1 length:(unsigned long long)arg2;
@@ -3719,8 +3883,11 @@ typedef union {
 @property int autoSuggestionStyle;
 @property double autoSuggestCompletionsDelay;
 @property BOOL autoSuggestCompletions;
+@property BOOL enableTypeOverCompletions;
 @property BOOL autoInsertOpenBracket;
 @property BOOL autoInsertClosingBrace;
+@property BOOL trimWhitespaceOnlyLines;
+@property BOOL trimTrailingWhitespace;
 @property long long wrappedLinesIndentWidth;
 @property BOOL wrapLines;
 - (BOOL)characterIsAutoIndent:(unsigned short)arg1;
@@ -3899,6 +4066,7 @@ typedef union {
 - (id)dvt_evaluateAsStringListInScope:(id)arg1 withState:(const struct DVTNestedMacroExpansionState *)arg2;
 - (id)dvt_evaluateAsStringInScope:(id)arg1 withState:(const struct DVTNestedMacroExpansionState *)arg2;
 - (BOOL)dvt_isLiteral;
+- (void)dealloc;
 - (id)initWithOriginalString:(id)arg1 substrings:(id)arg2;
 
 @end
@@ -4060,6 +4228,7 @@ typedef union {
     NSString *_currentDirectoryPath;
     NSArray *_arguments;
     NSArray *_preferredArchitectures;
+    NSMutableArray *_fileDescriptorsToKeepOpen;
     NSNumber *_exitStatus;
     NSNumber *_signalStatus;
     NSNumber *_processIdentifier;
@@ -4091,6 +4260,8 @@ typedef union {
 @property(copy) NSString *launchPath; // @synthesize launchPath=_launchPath;
 - (id)description;
 @property(readonly) BOOL isRunning;
+- (void)markFileHandleToStayOpenAcrossExec:(id)arg1;
+- (void)markFileDescriptorToStayOpenAcrossExec:(int)arg1;
 - (void)hookStandardInputToPipe:(id)arg1 closingParentEndOnLaunch:(BOOL)arg2;
 - (void)hookStandardErrorToPipe:(id)arg1 closingParentEndOnLaunch:(BOOL)arg2;
 - (void)hookStandardOutputToPipe:(id)arg1 closingParentEndOnLaunch:(BOOL)arg2;
@@ -4099,6 +4270,7 @@ typedef union {
 - (void)hookStandardOutputToFileHandle:(id)arg1 closingParentEndOnLaunch:(BOOL)arg2;
 - (void)addFileHandleToCloseAfterLaunch:(id)arg1;
 - (BOOL)runReturningStandardOutput:(id *)arg1 standardError:(id *)arg2 error:(id *)arg3;
+- (BOOL)runReturningStandardOutput:(id *)arg1 standardError:(id *)arg2 standardInput:(id)arg3 error:(id *)arg4;
 - (void)waitUntilExit;
 - (void)waitUntilExitRunningRunLoopInWaitMode;
 - (BOOL)launchReturningError:(id *)arg1;
@@ -4121,219 +4293,8 @@ typedef union {
 + (id)pipeReturningError:(id *)arg1;
 @property(readonly) NSFileHandle *fileHandleForWriting; // @synthesize fileHandleForWriting=_fileHandleForWriting;
 @property(readonly) NSFileHandle *fileHandleForReading; // @synthesize fileHandleForReading=_fileHandleForReading;
+- (void)closeBothFileHandles;
 - (id)initWithReadHandle:(id)arg1 andWriteHandle:(id)arg2;
-
-@end
-
-@interface DVTStatistics : NSObject <NSCopying>
-{
-    NSMutableDictionary *_statistics;
-    NSDate *_startTime;
-    BOOL _enabled;
-}
-
-+ (id)sharedStatistics;
-+ (void)initialize;
-@property(getter=isEnabled) BOOL enabled; // @synthesize enabled=_enabled;
-- (id)copyWithZone:(struct _NSZone *)arg1;
-- (BOOL)writeStatisticsToURL:(id)arg1 format:(id)arg2 error:(id *)arg3;
-- (id)dataUsingFormat:(id)arg1 error:(id *)arg2;
-- (id)recordRect:(struct CGRect)arg1 forName:(id)arg2 message:(id)arg3;
-- (id)recordSize:(struct CGSize)arg1 forName:(id)arg2 message:(id)arg3;
-- (id)recordPoint:(struct CGPoint)arg1 forName:(id)arg2 message:(id)arg3;
-- (id)recordRange:(struct _NSRange)arg1 forName:(id)arg2 message:(id)arg3;
-- (id)recordTimeInterval:(double)arg1 forName:(id)arg2 message:(id)arg3;
-- (id)recordFloat:(double)arg1 forName:(id)arg2 message:(id)arg3;
-- (id)recordInteger:(long long)arg1 forName:(id)arg2 message:(id)arg3;
-- (id)recordCountForName:(id)arg1 message:(id)arg2;
-- (void)logValues:(double)arg1:(double)arg2:(double)arg3:(double)arg4 forStatistic:(id)arg5 andName:(id)arg6 message:(id)arg7;
-- (void)registerStatistic:(id)arg1 forName:(id)arg2;
-- (id)statistics;
-- (id)statisticForName:(id)arg1;
-- (id)init;
-
-@end
-
-@interface DVTStatistic : NSObject <NSCopying>
-{
-    long long _count;
-}
-
-- (id)type;
-- (id)copyWithZone:(struct _NSZone *)arg1;
-- (id)formatValue:(id)arg1;
-- (id)average;
-- (id)sum;
-- (id)max;
-- (id)min;
-- (long long)count;
-- (void)recordValue:(id)arg1;
-- (id)init;
-
-@end
-
-@interface DVTIntegerStatistic : DVTStatistic <NSCopying>
-{
-    long long _min;
-    long long _max;
-    long long _sum;
-}
-
-- (id)type;
-- (id)copyWithZone:(struct _NSZone *)arg1;
-- (id)average;
-- (id)sum;
-- (id)max;
-- (id)min;
-- (void)recordInteger:(long long)arg1;
-- (void)recordValue:(id)arg1;
-
-@end
-
-@interface DVTFloatStatistic : DVTStatistic <NSCopying>
-{
-    double _min;
-    double _max;
-    long double _sum;
-}
-
-- (id)type;
-- (id)copyWithZone:(struct _NSZone *)arg1;
-- (id)average;
-- (id)sum;
-- (id)max;
-- (id)min;
-- (void)recordDouble:(double)arg1;
-- (void)recordValue:(id)arg1;
-
-@end
-
-@interface DVTTimeIntervalStatistic : DVTFloatStatistic <NSCopying>
-{
-}
-
-- (id)formatValue:(id)arg1;
-- (id)type;
-
-@end
-
-@interface DVTRangeStatistic : DVTStatistic <NSCopying>
-{
-    struct _NSRange _min;
-    struct _NSRange _max;
-    long long _location;
-    long long _length;
-}
-
-- (id)type;
-- (id)copyWithZone:(struct _NSZone *)arg1;
-- (id)formatValue:(id)arg1;
-- (id)average;
-- (id)sum;
-- (id)max;
-- (id)min;
-- (void)recordRange:(struct _NSRange)arg1;
-- (void)recordValue:(id)arg1;
-
-@end
-
-@interface DVTPointStatistic : DVTStatistic <NSCopying>
-{
-    struct CGPoint _min;
-    struct CGPoint _max;
-    long double _x;
-    long double _y;
-}
-
-- (id)type;
-- (id)copyWithZone:(struct _NSZone *)arg1;
-- (id)formatValue:(id)arg1;
-- (id)average;
-- (id)sum;
-- (id)max;
-- (id)min;
-- (void)recordPoint:(struct CGPoint)arg1;
-- (void)recordValue:(id)arg1;
-
-@end
-
-@interface DVTSizeStatistic : DVTStatistic <NSCopying>
-{
-    struct CGSize _min;
-    struct CGSize _max;
-    long double _width;
-    long double _height;
-}
-
-- (id)type;
-- (id)copyWithZone:(struct _NSZone *)arg1;
-- (id)formatValue:(id)arg1;
-- (id)average;
-- (id)sum;
-- (id)max;
-- (id)min;
-- (void)recordSize:(struct CGSize)arg1;
-- (void)recordValue:(id)arg1;
-
-@end
-
-@interface DVTRectStatistic : DVTStatistic <NSCopying>
-{
-    struct CGRect _min;
-    struct CGRect _max;
-    long double _x;
-    long double _y;
-    long double _width;
-    long double _height;
-}
-
-- (id)type;
-- (id)copyWithZone:(struct _NSZone *)arg1;
-- (id)formatValue:(id)arg1;
-- (id)average;
-- (id)sum;
-- (id)max;
-- (id)min;
-- (void)recordRect:(struct CGRect)arg1;
-- (void)recordValue:(id)arg1;
-
-@end
-
-@interface DVTStatisticsWriter : NSObject
-{
-    DVTStatistics *_statistics;
-    NSMutableData *_data;
-    unsigned long long _encoding;
-    NSError *_error;
-}
-
-+ (id)formats;
-+ (id)writerForFormat:(id)arg1;
-+ (void)registerWriter:(Class)arg1 format:(id)arg2;
-+ (id)writers;
-+ (void)initialize;
-@property(retain) NSError *error; // @synthesize error=_error;
-@property(nonatomic) unsigned long long encoding; // @synthesize encoding=_encoding;
-@property(readonly) DVTStatistics *statistics; // @synthesize statistics=_statistics;
-- (id)dataForStatistics:(id)arg1 error:(id *)arg2;
-- (id)dataWithError:(id *)arg1;
-- (void)appendFooter;
-- (void)appendBody;
-- (void)appendStatistic:(id)arg1 withName:(id)arg2;
-- (void)appendHeader;
-- (void)appendFormat:(id)arg1;
-- (void)appendString:(id)arg1;
-- (void)appendData:(id)arg1;
-- (id)init;
-
-@end
-
-@interface DVTCSVStatisticsWriter : DVTStatisticsWriter
-{
-}
-
-- (void)appendStatistic:(id)arg1 withName:(id)arg2;
-- (void)appendHeader;
 
 @end
 
@@ -4344,7 +4305,7 @@ typedef union {
 
 + (id)tokenAggregatingTokens:(id)arg1;
 - (void)cancel;
-@property(readonly, getter=isCancelled) BOOL cancelled;
+- (BOOL)isCancelled;
 - (id)initWithCallbackBlock:(id)arg1;
 
 @end
@@ -4550,6 +4511,7 @@ typedef union {
 - (unsigned long long)count;
 - (id)copyWithZone:(struct _NSZone *)arg1;
 - (id)conditionSetByRemovingParameterNamed:(id)arg1;
+- (void)dealloc;
 - (id)initWithObjects:(id *)arg1 count:(unsigned long long)arg2;
 
 @end
@@ -4586,32 +4548,41 @@ typedef union {
 
 @end
 
-@interface DVTAutosynchingProxyArray : NSArray <DVTObservingToken>
+@interface DVTAutosynchingProxyArray : NSArray <DVTInvalidation_New>
 {
     id _observedObject;
     NSString *_observedKeyPath;
     NSArray *_proxies;
-    NSMapTable *_objectsToProxies;
+    DVTMapTable *_objectsToProxies;
     id _proxyObtainBlock;
     id _proxyDiscardBlock;
     id _kvoNotifyObject;
     NSString *_kvoNotifyKeyPath;
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
 + (id)proxyArrayObservingObject:(id)arg1 keyPath:(id)arg2 withProxyObtainBlock:(id)arg3;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
+@property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
+@property(retain) id observedObject; // @synthesize observedObject=_observedObject;
 @property(copy) NSString *kvoNotifyKeyPath; // @synthesize kvoNotifyKeyPath=_kvoNotifyKeyPath;
 @property(retain) id kvoNotifyObject; // @synthesize kvoNotifyObject=_kvoNotifyObject;
 @property(copy) id proxyDiscardBlock; // @synthesize proxyDiscardBlock=_proxyDiscardBlock;
 @property(copy) id proxyObtainBlock; // @synthesize proxyObtainBlock=_proxyObtainBlock;
 - (void)observeValueForKeyPath:(id)arg1 ofObject:(id)arg2 change:(id)arg3 context:(void *)arg4;
-- (void)cancel;
-@property(readonly, getter=isCancelled) BOOL cancelled;
+- (void)primitiveInvalidate;
+- (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (id)proxyForObject:(id)arg1;
 - (id)objectAtIndex:(unsigned long long)arg1;
 - (unsigned long long)count;
 @property(readonly) NSString *observedKeyPath;
-@property(readonly) id observedObject;
-- (void)finalize;
 - (id)init;
 - (id)initWithObservedObject:(id)arg1 keyPath:(id)arg2 withProxyObtainBlock:(id)arg3;
 
@@ -4628,7 +4599,8 @@ typedef union {
     NSDictionary *_plugInPlist;
     double _timestamp;
     NSSet *_requiredCapabilities;
-    DVTVersion *_minimumSystemVersion;
+    DVTVersion *_minimumRequiredSystemVersion;
+    DVTVersion *_maximumAllowedSystemVersion;
     DVTPlugIn *_plugIn;
 }
 
@@ -4636,7 +4608,8 @@ typedef union {
 @property(retain) DVTPlugIn *plugIn; // @synthesize plugIn=_plugIn;
 @property(readonly) double timestamp; // @synthesize timestamp=_timestamp;
 @property(readonly) NSDictionary *plugInPlist; // @synthesize plugInPlist=_plugInPlist;
-@property(readonly) DVTVersion *minimumSystemVersion; // @synthesize minimumSystemVersion=_minimumSystemVersion;
+@property(readonly) DVTVersion *maximumAllowedSystemVersion; // @synthesize maximumAllowedSystemVersion=_maximumAllowedSystemVersion;
+@property(readonly) DVTVersion *minimumRequiredSystemVersion; // @synthesize minimumRequiredSystemVersion=_minimumRequiredSystemVersion;
 @property(readonly) NSSet *requiredCapabilities; // @synthesize requiredCapabilities=_requiredCapabilities;
 @property(readonly) NSDictionary *bundleRawInfoPlist; // @synthesize bundleRawInfoPlist=_bundleRawInfoPlist;
 @property(readonly) NSString *marketingVersion; // @synthesize marketingVersion=_marketingVersion;
@@ -4757,6 +4730,7 @@ typedef union {
 @interface DVTToolsInfo : NSObject
 {
     NSNumber *_isAppleInternal;
+    DVTBuildVersion *_toolsBuildVersion;
     DVTDispatchLock *_infoLock;
 }
 
@@ -4768,6 +4742,7 @@ typedef union {
 @property(readonly) unsigned long long runtimeOSMajorVersion;
 @property(readonly) unsigned long long buildOSActualVersion;
 @property(readonly) unsigned long long buildOSMajorVersion;
+@property(readonly) DVTBuildVersion *toolsBuildVersion;
 @property(readonly) DVTToolsVersion *toolsVersion;
 @property(readonly) BOOL isAppleInternal;
 
@@ -4822,6 +4797,7 @@ typedef union {
 @property(readonly) int CPUType; // @synthesize CPUType=_CPUType;
 @property(readonly) NSString *displayName; // @synthesize displayName=_displayName;
 @property(readonly) NSString *canonicalName; // @synthesize canonicalName=_canonicalName;
+- (_Bool)matchesCPUType:(int)arg1 andSubType:(int)arg2;
 - (id)description;
 - (id)initWithExtension:(id)arg1;
 - (id)initWithCanonicalName:(id)arg1 displayName:(id)arg2 CPUType:(int)arg3 CPUSubType:(int)arg4 is64Bit:(BOOL)arg5;
@@ -4930,13 +4906,18 @@ typedef union {
 - (void)setValue:(id)arg1 forMacroName:(id)arg2;
 - (void)updateOutdatedDownloadables:(id)arg1 authenticationBlock:(id)arg2 errorHandler:(void)arg3;
 - (id)download:(id)arg1 authenticationBlock:(id)arg2 error:(void)arg3;
-- (id)operationForDownload:(id)arg1 authenticationBlock:(id)arg2 error:(void)arg3;
+- (id)download:(id)arg1 authenticationBlock:(id)arg2 authorization:(void)arg3 error:(struct AuthorizationOpaqueRef *)arg4;
+- (id)operationForDownload:(id)arg1 authenticationBlock:(id)arg2 authorization:(void)arg3 error:(struct AuthorizationOpaqueRef *)arg4;
 - (void)addOperation:(id)arg1;
 @property(readonly) NSSet *operations;
 - (id)_candidatesForDependency:(id)arg1;
+- (void)triggerAutomaticUpdateCheck;
 - (id)outdatedDownloadables;
 - (BOOL)isDownloadedDownloadable:(id)arg1;
 - (BOOL)_isDownloadedDownloadable:(id)arg1;
+- (BOOL)deleteFromCache:(id)arg1 error:(id *)arg2;
+- (BOOL)isCachedDownloadable:(id)arg1;
+- (id)cacheURLForDownloadable:(id)arg1;
 - (id)downloadableForIdentifier:(id)arg1 version:(id)arg2;
 - (id)_downloadableForIdentifier:(id)arg1 version:(id)arg2;
 - (id)downloadablesForIdentifier:(id)arg1;
@@ -5032,12 +5013,13 @@ typedef union {
     DVTDownloadable *_downloadable;
     id _authenticationBlock;
     NSMutableArray *_cancellationBlocks;
+    struct AuthorizationOpaqueRef *_authRef;
 }
 
 @property(readonly) DVTDownloadable *downloadable; // @synthesize downloadable=_downloadable;
 - (void)cancel;
 - (void)downloadableOperationMain;
-- (id)initWithDownloadable:(id)arg1 userRequested:(BOOL)arg2 authenticationBlock:(id)arg3 manager:(void)arg4;
+- (id)initWithDownloadable:(id)arg1 userRequested:(BOOL)arg2 authenticationBlock:(id)arg3 authorization:(void)arg4 manager:(struct AuthorizationOpaqueRef *)arg5;
 
 @end
 
@@ -5144,16 +5126,23 @@ typedef union {
 
 @end
 
-@interface DVTGeneratedContentProvider : NSObject <DVTInvalidation>
+@interface DVTGeneratedContentProvider : NSObject <DVTInvalidation_New>
 {
-    DVTStackBacktrace *_invalidationBacktrace;
     BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
 + (id)sourceFilePathForGeneratedContentURL:(id)arg1;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (void)generateContentForURL:(id)arg1 waitingBlock:(id)arg2 completionBlock:(void)arg3;
 @property(readonly) NSString *displayName;
 
@@ -5283,6 +5272,7 @@ typedef union {
 - (BOOL)waitWithTimeout:(double)arg1;
 - (void)wait;
 - (BOOL)signal;
+- (void)dealloc;
 - (void)finalize;
 - (id)initWithCount:(long long)arg1;
 - (id)init;
@@ -5293,6 +5283,7 @@ typedef union {
 {
 }
 
++ (id)patienceLogAspect;
 - (void)_buildDiffDescriptors;
 
 @end
@@ -5301,7 +5292,7 @@ typedef union {
 {
 }
 
-+ (id)hashTableWithOptions:(unsigned long long)arg1;
++ (id)hashTableWithOptions:(int)arg1;
 + (id)hashTableWithWeakObjects;
 + (id)allocWithZone:(struct _NSZone *)arg1;
 + (id)alloc;
@@ -5337,7 +5328,7 @@ typedef union {
 - (id)objectEnumerator;
 - (id)description;
 - (id)init;
-- (id)initWithOptions:(unsigned long long)arg1 capacity:(unsigned long long)arg2;
+- (id)initWithOptions:(int)arg1 capacity:(unsigned long long)arg2;
 - (id)initWithCoder:(id)arg1;
 
 @end
@@ -5378,7 +5369,7 @@ typedef union {
 - (id)initWithCoder:(id)arg1;
 - (Class)classForCoder;
 - (id)initWithPointerFunctions:(id)arg1 capacity:(unsigned long long)arg2;
-- (id)initWithOptions:(unsigned long long)arg1 capacity:(unsigned long long)arg2;
+- (id)initWithOptions:(int)arg1 capacity:(unsigned long long)arg2;
 - (id)copy;
 - (id)init;
 - (void)_initBlock;
@@ -5393,7 +5384,7 @@ typedef union {
 + (id)mapTableWithStrongToWeakObjects;
 + (id)mapTableWithWeakToStrongObjects;
 + (id)mapTableWithStrongToStrongObjects;
-+ (id)mapTableWithKeyOptions:(unsigned long long)arg1 valueOptions:(unsigned long long)arg2;
++ (id)mapTableWithKeyOptions:(int)arg1 valueOptions:(int)arg2;
 + (id)allocWithZone:(struct _NSZone *)arg1;
 + (id)alloc;
 - (id)mutableCopyWithZone:(struct _NSZone *)arg1;
@@ -5427,8 +5418,9 @@ typedef union {
 - (id)description;
 - (id)init;
 - (id)initWithKeyPointerFunctions:(id)arg1 valuePointerFunctions:(id)arg2 capacity:(unsigned long long)arg3;
-- (id)initWithKeyOptions:(unsigned long long)arg1 valueOptions:(unsigned long long)arg2 capacity:(unsigned long long)arg3;
+- (id)initWithKeyOptions:(int)arg1 valueOptions:(int)arg2 capacity:(unsigned long long)arg3;
 - (id)initWithCoder:(id)arg1;
+- (void)dvt_enumerateKeysAndObjectsUsingBlock:(id)arg1;
 
 @end
 
@@ -5479,7 +5471,7 @@ typedef union {
 - (id)initWithCoder:(id)arg1;
 - (Class)classForCoder;
 - (id)initWithKeyPointerFunctions:(id)arg1 valuePointerFunctions:(id)arg2 capacity:(unsigned long long)arg3;
-- (id)initWithKeyOptions:(unsigned long long)arg1 valueOptions:(unsigned long long)arg2 capacity:(unsigned long long)arg3;
+- (id)initWithKeyOptions:(int)arg1 valueOptions:(int)arg2 capacity:(unsigned long long)arg3;
 - (id)copy;
 - (void)_setBackingStore;
 - (void)_initBlock;
@@ -5510,7 +5502,7 @@ typedef union {
 
 + (id)allocWithZone:(struct _NSZone *)arg1;
 + (id)pointerArrayWithPointerFunctions:(id)arg1;
-+ (id)pointerArrayWithOptions:(unsigned long long)arg1;
++ (id)pointerArrayWithOptions:(int)arg1;
 + (id)pointerArrayWithWeakObjects;
 + (id)pointerArrayWithStrongObjects;
 - (void)encodeWithCoder:(id)arg1;
@@ -5527,8 +5519,11 @@ typedef union {
 - (id)pointerFunctions;
 - (id)initWithCoder:(id)arg1;
 - (id)initWithPointerFunctions:(id)arg1;
-- (id)initWithOptions:(unsigned long long)arg1;
+- (id)initWithOptions:(int)arg1;
 - (id)init;
+- (void)getPointers:(id *)arg1;
+- (void)getPointers:(id *)arg1 range:(struct _NSRange)arg2;
+- (unsigned long long)indexOfPointerIdenticalTo:(id)arg1;
 - (id)allObjects;
 - (id)mutableArray;
 
@@ -5568,7 +5563,7 @@ typedef union {
 - (id)initWithCoder:(id)arg1;
 - (Class)classForCoder;
 - (id)initWithPointerFunctions:(id)arg1;
-- (id)initWithOptions:(unsigned long long)arg1;
+- (id)initWithOptions:(int)arg1;
 - (void)_initBlock;
 - (id)init;
 
@@ -5580,7 +5575,7 @@ typedef union {
     struct DVTSlice slice;
 }
 
-+ (_Bool)initializeSlice:(struct DVTSlice *)arg1 withOptions:(unsigned long long)arg2;
++ (_Bool)initializeSlice:(struct DVTSlice *)arg1 withOptions:(int)arg2;
 + (void)initializeBackingStore:(struct DVTSlice *)arg1 sentinel:(BOOL)arg2 compactable:(BOOL)arg3;
 - (BOOL)usesARC;
 - (BOOL)usesWeakReadAndWriteBarriers;
@@ -5603,7 +5598,7 @@ typedef union {
 - (BOOL)isEqual:(id)arg1;
 - (unsigned long long)hash;
 - (id)copyWithZone:(struct _NSZone *)arg1;
-- (id)initWithOptions:(unsigned long long)arg1;
+- (id)initWithOptions:(int)arg1;
 
 @end
 
@@ -5611,7 +5606,7 @@ typedef union {
 {
 }
 
-+ (id)pointerFunctionsWithOptions:(unsigned long long)arg1;
++ (id)pointerFunctionsWithOptions:(int)arg1;
 + (id)allocWithZone:(struct _NSZone *)arg1;
 @property BOOL usesWeakReadAndWriteBarriers;
 @property BOOL usesStrongWriteBarrier;
@@ -5622,7 +5617,7 @@ typedef union {
 @property void *hashFunction;
 @property void *sizeFunction;
 - (id)copyWithZone:(struct _NSZone *)arg1;
-- (id)initWithOptions:(unsigned long long)arg1;
+- (id)initWithOptions:(int)arg1;
 
 @end
 
@@ -5649,7 +5644,7 @@ typedef union {
 
 @end
 
-@interface DVTCollectionChecking
+@interface DVTCollectionChecking : NSObject
 {
 }
 
@@ -5705,17 +5700,23 @@ typedef union {
 
 @interface DVTToolchain : NSObject
 {
-    NSString *_identifier;
-    DVTFilePath *_path;
-    NSString *_displayName;
     NSString *_displayDescription;
+    NSString *_displayName;
+    DVTFilePath *_path;
+    DVTSearchPath *_librarySearchPath;
+    NSString *_identifier;
+    DVTSearchPath *_executableBinarySearchPath;
+    NSDictionary *_defaultBuildSettings;
 }
 
 + (id)defaultToolchain;
-@property(readonly) NSString *displayDescription; // @synthesize displayDescription=_displayDescription;
-@property(readonly) NSString *displayName; // @synthesize displayName=_displayName;
-@property(readonly) DVTFilePath *path; // @synthesize path=_path;
+@property(readonly) NSDictionary *defaultBuildSettings; // @synthesize defaultBuildSettings=_defaultBuildSettings;
+@property(readonly) DVTSearchPath *executableBinarySearchPath; // @synthesize executableBinarySearchPath=_executableBinarySearchPath;
 @property(readonly) NSString *identifier; // @synthesize identifier=_identifier;
+@property(readonly) DVTSearchPath *librarySearchPath; // @synthesize librarySearchPath=_librarySearchPath;
+@property(readonly) DVTFilePath *path; // @synthesize path=_path;
+@property(readonly) NSString *displayName; // @synthesize displayName=_displayName;
+@property(readonly) NSString *displayDescription; // @synthesize displayDescription=_displayDescription;
 - (id)description;
 - (id)init;
 - (id)initWithPath:(id)arg1 error:(id *)arg2;
@@ -5737,7 +5738,6 @@ typedef union {
 - (BOOL)scanSearchPathAndRegisterToolchains:(id *)arg1;
 - (id)allRegisteredToolchains;
 - (id)defaultToolchain;
-- (id)toolchainsForIdentifiers:(id)arg1;
 - (id)toolchainForIdentifier:(id)arg1;
 - (BOOL)registerToolchain:(id)arg1 error:(id *)arg2;
 - (id)init;
@@ -5788,9 +5788,12 @@ typedef union {
     void *_lexer;
 }
 
-+ (id)createTerminalNodeForToken:(CDStruct_1719765d *)arg1 scopeProductionRule:(id *)arg2;
++ (id)createTerminalNodeForToken:(CDStruct_341fcc3f *)arg1 scopeProductionRule:(id *)arg2;
++ (void)initializeLexerModes;
 + (id)languageSpecification;
-- (BOOL)_getNextToken:(CDStruct_1719765d *)arg1;
+- (void)_endLexerMode:(unsigned long long)arg1;
+- (void)_beginLexerMode:(unsigned long long)arg1;
+- (BOOL)_getNextToken:(CDStruct_341fcc3f *)arg1 temporaryFlags:(unsigned long long)arg2;
 - (unsigned long long)_currentLocation;
 - (void)_setCurrentLocation:(unsigned long long)arg1;
 - (void)_resetLexerWithInputString:(id)arg1;
@@ -5803,7 +5806,7 @@ typedef union {
     DVTLanguageSpecification *_langSpec;
     long long _langId;
     long long _langToken;
-    CDStruct_1719765d _currentToken;
+    CDStruct_341fcc3f _currentToken;
     CDStruct_627e0f85 _parseRange;
     BOOL _saveToken;
     BOOL _validToken;
@@ -5814,11 +5817,13 @@ typedef union {
     struct _NSRange _dirtyRange;
 }
 
-+ (id)createTerminalNodeForToken:(CDStruct_1719765d *)arg1 scopeProductionRule:(id *)arg2;
++ (id)createTerminalNodeForToken:(CDStruct_341fcc3f *)arg1 scopeProductionRule:(id *)arg2;
 + (id)languageSpecification;
 + (void)initializeLanguageSpecification:(id)arg1;
 - (BOOL)_atEndOfParseRange;
-- (BOOL)_getNextToken:(CDStruct_1719765d *)arg1;
+- (void)_endLexerMode:(unsigned long long)arg1;
+- (void)_beginLexerMode:(unsigned long long)arg1;
+- (BOOL)_getNextToken:(CDStruct_341fcc3f *)arg1 temporaryFlags:(unsigned long long)arg2;
 - (unsigned long long)_currentLocation;
 - (void)_setCurrentLocation:(unsigned long long)arg1;
 - (void)_resetLexerWithInputString:(id)arg1;
@@ -5843,8 +5848,12 @@ typedef union {
     DVTSourceModelParserProductionRule *_prodRule;
     BOOL _optional;
     BOOL _repeatable;
+    DVTSourceModelParserInteriorProductionRule *_nextCandidate;
+    unsigned long long _temporaryLexerFlags;
 }
 
+@property(nonatomic) unsigned long long temporaryLexerFlags; // @synthesize temporaryLexerFlags=_temporaryLexerFlags;
+@property(retain, nonatomic) DVTSourceModelParserInteriorProductionRule *nextCandidate; // @synthesize nextCandidate=_nextCandidate;
 @property(readonly, nonatomic) BOOL repeatable; // @synthesize repeatable=_repeatable;
 @property(readonly, nonatomic) BOOL optional; // @synthesize optional=_optional;
 @property(readonly, nonatomic) DVTSourceModelParserProductionRule *prodRule; // @synthesize prodRule=_prodRule;
@@ -5870,16 +5879,22 @@ typedef union {
     BOOL _inheritsNodeType;
     BOOL _ignoreToken;
     BOOL _itemIsVolatile;
+    BOOL _saveEndToken;
+    unsigned long long _lexerMode;
     NSArray *_tokenInteriorPredictSet;
     NSArray *_nodeInteriorPredictSet;
+    BOOL _interiorRuleMayHaveTemporaryLexerFlags;
 }
 
 + (void)initializeProductionsForLanguageSpecification:(id)arg1;
 + (unsigned long long)indexOfProductionMatchingNode:(id)arg1 inArray:(id)arg2;
 + (unsigned long long)indexOfProductionMatchingToken:(int)arg1 inArray:(id)arg2;
 + (int)tokenForSymbol:(id)arg1;
+@property(nonatomic) BOOL interiorRuleMayHaveTemporaryLexerFlags; // @synthesize interiorRuleMayHaveTemporaryLexerFlags=_interiorRuleMayHaveTemporaryLexerFlags;
 @property(retain, nonatomic) NSArray *nodeInteriorPredictSet; // @synthesize nodeInteriorPredictSet=_nodeInteriorPredictSet;
 @property(retain, nonatomic) NSArray *tokenInteriorPredictSet; // @synthesize tokenInteriorPredictSet=_tokenInteriorPredictSet;
+@property(nonatomic) unsigned long long lexerMode; // @synthesize lexerMode=_lexerMode;
+@property(nonatomic) BOOL saveEndToken; // @synthesize saveEndToken=_saveEndToken;
 @property(nonatomic) BOOL itemIsVolatile; // @synthesize itemIsVolatile=_itemIsVolatile;
 @property(nonatomic) BOOL ignoreToken; // @synthesize ignoreToken=_ignoreToken;
 @property(nonatomic) BOOL inheritsNodeType; // @synthesize inheritsNodeType=_inheritsNodeType;
@@ -5924,6 +5939,7 @@ typedef union {
 - (id)reduceToProduction:(id *)arg1 stackOffset:(unsigned long long *)arg2;
 - (BOOL)matchNode:(id)arg1 currentStackTop:(unsigned long long)arg2;
 - (BOOL)matchToken:(int)arg1 currentStackTop:(unsigned long long)arg2;
+@property(readonly, nonatomic) unsigned long long temporaryLexerFlags;
 @property(readonly, nonatomic) DVTSourceModelParserProductionRule *scopeProduction;
 @property(readonly, nonatomic) BOOL epsilonMatch; // @synthesize epsilonMatch=_epsilonMatch;
 @property(readonly, nonatomic) BOOL completeMatch; // @synthesize completeMatch=_completeMatch;
@@ -5955,10 +5971,14 @@ typedef union {
 {
 }
 
++ (id)expirationDateForCertificate:(struct OpaqueSecCertificateRef *)arg1;
++ (id)issueDateForCertificate:(struct OpaqueSecCertificateRef *)arg1;
++ (id)_dateFromCertificate:(struct OpaqueSecCertificateRef *)arg1 forOID:(id)arg2;
 + (id)platformIdentifierForCertificate:(struct OpaqueSecCertificateRef *)arg1;
 + (id)sha1HashForCertificate:(struct OpaqueSecCertificateRef *)arg1;
 + (id)defaultDesignatedRequirementsForIdentifier:(id)arg1 andCertificate:(struct OpaqueSecCertificateRef *)arg2;
 + (_Bool)isCertificateTrusted:(struct OpaqueSecCertificateRef *)arg1;
++ (_Bool)_isCertificateDataTrusted:(id)arg1;
 + (_Bool)hasCertificateExpired:(struct OpaqueSecCertificateRef *)arg1;
 + (_Bool)isCertificateAnIdentity:(struct OpaqueSecCertificateRef *)arg1;
 + (id)portalTeamNameFromCertificate:(struct OpaqueSecCertificateRef *)arg1;
@@ -5967,14 +5987,308 @@ typedef union {
 + (id)trimmedNameForCertificate:(struct OpaqueSecCertificateRef *)arg1;
 + (id)allSigningCertificates;
 + (id)allSigningIdentityCertificates;
++ (id)allSigningCertificates_Sync;
++ (id)allSigningIdentityCertificates_Sync;
++ (void)_scanForSigningCertificates;
++ (void)_scanForSigningIdentityCertificates;
 + (void)_setupKeychainCallback;
-+ (id)certificateLock;
++ (struct dispatch_queue_s *)certificateScanQueue;
++ (struct dispatch_queue_s *)certificateLockQueue;
 + (id)displayNameForCertificateKind:(id)arg1;
 + (id)certificateKindForCertificate:(struct OpaqueSecCertificateRef *)arg1;
++ (_Bool)loadFirstTimeInBackground;
++ (void)setLoadFirstTimeInBackground:(_Bool)arg1;
+
+@end
+
+@interface DVTUserNotificationCenter : NSObject <NSUserNotificationCenterDelegate>
+{
+    NSMutableDictionary *_handlers;
+}
+
++ (id)defaultUserNotificationCenter;
+- (BOOL)userNotificationCenter:(id)arg1 shouldPresentNotification:(id)arg2;
+- (void)userNotificationCenter:(id)arg1 didRemoveDeliveredNotifications:(id)arg2;
+- (void)userNotificationCenter:(id)arg1 didActivateNotification:(id)arg2;
+- (void)userNotificationCenter:(id)arg1 didDeliverNotification:(id)arg2;
+- (void)removeAllDeliveredNotifications;
+- (void)removeDeliveredNotification:(id)arg1;
+- (void)deliverNotification:(id)arg1 withEventHandler:(id)arg2;
+- (void)deliverNotification:(id)arg1;
+@property(readonly) NSArray *deliveredNotifications;
+- (void)removeScheduledNotification:(id)arg1;
+- (void)scheduleNotification:(id)arg1 withEventHandler:(id)arg2;
+- (void)scheduleNotification:(id)arg1;
+@property(copy) NSArray *scheduledNotifications;
+- (id)init;
+
+@end
+
+@interface DVTBloomFilter : NSObject
+{
+    id hashProvider;
+    CDStruct_d703e233 specification;
+    struct {
+        char *bytes;
+        unsigned long long byteCount;
+    } bitVector;
+}
+
+@property(copy) id hashProvider; // @synthesize hashProvider;
+- (long long)indexSize;
+@property(readonly) NSString *usageDescription;
+- (BOOL)mightContainKey:(const CDStruct_f444e920 *)arg1;
+- (void)addKey:(const CDStruct_f444e920 *)arg1;
+- (void)dealloc;
+- (void)finalize;
+- (void)encodeWithCoder:(id)arg1;
+- (id)initWithCoder:(id)arg1;
+- (id)initWithSpecification:(CDStruct_d703e233)arg1 hashProvider:(id)arg2;
+
+@end
+
+@interface DVTDocumentFragmentFilter : NSObject
+{
+    DVTBloomFilter *filter;
+    CDStruct_26ab8ed5 specification;
+}
+
++ (id)normalizedFoldedString:(id)arg1;
+@property(readonly, nonatomic) double timestamp;
+@property(readonly) NSString *usageDescription;
+- (long long)indexSize;
+- (BOOL)mightContainFragment:(id)arg1;
+- (void)encodeWithCoder:(id)arg1;
+- (id)initWithCoder:(id)arg1;
+- (id)initWithDocument:(id)arg1 filterSpecification:(CDStruct_26ab8ed5)arg2;
+
+@end
+
+@interface DVTLibraryFragmentFilter : NSObject
+{
+    NSMutableDictionary *identifiedDocuments;
+    CDStruct_fd921134 specification;
+    DVTDispatchLock *_dispatchLock;
+    id <DVTLibraryFragmentFilterDelegate> _delegate;
+}
+
+@property(nonatomic) id <DVTLibraryFragmentFilterDelegate> delegate; // @synthesize delegate=_delegate;
+- (id)unitTestingDescription;
+- (long long)indexSize;
+- (id)candidateIdentifiersForQuery:(id)arg1 allIdentifiers:(id *)arg2;
+- (id)candidateIdentifiersForQuery:(id)arg1;
+- (void)removeFiltersForIdentifiers:(id)arg1;
+- (void)removeFilterForIdentifier:(id)arg1;
+- (id)allIdentifiers;
+- (void)addFilterWithDocument:(id)arg1 timestamp:(double)arg2 forIdentifier:(id)arg3;
+- (void)loadFiltersFromData:(id)arg1 validationBlock:(id)arg2;
+- (id)saveFiltersToData;
+- (id)initWithFilterSpecification:(CDStruct_fd921134)arg1;
+
+@end
+
+@interface DVTWeakReference : NSObject
+{
+    id _representedObject;
+}
+
++ (id)weakReferenceForRepresentedObject:(id)arg1;
+@property(retain) id representedObject; // @synthesize representedObject=_representedObject;
+
+@end
+
+@interface _DVTWeakInterposerHelper : NSObject
+{
+    DVTWeakInterposer *_interposer;
+    id _representedObject;
+}
+
+@property __weak id representedObject; // @synthesize representedObject=_representedObject;
+@property(retain) DVTWeakInterposer *interposer; // @synthesize interposer=_interposer;
+- (void)dealloc;
+
+@end
+
+@interface DVTWeakInterposer : NSObject
+{
+    _DVTWeakInterposerHelper *_helper;
+}
+
++ (id)weakInterposerForRepresentedObject:(id)arg1;
+@property __weak _DVTWeakInterposerHelper *helper; // @synthesize helper=_helper;
+- (BOOL)isEqual:(id)arg1;
+- (unsigned long long)hash;
+@property(readonly) id representedObject;
+- (void)dealloc;
+
+@end
+
+@interface DVTObjCPlusPlusSourceModelParser : DVTObjCSourceModelParser
+{
+}
+
++ (id)createTerminalNodeForToken:(CDStruct_341fcc3f *)arg1 scopeProductionRule:(id *)arg2;
++ (void)initializeLexerModes;
++ (id)languageSpecification;
+- (void)_resetLexerWithInputString:(id)arg1;
+- (id)init;
+
+@end
+
+@interface DVTRegistry : NSObject
+{
+    DVTReaderWriterLock *_lock;
+    DVTMutableOrderedDictionary *_identsToRegisteredObjects;
+    NSString *_debugName;
+}
+
+@property(readonly) NSString *debugName; // @synthesize debugName=_debugName;
+@property(readonly) DVTMutableOrderedDictionary *identsToRegisteredObjects; // @synthesize identsToRegisteredObjects=_identsToRegisteredObjects;
+@property(readonly) DVTReaderWriterLock *lock; // @synthesize lock=_lock;
+- (id)description;
+- (id)allRegisteredObjects;
+- (id)objectForIdentifier:(id)arg1;
+- (void)didRegisterObject:(id)arg1 replacingObject:(id)arg2;
+- (BOOL)registerObject:(id)arg1 collisionHandler:(id)arg2;
+- (id)init;
+- (id)initWithDebugName:(id)arg1;
+
+@end
+
+@interface DVTOneShotBlock : NSObject <DVTInvalidation_New>
+{
+    id _callbackBlock;
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
+}
+
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
+@property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
+- (void)primitiveInvalidate;
+- (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (id)initWithCallbackBlock:(id)arg1;
+
+@end
+
+@interface DVTSystemStatisticsMeasurement : NSObject
+{
+    long long _numberOfVMPageouts;
+    long long _numberOfVMPageins;
+    double _wallClockTime;
+}
+
++ (id)systemStatisticsMeasurement;
+@property double wallClockTime; // @synthesize wallClockTime=_wallClockTime;
+@property long long numberOfVMPageins; // @synthesize numberOfVMPageins=_numberOfVMPageins;
+@property long long numberOfVMPageouts; // @synthesize numberOfVMPageouts=_numberOfVMPageouts;
+- (id)systemStatisticsMeasurementByMakingRelativeToMeasurement:(id)arg1;
+- (long long)compare:(id)arg1;
+- (id)init;
+- (id)initWithWallClockTime:(double)arg1 numberOfVMPageins:(long long)arg2 numberOfVMPageouts:(long long)arg3;
+
+@end
+
+@interface DVTDynamicLogController : NSObject
+{
+    NSString *_path;
+    DVTDispatchLock *_dispatchLock;
+}
+
++ (id)dynamicLogControllerForPath:(id)arg1 createIfNeeded:(BOOL)arg2 returningError:(id *)arg3;
+@property DVTDispatchLock *dispatchLock; // @synthesize dispatchLock=_dispatchLock;
+@property NSString *path; // @synthesize path=_path;
+- (BOOL)writeString:(id)arg1 toFileAtSubpath:(id)arg2 returningError:(id *)arg3;
+- (id)initWithPath:(id)arg1;
+
+@end
+
+@interface DVTMemorySnapshot : NSObject
+{
+    DVTLogAspect *_aspect;
+    NSCountedSet *_incrementsForSnapshotTypes;
+    DVTDispatchLock *_incrementLock;
+}
+
++ (id)_baseOutputFolder;
++ (id)snapshotForLogAspect:(id)arg1;
++ (void)initialize;
+- (void)takeVmmapSnapshotWithLogLevel:(int)arg1 logFormat:(id)arg2;
+- (void)_takeVmmapSnapshotWithLogLevel:(int)arg1 toFilePath:(id)arg2 logString:(id)arg3;
+- (void)cleanupBeforeTakingSnapshotsWithLogLevel:(int)arg1 logFormat:(id)arg2;
+- (unsigned long long)_newIncrementForSnapshotType:(id)arg1;
+- (id)initWithAspect:(id)arg1;
+
+@end
+
+@interface DVTMTReport : NSObject
+{
+    struct __aslmsg *_message;
+}
+
+@property struct __aslmsg *message; // @synthesize message=_message;
+- (void)recordSuccess:(BOOL)arg1 reason:(id)arg2;
+- (void)recordID:(id)arg1 forKey:(char *)arg2;
+- (void)recordNumber:(long long)arg1 forKey:(char *)arg2;
+- (void)recordNumber:(long long)arg1 forKey:(char *)arg2 deresolver:(id)arg3;
+- (void)recordTimeResult:(double)arg1 forKey:(char *)arg2;
+- (void)recordTimeResult:(double)arg1 forKey:(char *)arg2 deresolver:(id)arg3;
+- (void)logReport;
+- (void)finalize;
+- (void)dealloc;
+- (void)_freeMsg;
+- (id)initWithDomain:(char *)arg1 summarize:(BOOL)arg2;
+
+@end
+
+@interface DVTMessageTrace : NSObject
+{
+}
+
++ (void)reportDetail:(char *)arg1 collecting:(id)arg2;
++ (void)report:(char *)arg1 success:(BOOL)arg2 reason:(id)arg3;
++ (void)report:(char *)arg1 ID:(id)arg2;
++ (void)report:(char *)arg1 number:(long long)arg2;
++ (void)report:(char *)arg1 number:(long long)arg2 deresolver:(id)arg3;
++ (void)report:(char *)arg1 timeResult:(double)arg2;
++ (void)report:(char *)arg1 timeResult:(double)arg2 deresolver:(id)arg3;
++ (void)reportHit:(char *)arg1;
++ (void)reportForDomain:(char *)arg1 summarize:(BOOL)arg2 collecting:(id)arg3;
++ (double)delay:(double)arg1;
++ (void)initialize;
+
+@end
+
+@interface DVTBuildVersion : NSObject
+{
+    NSString *_buildVersion;
+    unsigned long long _buildVersionMajorNumber;
+    NSString *_buildVersionMajorLetter;
+    unsigned long long _buildVersionMinorNumber;
+    NSString *_buildVersionMinorLetter;
+}
+
++ (id)buildVersionWithString:(id)arg1;
+- (unsigned long long)hash;
+- (BOOL)isEqual:(id)arg1;
+- (long long)compare:(id)arg1;
+@property(readonly) NSString *buildVersionMinorLetter;
+@property(readonly) unsigned long long buildVersionMinorNumber;
+@property(readonly) NSString *buildVersionMajorLetter;
+@property(readonly) unsigned long long buildVersionMajorNumber;
+- (void)_parseBuildVersionIfNecessary;
+- (id)name;
+- (id)initWithString:(id)arg1;
 
 @end
 
 @interface NSFileManager (DVTNSFileManagerAdditions)
++ (BOOL)dvt_isPathValidForFileManagerOperations:(id)arg1;
 - (id)dvt_availableFilenameInDirectory:(id)arg1 desiredFilename:(id)arg2;
 @end
 
@@ -6002,6 +6316,7 @@ typedef union {
 + (id)dvt_stringWithPotentiallyMalformedUTF8Bytes:(const char *)arg1 length:(unsigned long long)arg2 stopAtTrailingIncompleteUTF8Sequence:(BOOL)arg3 getUsedLength:(unsigned long long *)arg4 getNumberOfMalformedSequences:(unsigned long long *)arg5;
 + (id)dvt_stringWithFileSystemRepresentation:(const char *)arg1 length:(unsigned long long)arg2;
 + (id)dvt_stringWithFileSystemRepresentation:(const char *)arg1;
+- (void)dvt_enumerateOccurancesOfSubstring:(id)arg1 options:(unsigned long long)arg2 usingBlock:(id)arg3;
 - (id)dvt_md5Hash;
 - (id)dvt_stringByRepeating:(unsigned long long)arg1;
 - (id)dvt_componentsSeparatedByUnquotedWhitespacePreservingQuotes:(BOOL)arg1;
@@ -6047,7 +6362,9 @@ typedef union {
 - (BOOL)dvt_areAnyObjectsPassingTest:(id)arg1;
 - (BOOL)dvt_areAllObjectsPassingTest:(id)arg1;
 - (id)dvt_objectsPassingTest:(id)arg1;
+- (id)dvt_objectByFoldingWithBlock:(id)arg1;
 - (id)dvt_onlyObject;
+- (id)dvt_firstObjectPassingTest:(id)arg1;
 - (id)dvt_firstObject;
 - (id)dvt_arrayByApplyingBlock:(id)arg1;
 - (id)dvt_arrayByApplyingSelector:(SEL)arg1;
@@ -6126,17 +6443,13 @@ typedef union {
 - (void)dvt_unregisterValueChangedCallbackForKeyPath:(id)arg1 ofObject:(id)arg2;
 - (void)dvt_registerValueChangedCallback:(SEL)arg1 forKeyPath:(id)arg2;
 - (void)dvt_registerValueChangedCallback:(SEL)arg1 forKeyPath:(id)arg2 ofObject:(id)arg3;
-- (id)_dvtObserverTokenStorage;
+- (void)_dvt_setObserverTokensForKeyPath:(id)arg1;
+- (id)_dvt_observerTokensForKeyPath;
 @end
 
 @interface NSArray (DVTObservingConvenience)
-- (void)dvt_removeObserver:(id)arg1 fromObjectsAtIndexes:(id)arg2 forKeyPath:(id)arg3 context:(void *)arg4;
 - (id)dvt_newObserverForKeyPath:(id)arg1 options:(unsigned long long)arg2 withHandlerBlock:(id)arg3;
 - (id)dvt_newObserverForKeyPath:(id)arg1 options:(unsigned long long)arg2 owner:(id)arg3 withHandlerBlock:(id)arg4;
-@end
-
-@interface NSObject (DVTKVOWorkarounds)
-- (void)dvt_removeObserver:(id)arg1 forKeyPath:(id)arg2 context:(void *)arg3;
 @end
 
 @interface NSObject (DVTSharedObserverAccess)
@@ -6157,6 +6470,10 @@ typedef union {
 - (void)_dvt_performBlockAfterDelay:(id)arg1;
 - (id)dvt_performAfterDelay:(double)arg1 usingBlock:(id)arg2;
 - (id)dvt_performAfterDelay:(double)arg1 inModes:(id)arg2 usingBlock:(id)arg3;
+@end
+
+@interface NSRunLoop (DVTNSRunLoopAdditions)
+- (id)dvt_performInModes:(id)arg1 withOrder:(long long)arg2 usingBlock:(id)arg3;
 @end
 
 @interface NSArray (DVTDiffHashing) <DVTDiffHashing>
@@ -6199,6 +6516,7 @@ typedef union {
 @end
 
 @interface NSSet (DVTNSSetAdditions)
+- (id)dvt_objectByFoldingWithBlock:(id)arg1;
 - (id)dvt_anyObjectPassingTest:(id)arg1;
 - (id)dvt_setByFilteringUsingBlock:(id)arg1;
 - (id)dvt_setByApplyingBlock:(id)arg1;
@@ -6210,6 +6528,7 @@ typedef union {
 
 @interface NSURL (DVTNSURLAdditions)
 + (id)dvt_fileURLWithAbsoluteOrRelativePath:(id)arg1;
+- (id)dvt_sanitizedFilePath;
 @end
 
 @interface NSMapTable (DVTNSMapTableAdditions)
@@ -6244,23 +6563,18 @@ typedef union {
 - (id)dvt_applyMacroExpansionOperator_count_inScope:(id)arg1;
 @end
 
-@interface NSString (Radar10259246)
-- (id)dvt_evaluateAsStringInContext:(id)arg1 withState:(void *)arg2;
-@end
-
-@interface NSArray (Radar10259246)
-- (id)dvt_evaluateAsStringInContext:(id)arg1 withState:(void *)arg2;
-@end
-
 @interface NSNotificationCenter (DVTNSNotificationCenterAdditions)
++ (void)load;
+- (id)__private__addObserverForName:(id)arg1 object:(id)arg2 queue:(id)arg3 usingBlock:(id)arg4;
 - (id)dvt_addObserverForName:(id)arg1 object:(id)arg2 queue:(id)arg3 usingBlock:(id)arg4;
 - (id)dvt_addObserver:(id)arg1 selector:(SEL)arg2 name:(id)arg3 object:(id)arg4;
 @end
 
 @interface NSProcessInfo (DVTNSProcessInfoAdditions)
+- (id)dvt_executablePath;
 - (id)dvt_cachedEnvironment;
 - (void)dvt_removeEnvironmentVariable:(id)arg1;
-- (int)dvt_setValue:(id)arg1 forEnvironmentVariable:(id)arg2;
+- (void)dvt_setValue:(id)arg1 forEnvironmentVariable:(id)arg2;
 - (BOOL)dvt_shouldDisallowSaving;
 - (void)dvt_setShouldDisallowSaving:(BOOL)arg1;
 - (void)dvt_disableSuddenTerminationForReason:(id)arg1;
@@ -6351,6 +6665,9 @@ typedef union {
 @end
 
 @interface SFCertificateData (DVTCertificateUtilities)
+@property(readonly) _Bool trusted;
+@property(readonly) NSDate *issueDate;
+@property(readonly) NSDate *expirationDate;
 @property(readonly) NSString *platformIdentifier;
 @property(readonly) NSString *sha1Hash;
 - (id)defaultDesignatedRequirementsForIdentifier:(id)arg1;
@@ -6363,5 +6680,32 @@ typedef union {
 - (BOOL)isEqual:(id)arg1;
 - (unsigned long long)hash;
 @property(readonly) NSString *name;
+@end
+
+@interface NSObject (DVTArcSupport)
+- (BOOL)dvt_requiresWeakIntercession;
+@end
+
+@interface NSObject (DVTInvalidation)
++ (void)dvt_setupWithInvalidationImplementingClass:(Class)arg1;
+@end
+
+@interface NSPropertyListSerialization (WorkaroundsFor11391989)
++ (id)workaroundsFor11391989_propertyListWithStream:(id)arg1 options:(unsigned long long)arg2 format:(unsigned long long *)arg3 error:(out id *)arg4;
++ (id)workaroundsFor11391989_propertyListWithData:(id)arg1 options:(unsigned long long)arg2 format:(unsigned long long *)arg3 error:(out id *)arg4;
++ (id)workaroundsFor11391989_propertyListFromData:(id)arg1 mutabilityOption:(unsigned long long)arg2 format:(unsigned long long *)arg3 errorDescription:(out id *)arg4;
+@end
+
+@interface NSString (WorkaroundsFor11391989)
+- (id)workaroundsFor11391989_propertyList;
+@end
+
+@interface NSPropertyListSerialization (DVTNSPropertyListSerializationAdditions)
++ (BOOL)dvt_writePropertyList:(id)arg1 toURL:(id)arg2 format:(unsigned long long)arg3 error:(id *)arg4;
++ (id)dvt_propertyListWithURL:(id)arg1 options:(unsigned long long)arg2 format:(unsigned long long *)arg3 error:(id *)arg4;
+@end
+
+@interface NSString (DVTFileSystemRepresentationProviding)
+- (void)dvt_provideFileSystemRepresentationToBlock:(id)arg1;
 @end
 

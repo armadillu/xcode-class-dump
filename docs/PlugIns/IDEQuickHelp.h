@@ -21,6 +21,11 @@ struct CGSize {
     double height;
 };
 
+struct _NSRange {
+    unsigned long long _field1;
+    unsigned long long _field2;
+};
+
 #pragma mark Typedef'd Structures
 
 typedef struct {
@@ -34,9 +39,9 @@ typedef struct {
 
 /*
  * File: /Applications/Xcode.app/Contents/PlugIns/IDEQuickHelp.ideplugin/Contents/MacOS/IDEQuickHelp
- * UUID: CA05B696-4492-3F2B-B4E6-E987B9D7F81B
+ * UUID: 70980979-3AC3-3058-983D-762B028630C2
  * Arch: Intel x86-64 (x86_64)
- *       Current version: 1171.0.0, Compatibility version: 1.0.0
+ *       Current version: 2062.0.0, Compatibility version: 1.0.0
  *       Minimum Mac OS X version: 10.7.0
  *
  *       Objective-C Garbage Collection: Required
@@ -48,6 +53,11 @@ typedef struct {
 - (void)invalidate;
 @end
 
+@protocol DVTInvalidation_New <DVTInvalidation>
+@property(retain) DVTStackBacktrace *creationBacktrace;
+- (void)primitiveInvalidate;
+@end
+
 @protocol DVTSourceExpressionSource <NSObject, DVTInvalidation>
 @property(readonly, nonatomic) DVTSourceExpression *mouseOverExpression;
 @property(readonly, nonatomic) struct CGRect currentSelectionFrame;
@@ -56,6 +66,7 @@ typedef struct {
 - (struct CGRect)expressionFrameForExpression:(id)arg1;
 
 @optional
+@property(readonly, nonatomic) NSString *selectedText;
 @property(readonly) DVTSourceExpression *quickHelpExpression;
 - (void)unregisterMouseOverExpressionObserver:(id)arg1;
 - (void)registerMouseOverExpressionObserver:(id)arg1;
@@ -64,10 +75,14 @@ typedef struct {
 @end
 
 @protocol DVTTextCompletionItemInfoProvider
-- (void)infoViewControllerForCompletionItemName:(id)arg1 displayText:(id)arg2 completionBlock:(id)arg3;
+- (void)infoViewControllerForCompletionItemName:(id)arg1 container:(id)arg2 displayText:(id)arg3 descriptionText:(id)arg4 width:(double)arg5 context:(id)arg6 completionBlock:(id)arg7;
 @end
 
 @protocol IDECommandHandler <NSObject, NSUserInterfaceValidations>
+@end
+
+@protocol IDEQuickHelpPlaceholderViewDelegate <NSObject>
+- (void)placeholderView:(id)arg1 clickSearchButton:(id)arg2;
 @end
 
 @protocol IDESourceExpressionSource <DVTSourceExpressionSource>
@@ -79,6 +94,7 @@ typedef struct {
 - (void)symbolsForExpression:(id)arg1 inQueue:(struct dispatch_queue_s *)arg2 completionBlock:(id)arg3;
 
 @optional
+- (BOOL)isLocationInFunctionOrMethodBody:(id)arg1;
 - (id)importStringInExpression:(id)arg1;
 @end
 
@@ -102,10 +118,76 @@ typedef struct {
 - (Class)superclass;
 - (unsigned long long)hash;
 - (BOOL)isEqual:(id)arg1;
+
+@optional
+- (id)debugDescription;
+@end
+
+@protocol NSPopoverDelegate <NSObject>
+
+@optional
+- (void)popoverDidClose:(id)arg1;
+- (void)popoverWillClose:(id)arg1;
+- (void)popoverDidShow:(id)arg1;
+- (void)popoverWillShow:(id)arg1;
+- (id)detachableWindowForPopover:(id)arg1;
+- (BOOL)popoverShouldClose:(id)arg1;
+@end
+
+@protocol NSTextDelegate <NSObject>
+
+@optional
+- (void)textDidChange:(id)arg1;
+- (void)textDidEndEditing:(id)arg1;
+- (void)textDidBeginEditing:(id)arg1;
+- (BOOL)textShouldEndEditing:(id)arg1;
+- (BOOL)textShouldBeginEditing:(id)arg1;
+@end
+
+@protocol NSTextViewDelegate <NSTextDelegate>
+
+@optional
+- (id)undoManagerForTextView:(id)arg1;
+- (void)textView:(id)arg1 draggedCell:(id)arg2 inRect:(struct CGRect)arg3 event:(id)arg4;
+- (void)textView:(id)arg1 doubleClickedOnCell:(id)arg2 inRect:(struct CGRect)arg3;
+- (void)textView:(id)arg1 clickedOnCell:(id)arg2 inRect:(struct CGRect)arg3;
+- (BOOL)textView:(id)arg1 clickedOnLink:(id)arg2;
+- (id)textView:(id)arg1 willShowSharingServicePicker:(id)arg2 forItems:(id)arg3;
+- (id)textView:(id)arg1 URLForContentsOfTextAttachment:(id)arg2 atIndex:(unsigned long long)arg3;
+- (id)textView:(id)arg1 didCheckTextInRange:(struct _NSRange)arg2 types:(unsigned long long)arg3 options:(id)arg4 results:(id)arg5 orthography:(id)arg6 wordCount:(long long)arg7;
+- (id)textView:(id)arg1 willCheckTextInRange:(struct _NSRange)arg2 options:(id)arg3 types:(unsigned long long *)arg4;
+- (id)textView:(id)arg1 menu:(id)arg2 forEvent:(id)arg3 atIndex:(unsigned long long)arg4;
+- (long long)textView:(id)arg1 shouldSetSpellingState:(long long)arg2 range:(struct _NSRange)arg3;
+- (BOOL)textView:(id)arg1 doCommandBySelector:(SEL)arg2;
+- (BOOL)textView:(id)arg1 shouldChangeTextInRange:(struct _NSRange)arg2 replacementString:(id)arg3;
+- (id)textView:(id)arg1 completions:(id)arg2 forPartialWordRange:(struct _NSRange)arg3 indexOfSelectedItem:(long long *)arg4;
+- (id)textView:(id)arg1 willDisplayToolTip:(id)arg2 forCharacterAtIndex:(unsigned long long)arg3;
+- (void)textViewDidChangeTypingAttributes:(id)arg1;
+- (void)textViewDidChangeSelection:(id)arg1;
+- (id)textView:(id)arg1 shouldChangeTypingAttributes:(id)arg2 toAttributes:(id)arg3;
+- (BOOL)textView:(id)arg1 shouldChangeTextInRanges:(id)arg2 replacementStrings:(id)arg3;
+- (id)textView:(id)arg1 willChangeSelectionFromCharacterRanges:(id)arg2 toCharacterRanges:(id)arg3;
+- (struct _NSRange)textView:(id)arg1 willChangeSelectionFromCharacterRange:(struct _NSRange)arg2 toCharacterRange:(struct _NSRange)arg3;
+- (BOOL)textView:(id)arg1 writeCell:(id)arg2 atIndex:(unsigned long long)arg3 toPasteboard:(id)arg4 type:(id)arg5;
+- (id)textView:(id)arg1 writablePasteboardTypesForCell:(id)arg2 atIndex:(unsigned long long)arg3;
+- (void)textView:(id)arg1 draggedCell:(id)arg2 inRect:(struct CGRect)arg3 event:(id)arg4 atIndex:(unsigned long long)arg5;
+- (void)textView:(id)arg1 doubleClickedOnCell:(id)arg2 inRect:(struct CGRect)arg3 atIndex:(unsigned long long)arg4;
+- (void)textView:(id)arg1 clickedOnCell:(id)arg2 inRect:(struct CGRect)arg3 atIndex:(unsigned long long)arg4;
+- (BOOL)textView:(id)arg1 clickedOnLink:(id)arg2 atIndex:(unsigned long long)arg3;
 @end
 
 @protocol NSUserInterfaceValidations
 - (BOOL)validateUserInterfaceItem:(id)arg1;
+@end
+
+@protocol __ARCLiteIndexedSubscripting__
+- (void)setObject:(id)arg1 atIndexedSubscript:(unsigned long long)arg2;
+- (id)objectAtIndexedSubscript:(unsigned long long)arg1;
+@end
+
+@protocol __ARCLiteKeyedSubscripting__
+- (void)setObject:(id)arg1 forKeyedSubscript:(id)arg2;
+- (id)objectForKeyedSubscript:(id)arg1;
 @end
 
 @interface _IDEQuickHelpPluginPrivateClassForFindingBundle : NSObject
@@ -114,44 +196,58 @@ typedef struct {
 
 @end
 
-@interface IDEQuickHelpController : NSObject <DVTInvalidation>
+@interface IDEQuickHelpController : NSObject <DVTInvalidation_New>
 {
-    BOOL _isInvalidated;
-    DVTStackBacktrace *_invalidationBacktrace;
     id <DVTSourceExpressionSource> _sourceExpressionSource;
     DVTSourceExpression *_selectedSourceExpression;
     NSString *_quickHelpContent;
+    NSString *_placeholderString;
+    BOOL _showsDocumentationSearch;
     WebView *_backgroundWebView;
     WebView *_targetWebView;
     struct CGSize _renderedContentSize;
     IDEQuickHelpQueryResult *_queryResult;
-    double _hostViewWidth;
+    NSString *_HTMLTemplate;
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 @property(retain) IDEQuickHelpQueryResult *queryResult; // @synthesize queryResult=_queryResult;
 @property struct CGSize renderedContentSize; // @synthesize renderedContentSize=_renderedContentSize;
+@property(retain) WebView *backgroundWebView; // @synthesize backgroundWebView=_backgroundWebView;
 @property(retain) WebView *targetWebView; // @synthesize targetWebView=_targetWebView;
+@property BOOL showsDocumentationSearch; // @synthesize showsDocumentationSearch=_showsDocumentationSearch;
+@property(retain) NSString *placeholderString; // @synthesize placeholderString=_placeholderString;
 @property(retain) NSString *quickHelpContent; // @synthesize quickHelpContent=_quickHelpContent;
 @property(retain) DVTSourceExpression *selectedSourceExpression; // @synthesize selectedSourceExpression=_selectedSourceExpression;
 @property(retain) id <DVTSourceExpressionSource> sourceExpressionSource; // @synthesize sourceExpressionSource=_sourceExpressionSource;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (void)showDefaultHelpMessage;
 - (id)localizedDefaultMessageString;
-- (id)_noHelpBadgeHTMLString;
 - (void)displayMessage:(id)arg1 withTitle:(id)arg2;
 - (void)handleLinkClickWithActionInformation:(id)arg1;
 - (void)renderWebView:(id)arg1 withHTML:(id)arg2 viewWidth:(double)arg3;
 - (void)webView:(id)arg1 didFinishLoadForFrame:(id)arg2;
+- (void)updateRenderedContentSize;
+- (void)updateRenderedContentSizeForFrame:(id)arg1;
 - (void)generateContentForSourceExpression:(id)arg1 fromSource:(id)arg2;
-- (void)generateContentForSourceExpression:(id)arg1;
-- (void)generateHTMLForSymbol:(id)arg1 fromQueryDictionary:(id)arg2 inExpressionSource:(id)arg3;
-- (id)sdkFromExpressionSource:(id)arg1;
+- (void)generateContentForSourceExpression:(id)arg1 container:(id)arg2 context:(id)arg3;
+- (void)generateHTMLForSymbol:(id)arg1 fromQueryDictionary:(id)arg2 inExpressionSource:(id)arg3 context:(id)arg4;
 - (void)generateHTMLFromResult:(id)arg1;
+- (void)generateHTMLFromResult:(id)arg1 clangCommentBlock:(id)arg2 symbol:(id)arg3;
 - (id)contentCreator;
-- (id)HTMLTemplate;
+- (id)mode;
 @property(readonly) NSString *declaredInHeaderFileName;
+@property(readonly) NSString *qualifiedName;
 @property(readonly) NSString *tokenName;
 - (void)showHeaderFile:(id)arg1;
 - (void)showDocumentation:(id)arg1;
@@ -168,7 +264,7 @@ typedef struct {
 - (id)localizedDocumentationNotFoundString;
 - (id)localizedQuickHelpTitleString;
 - (id)_safeShortTitleStringFromSelection:(id)arg1;
-- (id)localizedTemplateForDocumentationNotFoundForString:(id)arg1;
+- (id)localizedTemplateForDocumentationNotFound;
 
 // Remaining properties
 @property(readonly) DVTViewController *viewControllerWithContent; // @dynamic viewControllerWithContent;
@@ -182,24 +278,28 @@ typedef struct {
 + (id)handlerForAction:(SEL)arg1 withSelectionSource:(id)arg2;
 - (void)_showQuickHelpInternal:(id)arg1;
 - (void)showQuickHelp:(id)arg1;
+- (void)showDocumentationForSymbol:(id)arg1;
 - (BOOL)validateUserInterfaceItem:(id)arg1;
 
 @end
 
-@interface IDEQuickHelpOneShotController : IDEQuickHelpController
+@interface IDEQuickHelpOneShotController : IDEQuickHelpController <NSPopoverDelegate>
 {
     id <DVTObservingToken> _quickHelpContentObservingToken;
     id <DVTObservingToken> _renderedContentSizeObservingToken;
-    IDEQuickHelpOneShotWindowController *_windowController;
-    id _resignKeyWindowObserver;
+    NSPopover *_popover;
+    IDEQuickHelpOneShotWindowContentViewController *_contentViewController;
 }
 
+- (void)popoverDidClose:(id)arg1;
 - (void)closeQuickHelp;
 - (void)showQuickHelp;
-- (void)showPanel;
-- (struct CGPoint)panelOriginFromSelectionFrame:(struct CGRect)arg1 outArrowEdge:(unsigned long long *)arg2 panelHeight:(unsigned long long)arg3;
+- (void)_contentDidChange:(id)arg1;
+- (void)_configurePlaceholderView;
+- (void)showPanelAtPoint:(struct CGPoint)arg1 withContentSize:(struct CGSize)arg2;
+- (void)_adjustPlaceholderHeight;
+- (id)mode;
 - (id)contentCreator;
-- (id)selectedSourceExpression;
 - (id)sourceExpressionSource;
 
 @end
@@ -218,28 +318,41 @@ typedef struct {
 @interface IDEQuickHelpQueryResult : NSObject
 {
     DSAToken *_resultToken;
+    NSXMLDocument *_XMLDescription;
     NSString *_symbolName;
     NSString *_parentName;
     NSArray *_ancestorNames;
     IDEIndexSymbol *_indexSymbol;
     NSDictionary *_symbolDictionary;
+    NSString *_qualifiedName;
+    NSString *_platformFamilyName;
+    NSString *_sdkVersion;
 }
 
 + (id)queryResultWithSymbolDictionary:(id)arg1;
 + (id)queryResultForToken:(id)arg1 ancestorHierarchy:(id)arg2;
+@property(retain) NSString *sdkVersion; // @synthesize sdkVersion=_sdkVersion;
+@property(retain) NSString *platformFamilyName; // @synthesize platformFamilyName=_platformFamilyName;
+@property(copy) NSString *qualifiedName; // @synthesize qualifiedName=_qualifiedName;
 @property(copy) NSDictionary *symbolDictionary; // @synthesize symbolDictionary=_symbolDictionary;
 @property(retain) IDEIndexSymbol *indexSymbol; // @synthesize indexSymbol=_indexSymbol;
 @property(copy) NSArray *ancestorNames; // @synthesize ancestorNames=_ancestorNames;
 @property(copy) NSString *parentName; // @synthesize parentName=_parentName;
 @property(copy, nonatomic) NSString *symbolName; // @synthesize symbolName=_symbolName;
+@property(retain) NSXMLDocument *XMLDescription; // @synthesize XMLDescription=_XMLDescription;
 @property(retain) DSAToken *resultToken; // @synthesize resultToken=_resultToken;
-@property(readonly) NSArray *parametersAsNameAndValueStrings;
+@property(readonly) NSXMLElement *returnValue;
+@property(readonly) NSXMLElement *parameters;
 @property(readonly) NSString *deprecationStatement;
 @property(readonly) NSString *generalAvailabilityAndVersionStatement;
 @property(readonly) NSString *message;
 @property(readonly) NSURL *declaredInURL;
-@property(readonly) NSString *declaration;
-@property(readonly) NSString *abstract;
+@property(readonly) NSXMLElement *declaration;
+@property(readonly) NSXMLElement *specialConsiderations;
+@property(readonly) NSXMLElement *discussion;
+@property(readonly) NSXMLElement *abstract;
+- (id)contentElementWithName:(id)arg1 HTMLString:(id)arg2;
+- (id)contentElementForXPath:(id)arg1;
 
 @end
 
@@ -250,37 +363,49 @@ typedef struct {
 }
 
 @property unsigned long long exclusionMask; // @synthesize exclusionMask=_exclusionMask;
+- (id)contentForClangCommentBlock:(id)arg1;
 - (id)contentForQueryResult:(id)arg1;
-- (id)parametersWithNameValuePairs:(id)arg1;
 - (id)elementForNodeSet:(id)arg1 withDocSet:(id)arg2 elementName:(id)arg3;
 - (id)elementForTokenSet:(id)arg1 withDocSet:(id)arg2 elementName:(id)arg3;
 - (id)_stringByStrippingHTMLMarkupFromString:(id)arg1;
 - (id)_stringByRemovingHTMLEntitiesFromString:(id)arg1;
 - (id)elementNamed:(id)arg1 withXMLString:(id)arg2;
-- (id)_declarationFromRawString:(id)arg1;
+- (id)_declarationFromElement:(id)arg1;
 - (id)elementForLinkingString:(id)arg1 withURL:(id)arg2 titleAttribute:(id)arg3 elementName:(id)arg4;
 - (id)elementForUnlinkedString:(id)arg1 elementName:(id)arg2;
 - (id)elementForWrappedHTMLString:(id)arg1 elementName:(id)arg2;
 
 @end
 
-@interface IDEQuickHelpInspectorViewController : IDEInspectorViewController
+@interface IDEQuickHelpInspectorViewController : IDEInspectorViewController <IDEQuickHelpPlaceholderViewDelegate>
 {
     WebView *inspectorWebView;
     IDEQuickHelpInspectorController *_inspectorController;
     id <DVTObservingToken> _quickHelpContentObservingToken;
     id <DVTObservingToken> _renderedContentSizeObservingToken;
+    NSTrackingArea *_mouseTracking;
+    IDEQuickHelpPlaceholderView *_placeholderView;
 }
 
+@property(retain) IDEQuickHelpPlaceholderView *placeholderView; // @synthesize placeholderView=_placeholderView;
+- (void)placeholderView:(id)arg1 clickSearchButton:(id)arg2;
+- (void)mouseExited:(id)arg1;
+- (void)unregisterForMouseEvents;
+- (void)registerForMouseEvents;
+- (id)webView:(id)arg1 contextMenuItemsForElement:(id)arg2 defaultMenuItems:(id)arg3;
+- (unsigned long long)webView:(id)arg1 dragDestinationActionMaskForDraggingInfo:(id)arg2;
 - (void)webView:(id)arg1 decidePolicyForNavigationAction:(id)arg2 request:(id)arg3 frame:(id)arg4 decisionListener:(id)arg5;
 - (void)handleLinkClickWithActionInformation:(id)arg1;
 - (BOOL)inspectorIsActive;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)viewWillUninstall;
 - (void)viewDidInstall;
 - (void)awakeFromNib;
-- (void)_loadDefaultMessage;
+- (void)_contentDidChange:(id)arg1;
+- (void)_setPlaceholder:(id)arg1;
+- (void)_webViewFrameDidChange:(id)arg1;
 - (void)adjustInspectorHeightForContentSize:(struct CGSize)arg1;
+- (void)_configurePlaceholderView;
 - (void)_configureWebView;
 - (void)loadView;
 - (id)nibBundle;
@@ -304,50 +429,35 @@ typedef struct {
 - (void)beginTrackingExpressionSelectionSource:(id)arg1;
 - (void)beginTrackingMainViewController;
 - (void)generateContentForExpression:(id)arg1 inSource:(id)arg2;
+- (void)cancelContentGeneration;
 - (void)_generateContentWithExpressionAndSource:(id)arg1;
+- (id)contentCreator;
+- (id)mode;
 - (void)closeQuickHelp;
 - (void)showQuickHelp;
 
 @end
 
-@interface IDEQuickHelpOneShotWindowController : DVTHUDPopUpController
-{
-}
-
-- (void)addSubviews;
-
-@end
-
-@interface IDEQuickHelpOneShotWindowContentViewController : DVTHUDPopUpContentViewController
+@interface IDEQuickHelpOneShotWindowContentViewController : DVTViewController <IDEQuickHelpPlaceholderViewDelegate>
 {
     IDEQuickHelpController *_quickHelpController;
-    NSButton *_headerFileButton;
-    NSButton *_documentationButton;
-    DVTRolloverImageButton *_closeButton;
-    NSTextField *_symbolNameLabel;
     WebView *_webView;
+    IDEQuickHelpPlaceholderView *_placeholderView;
 }
 
 + (id)defaultViewNibName;
 @property(retain) IDEQuickHelpController *quickHelpController; // @synthesize quickHelpController=_quickHelpController;
+@property(retain) IDEQuickHelpPlaceholderView *placeholderView; // @synthesize placeholderView=_placeholderView;
 @property(retain) WebView *webView; // @synthesize webView=_webView;
-@property(retain) NSTextField *symbolNameLabel; // @synthesize symbolNameLabel=_symbolNameLabel;
-@property(retain) DVTRolloverImageButton *closeButton; // @synthesize closeButton=_closeButton;
-@property(retain) NSButton *documentationButton; // @synthesize documentationButton=_documentationButton;
-@property(retain) NSButton *headerFileButton; // @synthesize headerFileButton=_headerFileButton;
+- (void)placeholderView:(id)arg1 clickSearchButton:(id)arg2;
+- (unsigned long long)webView:(id)arg1 dragDestinationActionMaskForDraggingInfo:(id)arg2;
 - (void)webView:(id)arg1 decidePolicyForNavigationAction:(id)arg2 request:(id)arg3 frame:(id)arg4 decisionListener:(id)arg5;
+- (id)webView:(id)arg1 contextMenuItemsForElement:(id)arg2 defaultMenuItems:(id)arg3;
 - (void)handleLinkClickWithActionInformation:(id)arg1;
 - (void)loadWebViewWithHTML:(id)arg1;
 - (CDStruct_d2b197d1)contentInset;
 - (void)viewDidInstall;
-
-@end
-
-@interface IDEQuickHelpTopView : NSView
-{
-}
-
-- (void)drawRect:(struct CGRect)arg1;
+- (void)_configureWebView;
 
 @end
 
@@ -355,7 +465,7 @@ typedef struct {
 {
 }
 
-- (void)infoViewControllerForCompletionItemName:(id)arg1 displayText:(id)arg2 completionBlock:(id)arg3;
+- (void)infoViewControllerForCompletionItemName:(id)arg1 container:(id)arg2 displayText:(id)arg3 descriptionText:(id)arg4 width:(double)arg5 context:(id)arg6 completionBlock:(id)arg7;
 
 @end
 
@@ -363,8 +473,13 @@ typedef struct {
 {
 }
 
-- (id)contentCreator;
+- (void)showDefaultHelpMessage;
+- (void)generateHTMLFromResult:(id)arg1;
 - (void)closeQuickHelp;
+
+// Remaining properties
+@property(retain) IDEQuickHelpQueryResult *queryResult;
+@property(retain) NSString *quickHelpContent;
 
 @end
 
@@ -389,49 +504,70 @@ typedef struct {
 - (void)showHeaderFile:(id)arg1;
 - (void)showDocumentation:(id)arg1;
 - (void)handleLinkClickWithActionInformation:(id)arg1;
+- (void)handleFileColonSlashSlashLinkClick:(id)arg1;
+- (void)handleFileColonSlashSlashLinkClick:(id)arg1 forPlatformName:(id)arg2 sdkVersion:(id)arg3;
 - (id)urlFromLinkClickActionInformation:(id)arg1;
 - (id)_relativePathMinusAppleWebDataPrefixForURL:(id)arg1;
 - (id)initWithQueryResult:(id)arg1 sourceExpressionSource:(id)arg2;
 
 @end
 
-@interface IDEQuickHelpBadgeCache : NSObject
+@interface IDEQuickHelpCompletionInfoViewController : DVTInvalidatableViewController <NSTextViewDelegate>
 {
-    NSString *_tempImageDir;
-    NSString *_pathForNoQuickHelpImage;
-    NSString *_pathForIndexingImage;
-    double _badgeHeight;
-}
-
-+ (id)sharedQuickHelpBadgeCache;
-@property(readonly) double badgeHeight; // @synthesize badgeHeight=_badgeHeight;
-@property(readonly) NSString *pathForIndexingImage; // @synthesize pathForIndexingImage=_pathForIndexingImage;
-@property(readonly) NSString *pathForNoQuickHelpImage; // @synthesize pathForNoQuickHelpImage=_pathForNoQuickHelpImage;
-- (void)createBadgeTempImageFiles;
-- (id)_imageDataForLabel:(id)arg1;
-- (id)badgeImageFromView:(id)arg1;
-- (id)badgeWithLabel:(id)arg1;
-
-@end
-
-@interface IDEQuickHelpCompletionInfoViewController : DVTViewController <DVTInvalidation>
-{
-    BOOL _isInvalidated;
-    DVTStackBacktrace *_invalidationBacktrace;
-    WebView *_webView;
     IDEQuickHelpController *_quickHelpController;
+    NSTextField *_textField;
+    struct CGSize _renderedTextSize;
 }
 
 + (id)defaultViewNibName;
-@property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
+@property struct CGSize renderedTextSize; // @synthesize renderedTextSize=_renderedTextSize;
 @property(retain) IDEQuickHelpController *quickHelpController; // @synthesize quickHelpController=_quickHelpController;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
-- (void)invalidate;
-- (void)webView:(id)arg1 decidePolicyForNavigationAction:(id)arg2 request:(id)arg3 frame:(id)arg4 decisionListener:(id)arg5;
-- (void)handleLinkClickWithActionInformation:(id)arg1;
-- (void)loadWebViewWithHTML:(id)arg1;
+@property NSTextField *textField; // @synthesize textField=_textField;
+- (void)primitiveInvalidate;
 - (void)viewDidInstall;
 
+@end
+
+@interface _IDEQuickHelpCompletionInfoTextField : NSTextField
+{
+}
+
+- (void)mouseDown:(id)arg1;
+
+@end
+
+@interface IDEQuickHelpData : NSObject
+{
+}
+
++ (id)sdkFromDocument:(id)arg1 inWorkspace:(id)arg2;
++ (id)sdkFromExpressionSource:(id)arg1;
++ (void)indexSymbolForSourceExpression:(id)arg1 fromSource:(id)arg2 completionBlock:(id)arg3;
++ (struct dispatch_queue_s *)_indexQueriesSharedQueue;
+- (void)queryCommentXMLFromIndexSymbol:(id)arg1 expressionSource:(id)arg2 completionBlock:(id)arg3;
+- (void)queryResultForIndexSymbol:(id)arg1 expressionSource:(id)arg2 completionBlock:(id)arg3;
+- (void)generateQueryResultForSourceExpression:(id)arg1 fromSource:(id)arg2 completionBlock:(id)arg3;
+
+@end
+
+@interface IDEQuickHelpPlaceholderView : IDEUtilityPlaceholderView
+{
+    NSButton *_searchButton;
+    id <IDEQuickHelpPlaceholderViewDelegate> _delegate;
+}
+
+@property __weak id <IDEQuickHelpPlaceholderViewDelegate> delegate; // @synthesize delegate=_delegate;
+@property(retain) NSButton *searchButton; // @synthesize searchButton=_searchButton;
+- (void)clickSearchButton:(id)arg1;
+- (void)setShowsDocumentationSearch:(BOOL)arg1;
+- (void)layoutBottomUp;
+- (id)initWithFrame:(struct CGRect)arg1;
+
+@end
+
+@interface NSXMLElement (IDEQuickHelpAdditions)
+- (id)dvt_tidiedElement;
+- (void)dvt_setPreservesWhitespace:(BOOL)arg1;
 @end
 
 @interface DSANode (DSANodeNameSorting)

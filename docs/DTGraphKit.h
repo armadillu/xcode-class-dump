@@ -21,16 +21,26 @@ struct CGSize {
     double height;
 };
 
+struct LayoutRect {
+    struct CGRect _field1;
+    struct CGRect _field2;
+    struct CGRect _field3;
+    struct CGRect _field4;
+    struct CGRect _field5;
+    struct CGRect _field6;
+    struct CGRect _field7;
+};
+
 #pragma mark -
 
 /*
  * File: /Applications/Xcode.app/Contents/SharedFrameworks/DTGraphKit.framework/Versions/A/DTGraphKit
- * UUID: EEF9D111-F921-3059-8464-F7F5E4CB8C53
+ * UUID: AD55D06D-1469-37F4-9098-5071265F0C2F
  * Arch: Intel x86-64 (x86_64)
- *       Current version: 4305.0.0, Compatibility version: 1.0.0
+ *       Current version: 46000.0.0, Compatibility version: 1.0.0
  *       Minimum Mac OS X version: 10.7.0
  *
- *       Objective-C Garbage Collection: Supported
+ *       Objective-C Garbage Collection: Unsupported
  *       Run path: @loader_path/../../../
  *               = /Applications/Xcode.app/Contents/SharedFrameworks
  */
@@ -59,6 +69,19 @@ struct CGSize {
 - (Class)superclass;
 - (unsigned long long)hash;
 - (BOOL)isEqual:(id)arg1;
+
+@optional
+- (id)debugDescription;
+@end
+
+@protocol __ARCLiteIndexedSubscripting__
+- (void)setObject:(id)arg1 atIndexedSubscript:(unsigned long long)arg2;
+- (id)objectAtIndexedSubscript:(unsigned long long)arg1;
+@end
+
+@protocol __ARCLiteKeyedSubscripting__
+- (void)setObject:(id)arg1 forKeyedSubscript:(id)arg2;
+- (id)objectForKeyedSubscript:(id)arg1;
 @end
 
 @interface DTBarGraph : DTGraph
@@ -107,6 +130,10 @@ struct CGSize {
     NSString *_lineFilledKeyPath;
     NSString *_nodeAKeyPath;
     NSString *_nodeBKeyPath;
+    NSString *_binStartKeyPath;
+    NSString *_binEndKeyPath;
+    NSString *_binNameKeyPath;
+    NSString *_legendKeyPath;
     struct {
         unsigned int labelKeyPathMissing:1;
         unsigned int colorKeyPathMissing:1;
@@ -151,6 +178,10 @@ struct CGSize {
 - (struct CGRect)calculateTitleBoundsWithinBounds:(struct CGRect)arg1;
 - (BOOL)requiresTitle;
 - (void)observeValueForKeyPath:(id)arg1 ofObject:(id)arg2 change:(id)arg3 context:(void *)arg4;
+- (id)legendKeyPath;
+- (id)binNameKeyPath;
+- (id)binEndKeyPath;
+- (id)binStartKeyPath;
 - (id)nodeBKeyPath;
 - (id)nodeAKeyPath;
 - (id)shapeKeyPath;
@@ -336,7 +367,9 @@ struct CGSize {
 {
 }
 
++ (id)stringForObjectValue:(id)arg1;
 + (id)stringForNanoseconds:(unsigned long long)arg1;
++ (void)initialize;
 - (id)stringForObjectValue:(id)arg1;
 
 @end
@@ -468,11 +501,11 @@ struct CGSize {
     id <DTNetworkGraphLayout> layout;
 }
 
-@property(retain) id <DTNetworkGraphLayout> layout; // @synthesize layout;
 @property(retain) DTNetworkGraphObject *selectedObject; // @synthesize selectedObject;
 @property(retain) NSArray *edges; // @synthesize edges;
 @property(retain) NSArray *nodes; // @synthesize nodes;
 - (void)mouseDown:(id)arg1;
+@property(retain) id <DTNetworkGraphLayout> layout; // @synthesize layout;
 - (void)observeModel:(BOOL)arg1;
 - (void)setFrameSize:(struct CGSize)arg1;
 - (void)resetPaths;
@@ -518,6 +551,74 @@ struct CGSize {
 }
 
 - (void)layoutGraph:(id)arg1;
+
+@end
+
+@interface DTHistogramBar : NSObject
+{
+    unsigned long long height;
+    DTHistogramBin *bin;
+    unsigned long long binOffset;
+    struct CGRect rect;
+    NSColor *color;
+}
+
+@property(retain) NSColor *color; // @synthesize color;
+@property(nonatomic) struct CGRect rect; // @synthesize rect;
+@property(nonatomic) unsigned long long binOffset; // @synthesize binOffset;
+@property DTHistogramBin *bin; // @synthesize bin;
+@property(nonatomic) unsigned long long height; // @synthesize height;
+
+@end
+
+@interface DTHistogramBin : NSObject
+{
+    NSString *name;
+    double start;
+    double end;
+    _Bool isFake;
+    NSMutableArray *bars;
+}
+
+@property(retain) NSMutableArray *bars; // @synthesize bars;
+@property(nonatomic) _Bool isFake; // @synthesize isFake;
+@property(nonatomic) double end; // @synthesize end;
+@property(nonatomic) double start; // @synthesize start;
+@property(retain, nonatomic) NSString *name; // @synthesize name;
+- (id)init;
+
+@end
+
+@interface DTHistogramGraph : DTGraph
+{
+    _Bool _groupedFormat;
+    NSMutableArray *_bins;
+    DTHistogramBar *_selectedBar;
+    NSArray *_legend;
+    BOOL _binsAreNamed;
+}
+
+- (void)clearSelection;
+- (void)mouseDown:(id)arg1;
+- (void)observeModel:(BOOL)arg1;
+- (void)_layoutBins;
+- (void)setFrameSize:(struct CGSize)arg1;
+- (void)_createBins;
+- (double)calculateVerticalBorderBuffer;
+- (double)calculateHorizontalBorderBuffer;
+- (long long)_bestNumberOfDivsGuessing:(long long)arg1;
+- (struct CGRect)calculateXAxisBoundsWithinBounds:(struct CGRect)arg1;
+- (struct CGRect)calculateYAxisBoundsWithinBounds:(struct CGRect)arg1;
+- (void)drawLegend:(struct CGRect)arg1;
+- (void)drawYAxis:(struct CGRect)arg1;
+- (void)drawXAxis:(struct CGRect)arg1;
+- (void)drawBorder:(struct CGRect)arg1;
+- (void)drawContent:(struct CGRect)arg1;
+- (long long)_maxValue;
+- (void)clearCache;
+- (void)drawBackground:(struct CGRect)arg1;
+- (void)drawRect:(struct CGRect)arg1;
+- (void)_getLayoutRect:(struct LayoutRect *)arg1;
 
 @end
 

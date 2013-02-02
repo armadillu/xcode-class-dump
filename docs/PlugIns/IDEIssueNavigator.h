@@ -8,13 +8,23 @@
 
 /*
  * File: /Applications/Xcode.app/Contents/PlugIns/IDEIssueNavigator.ideplugin/Contents/MacOS/IDEIssueNavigator
- * UUID: 60701CFA-6124-38E7-8A06-EA7C341A7515
+ * UUID: BE646AAB-EDAF-30D6-AE3C-C767EF359029
  * Arch: Intel x86-64 (x86_64)
- *       Current version: 1165.0.0, Compatibility version: 1.0.0
+ *       Current version: 2053.0.0, Compatibility version: 1.0.0
  *       Minimum Mac OS X version: 10.7.0
  *
  *       Objective-C Garbage Collection: Required
  */
+
+@protocol __ARCLiteIndexedSubscripting__
+- (void)setObject:(id)arg1 atIndexedSubscript:(unsigned long long)arg2;
+- (id)objectAtIndexedSubscript:(unsigned long long)arg1;
+@end
+
+@protocol __ARCLiteKeyedSubscripting__
+- (void)setObject:(id)arg1 forKeyedSubscript:(id)arg2;
+- (id)objectForKeyedSubscript:(id)arg1;
+@end
 
 @interface IDEIssueNavigator : IDENavigator
 {
@@ -121,7 +131,7 @@
 - (id)domainIdentifier;
 @property BOOL showByType;
 - (BOOL)delegateFirstResponder;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)viewDidInstall;
 - (void)loadView;
 

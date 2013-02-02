@@ -8,13 +8,23 @@
 
 /*
  * File: /Applications/Xcode.app/Contents/PlugIns/IDEAppleScriptEditor.ideplugin/Contents/MacOS/IDEAppleScriptEditor
- * UUID: 5769E6F3-7708-3EC2-9222-074FE3781439
+ * UUID: 25129102-ED50-3B19-B894-2A35AE36341C
  * Arch: Intel x86-64 (x86_64)
- *       Current version: 1165.0.0, Compatibility version: 1.0.0
+ *       Current version: 2052.0.0, Compatibility version: 1.0.0
  *       Minimum Mac OS X version: 10.7.0
  *
  *       Objective-C Garbage Collection: Required
  */
+
+@protocol __ARCLiteIndexedSubscripting__
+- (void)setObject:(id)arg1 atIndexedSubscript:(unsigned long long)arg2;
+- (id)objectAtIndexedSubscript:(unsigned long long)arg1;
+@end
+
+@protocol __ARCLiteKeyedSubscripting__
+- (void)setObject:(id)arg1 forKeyedSubscript:(id)arg2;
+- (id)objectForKeyedSubscript:(id)arg1;
+@end
 
 @interface IDEAppleScriptDocument : IDESourceCodeDocument
 {

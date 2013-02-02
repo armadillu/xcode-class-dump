@@ -8,13 +8,23 @@
 
 /*
  * File: /Applications/Xcode.app/Contents/PlugIns/IDETemplateLibrary.ideplugin/Contents/MacOS/IDETemplateLibrary
- * UUID: 1A1327B9-854C-3B1B-ABC7-7CE4958328C2
+ * UUID: 9AF9541B-174B-3059-8A89-910F4C7F0945
  * Arch: Intel x86-64 (x86_64)
- *       Current version: 1165.0.0, Compatibility version: 1.0.0
+ *       Current version: 2053.0.0, Compatibility version: 1.0.0
  *       Minimum Mac OS X version: 10.7.0
  *
  *       Objective-C Garbage Collection: Required
  */
+
+@protocol __ARCLiteIndexedSubscripting__
+- (void)setObject:(id)arg1 atIndexedSubscript:(unsigned long long)arg2;
+- (id)objectAtIndexedSubscript:(unsigned long long)arg1;
+@end
+
+@protocol __ARCLiteKeyedSubscripting__
+- (void)setObject:(id)arg1 forKeyedSubscript:(id)arg2;
+- (id)objectForKeyedSubscript:(id)arg1;
+@end
 
 @interface IDEFileTemplatesLibrary : DVTLibraryController
 {

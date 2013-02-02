@@ -34,7 +34,7 @@ struct _NSRange {
 
 /*
  * File: /Applications/Xcode.app/Contents/PlugIns/Xcode3UI.ideplugin/Contents/MacOS/Xcode3UI
- * UUID: 68530D69-CF97-3389-A982-5B6F5D916DE5
+ * UUID: D982040D-23FD-3B3F-A9C9-D048523F3A21
  * Arch: Intel x86-64 (x86_64)
  *       Current version: 1.0.0, Compatibility version: 1.0.0
  *       Minimum Mac OS X version: 10.7.0
@@ -53,6 +53,7 @@ struct _NSRange {
 @protocol DVTCompletingTextViewDelegate <NSTextViewDelegate>
 
 @optional
+- (void)setupTextViewContextMenuWithMenu:(id)arg1;
 - (BOOL)completingTextViewHandleCancel:(id)arg1;
 - (unsigned long long)textView:(id)arg1 lineEndingForWritingSelectionToPasteboard:(id)arg2 type:(id)arg3;
 - (unsigned long long)textView:(id)arg1 lineEndingForReadingSelectionFromPasteboard:(id)arg2 type:(id)arg3;
@@ -90,6 +91,11 @@ struct _NSRange {
 - (void)invalidate;
 @end
 
+@protocol DVTInvalidation_New <DVTInvalidation>
+@property(retain) DVTStackBacktrace *creationBacktrace;
+- (void)primitiveInvalidate;
+@end
+
 @protocol DVTOutlineViewDelegate <NSOutlineViewDelegate>
 
 @optional
@@ -111,6 +117,12 @@ struct _NSRange {
 - (id)plist;
 @end
 
+@protocol DVTPlistViewControllerDelegate <NSObject>
+
+@optional
+- (id)plistViewController:(id)arg1 willReplacePlistWithPastedPlistNode:(id)arg2;
+@end
+
 @protocol DVTSourceExpressionSource <NSObject, DVTInvalidation>
 @property(readonly, nonatomic) DVTSourceExpression *mouseOverExpression;
 @property(readonly, nonatomic) struct CGRect currentSelectionFrame;
@@ -119,6 +131,7 @@ struct _NSRange {
 - (struct CGRect)expressionFrameForExpression:(id)arg1;
 
 @optional
+@property(readonly, nonatomic) NSString *selectedText;
 @property(readonly) DVTSourceExpression *quickHelpExpression;
 - (void)unregisterMouseOverExpressionObserver:(id)arg1;
 - (void)registerMouseOverExpressionObserver:(id)arg1;
@@ -138,10 +151,8 @@ struct _NSRange {
 
 @optional
 - (id)textViewWillReturnPrintJobTitle:(id)arg1;
-- (id)cursorForAltTemporaryLink;
 - (void)textViewDidScroll:(id)arg1;
 - (void)setupGutterContextMenuWithMenu:(id)arg1;
-- (void)setupTextViewContextMenuWithMenu:(id)arg1;
 - (void)tokenizableItemsForItemAtRealRange:(struct _NSRange)arg1 completionBlock:(id)arg2;
 - (void)textViewDidFinishAnimatingScroll:(id)arg1;
 - (void)textViewDidLoadAnnotationProviders:(id)arg1;
@@ -193,6 +204,7 @@ struct _NSRange {
 @property(readonly) id <IDEBlueprint> blueprint;
 @property(readonly) NSString *buildableIdentifier;
 - (id)createBuilderForBuildCommand:(int)arg1 withBuildTaskQueueSet:(id)arg2 parameters:(id)arg3 buildOnlyTheseFiles:(id)arg4 restorePersistedBuildResults:(BOOL)arg5;
+- (id)implicitDependenciesForBuildParameters:(id)arg1 executionEnvironment:(id)arg2 returningMessages:(id *)arg3;
 - (id)implicitDependenciesForBuildParameters:(id)arg1 executionEnvironment:(id)arg2;
 - (id)directDependencies;
 - (id)uncachedOrderedRecursiveDependenciesIncludingSelf:(BOOL)arg1 visitedBuildables:(id)arg2;
@@ -263,7 +275,9 @@ struct _NSRange {
 @end
 
 @protocol IDECompletionDestinationDelegate <NSObject>
+- (id)targetWorkspacesForDestinationManager:(id)arg1;
 - (void)destinationManagerGroupDidChange:(id)arg1;
+- (void)destinationManagerWorkspaceDidChange:(id)arg1;
 - (BOOL)destinationManager:(id)arg1 shouldAddItemToMenu:(id)arg2;
 @end
 
@@ -277,6 +291,10 @@ struct _NSRange {
 
 @protocol IDEInitialization
 + (BOOL)ide_initializeWithOptions:(int)arg1 error:(id *)arg2;
+@end
+
+@protocol IDEInspectorMatching <NSObject>
+- (id)applicableInspectorsForCategory:(id)arg1 suggestion:(id)arg2;
 @end
 
 @protocol IDENavigableItemFileReferenceProxy <NSObject>
@@ -296,7 +314,7 @@ struct _NSRange {
 
 @protocol IDETemplateOptionParent <NSObject>
 - (void)valueDidChangeForOption:(id)arg1;
-- (id)index;
+- (id)workspace;
 - (id)identifier;
 @end
 
@@ -345,6 +363,9 @@ struct _NSRange {
 - (Class)superclass;
 - (unsigned long long)hash;
 - (BOOL)isEqual:(id)arg1;
+
+@optional
+- (id)debugDescription;
 @end
 
 @protocol NSOutlineViewDataSource <NSObject>
@@ -498,6 +519,7 @@ struct _NSRange {
 - (void)textView:(id)arg1 doubleClickedOnCell:(id)arg2 inRect:(struct CGRect)arg3;
 - (void)textView:(id)arg1 clickedOnCell:(id)arg2 inRect:(struct CGRect)arg3;
 - (BOOL)textView:(id)arg1 clickedOnLink:(id)arg2;
+- (id)textView:(id)arg1 willShowSharingServicePicker:(id)arg2 forItems:(id)arg3;
 - (id)textView:(id)arg1 URLForContentsOfTextAttachment:(id)arg2 atIndex:(unsigned long long)arg3;
 - (id)textView:(id)arg1 didCheckTextInRange:(struct _NSRange)arg2 types:(unsigned long long)arg3 options:(id)arg4 results:(id)arg5 orthography:(id)arg6 wordCount:(long long)arg7;
 - (id)textView:(id)arg1 willCheckTextInRange:(struct _NSRange)arg2 options:(id)arg3 types:(unsigned long long *)arg4;
@@ -662,6 +684,16 @@ struct _NSRange {
 @property(readonly) Xcode3BuildSettingsContext *buildSettings;
 @end
 
+@protocol __ARCLiteIndexedSubscripting__
+- (void)setObject:(id)arg1 atIndexedSubscript:(unsigned long long)arg2;
+- (id)objectAtIndexedSubscript:(unsigned long long)arg1;
+@end
+
+@protocol __ARCLiteKeyedSubscripting__
+- (void)setObject:(id)arg1 forKeyedSubscript:(id)arg2;
+- (id)objectForKeyedSubscript:(id)arg1;
+@end
+
 @interface Xcode3UIInitializer : NSObject <IDEInitialization>
 {
 }
@@ -717,7 +749,7 @@ struct _NSRange {
     id <DVTObservingToken> _phaseViewControllersObserver;
     id <DVTObservingToken> _searchStringObserver;
     id <DVTObservingToken> _rezQueryObserver;
-    NSMapTable *_searchResultsObservers;
+    DVTMapTable *_searchResultsObservers;
     NSMutableSet *_expandedPhases;
     BOOL _menuNeedsUpdate;
     BOOL _filterStateChanged;
@@ -816,7 +848,7 @@ struct _NSRange {
 - (void)viewWillUninstall;
 - (void)viewDidInstall;
 - (void)loadView;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (id)initWithNibName:(id)arg1 bundle:(id)arg2;
 
 // Remaining properties
@@ -843,38 +875,36 @@ struct _NSRange {
 - (void)capsuleView:(id)arg1 setTitle:(id)arg2;
 - (id)capsuleViewTitleForEditing:(id)arg1;
 - (BOOL)capsuleViewCanBeRenamed:(id)arg1;
-@property(readonly) NSString *titleForDisplay;
+- (id)titleForDisplay;
 - (void)selectLocations:(id)arg1;
 - (id)currentSelectedLocations;
-@property(readonly) BOOL disclosedByDefault;
+- (BOOL)disclosedByDefault;
 - (BOOL)showTopBorder;
 - (void)observeValueForKeyPath:(id)arg1 ofObject:(id)arg2 change:(id)arg3 context:(void *)arg4;
 - (id)nibName;
 - (id)initWithNibName:(id)arg1 bundle:(id)arg2;
 - (id)initWithBuildPhase:(id)arg1;
-- (void)invalidate;
-
-// Remaining properties
-@property BOOL canAddItems;
-@property(readonly) BOOL canRemove;
-@property BOOL canRemoveItems;
-@property(readonly) BOOL canRename;
-@property(readonly) BOOL canUndisclose;
-@property(readonly) NSString *footerLabel;
-@property(readonly) NSImage *icon;
+- (void)primitiveInvalidate;
 
 @end
 
-@interface Xcode3CompileFlagSettingViewController : IDEViewController
+@interface Xcode3CompileFlagSettingViewController : IDEViewController <NSPopoverDelegate>
 {
     NSTextField *_textField;
     NSString *_content;
+    id _completionBlock;
+    NSPopover *_popover;
 }
 
++ (void)showCompileFlagPopoverRelativeToRect:(struct CGRect)arg1 ofView:(id)arg2 preferredEdge:(unsigned long long)arg3 defaultContent:(id)arg4 completionHandler:(id)arg5;
+@property(retain) NSPopover *popover; // @synthesize popover=_popover;
+@property(copy) id completionBlock; // @synthesize completionBlock=_completionBlock;
 @property(copy) NSString *content; // @synthesize content=_content;
+- (void)close:(id)arg1;
 - (void)viewWillUninstall;
 - (void)viewDidInstall;
 - (void)loadView;
+- (void)popoverDidClose:(id)arg1;
 
 @end
 
@@ -907,7 +937,7 @@ struct _NSRange {
 - (id)nibName;
 - (void)_fileViewControllerInvalid;
 - (void)awakeFromNib;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (id)initWithBuildPhase:(id)arg1;
 
 @end
@@ -930,6 +960,7 @@ struct _NSRange {
     id _navigableItemPropertyObserver;
     BOOL _willReload;
     BOOL _loadedView;
+    IDEFilePickerPanel *_filePickerPanel;
 }
 
 + (id)_attributesForHighlightedPathString;
@@ -1020,7 +1051,7 @@ struct _NSRange {
 - (void)viewDidInstall;
 - (id)initWithBuildFileGroup:(id)arg1 ofBuildPhase:(id)arg2;
 - (id)initWithBuildPhase:(id)arg1;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (id)nibName;
 
 @end
@@ -1045,6 +1076,7 @@ struct _NSRange {
 @interface Xcode3FrameworksBuildPhaseViewController : Xcode3FileBuildPhaseViewController
 {
     DVTPopUpButtonCell *_roleCell;
+    Xcode3AddFrameworksController *_addFrameworksController;
 }
 
 - (id)_filterPredicate;
@@ -1058,6 +1090,7 @@ struct _NSRange {
 - (id)_dataCellForRoleOfBuildFile:(id)arg1;
 - (BOOL)_canSetRole;
 - (void)viewDidInstall;
+- (void)primitiveInvalidate;
 
 @end
 
@@ -1100,7 +1133,7 @@ struct _NSRange {
     BOOL _canRemoveInputFiles;
     BOOL _canRemoveOutputFiles;
     unsigned long long _storedNumberOfLines;
-    DVTDelayedValidator *_scriptChangeDelayedValidator;
+    DVTDelayedInvocation *_scriptChangeDelayedInvocation;
 }
 
 @property unsigned long long _storedNumberOfLines; // @synthesize _storedNumberOfLines;
@@ -1126,6 +1159,7 @@ struct _NSRange {
 - (void)_rebuildLayoutForTable:(id)arg1;
 - (void)_reallyRebuildLayout;
 - (void)_rebuildLayout;
+- (void)primitiveInvalidate;
 - (void)viewWillUninstall;
 - (void)viewDidInstall;
 - (void)viewFrameChanged:(id)arg1;
@@ -1187,7 +1221,7 @@ struct _NSRange {
 - (BOOL)_buildRuleIsMovableAtIndex:(unsigned long long)arg1;
 - (id)_buildRuleViewControllerForBuildRule:(id)arg1;
 - (void)_buildRuleViewControllers;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)_invalidateRuleViewControllers;
 - (id)initWithNibName:(id)arg1 bundle:(id)arg2;
 
@@ -1208,18 +1242,7 @@ struct _NSRange {
 - (BOOL)canAddFiles;
 - (BOOL)capsuleViewCanBeRemoved:(id)arg1;
 - (id)capsuleViewTitleForEditing:(id)arg1;
-@property(readonly) NSString *titleForDisplay;
-- (void)invalidate;
-
-// Remaining properties
-@property BOOL canAddItems;
-@property(readonly) BOOL canRemove;
-@property BOOL canRemoveItems;
-@property(readonly) BOOL canRename;
-@property(readonly) BOOL canUndisclose;
-@property(readonly) BOOL disclosedByDefault;
-@property(readonly) NSString *footerLabel;
-@property(readonly) NSImage *icon;
+- (id)titleForDisplay;
 
 @end
 
@@ -1239,7 +1262,7 @@ struct _NSRange {
     NSString *_unknownCompilerSpecTitle;
     double _scriptViewsHeight;
     BOOL _willRebuild;
-    DVTDelayedValidator *_scriptChangeDelayedValidator;
+    DVTDelayedInvocation *_scriptChangeDelayedInvocation;
 }
 
 - (void)tableViewSelectionDidChange:(id)arg1;
@@ -1255,6 +1278,7 @@ struct _NSRange {
 - (void)capsuleView:(id)arg1 setTitle:(id)arg2;
 - (void)capsuleViewDidClickRemoveButton:(id)arg1;
 - (void)focusOnScriptView:(id)arg1;
+- (void)primitiveInvalidate;
 - (void)viewWillUninstall;
 - (void)viewDidInstall;
 - (void)viewFrameChanged:(id)arg1;
@@ -1268,7 +1292,6 @@ struct _NSRange {
 - (void)_rebuildOutputFilesLayout;
 - (void)_reallyRebuildLayout;
 - (void)_rebuildLayout;
-- (void)invalidate;
 
 @end
 
@@ -1413,6 +1436,7 @@ struct _NSRange {
     NSString *_buildPropertyInfoString;
     NSString *_buildPropertyName;
     NSString *_buildPropertyLocalizedName;
+    Xcode3ConfigurableDataSource *_outlineViewDataSource;
     NSButton *_editorModeButton_basic;
     NSButton *_editorModeButton_all;
     NSButton *_displayModeButton_combined;
@@ -1481,7 +1505,9 @@ struct _NSRange {
 - (BOOL)outlineView:(id)arg1 acceptDrop:(id)arg2 item:(id)arg3 childIndex:(long long)arg4;
 - (BOOL)outlineView:(id)arg1 createItemsFromPasteboard:(id)arg2;
 - (BOOL)_modifyBuildPropertiesUsingPasteboard:(id)arg1;
+- (BOOL)_parseThreePartString:(id)arg1 firstPart:(id)arg2 secondPart:(id)arg3 remainder:(id *)arg4;
 - (BOOL)outlineView:(id)arg1 writeItems:(id)arg2 toPasteboard:(id)arg3;
+- (void)addSetting:(id)arg1 configuration:(id)arg2 conditionString:(id)arg3 value:(id)arg4 usingDictionary:(id)arg5;
 - (BOOL)outlineView:(id)arg1 shouldMouseHoverForTableColumn:(id)arg2 row:(long long)arg3;
 - (BOOL)projectCanClose:(id)arg1;
 - (BOOL)viewCanBeRemoved;
@@ -1518,7 +1544,6 @@ struct _NSRange {
 - (void)savePendingEdits:(id)arg1;
 - (void)referenceWillBeRemovedFromProject:(id)arg1;
 - (void)referenceWasAddedToProject:(id)arg1;
-- (void)activeBuildConfigurationChanged:(id)arg1;
 - (void)viewWillUninstall;
 - (void)viewDidInstall;
 - (void)loadView;
@@ -1574,7 +1599,7 @@ struct _NSRange {
 @property(readonly) NSArray *buildConfigurations;
 - (id)_buildConfigurationListForInspectedBlueprint:(id)arg1;
 - (void)currentInspectedItemsChanged;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (id)addButtonTitle;
 - (id)buildPropertyValueDisplayModeToggleButtonMenu;
 - (id)buildPropertyNameDisplayModeToggleButtonMenu;
@@ -1597,6 +1622,7 @@ struct _NSRange {
 
 - (id)stringsFromDictionaries:(id)arg1;
 - (id)dictionariesFromStrings:(id)arg1;
+- (long long)columnForAutoEditing;
 - (struct CGSize)minimumEditorSizeForContent:(id)arg1;
 
 @end
@@ -1637,6 +1663,7 @@ struct _NSRange {
 - (void)remove:(id)arg1;
 - (void)add:(id)arg1;
 - (void)_scrollSelectionIntoViewAndEdit:(id)arg1;
+- (long long)columnForAutoEditing;
 - (void)removeArrangedObjectsAtIndexes:(id)arg1;
 - (void)insertArrangedObjects:(id)arg1 atIndexes:(id)arg2;
 - (id)content;
@@ -1670,6 +1697,7 @@ struct _NSRange {
 - (void)_firedLibraryTimer:(id)arg1;
 - (id)_developerLibraryGroup;
 - (id)_librariesInProject:(id)arg1;
+- (void)endSheetWithReturnCode:(long long)arg1;
 - (void)beginSheetModalForWindow:(id)arg1 completionHandler:(id)arg2;
 - (id)initWithTarget:(id)arg1;
 
@@ -1718,19 +1746,22 @@ struct _NSRange {
 
 @end
 
-@interface Xcode3InfoEditor : IDEViewController <Xcode3SourceListItemEditor>
+@interface Xcode3InfoEditor : IDEViewController <Xcode3SourceListItemEditor, IDECapsuleListViewDataSource>
 {
     id <IDEBlueprint> _inspectedBlueprint;
     Xcode3InfoController *_infoController;
     id <DVTObservingToken> _infoControllerDictionaryObserver;
     Xcode3ProjectEditor *_projectEditor;
     NSMutableArray *_sliceControllers;
+    NSArray *_capsuleSliceControllers;
     NSMutableDictionary *_listContentProviders;
     NSDictionary *_targetedFamilyInfo;
     id _targetBuildSettingsObserver;
-    DVTDelayedValidator *_delayedTargetFamilyInfoValidator;
+    DVTDelayedInvocation *_delayedTargetFamilyInfoInvocation;
     BOOL _settingDictionaryFlag;
     NSView *_emptyView;
+    DVTSourceExpression *_selectedExpression;
+    struct CGRect _currentSelectionFrame;
     DVTStackView_ML *_stackView;
     NSScrollView *_scrollView;
     DVTPerformanceMetric *_metric;
@@ -1739,29 +1770,21 @@ struct _NSRange {
 + (BOOL)canInspectBlueprint:(id)arg1;
 + (id)localizedSourceListItemEditorName;
 + (void)initialize;
+@property struct CGRect currentSelectionFrame; // @synthesize currentSelectionFrame=_currentSelectionFrame;
+@property(retain, nonatomic) DVTSourceExpression *selectedExpression; // @synthesize selectedExpression=_selectedExpression;
 @property(retain) Xcode3ProjectEditor *projectEditor; // @synthesize projectEditor=_projectEditor;
 @property(retain, nonatomic) id <IDEBlueprint> inspectedBlueprint; // @synthesize inspectedBlueprint=_inspectedBlueprint;
-- (id)_buildMenuForAddButton;
 - (void)_invalidateSliceControllers;
-- (SEL)menuSourceSelectorForToolbarButtonWithIdentifier:(id)arg1;
-- (id)addButtonTitle;
-- (id)titleKeyPathForToolbarButtonWithIdentifier:(id)arg1;
-- (id)supportedToolbarButtonIdentifiers;
+- (id)capsuleListView:(id)arg1 viewControllerForRow:(long long)arg2;
+- (long long)numberOfObjectsInCapsuleListView:(id)arg1;
 @property(readonly) NSDictionary *targetedFamilyInfo;
 - (id)listContentProviderForClass:(Class)arg1;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)_createSubviews;
 - (void)_hideEmptyView;
 - (void)_showEmptyView;
-- (void)stackViewFrameChanged:(id)arg1;
 - (void)viewWillUninstall;
 - (void)viewDidInstall;
-
-// Remaining properties
-@property(readonly) struct CGRect currentSelectionFrame;
-@property(copy, nonatomic) NSArray *inspectedBlueprints;
-@property(readonly, nonatomic) DVTSourceExpression *mouseOverExpression;
-@property(readonly, nonatomic) DVTSourceExpression *selectedExpression;
 
 @end
 
@@ -1776,17 +1799,29 @@ struct _NSRange {
 
 @end
 
-@interface Xcode3InfoEditorProjectItemNameProvider : NSObject <Xcode3InfoEditorListContentProvider>
+@interface Xcode3InfoEditorProjectItemNameProvider : NSObject <Xcode3InfoEditorListContentProvider, DVTInvalidation_New>
 {
     id <IDEBlueprint> _blueprint;
     IDEContainerQuery *_query;
     NSArray *_utis;
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
 + (id)keyPathsForValuesAffectingListContents;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
+@property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 @property(readonly) IDEContainerQuery *query; // @synthesize query=_query;
 - (id)blueprint;
 @property(readonly) NSArray *listContents;
+- (void)primitiveInvalidate;
+- (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (id)initWithBlueprint:(id)arg1 typeIdentifiers:(id)arg2;
 - (id)initWithBlueprint:(id)arg1 typeIdentifier:(id)arg2;
 - (id)initWithBlueprint:(id)arg1 workspace:(id)arg2;
@@ -1854,9 +1889,6 @@ struct _NSRange {
 - (id)sdefSupport_project;
 - (id)objectSpecifier;
 
-// Remaining properties
-@property unsigned long long supportedMatchingOptions;
-
 @end
 
 @interface Xcode3TabChooserValueTransformer : NSValueTransformer
@@ -1901,6 +1933,7 @@ struct _NSRange {
     id <DVTObservingToken> _projectBlueprintsObservingToken;
     NSArray *_sourceListItemEditorClasses;
     NSViewController *_currentSourceListItemEditor;
+    IDEUpgradeTaskWindowController *_upgradeTasksController;
 }
 
 + (id)keyPathsForValuesAffectingSelectedExpression;
@@ -1937,7 +1970,7 @@ struct _NSRange {
 - (id)outlineView:(id)arg1 toolTipForCell:(id)arg2 rect:(struct CGRect *)arg3 tableColumn:(id)arg4 item:(id)arg5 mouseLocation:(struct CGPoint)arg6;
 - (void)replacementView:(id)arg1 willCloseViewController:(id)arg2;
 - (void)replacementView:(id)arg1 didInstallViewController:(id)arg2;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)loadView;
 - (void)viewWillUninstall;
 - (void)viewDidInstall;
@@ -1972,6 +2005,7 @@ struct _NSRange {
 // Remaining properties
 @property(readonly) DVTStackBacktrace *invalidationBacktrace;
 @property(readonly) DVTSourceExpression *quickHelpExpression;
+@property(readonly, nonatomic) NSString *selectedText;
 @property(readonly, nonatomic, getter=isValid) BOOL valid;
 
 @end
@@ -2043,8 +2077,6 @@ struct _NSRange {
 - (void)setLinkBinaryWithLibrariesPhase:(id)arg1;
 - (id)linkBinaryWithLibrariesPhase;
 - (id)scriptingID;
-- (void)setExecutable:(id)arg1;
-- (id)executable;
 - (void)setCopyHeadersPhase:(id)arg1;
 - (id)copyHeadersPhase;
 - (void)setCopyBundleResourcesPhase:(id)arg1;
@@ -2224,30 +2256,19 @@ struct _NSRange {
 - (id)newScriptingObjectOfClass:(Class)arg1 forValueForKey:(id)arg2 withContentsValue:(id)arg3 properties:(id)arg4;
 - (id)Xcode3Groups;
 - (id)Xcode3FileReferences;
-- (id)textBookmarks;
 - (id)targetTemplates;
 - (id)targets;
-- (id)symbolicBreakpoints;
 - (id)itemReferences;
 - (id)groups;
 - (id)fileReferences;
-- (id)fileBreakpoints;
-- (id)executables;
-- (id)buildStyles;
 - (id)buildConfigurationTypes;
 - (id)buildConfigurations;
-- (id)breakpoints;
-- (id)bookmarks;
-- (void)setUserFileReference:(id)arg1;
-- (id)userFileReference;
 - (void)setRootGroup:(id)arg1;
 - (id)rootGroup;
 - (void)setRealPath:(id)arg1;
 - (id)realPath;
 - (void)setReadOnly:(BOOL)arg1;
 - (BOOL)readOnly;
-- (void)setProjectRoots:(id)arg1;
-- (id)projectRoots;
 - (void)setProjectFileReference:(id)arg1;
 - (id)projectFileReference;
 - (void)setProjectDirectory:(id)arg1;
@@ -2267,18 +2288,6 @@ struct _NSRange {
 - (id)defaultBuildConfigurationType;
 - (void)setCurrentlyBuilding:(BOOL)arg1;
 - (BOOL)currentlyBuilding;
-- (void)setActiveTarget:(id)arg1;
-- (id)activeTarget;
-- (void)setActiveSdk:(id)arg1;
-- (id)activeSdk;
-- (void)setActiveExecutable:(id)arg1;
-- (id)activeExecutable;
-- (void)setActiveBuildStyle:(id)arg1;
-- (id)activeBuildStyle;
-- (void)setActiveBuildConfigurationType:(id)arg1;
-- (id)activeBuildConfigurationType;
-- (void)setActiveArchitecture:(id)arg1;
-- (id)activeArchitecture;
 
 @end
 
@@ -2338,17 +2347,6 @@ struct _NSRange {
 - (id)comments;
 - (void)setBuildConfigurationType:(id)arg1;
 - (id)buildConfigurationType;
-
-@end
-
-@interface PBXExecutableWrapper : ProjectItemWrapper
-{
-}
-
-- (void)setTarget:(id)arg1;
-- (void)setPath:(id)arg1;
-- (void)setLaunchable:(BOOL)arg1;
-- (void)setActiveArguments:(id)arg1;
 
 @end
 
@@ -2502,6 +2500,7 @@ struct _NSRange {
     NSMutableDictionary *_localizationFileCount;
     NSMenuItem *_localizationInfoMenuItem;
     NSTimer *_localizationReloadTimer;
+    NSWindow *_localizationsSheet;
     NSView *_noTargetsLozengeHolder;
     DVTLozengeTextField *_noTargetsLozengeTextField;
     BOOL _noTargetsFound;
@@ -2526,6 +2525,7 @@ struct _NSRange {
     DVTGradientImageButton *_removeConfigurationButton;
     DVTGradientImagePopUpButton *_addConfigurationButton;
     DVTBorderedView *_configurationGlassBar;
+    NSButton *_internationalizationCheckBox;
     DVTDisclosureView *_localizationsView;
     NSView *_localizationsContentView;
     DVTTableView *_localizationsTableView;
@@ -2535,11 +2535,18 @@ struct _NSRange {
     NSComboBox *_deploymentOSMacCombo;
     NSComboBox *_deploymentOSiPhoneCombo;
     NSPopUpButton *_defaultConfigurationPopup;
+    NSTextField *_deploymentOSMacLabel;
     DVTPerformanceMetric *_metric;
+    NSArray *_baseDestinationLocales;
+    NSView *_baseLocalizationAccessoryView;
+    DVTLocale *_baseDestinationLocale;
 }
 
 + (id)localizedSourceListItemEditorName;
 + (BOOL)canInspectBlueprint:(id)arg1;
++ (void)initialize;
+@property(retain) DVTLocale *baseDestinationLocale; // @synthesize baseDestinationLocale=_baseDestinationLocale;
+@property NSView *baseLocalizationAccessoryView; // @synthesize baseLocalizationAccessoryView=_baseLocalizationAccessoryView;
 @property(readonly) NSArray *configurations; // @synthesize configurations=_configurations;
 @property(readonly) NSArray *configFileBasedOnList; // @synthesize configFileBasedOnList=_configFileBasedOnList;
 @property(retain) NSArray *localizations; // @synthesize localizations=_localizations;
@@ -2554,31 +2561,16 @@ struct _NSRange {
 @property(readonly) NSArray *macOSProjectDeploymentOSVersions;
 - (void)changeIPhoneBaseSDK:(id)arg1;
 - (void)changeMacOSXBaseSDK:(id)arg1;
-- (BOOL)tableView:(id)arg1 doCommandBySelector:(SEL)arg2;
+- (void)internationalize:(id)arg1;
+- (void)_showLocalizationSheetForPriorOS;
 - (void)deleteLocalization:(id)arg1;
 - (void)chooseLocalizationFromMenu:(id)arg1;
 - (BOOL)outlineView:(id)arg1 doCommandBySelector:(SEL)arg2;
 - (void)deleteConfiguration:(id)arg1;
 - (void)addConfiguration:(id)arg1;
 - (void)addConfigurationFromEditorMenu:(id)arg1;
-- (void)_duplicateConfigurationNamed:(id)arg1;
 - (void)beginSheetModalUsingAlert:(id)arg1 completionHandler:(id)arg2;
 - (void)alertWithCompletionBlockDidEnd:(id)arg1 returnCode:(long long)arg2 contextInfo:(void *)arg3;
-- (id)_targetForAction:(SEL)arg1;
-- (BOOL)validateMenuItem:(id)arg1;
-- (void)tableViewSelectionDidChange:(id)arg1;
-- (id)tableView:(id)arg1 objectValueForTableColumn:(id)arg2 row:(long long)arg3;
-- (long long)numberOfRowsInTableView:(id)arg1;
-- (void)outlineViewSelectionDidChange:(id)arg1;
-- (void)outlineView:(id)arg1 setObjectValue:(id)arg2 forTableColumn:(id)arg3 byItem:(id)arg4;
-- (void)outlineView:(id)arg1 willDisplayCell:(id)arg2 forTableColumn:(id)arg3 item:(id)arg4;
-- (id)outlineView:(id)arg1 dataCellForTableColumn:(id)arg2 item:(id)arg3;
-- (void)outlineViewItemDidCollapse:(id)arg1;
-- (void)outlineViewItemDidExpand:(id)arg1;
-- (id)outlineView:(id)arg1 objectValueForTableColumn:(id)arg2 byItem:(id)arg3;
-- (BOOL)outlineView:(id)arg1 isItemExpandable:(id)arg2;
-- (id)outlineView:(id)arg1 child:(long long)arg2 ofItem:(id)arg3;
-- (long long)outlineView:(id)arg1 numberOfChildrenOfItem:(id)arg2;
 - (void)buildSettingDidChange:(id)arg1;
 - (void)projectNameDidChange:(id)arg1;
 - (void)referenceWillBeRemovedFromProject:(id)arg1;
@@ -2591,10 +2583,37 @@ struct _NSRange {
 - (void)selectLocations:(id)arg1;
 - (void)resizeStackViewChildViews;
 - (void)loadView;
+- (BOOL)tableView:(id)arg1 doCommandBySelector:(SEL)arg2;
+- (id)_targetForAction:(SEL)arg1;
+- (BOOL)validateMenuItem:(id)arg1;
+- (void)tableViewSelectionDidChange:(id)arg1;
+- (id)tableView:(id)arg1 objectValueForTableColumn:(id)arg2 row:(long long)arg3;
+- (long long)numberOfRowsInTableView:(id)arg1;
+- (void)_removeBaseLocalization;
+- (void)_removeLocalization:(id)arg1;
+- (void)_showLocalizationsSheetForNewLocale:(id)arg1;
+- (void)_convertLocalizationVariantGroups:(id)arg1 toLocalization:(id)arg2 completionBlock:(id)arg3;
+- (void)_convertVariantFileReference:(id)arg1 localizationVariantGroup:(id)arg2 toLocalization:(id)arg3 completionBlock:(id)arg4;
+- (void)_convertFileAtPath:(id)arg1 toDefaultFileTypeForVariantGroup:(id)arg2 locale:(id)arg3 completionBlock:(id)arg4;
+- (id)_loadDocumentAtPath:(id)arg1 ofType:(id)arg2;
 - (void)_localizationReloadTimerAction:(id)arg1;
 - (void)_restartLocalizationReloadTimer;
+- (void)_updateInternationalization;
 - (void)_updateLocalizations;
 - (void)_updateAddLocalizationMenu;
+- (void)setBaseDestinationLocales:(id)arg1;
+@property(readonly) NSArray *baseDestinationLocales; // @synthesize baseDestinationLocales=_baseDestinationLocales;
+- (void)outlineViewSelectionDidChange:(id)arg1;
+- (void)outlineView:(id)arg1 setObjectValue:(id)arg2 forTableColumn:(id)arg3 byItem:(id)arg4;
+- (void)outlineView:(id)arg1 willDisplayCell:(id)arg2 forTableColumn:(id)arg3 item:(id)arg4;
+- (id)outlineView:(id)arg1 dataCellForTableColumn:(id)arg2 item:(id)arg3;
+- (void)outlineViewItemDidCollapse:(id)arg1;
+- (void)outlineViewItemDidExpand:(id)arg1;
+- (id)outlineView:(id)arg1 objectValueForTableColumn:(id)arg2 byItem:(id)arg3;
+- (BOOL)outlineView:(id)arg1 isItemExpandable:(id)arg2;
+- (id)outlineView:(id)arg1 child:(long long)arg2 ofItem:(id)arg3;
+- (long long)outlineView:(id)arg1 numberOfChildrenOfItem:(id)arg2;
+- (void)_duplicateConfigurationNamed:(id)arg1;
 - (void)_updateConfigurations;
 - (void)_renameConfigurationAtNode:(id)arg1 to:(id)arg2;
 - (void)_updateConfigurationAddMenu;
@@ -2614,6 +2633,7 @@ struct _NSRange {
 - (id)_noTargetsLozengeView;
 - (id)_applicationPlatformNames;
 - (id)_iPhonePlatformNames;
+- (id)project;
 
 // Remaining properties
 @property(readonly) struct CGRect currentSelectionFrame;
@@ -2646,59 +2666,105 @@ struct _NSRange {
 
 @end
 
-@interface Xcode3LocalizationInspectorContentView : DVTLayoutView_ML
+@interface Xcode3LocalizationsInspectorLocale : NSObject
 {
-    DVTDelayedValidator *_buttonValidator;
-    Xcode3LocalizationsInspector *_inspector;
-    DVTTableView *_localizationsTableView;
-    DVTGradientImageButton *_deleteLanguageButton;
-    DVTGradientImagePopUpButton *_addPopUpButton;
-    DVTGradientImageButton *_addLanguageButton;
-    DVTBorderedView *_controlBar;
-    NSMenu *_addButtonMenu;
+    BOOL _localized;
+    DVTFileDataType *_fileDataType;
+    DVTLocale *_locale;
+    Xcode3LocalizationsInspector *_locInspector;
 }
 
-- (void)invalidateButtons;
-- (void)validateButtons;
-- (void)ensureAddButtonIsVisible:(id)arg1;
-- (void)menuNeedsUpdate:(id)arg1;
++ (id)keyPathsForValuesAffectingImage;
+@property(readonly) Xcode3LocalizationsInspector *locInspector; // @synthesize locInspector=_locInspector;
+@property(readonly) DVTLocale *locale; // @synthesize locale=_locale;
+@property(retain) DVTFileDataType *fileDataType; // @synthesize fileDataType=_fileDataType;
+@property BOOL localized; // @synthesize localized=_localized;
+@property(readonly) NSImage *image;
+- (id)initWithLocale:(id)arg1 fileDataType:(id)arg2 localized:(BOOL)arg3 locInspector:(id)arg4;
+
+@end
+
+@interface Xcode3LocalizationInspectorContentView : DVTLayoutView_ML
+{
+    NSView *makeLocalizedView;
+    DVTTableView *_localizationsTableView;
+    Xcode3LocalizationsInspector *_inspector;
+}
+
+@property(retain) Xcode3LocalizationsInspector *inspector; // @synthesize inspector=_inspector;
+@property(retain) DVTTableView *localizationsTableView; // @synthesize localizationsTableView=_localizationsTableView;
+@property NSView *makeLocalizedView; // @synthesize makeLocalizedView;
 - (void)layoutBottomUp;
 - (void)awakeFromNib;
 
 @end
 
-@interface Xcode3LocalizationsInspector : IDEInspectorViewController <NSTableViewDelegate>
+@interface Xcode3LocalizationsInspector : IDEInspectorViewController <NSTableViewDelegate, NSTableViewDataSource>
 {
-    NSMutableArray *_localizations;
+    NSArrayController *projectLocalizationsArrayController;
+    NSView *makeLocalizedAccessoryView;
     NSArrayController *_localizationsArrayController;
+    NSArrayController *_baseLocalizationsArrayController;
     Xcode3LocalizationInspectorContentView *_inspectorContentView;
+    NSView *_baseLocalizationAccessoryView;
+    IDENavigatorDataCell *_nameAndImageCell;
+    DVTLocale *_conversionLocale;
+    DVTLocale *_baseDestinationLocale;
 }
 
-@property(readonly) NSArray *systemLocalizations;
-@property(readonly) NSArray *preferredLocalizations;
-- (void)unlocalizeEntity:(id)arg1;
-- (void)closeAllVariantFilesForVariantGroup:(id)arg1;
-- (void)createLocalizedEntity:(id)arg1;
-- (void)chooseLocalizationFromMenu:(id)arg1;
-- (BOOL)tableView:(id)arg1 doCommandBySelector:(SEL)arg2;
-- (void)removeLocalization:(id)arg1;
-- (void)viewWillUninstall;
-- (void)addAllMissingLocalizations:(id)arg1;
-- (void)postponedSelectionChanged;
++ (id)keyPathsForValuesAffectingFileExists;
+@property(retain) DVTLocale *baseDestinationLocale; // @synthesize baseDestinationLocale=_baseDestinationLocale;
+@property(retain) DVTLocale *conversionLocale; // @synthesize conversionLocale=_conversionLocale;
+@property(retain) IDENavigatorDataCell *nameAndImageCell; // @synthesize nameAndImageCell=_nameAndImageCell;
+@property NSView *baseLocalizationAccessoryView; // @synthesize baseLocalizationAccessoryView=_baseLocalizationAccessoryView;
+@property(retain) Xcode3LocalizationInspectorContentView *inspectorContentView; // @synthesize inspectorContentView=_inspectorContentView;
+@property NSArrayController *baseLocalizationsArrayController; // @synthesize baseLocalizationsArrayController=_baseLocalizationsArrayController;
+@property(retain) NSArrayController *localizationsArrayController; // @synthesize localizationsArrayController=_localizationsArrayController;
+@property NSView *makeLocalizedAccessoryView; // @synthesize makeLocalizedAccessoryView;
+@property NSArrayController *projectLocalizationsArrayController; // @synthesize projectLocalizationsArrayController;
 - (void)beginSheetModalUsingAlert:(id)arg1 completionHandler:(id)arg2;
 - (void)alertWithCompletionBlockDidEnd:(id)arg1 returnCode:(long long)arg2 contextInfo:(void *)arg3;
-- (id)navigableGroupForItem:(id)arg1;
-- (id)variantGroupForItem:(id)arg1;
+- (void)tableView:(id)arg1 setObjectValue:(id)arg2 forTableColumn:(id)arg3 row:(long long)arg4;
+- (id)tableView:(id)arg1 dataCellForTableColumn:(id)arg2 row:(long long)arg3;
+- (void)tableView:(id)arg1 willDisplayCell:(id)arg2 forTableColumn:(id)arg3 row:(long long)arg4;
+- (BOOL)tableView:(id)arg1 shouldTrackCell:(id)arg2 forTableColumn:(id)arg3 row:(long long)arg4;
+- (BOOL)tableView:(id)arg1 shouldSelectRow:(long long)arg2;
+- (BOOL)allowsConversion;
+- (id)conversionFileExtension;
+- (id)fileExtension;
+@property(readonly) NSArray *projectLocalizations;
+- (id)conversionFileDataType;
+- (id)fileDataType;
+- (id)fileDataTypeForValue:(long long)arg1;
+@property(readonly) NSArray *fileDataTypes;
+- (id)defaultFileDataType;
+- (id)variantGroup;
+- (id)project;
+- (void)addLocalizedResourceForLocale:(id)arg1;
+- (void)copyFileForLocale:(id)arg1 fromLocale:(id)arg2;
+- (void)removeLocalizedResourceForLocale:(id)arg1;
+- (void)moveLocalizedResourceForBaseLocale:(id)arg1;
+- (BOOL)shouldConvertFileDataType:(id)arg1 locale:(id)arg2;
+- (void)convertFile:(id)arg1 toFileDataType:(id)arg2;
+- (void)convertFileToConversionTypeAtPath:(id)arg1 variantGroup:(id)arg2 inspectorLocale:(id)arg3 completionBlock:(id)arg4;
+- (void)convertFileToDefaultTypeAtPath:(id)arg1 variantGroup:(id)arg2 inspectorLocale:(id)arg3 completionBlock:(id)arg4;
+- (long long)performCheckForExistingFileAtPath:(id)arg1;
+- (void)performActionsforEditorDocumentAtFilePath:(id)arg1 withBlock:(id)arg2;
+- (void)completeConversionForInspectorLocale:(id)arg1 variantGroup:(id)arg2 filePath:(id)arg3 displayDocument:(BOOL)arg4 completionBlock:(id)arg5;
+- (void)displayDocumentAtFilePath:(id)arg1;
+- (void)removeVariantForInspectorLocale:(id)arg1 variantGroup:(id)arg2 deleteFiles:(BOOL)arg3 completionBlock:(id)arg4;
+- (void)selectionChanged:(id)arg1;
+- (void)addLocalization:(id)arg1 fileDataType:(id)arg2;
+- (BOOL)variantGroupContainsLocale:(id)arg1;
+- (id)filePathForLocale:(id)arg1 withFileExtension:(id)arg2;
+- (void)makeLocalized:(id)arg1;
+@property(readonly) BOOL fileExists;
+- (id)imageForLocale:(id)arg1 fileDataType:(id)arg2;
+- (BOOL)isVariant;
+- (id)modelObject;
 - (id)nibBundle;
 - (id)nibName;
 - (void)loadView;
-- (void)languageSelectionChanged:(id)arg1;
-- (void)selectionChanged:(id)arg1;
-- (id)selectedLocalization;
-- (void)numberOfLocalizationsChanged:(id)arg1;
-@property(readonly) NSArray *itemLocalizations;
-@property(readonly) NSArray *projectLocalizations;
-- (id)inspectedItem;
 
 @end
 
@@ -2706,9 +2772,11 @@ struct _NSRange {
 {
 }
 
-- (id)itemLocalizations;
-- (id)projectLocalizations;
-- (id)inspectedItem;
+- (id)conversionFileDataType;
+- (id)fileDataType;
+- (id)variantGroup;
+- (id)project;
+- (id)inspectedObj;
 
 @end
 
@@ -2716,9 +2784,11 @@ struct _NSRange {
 {
 }
 
-- (id)itemLocalizations;
-- (id)projectLocalizations;
-- (id)inspectedItem;
+- (id)conversionFileDataType;
+- (id)fileDataType;
+- (id)variantGroup;
+- (id)project;
+- (id)inspectedObj;
 
 @end
 
@@ -2726,9 +2796,11 @@ struct _NSRange {
 {
 }
 
-- (id)itemLocalizations;
-- (id)projectLocalizations;
-- (id)inspectedItem;
+- (id)conversionFileDataType;
+- (id)fileDataType;
+- (id)variantGroup;
+- (id)project;
+- (id)inspectedObj;
 
 @end
 
@@ -2763,7 +2835,6 @@ struct _NSRange {
 - (void)_refreshPaths;
 - (void)_didRefreshPaths;
 - (void)_willRefreshPaths;
-- (void)loadView;
 
 @end
 
@@ -2782,9 +2853,12 @@ struct _NSRange {
 
 @interface Xcode3VariantGroupNavigableItem : IDEKeyDrivenNavigableItem <IDENavigableItemFileReferenceProxy>
 {
+    DVTDocumentLocation *_lastContentDocumentLocation;
+    DVTFileDataType *_lastDocumentType;
 }
 
 + (id)keyPathsForValuesAffectingToolTip;
++ (id)keyPathsForValuesAffectingFileReference;
 - (BOOL)showSubitems;
 @property(readonly) IDENavigableItem *primaryChildItem;
 - (id)toolTip;
@@ -2793,7 +2867,7 @@ struct _NSRange {
 - (id)documentType;
 - (id)fileReference;
 - (id)image;
-- (id)subitemForMainLocalization;
+- (id)defaultReference;
 
 @end
 
@@ -2829,6 +2903,7 @@ struct _NSRange {
 {
     NSView *_groupSubview;
     NSView *_gitSubview;
+    NSView *_workspaceSubview;
     BOOL _enableCreateLocalRepository;
     BOOL _shouldCreateLocalRepository;
     BOOL _shouldCreateLocalRepositoryTemporaryValue;
@@ -2841,6 +2916,7 @@ struct _NSRange {
 - (void)_createLocalRepositoryAtPath:(id)arg1;
 - (void)didInstantiateItems:(id)arg1;
 - (void)_updateDirectoryURL:(id)arg1;
+- (void)destinationManagerWorkspaceDidChange:(id)arg1;
 - (BOOL)destinationManager:(id)arg1 shouldAddItemToMenu:(id)arg2;
 - (BOOL)_isProjectSafeToReplaceAtURL:(id)arg1 busyProjectName:(id *)arg2;
 - (void)panel:(id)arg1 didChangeToDirectoryURL:(id)arg2;
@@ -2935,7 +3011,7 @@ struct _NSRange {
 @property(copy) NSDictionary *units; // @synthesize units=_units;
 - (id)prefix;
 - (void)setPrefix:(id)arg1;
-@property(retain) id <Xcode3ProjectTemplateOptionParent> parent;
+@property __weak id <Xcode3ProjectTemplateOptionParent> parent;
 - (id)values;
 - (id)displayValues;
 - (void)updateEnabledWithOptions:(id)arg1;
@@ -2983,7 +3059,7 @@ struct _NSRange {
 - (id)projectForProjectPath:(id)arg1 context:(id)arg2;
 - (id)templateConfigurationName:(id)arg1 projectNames:(id)arg2 templateNames:(id)arg3;
 - (void)addSettings:(id)arg1 toConfigurationNamed:(id)arg2 inList:(id)arg3;
-- (void)normalizeSettingsDictionary:(id *)arg1;
+- (id)normalizeSettingsDictionary:(id)arg1;
 - (id)projectInGroup:(id)arg1;
 - (id)projectForItem:(id)arg1;
 - (BOOL)canInstantiateTemplateForContext:(id)arg1;
@@ -3033,33 +3109,31 @@ struct _NSRange {
 
 @end
 
-@interface Xcode3InfoArraySliceController : Xcode3InfoSliceController <IDECapsuleListViewDataSource>
+@interface Xcode3InfoArraySliceController : Xcode3InfoSliceController
 {
     NSMutableArray *_info;
     NSMutableArray *_sliceControllers;
-    IDECapsuleListView *_capsuleListView;
+    DVTStackView_ML *_stackView;
     NSView *_emptyContentView;
+    NSPredicate *_entryFilter;
+    NSArray *_filteredEntries;
 }
 
 + (id)keyPathsForValuesAffectingTitleForDisplay;
 + (void)initialize;
-- (BOOL)hasContent;
-- (BOOL)capsuleListView:(id)arg1 writeRowWithIndex:(unsigned long long)arg2 toPasteboard:(id)arg3;
-- (unsigned long long)capsuleListView:(id)arg1 validateDrop:(id)arg2 proposedRow:(long long)arg3;
-- (BOOL)capsuleListView:(id)arg1 acceptDrop:(id)arg2 row:(long long)arg3;
-- (id)capsuleListView:(id)arg1 viewControllerForRow:(long long)arg2;
-- (long long)numberOfObjectsInCapsuleListView:(id)arg1;
+- (void)addItems:(id)arg1;
 @property(copy) NSArray *sliceControllers; // @dynamic sliceControllers;
 @property(copy) NSArray *info;
 - (id)titleForDisplay;
 - (void)controllerInfoChanged:(id)arg1;
 - (void)sliceControllersChanged:(id)arg1 changeDictionary:(id)arg2;
+- (void)_rebuildStackView;
 - (void)_recomputeInfoFromSliceControllers;
 - (BOOL)validateMenuItem:(id)arg1;
 - (void)removeSlice:(id)arg1;
 - (void)addSlice:(id)arg1;
 - (id)_sliceControllerForInfoDict:(id)arg1;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)_hideEmptyContentView;
 - (void)_showEmptyContentView;
 - (void)loadView;
@@ -3070,7 +3144,7 @@ struct _NSRange {
 
 @end
 
-@interface Xcode3InfoDictionarySliceController : Xcode3InfoSliceController
+@interface Xcode3InfoDictionarySliceController : Xcode3InfoSliceController <DVTPlistViewControllerDelegate>
 {
     NSDictionary *_info;
     NSString *_titleKey;
@@ -3083,9 +3157,13 @@ struct _NSRange {
     DVTStackView_ML *_stackView;
     DVTPlistViewController *_plistViewController;
     Xcode3InfoEditorPlistDocument *_plistDocument;
+    NSColor *_backgroundColor;
+    NSColor *_alternateBackgroundColor;
 }
 
 + (id)keyPathsForValuesAffecting_customPropertiesTitle;
+@property(retain, nonatomic) NSColor *backgroundColor; // @synthesize backgroundColor=_backgroundColor;
+@property(retain, nonatomic) NSColor *alternateBackgroundColor; // @synthesize alternateBackgroundColor=_alternateBackgroundColor;
 @property(readonly) NSString *customPropertyString; // @synthesize customPropertyString=_customPropertiesTitleString;
 @property(copy, nonatomic) NSString *_titleKey; // @synthesize _titleKey;
 @property(retain) Xcode3InfoArraySliceController *parentController; // @synthesize parentController=_parentController;
@@ -3096,7 +3174,10 @@ struct _NSRange {
 @property(copy) NSString *_iconKey;
 @property(readonly) NSDictionary *_customInfo;
 @property(copy) NSDictionary *info;
-- (void)invalidate;
+- (id)plistViewController:(id)arg1 willReplacePlistWithPastedPlistNode:(id)arg2;
+- (void)_outlineViewSelectionDidChange:(id)arg1;
+- (void)_updateSubviewColors;
+- (void)primitiveInvalidate;
 - (void)viewWillUninstall;
 - (void)viewDidInstall;
 - (void)customPlistChanged:(id)arg1;
@@ -3177,16 +3258,23 @@ struct _NSRange {
 
 @end
 
-@interface Xcode3InfoEditorPlistDocument : NSDocument <DVTPlistDocumentProtocol, DVTInvalidation>
+@interface Xcode3InfoEditorPlistDocument : NSDocument <DVTPlistDocumentProtocol, DVTInvalidation_New>
 {
     DVTPlistModel *_model;
     BOOL _isInvalidated;
+    BOOL _isInvalidating;
     DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (void)propertyListChanged:(id)arg1;
 - (void)revealNode:(id)arg1;
 - (BOOL)commitEdits;
@@ -3207,35 +3295,29 @@ struct _NSRange {
 + (id)keyPathsForValuesAffectingTitleForDisplay;
 @property(readonly) Xcode3InfoEditor *infoEditor; // @synthesize infoEditor=_infoEditor;
 @property(readonly) NSString *sliceIdentifier; // @synthesize sliceIdentifier=_sliceIdentifier;
-@property(readonly) BOOL disclosedByDefault;
+- (BOOL)disclosedByDefault;
 @property(readonly) BOOL hasContent;
 - (BOOL)capsuleViewCanBeRemoved:(id)arg1;
-@property(readonly) NSString *titleForDisplay;
+- (id)titleForDisplay;
 - (void)loadView;
 - (id)initWithNibName:(id)arg1 bundle:(id)arg2;
 - (id)initWithSliceIdentifier:(id)arg1 infoEditor:(id)arg2;
 
 // Remaining properties
-@property BOOL canAddItems;
-@property(readonly) BOOL canRemove;
-@property BOOL canRemoveItems;
-@property(readonly) BOOL canRename;
-@property(readonly) BOOL canUndisclose;
-@property(readonly) NSString *footerLabel;
-@property(readonly) NSImage *icon;
 @property(copy) id info; // @dynamic info;
 
 @end
 
 @interface Xcode3ImagePopUpButton : NSButton
 {
-    id _menuSource;
+    id _menuSource_dvtWeak;
     SEL _menuSelector;
 }
 
 + (Class)cellClass;
 - (void)_doAction;
 - (void)setMenuSource:(id)arg1 selector:(SEL)arg2;
+@property __weak id menuSource;
 
 @end
 
@@ -3348,11 +3430,14 @@ struct _NSRange {
 + (id)pathForImageNamed:(id)arg1 inProject:(id)arg2;
 + (id)containerItemDragTypes;
 + (id)infoEditorConfiguredInnerSliceDisclosureView;
++ (id)infoEditorConfiguredSliceDisclosureViewWithCloseHandler:(id)arg1;
 + (id)infoEditorConfiguredDisclosureView;
 + (id)inspectorKeyForInfoKey:(id)arg1;
 + (id)displayNameForFilePath:(id)arg1;
 + (id)extensionForInfoEditorSliceWithIdentifier:(id)arg1;
 + (id)extensionForInfoEditorTypeWithProductIdentifier:(id)arg1 platformIdentifier:(id)arg2 productTag:(id)arg3;
++ (id)extensionsForInfoEditorTypeWithProductIdentifier:(id)arg1;
++ (id)_allInfoEditorExtensions;
 
 @end
 
@@ -3388,7 +3473,7 @@ struct _NSRange {
 @property(readonly) NSString *_entryKeyPath;
 @property(readonly) NSString *inspectorKey;
 - (id)initWithKey:(id)arg1 extension:(id)arg2 infoEditor:(id)arg3;
-@property(readonly) NSXMLElement *inspectorXML;
+@property(readonly) id inspectorXML;
 
 @end
 
@@ -3485,7 +3570,7 @@ struct _NSRange {
 
 @property(readonly) NSString *title; // @synthesize title=_title;
 @property(readonly) NSArray *entries; // @synthesize entries=_entries;
-@property(readonly) NSXMLElement *inspectorXML;
+@property(readonly) id inspectorXML;
 - (id)initWithExtension:(id)arg1 infoEditor:(id)arg2;
 
 @end
@@ -3546,6 +3631,7 @@ struct _NSRange {
     NSImage *_badgeImage;
     id <Xcode3ImageViewDelegate> _delegate;
     NSTextField *_emptyContentField;
+    BOOL isShowingIconset;
 }
 
 + (void)initialize;
@@ -3561,6 +3647,7 @@ struct _NSRange {
 - (void)_delegateSelectFile:(id)arg1;
 - (id)_createContextMenu;
 - (void)drawRect:(struct CGRect)arg1;
+- (void)resizeSubviewsWithOldSize:(struct CGSize)arg1;
 - (void)_refreshImage;
 - (void)_hideEmptyContentField;
 - (void)_showEmptyContentField;
@@ -3631,7 +3718,7 @@ struct _NSRange {
 - (void)_hasSearchResultsChanged;
 @property(copy) NSString *searchString;
 - (BOOL)_isFiltered;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (BOOL)canRemoveItems;
 - (void)_canRemoveItemsChanged;
 - (void)removeItems:(id)arg1;
@@ -3776,6 +3863,7 @@ struct _NSRange {
 }
 
 + (id)keyPathsForValuesAffectingName;
+- (void)dealloc;
 - (id)image;
 - (id)name;
 - (void)targetProductSettingsChanged:(id)arg1;
@@ -3788,6 +3876,7 @@ struct _NSRange {
     NSImage *_icon;
 }
 
+- (void)dealloc;
 - (id)image;
 - (id)name;
 - (void)targetProductSettingsChanged:(id)arg1;
@@ -3965,14 +4054,6 @@ struct _NSRange {
 
 @end
 
-@interface Xcode3HiddenPopUpButtonCell : NSPopUpButtonCell
-{
-}
-
-- (void)drawWithFrame:(struct CGRect)arg1 inView:(id)arg2;
-
-@end
-
 @interface Xcode3TargetMembershipInspectorContentView : DVTLayoutView_ML
 {
     Xcode3TargetMembershipInspector *_inspector;
@@ -3999,7 +4080,7 @@ struct _NSRange {
 @property(retain) NSArray *targetMemberships; // @synthesize targetMemberships=_targetMemberships;
 - (id)nibBundle;
 - (id)nibName;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)loadView;
 - (void)_itemsChangedInProject:(id)arg1;
 - (void)selectionChanged:(id)arg1;
@@ -4038,10 +4119,14 @@ struct _NSRange {
     NSArray *_targetEntitlementsFiles;
     IDEEntitlementsFile *_entitlementsFileHandler;
     id _defaultEntitlementsCreator;
-    id _innerViewController;
+    IDEViewController *_innerViewController;
     DVTStackView_ML *_stackView;
     BOOL _fileReferenceToEntitlementsExists;
     DVTFilePath *_associatingFilePath;
+    DVTFilePath *_associatedEntitlementsFilePath;
+    Xcode3InfoEditorStoryboardNameProvider *_storyboardNameProvider;
+    Xcode3InfoEditorNibNameProvider *_nibNameProvider;
+    Xcode3InfoEditorProjectItemNameProvider *_pngNameProvider;
 }
 
 + (id)validValuesForBuildSetting:(id)arg1 inTarget:(id)arg2;
@@ -4051,14 +4136,20 @@ struct _NSRange {
 + (id)duplicateTarget:(id)arg1;
 + (id)_duplicateTarget:(id)arg1;
 + (BOOL)canInspectBlueprint:(id)arg1;
-+ (Class)targetSummaryEditorClassWithPlatform:(id)arg1;
-+ (id)extensionForTargetSummaryEditorWithPlatform:(id)arg1;
++ (Class)targetSummaryEditorClassWithProductTypeIdentifier:(id)arg1 platformIdentifier:(id)arg2;
++ (id)extensionForTargetSummaryEditorWithProductTypeIdentifier:(id)arg1 platformIdentifier:(id)arg2;
 + (id)defaultViewNibBundle;
 + (id)defaultViewNibName;
 + (id)localizedSourceListItemEditorName;
 @property(copy) id defaultEntitlementsCreator; // @synthesize defaultEntitlementsCreator=_defaultEntitlementsCreator;
 @property(retain, nonatomic) id <IDEBlueprint> inspectedBlueprint; // @synthesize inspectedBlueprint=_inspectedBlueprint;
 @property(retain) Xcode3ProjectEditor *projectEditor; // @synthesize projectEditor=_projectEditor;
+- (void)showLaunchImageAlertForImageName:(id)arg1;
+- (void)pickInfoPlistFile:(id)arg1;
+- (void)_infoPlistPickerPanel:(id)arg1 completedWithResult:(unsigned long long)arg2;
+- (void)configureInfoPlistPickerPanel:(id)arg1;
+- (id)infoPlistPickerItemFilter;
+- (id)rootItemsForInfoPlistPickerPanel;
 - (BOOL)targetConvertNibFile:(id)arg1 asFile:(id)arg2 inGroupAndFolder:(id)arg3 withConversionHandler:(id)arg4;
 - (BOOL)targetRemoveImageWithName:(id)arg1;
 - (BOOL)targetAddImageFromUrl:(id)arg1 withName:(id)arg2 completionBlock:(id)arg3;
@@ -4066,7 +4157,7 @@ struct _NSRange {
 - (id)targetEntitlementsFiles;
 - (void)setAppProtectionEnabled:(BOOL)arg1;
 - (void)setDefaultCodeSigningIdentity;
-- (void)createEntitlementsFileWithName:(id)arg1;
+- (void)createEntitlementsFile;
 - (BOOL)appProtectionEnabled;
 - (id)bestTargetEntitlementFileName;
 - (void)entitlementsFileAlertDidEnd:(id)arg1 returnCode:(long long)arg2 contextInfo:(void *)arg3;
@@ -4078,8 +4169,10 @@ struct _NSRange {
 - (id)entitlementsValuesProxy;
 - (void)updateFromEntitlementsFile;
 - (id)fileReferenceForFileName:(id)arg1;
+- (id)targetPNGs;
 - (id)targetMainInterfaceNibs;
 - (id)targetMainInterfaceStoryboards;
+- (id)targetProvisioningProfileUUIDsByConfiguration;
 - (id)validValuesForBuildSetting:(id)arg1;
 - (id)expandedValueForString:(id)arg1;
 - (void)setValue:(id)arg1 forBuildSetting:(id)arg2;
@@ -4088,12 +4181,13 @@ struct _NSRange {
 - (id)_rawValueForBuildSetting:(id)arg1 inConfigurationList:(id)arg2;
 - (id)valueForBuildSetting:(id)arg1;
 - (void)setValue:(id)arg1 forPlistSetting:(id)arg2;
-- (id)valueForPlistSetting:(id)arg1;
+- (id)valueForPlistSetting:(id)arg1 ofType:(Class)arg2;
+- (BOOL)plistSettingsAreValid;
 @property(readonly) IDEViewController<IDECapsuleViewController> *frameworksViewController;
 - (void)_refreshEditor:(id)arg1;
 - (void)updateEntitlementsInfo;
 - (Class)targetSummaryEditorClass;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 
 // Remaining properties
 @property(readonly) struct CGRect currentSelectionFrame;
@@ -4116,6 +4210,9 @@ struct _NSRange {
     DVTDisclosureView *_frameworksView;
     DVTDisclosureView *_entitlementsView;
     DVTLayoutView_ML *_entitlementsContentView;
+    DVTBorderedView *_entitlementsSetupSection;
+    DVTBorderedView *_sandboxSetupSection;
+    DVTBorderedView *_iCloudSetupSection;
     DVTControllerContentView *_frameworksContentView;
     DVTBorderedView *_frameworksGlassBar;
     DVTBorderedView *_iCloudContainersGlassBar;
@@ -4129,9 +4226,14 @@ struct _NSRange {
     NSArrayController *_iCloudContainersArrayController;
     DVTGradientImageButton *_addiCloudContainerButton;
     DVTGradientImageButton *_deleteiCloudContainersButton;
+    NSView *_chooseInfoPListView;
+    NSView *_originalDeploymentTargetContentView;
+    BOOL _iCloudEnabled;
+    NSMutableArray *_invalidEntitlementImageViews;
 }
 
 + (id)keyPathsForValuesAffectingICloudKeyValueStoreEnabled;
++ (id)keyPathsForValuesAffectingICloudEnabled;
 + (id)keyPathsForValuesAffectingICloudKeyValueStore;
 + (id)keyPathsForValuesAffectingCanRemoveFramework;
 + (id)defaultViewNibBundle;
@@ -4148,8 +4250,11 @@ struct _NSRange {
 - (id)iCloudContainers;
 - (void)setICloudKeyValueStoreEnabled:(BOOL)arg1;
 - (BOOL)iCloudKeyValueStoreEnabled;
+- (void)setICloudEnabled:(BOOL)arg1;
+- (BOOL)iCloudEnabled;
 @property(copy) NSString *iCloudKeyValueStore;
 - (void)layoutEntitlementsView;
+- (void)pickInfoPlistFile:(id)arg1;
 - (void)removeFramework:(id)arg1;
 - (void)addFramework:(id)arg1;
 @property(readonly) BOOL canRemoveFramework;
@@ -4171,7 +4276,7 @@ struct _NSRange {
 @property(copy) NSString *targetIdentifier;
 @property(copy) NSString *targetDeploymentOS;
 @property(copy) NSString *productName;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)stackViewFrameChanged:(id)arg1;
 - (void)viewDidInstall;
 - (void)loadView;
@@ -4344,7 +4449,6 @@ struct _NSRange {
 - (BOOL)isDataNodeExpandable:(id)arg1;
 - (void)instantiateChildrenForDataNode:(id)arg1;
 - (BOOL)_hasSubsettingsForConditionSets;
-- (BOOL)_shouldDisplayExpandedAsPerConfiguration;
 - (void)dataNode:(id)arg1 setObjectValue:(id)arg2 forTableColumn:(id)arg3;
 - (id)_multipleValuesRepresentation;
 - (void)setDefinitionValue:(id)arg1 forTableColumn:(id)arg2;
@@ -4375,6 +4479,7 @@ struct _NSRange {
 @interface XCEConfigurableFormatter : NSFormatter
 {
     struct NSObject *_adapter;
+    NSString *_oldStringValue;
     struct {
         unsigned int _adapterRespondsTo_stringForObjectValue:1;
         unsigned int _adapterRespondsTo_getObjectValue:1;
@@ -4384,6 +4489,8 @@ struct _NSRange {
 
 - (BOOL)getObjectValue:(out id *)arg1 forString:(id)arg2 errorDescription:(out id *)arg3;
 - (id)stringForObjectValue:(id)arg1;
+- (id)oldStringValue;
+- (void)setOldStringValue:(id)arg1;
 - (struct NSObject *)adapter;
 - (void)setAdapter:(struct NSObject *)arg1;
 
@@ -4521,12 +4628,23 @@ struct _NSRange {
 
 @end
 
+@interface Xcode3BuildPropertyDefinitionSupportedPlatformsNodeAdapter : Xcode3BuildPropertyDefinitionCustomEnumNodeAdapter
+{
+}
+
+- (id)_buildPropertyEditor;
+- (id)objectValueForExpandedString:(id)arg1 orValue:(id)arg2;
+- (void)addMenuItemsToPopUpCell:(id)arg1;
+
+@end
+
 @interface Xcode3BuildPropertyDefinitionSDKRootNodeAdapter : Xcode3BuildPropertyDefinitionCustomEnumNodeAdapter
 {
 }
 
 + (void)initialize;
 - (id)_buildPropertyEditor;
+- (id)menuItemForUnknownValue:(id)arg1;
 - (void)addMenuItemsToPopUpCell:(id)arg1;
 
 @end
@@ -4638,12 +4756,12 @@ struct _NSRange {
 - (id)_propertyInfoContextForConfiguration:(id)arg1;
 - (id)_propertyInfoContextForRowContext:(id)arg1;
 @property(readonly) XCPropertyInfoContext *directlyAccessedPropertyInfoContext;
+- (void)enumerateRowsOfSummaryRowContext:(id)arg1 usingBlock:(id)arg2;
 - (id)conditionFlavorsForRowContext:(id)arg1;
 - (id)platformSpecificArchitecturesForConfiguration:(id)arg1;
 - (id)platformSpecificArchitecturesForRowContext:(id)arg1;
 - (id)conditionSetsForRowContext:(id)arg1;
 - (BOOL)_hasSubsettingsForConditionSetsForRowContext:(id)arg1;
-- (BOOL)_shouldDisplayExpandedAsPerConfigurationForRowContext:(id)arg1;
 - (void)setStringValue:(id)arg1 forRowContext:(id)arg2;
 - (void)removePropertyForRowContext:(id)arg1;
 - (id)expandedValueForString:(id)arg1 forRowContext:(id)arg2;
@@ -4680,16 +4798,17 @@ struct _NSRange {
 - (id)platformSpecificArchitecturesForRowContext:(id)arg1;
 - (id)conditionSetsForRowContext:(id)arg1;
 - (BOOL)_hasSubsettingsForConditionSetsForRowContext:(id)arg1;
-- (BOOL)_shouldDisplayExpandedAsPerConfigurationForRowContext:(id)arg1;
 - (void)setStringValue:(id)arg1 forRowContext:(id)arg2;
 - (void)removePropertyForRowContext:(id)arg1;
 - (id)expandedValueForString:(id)arg1 forRowContext:(id)arg2;
 - (id)expandedPropertyValueForRowContext:(id)arg1;
 - (id)propertyDefinitionValueForRowContext:(id)arg1;
+- (BOOL)_isEqualForMultipleValues:(id)arg1 with:(id)arg2;
 - (BOOL)allowsPropertyConditionFlavor:(id)arg1 forRowContext:(id)arg2;
 - (BOOL)hasDefiningValueForRowContext:(id)arg1;
 - (BOOL)hasAssignmentForRowContext:(id)arg1;
 - (BOOL)hasChildPropertiesForRowContext:(id)arg1;
+- (id)computeValueForRowContext:(id)arg1 usingBlock:(id)arg2;
 - (id)_propertyInfoContextForRowContext:(id)arg1;
 - (id)_propertyInfoContextForConfiguration:(id)arg1;
 - (id)directlyAccessedPropertyInfoContext;
@@ -4725,6 +4844,8 @@ struct _NSRange {
 - (void)configureForConfigurationFileInLevelsMode:(BOOL)arg1;
 - (id)customTitleForName:(id)arg1;
 - (BOOL)hasAssignmentForRowContext:(id)arg1;
+- (id)expandedPropertyValueForRowContext:(id)arg1;
+- (id)expandedValueForRowContext:(id)arg1 withConditionSet:(id)arg2 propertyInfoContext:(id)arg3;
 - (id)propertyDefinitionValueForRowContext:(id)arg1;
 - (int)definitionLevelForConfigFile;
 - (id)init;
@@ -4763,6 +4884,8 @@ struct _NSRange {
 }
 
 + (id)keyPathsForValuesAffectingCanFinish;
+- (id)targetWorkspacesForDestinationManager:(id)arg1;
+- (void)destinationManagerWorkspaceDidChange:(id)arg1;
 - (void)destinationManagerGroupDidChange:(id)arg1;
 - (BOOL)destinationManager:(id)arg1 shouldAddItemToMenu:(id)arg2;
 - (void)restoreSelectionFromUserDefaults;
@@ -4797,6 +4920,7 @@ struct _NSRange {
 }
 
 @property(readonly) NSArray *buildConfigurationNames;
+- (id)nameForBuildSetting:(id)arg1;
 - (id)resolvedValueForBuildSetting:(id)arg1;
 - (void)setValue:(id)arg1 forBuildSetting:(id)arg2 forConfigurationName:(id)arg3;
 - (void)setValue:(id)arg1 forBuildSetting:(id)arg2;
@@ -4875,11 +4999,29 @@ struct _NSRange {
 
 @end
 
+@interface Xcode3UpgradeHiDPIArtwork_Project : Xcode3UpgradeProjectTask
+{
+}
+
++ (id)analyzeInContext:(id)arg1;
+- (BOOL)upgrade;
+
+@end
+
+@interface Xcode3UpgradeHiDPIArtwork_Target : Xcode3UpgradeTargetTask
+{
+}
+
++ (id)analyzeInContext:(id)arg1;
+- (BOOL)upgrade;
+
+@end
+
 @interface Xcode3UpgradeDebugger : Xcode3UpgradeTask
 {
-    _Bool _shouldUpdateSetting;
     IDEScheme *_scheme;
-    _Bool _upgradeTests;
+    BOOL _upgradeLaunch;
+    BOOL _upgradeTest;
 }
 
 + (id)analyzeInContext:(id)arg1;
@@ -4894,6 +5036,36 @@ struct _NSRange {
 }
 
 + (id)analyzeInContext:(id)arg1;
+- (BOOL)upgrade;
+
+@end
+
+@interface Xcode3EntitlementUpgradeInfo : NSObject
+{
+    NSString *_name;
+    id _value;
+    NSString *_description;
+}
+
++ (id)entitlementUpgradeWithName:(id)arg1 value:(id)arg2 description:(id)arg3;
+@property(readonly) NSString *description; // @synthesize description=_description;
+@property(readonly) id value; // @synthesize value=_value;
+@property(readonly) NSString *name; // @synthesize name=_name;
+- (id)initWithName:(id)arg1 value:(id)arg2 description:(id)arg3;
+
+@end
+
+@interface Xcode3UpgradeEntitlements : Xcode3UpgradeTask
+{
+    DVTFilePath *_entitlementsFilePath;
+    NSDictionary *_entitlementDictionary;
+}
+
++ (id)analyzeInContext:(id)arg1;
++ (id)absolutePathForEntitlementsFile:(id)arg1 inContext:(id)arg2;
++ (id)recommendedEntitlementsFileNameForContext:(id)arg1;
++ (id)recommendedOSXEntitlements;
++ (id)recommendedIOSEntitlements;
 - (BOOL)upgrade;
 
 @end
@@ -4944,6 +5116,16 @@ struct _NSRange {
 @interface Xcode3RemoveObsoleteSettings : Xcode3UpgradeTask
 {
     NSArray *_obsoleteSettings;
+}
+
++ (id)analyzeInContext:(id)arg1;
+- (BOOL)upgrade;
+
+@end
+
+@interface Xcode3AddCompilerWarnings : Xcode3UpgradeTask
+{
+    NSArray *_settingsToEnable;
 }
 
 + (id)analyzeInContext:(id)arg1;
@@ -5027,6 +5209,102 @@ struct _NSRange {
 
 @end
 
+@interface Xcode3ProjectLocalizationLocaleAssistant : IDEAssistant <NSTableViewDelegate, NSTableViewDataSource>
+{
+    NSArray *_availableFileTypes;
+    NSArray *_availableLocales;
+    NSPopUpButtonCell *_popupButtonCell;
+    IDENavigatorDataCell *_nameAndImageCell;
+    NSTableView *_tableView;
+}
+
+@property(retain) NSTableView *tableView; // @synthesize tableView=_tableView;
+@property(retain) IDENavigatorDataCell *nameAndImageCell; // @synthesize nameAndImageCell=_nameAndImageCell;
+@property(retain) NSPopUpButtonCell *popupButtonCell; // @synthesize popupButtonCell=_popupButtonCell;
+@property(readonly) NSArray *availableLocales; // @synthesize availableLocales=_availableLocales;
+@property(readonly) NSArray *availableFileTypes; // @synthesize availableFileTypes=_availableFileTypes;
+- (void)finishWithCompletionBlock:(id)arg1;
+- (BOOL)alwaysShowFinish;
+- (BOOL)canGoForward;
+- (BOOL)canGoBack;
+- (BOOL)canFinish;
+- (id)assistantTitle;
+- (id)tableView:(id)arg1 dataCellForTableColumn:(id)arg2 row:(long long)arg3;
+- (void)tableView:(id)arg1 willDisplayCell:(id)arg2 forTableColumn:(id)arg3 row:(long long)arg4;
+- (BOOL)tableView:(id)arg1 shouldTrackCell:(id)arg2 forTableColumn:(id)arg3 row:(long long)arg4;
+- (BOOL)tableView:(id)arg1 shouldSelectRow:(long long)arg2;
+- (id)context;
+- (void)loadView;
+
+@end
+
+@interface Xcode3HiddenPopUpButtonCell : NSPopUpButtonCell
+{
+}
+
+- (void)drawWithFrame:(struct CGRect)arg1 inView:(id)arg2;
+
+@end
+
+@interface Xcode3InAppPurchaseTargetEditor : IDEViewController
+{
+    id _targetViewController;
+    DVTInfoPlistValueCell *_productIdentifierCell;
+    DVTDisclosureView *_disclosureView;
+}
+
++ (id)keyPathsForValuesAffectingContentVersion;
++ (id)keyPathsForValuesAffectingProductIdentifier;
++ (id)keyPathsForValuesAffectingProductName;
+@property(retain, nonatomic) id targetViewController; // @synthesize targetViewController=_targetViewController;
+- (id)infoPlistValueCell:(id)arg1 expandedValueForString:(id)arg2;
+@property(retain) NSString *contentVersion;
+@property(retain) NSString *productIdentifier;
+- (void)productIdentifierChanged:(id)arg1;
+- (void)refreshProductIdentifier;
+@property(retain) NSString *productName;
+- (void)loadView;
+
+@end
+
+@interface Xcode3LocalizationsGeniusResultsFinder : IDEGeniusResultsFinder
+{
+}
+
++ (id)_fileReferenceForFileURL:(id)arg1;
+- (id)geniusResults;
+
+@end
+
+@interface Xcode3LocalizedContentGeniusResultsFinder : IDEGeniusResultsFinder
+{
+}
+
++ (id)_infoPlistFilesForInfoPlistStringFile:(id)arg1;
++ (id)_fileReferenceForFileURL:(id)arg1;
+- (id)geniusResults;
+
+@end
+
+@interface Xcode3ProjectLocalizationLocaleAssistantContext : IDEAssistantContext
+{
+    NSArray *_localizableFiles;
+    Xcode3Project *_project;
+    DVTLocale *_toLocale;
+    NSString *_existingFileResolution;
+}
+
+@property(retain) NSString *existingFileResolution; // @synthesize existingFileResolution=_existingFileResolution;
+@property(retain) DVTLocale *toLocale; // @synthesize toLocale=_toLocale;
+@property(retain) Xcode3Project *project; // @synthesize project=_project;
+@property(retain) NSArray *localizableFiles; // @synthesize localizableFiles=_localizableFiles;
+- (id)populateLocalizableFiles;
+- (BOOL)isConvertibleVariantGroup:(id)arg1;
+@property(readonly) NSString *assistantTitle;
+- (id)initWithProject:(id)arg1 toLocale:(id)arg2;
+
+@end
+
 @interface PBXFileType (_Xcode3BuildRuleViewControllerExtensions)
 - (id)fileTypeIdentifierInfo;
 - (id)fileTypeLocalizedDescription;
@@ -5068,20 +5346,12 @@ struct _NSRange {
 @end
 
 @interface Xcode3Project (Xcode3ProjectScripting)
-- (id)sdefSupport_textBookmarks;
 - (id)sdefSupport_targets;
-- (id)sdefSupport_executables;
-- (id)sdefSupport_buildStyles;
 - (id)sdefSupport_buildConfigurations;
-- (id)sdefSupport_bookmarks;
-- (void)setSdefSupport_userFileReference:(id)arg1;
-- (id)sdefSupport_userFileReference;
 - (void)setSdefSupport_realPath:(id)arg1;
 - (id)sdefSupport_realPath;
 - (void)setSdefSupport_readOnly:(BOOL)arg1;
 - (BOOL)sdefSupport_readOnly;
-- (void)setSdefSupport_projectRoots:(id)arg1;
-- (id)sdefSupport_projectRoots;
 - (void)setSdefSupport_projectFileReference:(id)arg1;
 - (id)sdefSupport_projectFileReference;
 - (void)setSdefSupport_projectDirectory:(id)arg1;
@@ -5102,18 +5372,6 @@ struct _NSRange {
 - (id)sdefSupport_defaultBuildConfigurationType;
 - (void)setSdefSupport_currentlyBuilding:(BOOL)arg1;
 - (BOOL)sdefSupport_currentlyBuilding;
-- (void)setSdefSupport_activeTarget:(id)arg1;
-- (id)sdefSupport_activeTarget;
-- (void)setSdefSupport_activeSdk:(id)arg1;
-- (id)sdefSupport_activeSdk;
-- (void)setSdefSupport_activeExecutable:(id)arg1;
-- (id)sdefSupport_activeExecutable;
-- (void)setSdefSupport_activeBuildStyle:(id)arg1;
-- (id)sdefSupport_activeBuildStyle;
-- (void)setSdefSupport_activeBuildConfigurationType:(id)arg1;
-- (id)sdefSupport_activeBuildConfigurationType;
-- (void)setSdefSupport_activeArchitecture:(id)arg1;
-- (id)sdefSupport_activeArchitecture;
 @end
 
 @interface IDEApplication (Xcode3ProjectTemplateScripting)
@@ -5186,11 +5444,15 @@ struct _NSRange {
 
 @interface Xcode3Target (Xcode3TargetUIAdditions)
 + (id)iconForPBXTarget:(id)arg1;
-+ (id)imageNameByIconNamePrefix;
+- (void)createEntitlementsFileWithDefaultEntitlements:(id)arg1;
 @end
 
 @interface Xcode3VariantFileReference (IDENavigableItemSupport)
 - (id)navigableItem_name;
+@end
+
+@interface Xcode3VariantFileReference (IDEInspectorSupport) <IDEInspectorMatching>
+- (id)applicableInspectorsForCategory:(id)arg1 suggestion:(id)arg2;
 @end
 
 @interface NSMutableString (Xcode3ProjectTemplateDefinitionNodeAdditions)
@@ -5212,7 +5474,27 @@ struct _NSRange {
 - (id)navigableItem_name;
 @end
 
+@interface Xcode3Target (Xcode3TargetEditorAdditions)
+@property(readonly) BOOL _xcode3TEA_isAutomatorActionTarget;
+@end
+
+@interface NSMutableDictionary (Xcode3AutomatorTargetEditorAdditions)
+- (void)_xcode3_safeSetString:(id)arg1 forKey:(id)arg2;
+@end
+
 @interface Xcode3FileReference (IDENavigableItemSupport)
 - (id)navigableItem_conformanceString;
+@end
+
+@interface Xcode3FileReference (IDEInspectorSupport) <IDEInspectorMatching>
+- (id)applicableInspectorsForCategory:(id)arg1 suggestion:(id)arg2;
+@end
+
+@interface Xcode3VariantGroup (IDEInspectorSupport) <IDEInspectorMatching>
+- (id)applicableInspectorsForCategory:(id)arg1 suggestion:(id)arg2;
+@end
+
+@interface Xcode3VersionGroup (IDEInspectorSupport) <IDEInspectorMatching>
+- (id)applicableInspectorsForCategory:(id)arg1 suggestion:(id)arg2;
 @end
 

@@ -24,6 +24,7 @@ struct CGSize {
 struct DevkitCompilationUnitPointers {
     void *_field1;
     void *_field2;
+    void *_field3;
 };
 
 struct DevkitTreeSearcherPatternElement {
@@ -56,9 +57,9 @@ struct __va_list_tag {
 
 /*
  * File: /Applications/Xcode.app/Contents/PlugIns/IDEDevkitRefactoring.ideplugin/Contents/MacOS/IDEDevkitRefactoring
- * UUID: 4A99E7F4-F6A8-31A1-B57C-8F8DED4A4E1A
+ * UUID: 3413BF00-57B1-32AF-B5B3-3B28F129038E
  * Arch: Intel x86-64 (x86_64)
- *       Current version: 1170.0.0, Compatibility version: 1.0.0
+ *       Current version: 2057.0.0, Compatibility version: 1.0.0
  *       Minimum Mac OS X version: 10.7.0
  *
  *       Objective-C Garbage Collection: Required
@@ -70,6 +71,11 @@ struct __va_list_tag {
 - (void)invalidate;
 @end
 
+@protocol DVTInvalidation_New <DVTInvalidation>
+@property(retain) DVTStackBacktrace *creationBacktrace;
+- (void)primitiveInvalidate;
+@end
+
 @protocol DVTSourceExpressionSource <NSObject, DVTInvalidation>
 @property(readonly, nonatomic) DVTSourceExpression *mouseOverExpression;
 @property(readonly, nonatomic) struct CGRect currentSelectionFrame;
@@ -78,6 +84,7 @@ struct __va_list_tag {
 - (struct CGRect)expressionFrameForExpression:(id)arg1;
 
 @optional
+@property(readonly, nonatomic) NSString *selectedText;
 @property(readonly) DVTSourceExpression *quickHelpExpression;
 - (void)unregisterMouseOverExpressionObserver:(id)arg1;
 - (void)registerMouseOverExpressionObserver:(id)arg1;
@@ -144,7 +151,6 @@ struct __va_list_tag {
 @property(retain) IDEIndex *index;
 - (id)snapshotDescription;
 - (void)cancel;
-- (BOOL)applyChangesWithError:(id *)arg1;
 - (BOOL)calculateChangesWithProgressHandler:(id)arg1;
 - (id)dataFromInitialFile:(id *)arg1;
 - (BOOL)processUserInput:(id)arg1 outInitialFiles:(id *)arg2 outError:(id *)arg3;
@@ -167,7 +173,12 @@ struct __va_list_tag {
 - (void)symbolsForExpression:(id)arg1 inQueue:(struct dispatch_queue_s *)arg2 completionBlock:(id)arg3;
 
 @optional
+- (BOOL)isLocationInFunctionOrMethodBody:(id)arg1;
 - (id)importStringInExpression:(id)arg1;
+@end
+
+@protocol NSCopying
+- (id)copyWithZone:(struct _NSZone *)arg1;
 @end
 
 @protocol NSObject
@@ -190,6 +201,19 @@ struct __va_list_tag {
 - (Class)superclass;
 - (unsigned long long)hash;
 - (BOOL)isEqual:(id)arg1;
+
+@optional
+- (id)debugDescription;
+@end
+
+@protocol __ARCLiteIndexedSubscripting__
+- (void)setObject:(id)arg1 atIndexedSubscript:(unsigned long long)arg2;
+- (id)objectAtIndexedSubscript:(unsigned long long)arg1;
+@end
+
+@protocol __ARCLiteKeyedSubscripting__
+- (void)setObject:(id)arg1 forKeyedSubscript:(id)arg2;
+- (id)objectForKeyedSubscript:(id)arg1;
 @end
 
 @interface DevkitParseErrorStream : NSObject
@@ -389,7 +413,6 @@ struct __va_list_tag {
 - (id)baseType;
 - (id)declarations;
 - (unsigned long long)declarationsInDeclSet;
-- (void)dealloc;
 - (id)initWithOverallLocation:(id)arg1;
 - (long long)context;
 
@@ -422,7 +445,7 @@ struct __va_list_tag {
 + (id)memoryUse;
 - (id)returnStringLeftSide:(id *)arg1 rightSide:(id *)arg2;
 - (id)castString;
-- (BOOL)mergeWithDecl:(id)arg1 namesMustMatch:(BOOL)arg2;
+- (BOOL)mergeWithDecl:(id)arg1 namesMustMatch:(BOOL)arg2 typesMustMatch:(BOOL)arg3;
 - (id)lookupNameRecursively:(id)arg1 nameKind:(int)arg2 upTo:(id)arg3;
 - (id)lookupName:(id)arg1 nameKind:(int)arg2;
 - (long long)compareName:(id)arg1;
@@ -564,12 +587,17 @@ struct __va_list_tag {
 @interface DevkitObjcClassDeclaration : DevkitObjcMethodContainerDeclaration
 {
     DevkitObjcClassDeclaration *_superclass;
+    DevkitObjcClassDeclaration *_aliasedClass;
     NSMutableArray *_subclasses;
+    NSMutableSet *_filenameReferences;
     DevkitLocation *_superclassNameLocation;
     DevkitLocation *_leftCurlyLocation;
     DevkitLocation *_rightCurlyLocation;
 }
 
+@property DevkitObjcClassDeclaration *aliasedClass; // @synthesize aliasedClass=_aliasedClass;
+@property(readonly) NSSet *filenameReferences; // @synthesize filenameReferences=_filenameReferences;
+- (void)addFilenameReference:(id)arg1;
 - (id)methodsInClassHierarchy:(id)arg1 isClassMethod:(BOOL)arg2;
 - (id)longDescription;
 - (void)removeDeclaration:(id)arg1 project:(id)arg2;
@@ -903,9 +931,9 @@ struct __va_list_tag {
 - (id)filenameToIncludeMappingDict;
 - (id)classType;
 - (void)stopParsing;
-- (struct _NSZone *)parserZone;
 - (id)reparseFunctionBody:(id)arg1;
 - (BOOL)parseOneCompilationUnit:(id)arg1;
+- (void)_rememberCPP:(void *)arg1 lexer:(void *)arg2 inputStream:(void *)arg3;
 - (void)setSdkRoot:(id)arg1;
 - (id)sdkRoot;
 - (unsigned long long)fileLanguage;
@@ -926,7 +954,6 @@ struct __va_list_tag {
 - (id)getStringAtLocation:(id)arg1 replacing:(id)arg2;
 - (id)getStringAtLocation:(id)arg1;
 - (id)memorySourceForFile:(const char *)arg1;
-- (void)rememberCompilationUnitPointers:(void *)arg1 inputStream:(void *)arg2;
 - (void)cleanup;
 - (void)setup;
 - (id)init;
@@ -1218,10 +1245,12 @@ struct __va_list_tag {
 @interface DevkitConstantExpression : DevkitExpression
 {
     NSString *_stringValue;
+    DevkitLocation *_stringContentLocation;
 }
 
 - (id)shortDescription;
 - (id)prettyPrint;
+@property(readonly) DevkitLocation *stringContentLocation; // @synthesize stringContentLocation=_stringContentLocation;
 - (id)stringValue;
 - (void)setStringValue:(const char *)arg1;
 - (id)initWithString:(id)arg1;
@@ -1301,8 +1330,10 @@ struct __va_list_tag {
     DevkitDeclaration *_owningFunction;
     DevkitExpression *_functionBody;
     DevkitLocation *_functionBodyLocation;
+    DevkitObjcClassDeclaration *_implementingClass;
 }
 
+@property DevkitObjcClassDeclaration *implementingClass; // @synthesize implementingClass=_implementingClass;
 - (id)overallChildren;
 - (long long)numberOfChildren;
 - (id)expressionContainingLocation:(id)arg1;
@@ -1355,7 +1386,7 @@ struct __va_list_tag {
 + (id)findOrCreateParameterFor:(id)arg1 inDictionary:(id)arg2;
 + (id)parameterInfoForDeclaration:(id)arg1 inDictionary:(id)arg2;
 + (BOOL)isValidBody:(id)arg1;
-+ (id)variableReferencesNotVisibleIfMoved:(id)arg1 project:(id)arg2 newScope:(id)arg3;
++ (id)variableReferencesNotVisibleIfMoved:(id)arg1 newScope:(id)arg2;
 - (BOOL)performFinal;
 - (BOOL)performPerFile;
 - (BOOL)checkPerFile;
@@ -1644,6 +1675,7 @@ struct __va_list_tag {
 @interface DevkitRenameEngine : DevkitTransformationEngine
 {
     BOOL _conflictingMacroFound;
+    BOOL _renamingFiles;
     DevkitCompoundStatement *_functionBodyContainingDeclaration;
 }
 
@@ -1732,6 +1764,7 @@ struct __va_list_tag {
     BOOL _hasSimpleErrors;
     NSMutableArray *_subengines;
     NSArray *_locationsToReIndent;
+    NSMutableSet *_allLocationsChanged;
 }
 
 + (BOOL)populateParamDictionary:(id)arg1 project:(id)arg2 error:(id *)arg3;
@@ -1775,6 +1808,7 @@ struct __va_list_tag {
 - (id)errorLog;
 - (id)warningLog;
 - (id)project;
+@property(readonly) NSSet *allLocationsChanged;
 - (id)initWithTransformInstance:(id)arg1 declaration:(id)arg2 paramDict:(id)arg3;
 - (id)declarationStringForType:(id)arg1 name:(id)arg2;
 - (id)firstSelectorKeywordFromMethod:(id)arg1;
@@ -1882,6 +1916,7 @@ struct __va_list_tag {
 - (BOOL)matchInTree:(id)arg1 withPattern:(struct DevkitTreeSearcherPatternElement *)arg2;
 - (id)description;
 - (id)subDescription:(struct DevkitTreeSearcherPatternElement *)arg1;
+- (void)dealloc;
 - (id)initWithSearchString:(id)arg1;
 - (struct DevkitTreeSearcherPatternElement *)parseSearchString:(id)arg1;
 
@@ -2035,7 +2070,7 @@ struct __va_list_tag {
 
 @end
 
-@interface DevkitRefactoringTransformation : NSObject <IDERefactoringTransformation, DVTInvalidation>
+@interface DevkitRefactoringTransformation : NSObject <IDERefactoringTransformation, DVTInvalidation_New>
 {
     IDEWorkspaceDocument *_workspaceDocument;
     NSDictionary *_editedFilePathsAndContents;
@@ -2050,30 +2085,34 @@ struct __va_list_tag {
     DevkitTransformationEngine *_engine;
     DevkitTransformInstance *_transformInstance;
     DVTDispatchLock *_parserLock;
-    NSMutableArray *_allChangeSets;
     NSMutableDictionary *_nonTextChangeSets;
     Class _nibFileChangeSetClass;
     Class _dataModelChangeSetClass;
     Class _plistFileChangeSetClass;
-    BOOL _valid;
-    DVTStackBacktrace *_invalidationBacktrace;
+    NSMutableArray *_allChangeSets;
     IDERefactoring *_refactoring;
     DevkitParser *_parser;
     NSDictionary *_mainThreadArguments;
     NSDictionary *_userInput;
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
-@property(retain) IDEWorkspaceDocument *workspaceDocument; // @synthesize workspaceDocument=_workspaceDocument;
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
-@property(readonly, nonatomic, getter=isValid) BOOL valid; // @synthesize valid=_valid;
+@property(retain) IDEWorkspaceDocument *workspaceDocument; // @synthesize workspaceDocument=_workspaceDocument;
 @property(retain) IDERefactoring *refactoring; // @synthesize refactoring=_refactoring;
 @property(retain) IDEIndexSymbol *selectedSymbol; // @synthesize selectedSymbol=_selectedSymbol;
 @property(retain) IDEIndex *index; // @synthesize index=_index;
 @property(retain) NSDictionary *userInput; // @synthesize userInput=_userInput;
 - (id)snapshotDescription;
-- (BOOL)modifyProblems:(id)arg1 parseThreadArguments:(id)arg2 error:(id *)arg3;
-- (BOOL)modifyFileChangeSets:(id)arg1 parseThreadArguments:(id)arg2 error:(id *)arg3;
-- (id)transformParamDict:(id)arg1;
+- (void)modifyIssues:(id)arg1;
+- (BOOL)modifyFileChangeSets:(id)arg1 error:(id *)arg2;
+- (id)transformParamDict;
 - (BOOL)getEngineClass:(Class *)arg1 declaration:(id *)arg2 fromASTNode:(id)arg3 mainThreadArguments:(id)arg4 error:(id *)arg5;
 - (void)modifyFileList:(id)arg1;
 - (BOOL)allowOnlyObjectiveCCompilationUnits:(id)arg1;
@@ -2091,10 +2130,9 @@ struct __va_list_tag {
 - (id)localizedSymbolKindPhrase;
 - (id)capitalizedLocalizedName;
 - (void)cancel;
-- (BOOL)applyChangesWithError:(id *)arg1;
 - (BOOL)calculateChangesWithProgressHandler:(id)arg1;
 - (id)_issues;
-- (id)_fileChangeSetsWithError:(id *)arg1;
+- (BOOL)_gatherFileChangeSetsWithError:(id *)arg1;
 - (BOOL)_analyzeFile:(id)arg1 buildSettings:(id)arg2 error:(id *)arg3;
 - (BOOL)_analyzePlistFile:(id)arg1 error:(id *)arg2;
 - (BOOL)_analyzeDataModelFile:(id)arg1 error:(id *)arg2;
@@ -2116,7 +2154,10 @@ struct __va_list_tag {
 - (id)renameOldName;
 - (BOOL)wordIsReserved:(id)arg1;
 - (id)effectivePathForHeader:(id)arg1;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (id)init;
 
 @end
@@ -2126,7 +2167,7 @@ struct __va_list_tag {
 }
 
 - (id)snapshotDescription;
-- (id)transformParamDict:(id)arg1;
+- (id)transformParamDict;
 - (BOOL)getEngineClass:(Class *)arg1 declaration:(id *)arg2 fromASTNode:(id)arg3 mainThreadArguments:(id)arg4 error:(id *)arg5;
 - (id)preliminaryRelatedNames;
 - (BOOL)isSymbolValidForTransformation:(id)arg1 error:(id *)arg2;
@@ -2140,7 +2181,7 @@ struct __va_list_tag {
 }
 
 - (id)snapshotDescription;
-- (id)transformParamDict:(id)arg1;
+- (id)transformParamDict;
 - (id)dataFromInitialFile:(id *)arg1;
 - (id)postInitialFileInfo:(id)arg1 newSelectionLineInfo:(struct _DevkitLineInfo *)arg2 error:(id *)arg3;
 - (BOOL)getEngineClass:(Class *)arg1 declaration:(id *)arg2 fromASTNode:(id)arg3 mainThreadArguments:(id)arg4 error:(id *)arg5;
@@ -2156,11 +2197,10 @@ struct __va_list_tag {
 
 @interface DevkitMoveDownTransformation : DevkitRefactoringTransformation
 {
-    NSArray *_nibProblems;
 }
 
 - (id)snapshotDescription;
-- (id)transformParamDict:(id)arg1;
+- (id)transformParamDict;
 - (BOOL)getEngineClass:(Class *)arg1 declaration:(id *)arg2 fromASTNode:(id)arg3 mainThreadArguments:(id)arg4 error:(id *)arg5;
 - (id)preliminaryRelatedNames;
 - (BOOL)isSymbolValidForTransformation:(id)arg1 error:(id *)arg2;
@@ -2184,8 +2224,6 @@ struct __va_list_tag {
 
 @interface DevkitRenamePrefixTransformation : DevkitRefactoringTransformation
 {
-    NSArray *_filePathsToChange;
-    NSArray *_changedFilenames;
 }
 
 - (id)capitalizedLocalizedName;
@@ -2195,15 +2233,14 @@ struct __va_list_tag {
 @interface DevkitRenameTransformation : DevkitRefactoringTransformation
 {
     IDEIndexSymbol *_renameFilesTargetSymbol;
-    NSMutableDictionary *_filesToRename;
 }
 
 + (id)renamableFilePathForSymbol:(id)arg1;
 - (BOOL)shouldAnalyzeDataModelFiles;
 - (BOOL)shouldAnalyzeNibFiles;
 - (id)snapshotDescription;
-- (BOOL)modifyFileChangeSets:(id)arg1 parseThreadArguments:(id)arg2 error:(id *)arg3;
-- (id)transformParamDict:(id)arg1;
+- (BOOL)modifyFileChangeSets:(id)arg1 error:(id *)arg2;
+- (id)transformParamDict;
 - (id)_newFileNameForFileName:(id)arg1 baseName:(id)arg2 newName:(id)arg3;
 - (BOOL)getEngineClass:(Class *)arg1 declaration:(id *)arg2 fromASTNode:(id)arg3 mainThreadArguments:(id)arg4 error:(id *)arg5;
 - (void)modifyFileList:(id)arg1;
@@ -2230,13 +2267,12 @@ struct __va_list_tag {
     NSString *_newSourceFileName;
     DevkitNewTextFileChangeSet *_newTextHeaderFileChangeSet;
     DevkitNewTextFileChangeSet *_newTextSourceFileChangeSet;
-    IDERefactoringIssue *_importIssue;
 }
 
 - (id)snapshotDescription;
-- (BOOL)modifyProblems:(id)arg1 parseThreadArguments:(id)arg2 error:(id *)arg3;
-- (BOOL)modifyFileChangeSets:(id)arg1 parseThreadArguments:(id)arg2 error:(id *)arg3;
-- (id)transformParamDict:(id)arg1;
+- (void)modifyIssues:(id)arg1;
+- (BOOL)modifyFileChangeSets:(id)arg1 error:(id *)arg2;
+- (id)transformParamDict;
 - (BOOL)getEngineClass:(Class *)arg1 declaration:(id *)arg2 fromASTNode:(id)arg3 mainThreadArguments:(id)arg4 error:(id *)arg5;
 - (BOOL)userInputIsAvailable;
 - (id)preliminaryRelatedNames;
@@ -2282,11 +2318,9 @@ struct __va_list_tag {
 @interface DevkitExistingTextFileChangeSet : DevkitTextFileChangeSet
 {
     NSData *_textData;
-    BOOL _userVisibleChangesCalculated;
 }
 
 - (void)writeTempResults;
-- (void)addChange:(id)arg1;
 - (id)stringWithChangesUsingEncoding:(unsigned long long)arg1;
 - (id)stringUsingEncoding:(unsigned long long)arg1;
 - (void)setTextData:(id)arg1;
@@ -2380,9 +2414,11 @@ struct __va_list_tag {
     struct _NSRange _invalidSignatureErrorRange;
     NSString *_invalidSignatureLocalizedMessage;
     NSString *_modifiedName;
+    BOOL _isStaticFunction;
     NSArray *_modifiedParameters;
 }
 
+@property(readonly) BOOL isStaticFunction; // @synthesize isStaticFunction=_isStaticFunction;
 @property(copy) NSArray *modifiedParameters; // @synthesize modifiedParameters=_modifiedParameters;
 @property(copy) NSArray *originalParameters; // @synthesize originalParameters=_originalParameters;
 @property(copy) NSString *modifiedName; // @synthesize modifiedName=_modifiedName;
@@ -2411,12 +2447,12 @@ struct __va_list_tag {
 - (id)rightSideOfParameterTypeMissingLocalizedMessage:(id)arg1;
 - (id)leftSideOfParameterTypeMissingLocalizedMessage:(id)arg1;
 - (id)parameterTypeMissingLocalizedMessage:(id)arg1;
-- (id)rightSideOfReturnTypeMissingLocalizedMessage:(id)arg1;
-- (id)leftSideOfReturnTypeMissingLocalizedMessage:(id)arg1;
-- (id)returnTypeMissingLocalizedMessage:(id)arg1;
-- (id)rightSideOfReturnTypeNonmatchingLocalizedMessage:(id)arg1;
-- (id)leftSideOfReturnTypeNonmatchingLocalizedMessage:(id)arg1;
-- (id)returnTypeNonmatchingLocalizedMessage:(id)arg1;
+- (id)rightSideOfReturnTypeMissingLocalizedMessage;
+- (id)leftSideOfReturnTypeMissingLocalizedMessage;
+- (id)returnTypeMissingLocalizedMessage;
+- (id)rightSideOfReturnTypeNonmatchingLocalizedMessage;
+- (id)leftSideOfReturnTypeNonmatchingLocalizedMessage;
+- (id)returnTypeNonmatchingLocalizedMessage;
 - (id)endedPrematurelyLocalizedMessage;
 - (id)commaFunctionLocalizedMessage;
 - (id)endingParenInFunctionLocalizedMessage;
@@ -2446,7 +2482,7 @@ struct __va_list_tag {
 - (BOOL)_matchedParameterName:(struct _NSRange *)arg1 newExtractParameters:(id)arg2 index:(unsigned long long *)arg3;
 - (BOOL)_matchedParameterInTypes:(id)arg1 newTypeStringRange:(struct _NSRange *)arg2 foundType:(id *)arg3 index:(unsigned long long *)arg4;
 - (BOOL)_matchedReturnTypeAtIndex:(unsigned long long *)arg1;
-- (BOOL)_matchedReturnTypeAtIndex:(unsigned long long *)arg1 stringToCheck:(id)arg2 nonmatchingError:(SEL)arg3 missingError:(SEL)arg4;
+- (BOOL)_matchedReturnTypeAtIndex:(unsigned long long *)arg1 stringToCheck:(id)arg2 nonmatchingFormat:(id)arg3 missingFormat:(id)arg4;
 - (BOOL)_matchedEndOfText:(unsigned long long *)arg1;
 - (BOOL)_matchedName:(id *)arg1 localizedCapitalizedNameIfError:(id)arg2 index:(unsigned long long *)arg3;
 - (BOOL)_matchedChar:(unsigned short)arg1 localizedMessageIfMissing:(id)arg2 index:(unsigned long long *)arg3;
@@ -2481,7 +2517,7 @@ struct __va_list_tag {
 
 @end
 
-@interface XCRefactoringExtractType : NSObject
+@interface XCRefactoringExtractType : NSObject <NSCopying>
 {
     NSString *_castString;
     NSString *_leftSideString;
@@ -2489,6 +2525,7 @@ struct __va_list_tag {
 }
 
 @property(readonly) NSString *castString; // @synthesize castString=_castString;
+- (id)description;
 @property(readonly) NSString *rightSideString;
 @property(readonly) NSString *leftSideString;
 - (id)copyWithZone:(struct _NSZone *)arg1;

@@ -34,9 +34,9 @@ struct _NSRange {
 
 /*
  * File: /Applications/Xcode.app/Contents/PlugIns/SharedPlugInUtilities.ideplugin/Contents/MacOS/SharedPlugInUtilities
- * UUID: 4AD97845-B721-3336-8E97-3B206E0C667D
+ * UUID: 911FFC5D-6646-3095-BF3D-957E55B2A99C
  * Arch: Intel x86-64 (x86_64)
- *       Current version: 1165.0.0, Compatibility version: 1.0.0
+ *       Current version: 2052.0.0, Compatibility version: 1.0.0
  *       Minimum Mac OS X version: 10.7.0
  *
  *       Objective-C Garbage Collection: Required
@@ -74,6 +74,9 @@ struct _NSRange {
 - (Class)superclass;
 - (unsigned long long)hash;
 - (BOOL)isEqual:(id)arg1;
+
+@optional
+- (id)debugDescription;
 @end
 
 @protocol NSOutlineViewDataSource <NSObject>
@@ -136,6 +139,16 @@ struct _NSRange {
 - (void)outlineView:(id)arg1 didAddRowView:(id)arg2 forRow:(long long)arg3;
 - (id)outlineView:(id)arg1 rowViewForItem:(id)arg2;
 - (id)outlineView:(id)arg1 viewForTableColumn:(id)arg2 item:(id)arg3;
+@end
+
+@protocol __ARCLiteIndexedSubscripting__
+- (void)setObject:(id)arg1 atIndexedSubscript:(unsigned long long)arg2;
+- (id)objectAtIndexedSubscript:(unsigned long long)arg1;
+@end
+
+@protocol __ARCLiteKeyedSubscripting__
+- (void)setObject:(id)arg1 forKeyedSubscript:(id)arg2;
+- (id)objectForKeyedSubscript:(id)arg1;
 @end
 
 @interface IDEConfigurableDataNode : NSObject
@@ -304,6 +317,7 @@ struct _NSRange {
 - (id)image;
 @property(retain, nonatomic) id <XCEDataNodeAdapterP> adapter; // @synthesize adapter=_adapter;
 - (void)clear;
+- (BOOL)nodeWasInvalidated;
 - (void)invalidate;
 @property(retain, nonatomic) IDEConfigurableDataSource *dataSource; // @dynamic dataSource;
 @property(retain, nonatomic) IDEConfigurableDataNode *parent;
@@ -517,7 +531,5 @@ struct _NSRange {
 @interface NSMutableArray (IDEConfigurableDataNodeArrayExtensions)
 - (void)IDE_insertObjects:(id)arg1 inArraySortedUsingComparator:(id)arg2;
 - (void)IDE_insertObject:(id)arg1 inArraySortedUsingComparator:(id)arg2;
-- (void)IDE_insertObjects:(id)arg1 inArraySortedUsingSelector:(SEL)arg2;
-- (void)IDE_insertObject:(id)arg1 inArraySortedUsingSelector:(SEL)arg2;
 @end
 

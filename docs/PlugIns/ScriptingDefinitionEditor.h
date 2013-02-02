@@ -21,13 +21,18 @@ struct CGSize {
     double _field2;
 };
 
+struct _NSRange {
+    unsigned long long _field1;
+    unsigned long long _field2;
+};
+
 #pragma mark -
 
 /*
  * File: /Applications/Xcode.app/Contents/PlugIns/ScriptingDefinitionEditor.ideplugin/Contents/MacOS/ScriptingDefinitionEditor
- * UUID: EFC5A7B0-7685-3F72-A2F3-37C315937EDA
+ * UUID: FC5E5354-201E-3676-83AF-B53C510FDB2F
  * Arch: Intel x86-64 (x86_64)
- *       Current version: 1165.0.0, Compatibility version: 1.0.0
+ *       Current version: 2052.0.0, Compatibility version: 1.0.0
  *       Minimum Mac OS X version: 10.7.0
  *
  *       Objective-C Garbage Collection: Required
@@ -47,6 +52,7 @@ struct CGSize {
 @protocol DVTFindBarFindable
 
 @optional
+- (struct _NSRange)selectedRangeForFindBar:(id)arg1;
 - (id)startingLocationForFindBar:(id)arg1 findingBackwards:(BOOL)arg2;
 - (void)dvtFindBar:(id)arg1 didUpdateCurrentResult:(id)arg2;
 - (void)dvtFindBar:(id)arg1 didUpdateResults:(id)arg2;
@@ -76,10 +82,23 @@ struct CGSize {
 - (Class)superclass;
 - (unsigned long long)hash;
 - (BOOL)isEqual:(id)arg1;
+
+@optional
+- (id)debugDescription;
 @end
 
 @protocol NSUserInterfaceValidations
 - (BOOL)validateUserInterfaceItem:(id)arg1;
+@end
+
+@protocol __ARCLiteIndexedSubscripting__
+- (void)setObject:(id)arg1 atIndexedSubscript:(unsigned long long)arg2;
+- (id)objectAtIndexedSubscript:(unsigned long long)arg1;
+@end
+
+@protocol __ARCLiteKeyedSubscripting__
+- (void)setObject:(id)arg1 forKeyedSubscript:(id)arg2;
+- (id)objectForKeyedSubscript:(id)arg1;
 @end
 
 @interface IDEScriptingDefinitionPlaceholderView : DVTLayoutView_ML

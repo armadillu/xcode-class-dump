@@ -8,13 +8,23 @@
 
 /*
  * File: /Applications/Xcode.app/Contents/PlugIns/IDEAppleScriptCore.ideplugin/Contents/MacOS/IDEAppleScriptCore
- * UUID: 7FC4502E-6A2C-3902-ABF7-4C778C8EDC9B
+ * UUID: 7C879A54-1564-3735-A657-9F3C60943EFB
  * Arch: Intel x86-64 (x86_64)
- *       Current version: 1165.0.0, Compatibility version: 1.0.0
+ *       Current version: 2052.0.0, Compatibility version: 1.0.0
  *       Minimum Mac OS X version: 10.7.0
  *
  *       Objective-C Garbage Collection: Required
  */
+
+@protocol __ARCLiteIndexedSubscripting__
+- (void)setObject:(id)arg1 atIndexedSubscript:(unsigned long long)arg2;
+- (id)objectAtIndexedSubscript:(unsigned long long)arg1;
+@end
+
+@protocol __ARCLiteKeyedSubscripting__
+- (void)setObject:(id)arg1 forKeyedSubscript:(id)arg2;
+- (id)objectForKeyedSubscript:(id)arg1;
+@end
 
 @interface IDEAppleScriptIndexQueryProvider : IDEIndexGenericQueryProvider
 {

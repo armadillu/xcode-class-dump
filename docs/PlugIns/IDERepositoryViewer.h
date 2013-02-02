@@ -7,23 +7,18 @@
 #pragma mark Named Structures
 
 struct CGPoint {
-    double x;
-    double y;
+    double _field1;
+    double _field2;
 };
 
 struct CGRect {
-    struct CGPoint origin;
-    struct CGSize size;
+    struct CGPoint _field1;
+    struct CGSize _field2;
 };
 
 struct CGSize {
-    double width;
-    double height;
-};
-
-struct _NSRange {
-    unsigned long long _field1;
-    unsigned long long _field2;
+    double _field1;
+    double _field2;
 };
 
 #pragma mark Typedef'd Structures
@@ -39,9 +34,9 @@ typedef struct {
 
 /*
  * File: /Applications/Xcode.app/Contents/PlugIns/IDERepositoryViewer.ideplugin/Contents/MacOS/IDERepositoryViewer
- * UUID: 413F1505-C7AC-3B42-8CEE-231F6F074E6E
+ * UUID: E175BCF2-E1E7-3726-A9AE-D7B717FF8BA2
  * Arch: Intel x86-64 (x86_64)
- *       Current version: 1171.0.0, Compatibility version: 1.0.0
+ *       Current version: 2053.0.0, Compatibility version: 1.0.0
  *       Minimum Mac OS X version: 10.7.0
  *
  *       Objective-C Garbage Collection: Required
@@ -70,59 +65,13 @@ typedef struct {
 - (void)setStateToken:(id)arg1;
 @end
 
-@protocol IDEComparisonEditorDataSource <NSObject>
-- (id)documentForSecondaryDocumentLocation:(id)arg1 completionBlock:(id)arg2;
-- (id)documentForPrimaryDocumentLocation:(id)arg1 completionBlock:(id)arg2;
-
-@optional
-- (id)contentStringForSecondaryEmptyEditorWithDocumentLocation:(id)arg1;
-- (id)contentStringForPrimaryEmptyEditorWithDocumentLocation:(id)arg1;
-- (BOOL)shouldShowEmptyEditorForSecondaryDocumentLocation:(id)arg1 submodeType:(int)arg2;
-- (BOOL)shouldShowEmptyEditorForPrimaryDocumentLocation:(id)arg1 submodeType:(int)arg2;
-- (id)documentForAncestorDocumentLocation:(id)arg1 completionBlock:(id)arg2;
-- (id)navigableItemsForSecondaryDocumentLocation:(id)arg1 usingNavigableItemCoordinator:(id)arg2 completionBlock:(id)arg3;
-- (id)navigableItemsForPrimaryDocumentLocation:(id)arg1 usingNavigableItemCoordinator:(id)arg2 completionBlock:(id)arg3;
-- (id)navigableItemsForPrimaryDocumentLocation:(id)arg1 secondaryDocumentLocation:(id)arg2 usingNavigableItemCoordinator:(id)arg3 completionBlock:(id)arg4;
-- (BOOL)shouldSelectFirstDiff;
-- (id)secondaryDocumentLocationForNavigableItem:(id)arg1;
-- (id)primaryDocumentLocationForNavigableItem:(id)arg1;
-@end
-
 @protocol IDEOrganizerSource <NSObject, DVTStatefulObject>
 
 @optional
+- (void)organizerSourceWillCloseInWindowController:(id)arg1;
 - (void)organizerSourceWillAppearInWindowController:(id)arg1;
 - (void)openFileURL:(id)arg1 withFileType:(id)arg2;
 - (void)searchWithString:(id)arg1;
-@end
-
-@protocol IDEReviewFilesDataSource <NSObject>
-- (id)reviewFilesNavigator:(id)arg1 documentLocationForNavigableItem:(id)arg2;
-- (id)reviewFilesNavigator:(id)arg1 outlineView:(id)arg2 dataCellForNavigableItem:(id)arg3;
-- (id)issueNavigableItems;
-- (id)flatNavigableItems;
-- (id)fileSystemNavigableItems;
-- (id)workspaceNavigableItems;
-
-@optional
-- (double)reviewFilesNavigator:(id)arg1 outlineView:(id)arg2 rowHeightForNavigableItem:(id)arg3;
-- (void)reviewFilesNavigator:(id)arg1 outlineView:(id)arg2 willDisplayCell:(id)arg3 forNavigableItem:(id)arg4;
-- (id)reviewFilesNavigator:(id)arg1 importantFilePathsForNavigableItem:(id)arg2 excludingDisabledItems:(id)arg3;
-@end
-
-@protocol IDEReviewFilesViewControllerDelegate <NSObject>
-
-@optional
-- (void)reviewFilesViewController:(id)arg1 didInstallComparisonEditor:(id)arg2;
-- (void)willOpenDocumentLocation:(id)arg1 completionBlock:(id)arg2;
-@end
-
-@protocol NSLayoutManagerDelegate <NSObject>
-
-@optional
-- (id)layoutManager:(id)arg1 shouldUseTemporaryAttributes:(id)arg2 forDrawingToScreen:(BOOL)arg3 atCharacterIndex:(unsigned long long)arg4 effectiveRange:(struct _NSRange *)arg5;
-- (void)layoutManager:(id)arg1 didCompleteLayoutForTextContainer:(id)arg2 atEnd:(BOOL)arg3;
-- (void)layoutManagerDidInvalidateLayout:(id)arg1;
 @end
 
 @protocol NSObject
@@ -145,23 +94,9 @@ typedef struct {
 - (Class)superclass;
 - (unsigned long long)hash;
 - (BOOL)isEqual:(id)arg1;
-@end
-
-@protocol NSSplitViewDelegate <NSObject>
 
 @optional
-- (void)splitViewDidResizeSubviews:(id)arg1;
-- (void)splitViewWillResizeSubviews:(id)arg1;
-- (struct CGRect)splitView:(id)arg1 additionalEffectiveRectOfDividerAtIndex:(long long)arg2;
-- (struct CGRect)splitView:(id)arg1 effectiveRect:(struct CGRect)arg2 forDrawnRect:(struct CGRect)arg3 ofDividerAtIndex:(long long)arg4;
-- (BOOL)splitView:(id)arg1 shouldHideDividerAtIndex:(long long)arg2;
-- (BOOL)splitView:(id)arg1 shouldAdjustSizeOfSubview:(id)arg2;
-- (void)splitView:(id)arg1 resizeSubviewsWithOldSize:(struct CGSize)arg2;
-- (double)splitView:(id)arg1 constrainSplitPosition:(double)arg2 ofSubviewAt:(long long)arg3;
-- (double)splitView:(id)arg1 constrainMaxCoordinate:(double)arg2 ofSubviewAt:(long long)arg3;
-- (double)splitView:(id)arg1 constrainMinCoordinate:(double)arg2 ofSubviewAt:(long long)arg3;
-- (BOOL)splitView:(id)arg1 shouldCollapseSubview:(id)arg2 forDoubleClickOnDividerAtIndex:(long long)arg3;
-- (BOOL)splitView:(id)arg1 canCollapseSubview:(id)arg2;
+- (id)debugDescription;
 @end
 
 @protocol NSWindowDelegate <NSObject>
@@ -179,6 +114,7 @@ typedef struct {
 - (void)windowWillStartLiveResize:(id)arg1;
 - (void)windowDidEndSheet:(id)arg1;
 - (void)windowWillBeginSheet:(id)arg1;
+- (void)windowDidChangeBackingProperties:(id)arg1;
 - (void)windowDidChangeScreenProfile:(id)arg1;
 - (void)windowDidChangeScreen:(id)arg1;
 - (void)windowDidUpdate:(id)arg1;
@@ -231,6 +167,16 @@ typedef struct {
 - (void)rvStructureView:(id)arg1 dragItems:(id)arg2 toFileURL:(id)arg3;
 - (BOOL)rvStructureView:(id)arg1 shouldAllowDragOfItems:(id)arg2;
 - (BOOL)rvStructureView:(id)arg1 doCommandBySelector:(SEL)arg2;
+@end
+
+@protocol __ARCLiteIndexedSubscripting__
+- (void)setObject:(id)arg1 atIndexedSubscript:(unsigned long long)arg2;
+- (id)objectAtIndexedSubscript:(unsigned long long)arg1;
+@end
+
+@protocol __ARCLiteKeyedSubscripting__
+- (void)setObject:(id)arg1 forKeyedSubscript:(id)arg2;
+- (id)objectForKeyedSubscript:(id)arg1;
 @end
 
 @interface RVRepositoryViewController : IDEViewController <IDEOrganizerSource, DVTReplacementViewDelegate>
@@ -294,7 +240,7 @@ typedef struct {
 @property(readonly) NSArray *repositories;
 - (id)sourceControlManagerNavigableItem;
 - (id)repositoryGroupType;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)organizerSourceWillAppearInWindowController:(id)arg1;
 - (void)viewWillUninstall;
 - (void)revertState;
@@ -375,7 +321,7 @@ typedef struct {
 - (id)prototypeBranchCell;
 - (id)prototypeCell;
 - (void)configurePrototypCell:(id)arg1;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)viewDidInstall;
 - (void)loadView;
 - (id)initWithNibName:(id)arg1 bundle:(id)arg2;
@@ -394,7 +340,7 @@ typedef struct {
     DVTReplacementView *_structureReplacementView;
     DVTBorderedView *_toolbarBorderView;
     DVTBorderedView *_infoBorderView;
-    NSPanel *_switchBranchSheet;
+    IDESourceControlOperationPanel *_switchBranchSheet;
     NSPopUpButton *_branchesPopup;
     NSButton *_toggleLogButton;
     NSButton *_updateButton;
@@ -410,16 +356,17 @@ typedef struct {
     IDESourceControlRequest *_currentBranchRequest;
     id _logVisibleToken;
     id <DVTObservingToken> _repositoryBranchesObservationToken;
-    id <DVTInvalidation> _updateOperationToken;
+    BOOL _canSwitchBranches;
 }
 
 + (id)keyPathsForValuesAffectingCurrentBranch;
-+ (id)keyPathsForValuesAffectingCanSwitchBranch;
++ (id)keyPathsForValuesAffectingSourceTreeIsIdle;
 + (id)keyPathsForValuesAffectingHasBranches;
 + (id)keyPathsForValuesAffectingUpdateTitle;
 + (id)defaultViewNibName;
 + (id)keyPathsForValuesAffectingLocation;
 + (void)initialize;
+@property BOOL canSwitchBranches; // @synthesize canSwitchBranches=_canSwitchBranches;
 @property(retain) id currentBranchToken; // @synthesize currentBranchToken=_currentBranchRequest;
 @property(retain) IDESourceControlBranch *currentBranch; // @synthesize currentBranch=_currentBranch;
 @property(retain) NSArray *branches; // @synthesize branches=_branches;
@@ -440,7 +387,7 @@ typedef struct {
 - (void)update:(id)arg1;
 - (void)repositionWorkingCopyInfo;
 - (id)branchString;
-- (BOOL)canSwitchBranch;
+- (BOOL)sourceTreeIsIdle;
 @property(readonly) BOOL hasBranches;
 - (id)updateTitle;
 - (void)updateBranchesPopup;
@@ -459,17 +406,20 @@ typedef struct {
 {
     DVTReplacementView *_centerReplacementView;
     DVTReplacementView *_bottomReplacementView;
-    DVTStackView_ML *_stackView;
     IDESourceControlRepository *_sourceTree;
     id <DVTObservingToken> _sourceTreeObserver;
     IDESourceControlRepositoryCreationContext *_context;
-    NSImageView *_logoImageView;
     DVTBorderedView *_headerView;
+    DVTStackView_ML *_stackView;
+    NSImageView *_logoImageView;
 }
 
 + (id)keyPathsForValuesAffectingRemoteOrigin;
 + (id)defaultViewNibName;
 + (void)initialize;
+@property(nonatomic) __weak NSImageView *logoImageView; // @synthesize logoImageView=_logoImageView;
+@property(nonatomic) __weak DVTStackView_ML *stackView; // @synthesize stackView=_stackView;
+@property(nonatomic) __weak DVTBorderedView *headerView; // @synthesize headerView=_headerView;
 @property(retain) IDESourceControlRepositoryCreationContext *context; // @synthesize context=_context;
 @property(retain) IDESourceControlRepository *sourceTree; // @synthesize sourceTree=_sourceTree;
 - (void)updateBoundSourceTree;
@@ -509,6 +459,7 @@ typedef struct {
     RVStructureViewController *_structureController;
 }
 
++ (id)keyPathsForValuesAffectingRepositorySupportsCheckout;
 + (id)keyPathsForValuesAffectingBranchSupportsCheckout;
 + (id)keyPathsForValuesAffectingBranchIsSelected;
 + (id)keyPathsForValuesAffectingSelectedBranch;
@@ -531,6 +482,7 @@ typedef struct {
 - (void)newBranch:(id)arg1;
 - (void)toggleHistory:(id)arg1;
 - (void)checkout:(id)arg1;
+@property(readonly) BOOL repositorySupportsCheckout;
 @property(readonly) BOOL branchSupportsCheckout;
 @property(readonly) BOOL branchIsSelected;
 @property(readonly) IDESourceControlBranch *selectedBranch;
@@ -567,8 +519,8 @@ typedef struct {
 
 @interface RVLogItemViewController : IDESourceControlLogItemViewController <NSWindowDelegate, RVPeoplePickerDelegate>
 {
+    NSTextField *_revisionTextField;
     RVAuthorImageView *_authorImageView;
-    DVTStackView_ML *_messageAndFilesStackView;
     DVTStackView_ML *_commitAndNameStackView;
     NSButton *_fileDiscloseButton;
     NSView *_viewChangesButtonView;
@@ -581,23 +533,27 @@ typedef struct {
 }
 
 + (id)messageTextAttributes;
++ (double)textHorizontalMargins;
 + (double)minHeight;
 + (id)keyPathsForValuesAffectingDisplayDate;
 + (id)keyPathsForValuesAffectingDisplayRevision;
 + (double)defaultMaxSize;
 + (id)defaultViewNibName;
 @property(readonly) RVAuthorImageView *authorImageView; // @synthesize authorImageView=_authorImageView;
+@property(retain) NSTextField *revisionTextField; // @synthesize revisionTextField=_revisionTextField;
 - (void)cleanup;
 - (void)clearAuthor;
 - (void)personSelected:(id)arg1;
 - (void)viewChanges:(id)arg1;
 - (void)discloseChangedFiles:(id)arg1;
+@property(readonly) BOOL isDisplayingFiles;
 - (void)selectAuthor:(id)arg1;
 - (void)_cleanUpAfterClosingPopupWindow;
 @property(readonly) NSString *displayDate;
 @property(readonly) NSString *displayRevision;
 - (id)authorNameKeyPath;
 - (void)loadView;
+- (void)_setupTracking;
 
 @end
 
@@ -607,6 +563,7 @@ typedef struct {
 
 + (id)defaultViewNibName;
 - (void)loadView;
+- (double)dynamicTableView:(id)arg1 heightForRow:(long long)arg2 inSection:(long long)arg3;
 - (BOOL)displayFilesChanged;
 - (id)rowBackgroundColor2;
 - (id)rowBackgroundColor1;
@@ -639,6 +596,8 @@ typedef struct {
     DVTBorderedView *_backgroundBorderedView;
     DVTBorderedView *_toolbarView;
     NSButton *_cloneButton;
+    NSButton *_refreshButton;
+    NSButton *_viewRevisionButton;
     IDESourceControlRepository *_sourceTree;
     IDESourceControlTreeItem *_logItem;
     IDENavigableItemCoordinator *_coordinator;
@@ -655,6 +614,8 @@ typedef struct {
 - (void)replacementView:(id)arg1 willCloseViewController:(id)arg2;
 - (void)replacementView:(id)arg1 didInstallViewController:(id)arg2;
 - (void)promptToOpenAlertDidEnd:(id)arg1 returnCode:(long long)arg2 contextInfo:(void *)arg3;
+- (void)viewRevision:(id)arg1;
+- (void)refresh:(id)arg1;
 - (void)clone:(id)arg1;
 - (void)viewWillUninstall;
 - (void)viewDidInstall;
@@ -907,11 +868,11 @@ typedef struct {
 
 @interface RVPeoplePickerContentViewController : DVTViewController
 {
-    RVPeoplePickerPopUpContentController *_owningController;
+    RVPeoplePickerPopUpContentController *_owningController_dvtWeak;
 }
 
-@property __weak RVPeoplePickerPopUpContentController *owningController; // @synthesize owningController=_owningController;
 - (void)commitEditingValues;
+@property __weak RVPeoplePickerPopUpContentController *owningController;
 
 @end
 
@@ -979,86 +940,6 @@ typedef struct {
 - (void)selectStartingPoint:(id)arg1;
 - (void)windowDidLoad;
 - (id)initWithStartingPoint:(id)arg1 repository:(id)arg2;
-
-@end
-
-@interface RVCommitViewerViewController : IDEViewController <NSSplitViewDelegate, IDEReviewFilesViewControllerDelegate, NSLayoutManagerDelegate>
-{
-    DVTBorderedView *_reviewFilesBorderedView;
-    DVTBorderedView *_borderedView;
-    NSWindow *_previewSheet;
-    NSSplitView *_splitView;
-    NSTextView *_commitTextView;
-    IDEReviewFilesViewController *_reviewFilesViewController;
-    IDESourceControlTreeItem *_initialSelection;
-    RVCommitViewerNavigatorDataSource *_navigatorDataSource;
-    IDENavigableItemCoordinator *_coordinator;
-    RVCommitViewerNavigatorDataSource *_fileSystemDataSource;
-    RVCommitViewerComparisonEditorDataSource *_comparisonEditorDataSource;
-    IDESourceControlRepository *_repository;
-    IDESourceControlLogItem *_logItem;
-    struct CGRect _commitMessageRect;
-    double _commitMessageSplitMaxHeight;
-    BOOL _initialSplitPositionHasHappened;
-    id <DVTObservingToken> _comparisonEditorObservingToken;
-}
-
-+ (id)defaultViewNibName;
-+ (void)runPreviewSheetForWindow:(id)arg1 viewingCommit:(id)arg2 onRepository:(id)arg3 withInitialSelection:(id)arg4;
-@property(retain) IDESourceControlTreeItem *initialSelection; // @synthesize initialSelection=_initialSelection;
-@property(retain) IDESourceControlLogItem *logItem; // @synthesize logItem=_logItem;
-@property(retain) IDESourceControlRepository *repository; // @synthesize repository=_repository;
-- (BOOL)splitView:(id)arg1 shouldAdjustSizeOfSubview:(id)arg2;
-- (double)splitView:(id)arg1 constrainMinCoordinate:(double)arg2 ofSubviewAt:(long long)arg3;
-- (BOOL)splitView:(id)arg1 canCollapseSubview:(id)arg2;
-- (void)invalidate;
-- (void)sheetDidEnd:(id)arg1 returnCode:(long long)arg2 contextInfo:(void *)arg3;
-- (void)ok:(id)arg1;
-- (void)willOpenDocumentLocation:(id)arg1 completionBlock:(id)arg2;
-- (void)lastRevisionOnRepository:(id)arg1 forAbsolutePath:(id)arg2 StartingWithRevision:(id)arg3 withCompletionBlock:(id)arg4;
-- (id)_temporaryFileLocationForRepository:(id)arg1 remoteAbsolutePath:(id)arg2 revisionNumber:(id)arg3 completionBlock:(id)arg4;
-- (void)_configureDataSources;
-- (void)setInitialSelection:(id)arg1 forNavigatorOutlineView:(id)arg2;
-- (id)treeItemFilterPredicate;
-- (void)layoutManager:(id)arg1 didCompleteLayoutForTextContainer:(id)arg2 atEnd:(BOOL)arg3;
-- (double)_positionOfSplitterWithCommitMessageRect:(struct CGRect)arg1;
-- (void)_runSheetForWindow:(id)arg1;
-
-@end
-
-@interface RVCommitViewerNavigatorDataSource : NSObject <IDEReviewFilesDataSource>
-{
-    IDENavigatorDataCell *_cachedSourceTreeItemCell;
-    IDENavigatorDataCell *_cachedRepositoryContainerCell;
-    NSArray *_navigableItems;
-    IDESourceControlRepository *_repository;
-}
-
-@property(retain) IDESourceControlRepository *repository; // @synthesize repository=_repository;
-@property(retain) NSArray *navigableItems; // @synthesize navigableItems=_navigableItems;
-- (id)reviewFilesNavigator:(id)arg1 documentLocationForNavigableItem:(id)arg2;
-- (id)reviewFilesNavigator:(id)arg1 outlineView:(id)arg2 dataCellForNavigableItem:(id)arg3;
-- (id)repositoryContainerCell;
-- (id)sourceTreeItemCell;
-- (id)sourceControlCategoryStatusCellsWithRepresentedObject:(id)arg1;
-- (id)issueNavigableItems;
-- (id)flatNavigableItems;
-- (id)fileSystemNavigableItems;
-- (id)workspaceNavigableItems;
-
-@end
-
-@interface RVCommitViewerComparisonEditorDataSource : NSObject <IDEComparisonEditorDataSource>
-{
-}
-
-- (id)documentForSecondaryDocumentLocation:(id)arg1 completionBlock:(id)arg2;
-- (id)documentForPrimaryDocumentLocation:(id)arg1 completionBlock:(id)arg2;
-- (void)_cachedDocumentForDocumentLocation:(id)arg1 completionBlock:(id)arg2;
-- (id)secondaryDocumentLocationForNavigableItem:(id)arg1;
-- (id)primaryDocumentLocationForNavigableItem:(id)arg1;
-- (id)navigableItemsForSecondaryDocumentLocation:(id)arg1 completionBlock:(id)arg2;
-- (id)navigableItemsForPrimaryDocumentLocation:(id)arg1 completionBlock:(id)arg2;
 
 @end
 
@@ -1153,6 +1034,44 @@ typedef struct {
 - (void)cancel:(id)arg1;
 - (void)windowDidLoad;
 - (id)initWithRepository:(id)arg1;
+
+@end
+
+@interface RVRepositoryShowRevisionWindowController : NSWindowController
+{
+    IDESourceControlRequest *_currentRequest;
+    IDESourceControlRepository *_sourceTree;
+    NSWindow *_parentWindow;
+    NSString *_primaryRevison;
+    NSString *_secondaryRevision;
+    NSImage *_errorImage;
+    BOOL _loadingRevisions;
+    NSString *_statusText;
+    NSImageView *_statusImageView;
+    BOOL _showingMultipleFields;
+    NSButton *_modeSwitch;
+    NSTextField *_primaryRevisionField;
+    NSTextField *_secondaryRevisionField;
+}
+
+@property(retain) NSString *statusText; // @synthesize statusText=_statusText;
+@property NSTextField *secondaryRevisionField; // @synthesize secondaryRevisionField=_secondaryRevisionField;
+@property NSTextField *primaryRevisionField; // @synthesize primaryRevisionField=_primaryRevisionField;
+@property NSButton *modeSwitch; // @synthesize modeSwitch=_modeSwitch;
+@property NSImageView *statusImageView; // @synthesize statusImageView=_statusImageView;
+@property BOOL showingMultipleFields; // @synthesize showingMultipleFields=_showingMultipleFields;
+@property BOOL loadingRevisions; // @synthesize loadingRevisions=_loadingRevisions;
+@property(retain) NSString *secondaryRevision; // @synthesize secondaryRevision=_secondaryRevision;
+@property(retain) NSString *primaryRevision; // @synthesize primaryRevision=_primaryRevison;
+@property(retain) IDESourceControlRepository *sourceTree; // @synthesize sourceTree=_sourceTree;
+- (void)hideOrShowSecondaryRevision:(id)arg1;
+- (void)viewRevision:(id)arg1;
+- (void)_failedToLoad;
+- (void)cancel:(id)arg1;
+- (void)showRevisionSheetDidEnd:(id)arg1 returnCode:(long long)arg2 contextInfo:(void *)arg3;
+- (void)beginSheetForWindow:(id)arg1;
+- (void)windowDidLoad;
+- (id)windowNibName;
 
 @end
 

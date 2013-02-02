@@ -47,6 +47,22 @@ typedef struct {
 } CDStruct_70511ce9;
 
 typedef struct {
+    void *_field1;
+    void *_field2;
+    void *_field3;
+    void *_field4;
+    void *_field5;
+    void *_field6;
+    void *_field7;
+    void *_field8;
+} CDStruct_9b0a347d;
+
+typedef struct {
+    int _field1;
+    void *_field2[2];
+} CDStruct_9b248d9b;
+
+typedef struct {
     int _field1;
     int _field2;
     void *_field3[3];
@@ -56,17 +72,19 @@ typedef struct {
 
 /*
  * File: /Applications/Xcode.app/Contents/Frameworks/IDEFoundation.framework/Versions/A/IDEFoundation
- * UUID: 1A2C2BAD-91CE-31A1-A739-37F928BBF1B9
+ * UUID: 7570CB42-BD24-3C34-B326-2EA665A94299
  * Arch: Intel x86-64 (x86_64)
- *       Current version: 1192.0.0, Compatibility version: 1.0.0
+ *       Current version: 2100.0.0, Compatibility version: 1.0.0
  *       Minimum Mac OS X version: 10.7.0
  *
  *       Objective-C Garbage Collection: Required
  *       Run path: @loader_path/../../../../Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib
  *               = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib
+ *       Run path: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib
+ *               = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib
  */
 
-@protocol DVTCancellableToken <NSObject>
+@protocol DVTCancellable <NSObject>
 @property(readonly, getter=isCancelled) BOOL cancelled;
 - (void)cancel;
 @end
@@ -97,7 +115,19 @@ typedef struct {
 - (void)invalidate;
 @end
 
-@protocol DVTObservingToken <DVTCancellableToken>
+@protocol DVTInvalidation_New <DVTInvalidation>
+@property(retain) DVTStackBacktrace *creationBacktrace;
+- (void)primitiveInvalidate;
+@end
+
+@protocol DVTLibraryFragmentFilterDelegate <NSObject>
+
+@optional
+- (void)libraryFragmentFilter:(id)arg1 didRemoveFilterForIdentifier:(id)arg2;
+- (void)libraryFragmentFilter:(id)arg1 didAddFilterForIdentifier:(id)arg2;
+@end
+
+@protocol DVTObservingToken <DVTCancellable>
 @end
 
 @protocol DVTPerformanceTestParser
@@ -123,6 +153,16 @@ typedef struct {
 - (id)initFromXMLUnarchiver:(id)arg1 archiveVersion:(float)arg2;
 @end
 
+@protocol IDEAutoImportable <NSObject>
+@property(readonly, nonatomic) IDEIndexCollection *definitions;
+@property(readonly, nonatomic, getter=isAutoImportable) BOOL autoImportable;
+@property(readonly, nonatomic) DVTFilePath *filePathToHeaderToImport;
+@property(readonly, nonatomic) DVTSourceCodeSymbolKind *symbolKind;
+@property(readonly, nonatomic, getter=isInProject) BOOL inProject;
+@property(readonly, nonatomic) NSString *completionString;
+@property(readonly, nonatomic) NSString *name;
+@end
+
 @protocol IDEBlueprint <NSObject, IDEIntegrityLogDataSource>
 @property(readonly) NSString *blueprintIdentifier;
 @property(readonly) NSString *name;
@@ -142,8 +182,14 @@ typedef struct {
 - (void)setValue:(id)arg1 forOverridingBuildSettingKey:(id)arg2 sourceCodeBuildFileReference:(id)arg3;
 - (id)valueForBuildSettingKey:(id)arg1 sourceCodeBuildFileReferences:(id)arg2;
 - (void)setValue:(id)arg1 forBuildSettingKey:(id)arg2 sourceCodeBuildFileReference:(id)arg3;
+- (id)linkedBinaries;
+- (id)allProjectHeaderFiles;
+- (id)allPrivateHeaderFiles;
+- (id)allPublicHeaderFiles;
+- (id)allBuildFileReferences;
 - (id)sourceCodeBuildFileReferences;
 - (void)convertToUseARC;
+- (void)convertToUseModernObjCSyntax;
 - (BOOL)canConvertToUseARC;
 - (void)convertToBuild64bitOnly;
 - (void)convertToUseClang;
@@ -168,6 +214,20 @@ typedef struct {
 - (id)blueprints;
 @end
 
+@protocol IDEBuildStatisticsData
+@property(readonly) long long numberOfVMPageouts;
+@property(readonly) long long numberOfVMPageins;
+@property(readonly) double elapsedSystemTime;
+@property(readonly) double elapsedUserTime;
+@property(readonly) double elapsedWallClockTime;
+@property(readonly) double endWallClockTime;
+@property(readonly) double startWallClockTime;
+@property(readonly) unsigned long long ordinal;
+@property(readonly) NSString *title;
+- (void)emitContentsForAspect:(id)arg1 logLevel:(int)arg2 indentLevel:(unsigned long long)arg3 withBlock:(id)arg4;
+- (id)defaultEmissionStringWithIndentLevel:(unsigned long long)arg1;
+@end
+
 @protocol IDEBuildable <NSObject>
 @property(readonly) NSString *legacyIdentifier;
 @property(readonly) NSSet *namesOfLinkedBinaries;
@@ -177,6 +237,7 @@ typedef struct {
 @property(readonly) id <IDEBlueprint> blueprint;
 @property(readonly) NSString *buildableIdentifier;
 - (id)createBuilderForBuildCommand:(int)arg1 withBuildTaskQueueSet:(id)arg2 parameters:(id)arg3 buildOnlyTheseFiles:(id)arg4 restorePersistedBuildResults:(BOOL)arg5;
+- (id)implicitDependenciesForBuildParameters:(id)arg1 executionEnvironment:(id)arg2 returningMessages:(id *)arg3;
 - (id)implicitDependenciesForBuildParameters:(id)arg1 executionEnvironment:(id)arg2;
 - (id)directDependencies;
 - (id)uncachedOrderedRecursiveDependenciesIncludingSelf:(BOOL)arg1 visitedBuildables:(id)arg2;
@@ -202,7 +263,7 @@ typedef struct {
 - (void)cancelTrackedClients;
 - (id)clientsNotSupportingCancellation;
 - (id)clientsRequiringCancellationPrompt;
-- (id)registerClientWithName:(id)arg1;
+- (id)registerUncancellableClientWithName:(id)arg1;
 - (id)registerClientWithName:(id)arg1 promptForCancellation:(BOOL)arg2 cancellationBlock:(id)arg3;
 @end
 
@@ -240,7 +301,7 @@ typedef struct {
 
 @protocol IDEContainerItemCore <NSObject>
 @property(readonly) id <IDEContainerCore> parentContainer;
-@property(copy) NSString<DVTMacroExpansion> *path;
+@property(copy) NSString *path;
 @property(retain) id <IDEGroupCore> parentGroup;
 @end
 
@@ -285,6 +346,7 @@ typedef struct {
 @protocol IDEIndexDatabaseDelegate
 
 @optional
+- (void)clearPCHFailuresForDatabase:(id)arg1;
 - (void)database:(id)arg1 didForgetFiles:(id)arg2;
 - (id)databaseProvidersAndVersions:(id)arg1;
 - (void)databaseDidReportError:(id)arg1;
@@ -295,13 +357,24 @@ typedef struct {
 - (void)databaseDidOpen:(id)arg1;
 @end
 
+@protocol IDEIndexNewFileBase
+- (id)newSymbolWithName:(id)arg1 kind:(id)arg2 role:(int)arg3 language:(id)arg4 resolution:(id)arg5 lineNumber:(long long)arg6 column:(long long)arg7 locator:(id)arg8 completionString:(void *)arg9 container:(id)arg10;
+- (void)addSymbolWithName:(id)arg1 kind:(id)arg2 role:(int)arg3 language:(id)arg4 resolution:(id)arg5 lineNumber:(long long)arg6 column:(long long)arg7 locator:(id)arg8 completionString:(void *)arg9 container:(id)arg10;
+@end
+
 @protocol IDEIndexQueryProvider <NSObject>
 + (BOOL)supportsSymbolColoring;
 + (id)locationForURL:(id)arg1 locator:(id)arg2;
 @property(readonly, nonatomic) NSDictionary *settings;
 @property(readonly, nonatomic) IDEIndexDatabase *database;
+- (id)definitionsForSymbolWithResolutionOffset:(long long)arg1;
+- (id)allAutoImportCompletionItemsMatchingKind:(id)arg1 symbolLanguage:(id)arg2 forIndex:(id)arg3;
+- (id)allAutoImportCompletionItemsMatchingKind:(id)arg1 forIndex:(id)arg2;
+- (id)completionStringForSymbol:(id)arg1;
 - (BOOL)isProjectSymbol:(id)arg1;
+- (id)calleesForSymbolOccurrence:(id)arg1;
 - (id)locationForSymbolOccurrence:(id)arg1;
+- (id)containerSymbolForOccurrence:(id)arg1;
 - (id)correspondingSymbolForOccurrence:(id)arg1;
 - (id)relatedClassForCategory:(id)arg1;
 - (id)propertiesForCategory:(id)arg1;
@@ -339,6 +412,15 @@ typedef struct {
 - (id)instanceMethodsForClass:(id)arg1;
 - (id)classMethodsForClass:(id)arg1;
 - (id)childrenForContainer:(id)arg1;
+- (id)getterForProperty:(id)arg1;
+- (id)setterForProperty:(id)arg1;
+- (id)typeOfArgument:(unsigned long long)arg1 forCallable:(id)arg2;
+- (unsigned long long)numArgumentsForCallable:(id)arg1;
+- (id)returnTypeForCallable:(id)arg1;
+- (id)propertyForCallable:(id)arg1;
+- (id)overridingSymbolsForCallable:(id)arg1;
+- (id)overriddenSymbolsForCallable:(id)arg1;
+- (id)referencesForSymbol:(id)arg1;
 - (id)referencingFilesForSymbol:(id)arg1;
 - (id)containerSymbolForSymbol:(id)arg1;
 - (id)containerSymbolsForSymbol:(id)arg1;
@@ -361,9 +443,10 @@ typedef struct {
 - (id)symbolsContaining:(id)arg1 anchorStart:(BOOL)arg2 anchorEnd:(BOOL)arg3 subsequence:(BOOL)arg4 ignoreCase:(BOOL)arg5 cancelWhen:(id)arg6 forIndex:(void)arg7;
 - (id)topLevelProtocolsWorkspaceOnly:(BOOL)arg1 cancelWhen:(id)arg2 forIndex:(void)arg3;
 - (id)topLevelClassesWorkspaceOnly:(BOOL)arg1 cancelWhen:(id)arg2 forIndex:(void)arg3;
-- (id)filesContaining:(id)arg1 anchorStart:(BOOL)arg2 anchorEnd:(BOOL)arg3 subsequence:(BOOL)arg4 ignoreCase:(BOOL)arg5 forIndex:(id)arg6;
+- (id)filesContaining:(id)arg1 anchorStart:(BOOL)arg2 anchorEnd:(BOOL)arg3 subsequence:(BOOL)arg4 ignoreCase:(BOOL)arg5 cancelWhen:(id)arg6 forIndex:(void)arg7;
 - (id)filesIncludedByFile:(id)arg1 forIndex:(id)arg2;
 - (id)filesIncludingFile:(id)arg1 forIndex:(id)arg2;
+- (id)parsedCodeCommentAtLocation:(id)arg1 withCurrentFileContentDictionary:(id)arg2 forIndex:(id)arg3;
 - (id)importedFileAtDocumentLocation:(id)arg1 withCurrentFileContentDictionary:(id)arg2 forIndex:(id)arg3;
 - (id)collectionElementTypeSymbolForSymbol:(id)arg1 withCurrentFileContentDictionary:(id)arg2 forIndex:(id)arg3;
 - (id)typeSymbolForSymbol:(id)arg1 withCurrentFileContentDictionary:(id)arg2 forIndex:(id)arg3;
@@ -372,7 +455,7 @@ typedef struct {
 - (id)symbolsUsedInContext:(id)arg1 withCurrentFileContentDictionary:(id)arg2 forIndex:(id)arg3;
 - (id)symbolsOccurrencesInContext:(id)arg1 withCurrentFileContentDictionary:(id)arg2 forIndex:(id)arg3;
 - (id)codeDiagnosticsAtLocation:(id)arg1 withCurrentFileContentDictionary:(id)arg2 forIndex:(id)arg3;
-- (id)codeCompletionsAtLocation:(id)arg1 withCurrentFileContentDictionary:(id)arg2 sortedUsingBlock:(id)arg3 forIndex:(void)arg4;
+- (id)codeCompletionsAtLocation:(id)arg1 withCurrentFileContentDictionary:(id)arg2 completionContext:(id *)arg3 sortedUsingBlock:(id)arg4 forIndex:(void)arg5;
 - (id)symbolsMatchingName:(id)arg1 inContext:(id)arg2 withCurrentFileContentDictionary:(id)arg3 forIndex:(id)arg4;
 - (id)symbolsMatchingName:(id)arg1 inContext:(id)arg2 forIndex:(id)arg3;
 - (id)topLevelSymbolsInFile:(id)arg1 forIndex:(id)arg2;
@@ -380,7 +463,7 @@ typedef struct {
 - (id)initWithSettings:(id)arg1 database:(id)arg2;
 @end
 
-@protocol IDEIndexable <NSObject>
+@protocol IDEIndexable <NSObject, NSCopying>
 - (id)buildSettingsForMainFile:(id)arg1;
 - (id)localizedIndexableDescription;
 - (void)languageOfMainFile:(id)arg1 completionBlock:(id)arg2;
@@ -410,10 +493,6 @@ typedef struct {
 @protocol IDEIntegrityLogDataSource
 @property(readonly) IDEActivityLogSection *integrityLog;
 - (void)analyzeModelIntegrity;
-@end
-
-@protocol IDELegacyBreakpointProvider
-- (id)legacyProjectBreakpoints;
 @end
 
 @protocol IDEOCUnitTestOutputParserDelegate <NSObject>
@@ -450,6 +529,7 @@ typedef struct {
 @end
 
 @protocol IDEStructureEditing
+- (BOOL)allowRemovingContainerGroup;
 - (BOOL)structureEditSetName:(id)arg1 inContext:(id)arg2;
 - (BOOL)canStructureEditName;
 - (BOOL)structureEditRemoveSubitemsAtIndexes:(id)arg1 error:(id *)arg2;
@@ -516,6 +596,10 @@ typedef struct {
 - (unsigned long long)countByEnumeratingWithState:(CDStruct_70511ce9 *)arg1 objects:(id *)arg2 count:(unsigned long long)arg3;
 @end
 
+@protocol NSMutableCopying
+- (id)mutableCopyWithZone:(struct _NSZone *)arg1;
+@end
+
 @protocol NSObject
 - (id)description;
 - (unsigned long long)retainCount;
@@ -536,24 +620,30 @@ typedef struct {
 - (Class)superclass;
 - (unsigned long long)hash;
 - (BOOL)isEqual:(id)arg1;
+
+@optional
+- (id)debugDescription;
 @end
 
 @protocol NSURLConnectionDelegate <NSObject>
 
 @optional
-- (id)connection:(id)arg1 willCacheResponse:(id)arg2;
-- (void)connection:(id)arg1 didFailWithError:(id)arg2;
-- (void)connectionDidFinishLoading:(id)arg1;
-- (void)connection:(id)arg1 didSendBodyData:(long long)arg2 totalBytesWritten:(long long)arg3 totalBytesExpectedToWrite:(long long)arg4;
-- (void)connection:(id)arg1 didReceiveData:(id)arg2;
-- (void)connection:(id)arg1 didReceiveResponse:(id)arg2;
-- (BOOL)connectionShouldUseCredentialStorage:(id)arg1;
 - (void)connection:(id)arg1 didCancelAuthenticationChallenge:(id)arg2;
-- (void)connection:(id)arg1 willSendRequestForAuthenticationChallenge:(id)arg2;
 - (void)connection:(id)arg1 didReceiveAuthenticationChallenge:(id)arg2;
 - (BOOL)connection:(id)arg1 canAuthenticateAgainstProtectionSpace:(id)arg2;
-- (id)connection:(id)arg1 needNewBodyStream:(id)arg2;
-- (id)connection:(id)arg1 willSendRequest:(id)arg2 redirectResponse:(id)arg3;
+- (void)connection:(id)arg1 willSendRequestForAuthenticationChallenge:(id)arg2;
+- (BOOL)connectionShouldUseCredentialStorage:(id)arg1;
+- (void)connection:(id)arg1 didFailWithError:(id)arg2;
+@end
+
+@protocol __ARCLiteIndexedSubscripting__
+- (void)setObject:(id)arg1 atIndexedSubscript:(unsigned long long)arg2;
+- (id)objectAtIndexedSubscript:(unsigned long long)arg1;
+@end
+
+@protocol __ARCLiteKeyedSubscripting__
+- (void)setObject:(id)arg1 forKeyedSubscript:(id)arg2;
+- (id)objectForKeyedSubscript:(id)arg1;
 @end
 
 @interface IDEDebuggerSpecifier : NSObject
@@ -564,13 +654,14 @@ typedef struct {
 
 + (BOOL)_isDefaultNonDebuggerLauncher:(id)arg1;
 + (id)_launcherExtensions;
++ (BOOL)requiresDebuggerForPlatform:(id)arg1;
 + (id)defaultDebuggerSpecifierForWorkspace:(id)arg1;
-+ (id)_launcherPluginIdentiferForDebuggerPlugin:(id)arg1;
++ (id)_launcherPluginIdentifierForDebuggerPlugin:(id)arg1;
 + (id)allDebuggerSpecifiersIncludingNone;
 + (id)allDebuggerSpecifiers;
-+ (id)_specifierWithIdentifer:(id)arg1 inArray:(id)arg2;
-+ (id)specifierWithIdentiferInAllDebuggerSpecifierssIncludingNone:(id)arg1;
-+ (id)specifierWithIdentiferInAllSpecifiers:(id)arg1;
++ (id)_specifierWithIdentifier:(id)arg1 inArray:(id)arg2;
++ (id)specifierWithIdentifierInAllDebuggerSpecifiersIncludingNone:(id)arg1;
++ (id)specifierWithIdentifierInAllSpecifiers:(id)arg1;
 @property(readonly) DVTExtension *extension; // @synthesize extension=_extension;
 @property(readonly) NSString *correspondingLauncherIdentifier;
 @property(readonly) NSString *identifier;
@@ -579,7 +670,7 @@ typedef struct {
 
 @end
 
-@interface IDEContainer : DVTModelObject <DVTInvalidation, IDEIntegrityLogDataSource, IDEReadOnlyItem, DVTDirectoryBasedCustomDataStoreDelegate>
+@interface IDEContainer : DVTModelObject <DVTInvalidation_New, IDEIntegrityLogDataSource, IDEReadOnlyItem, DVTDirectoryBasedCustomDataStoreDelegate>
 {
     id <IDEContainerCore> _containerCore;
     IDEWorkspace *_workspace;
@@ -590,7 +681,7 @@ typedef struct {
     DVTOperation *_willReadOperation;
     DVTOperation *_readOperation;
     DVTOperation *_didReadOperation;
-    id <DVTCancellableToken> _resolvePendingFilesCancellableToken;
+    id <DVTCancellable> _resolvePendingFilesCancellableToken;
     int _activity;
     int _transitionActivity;
     NSMutableDictionary *_sessionIdentifiersToFilePaths;
@@ -604,13 +695,14 @@ typedef struct {
     NSMutableDictionary *_filePathToReadOnlyItemMap;
     NSMapTable *_readOnlyItemToStatusObserverMap;
     id <IDEContainerDelegate> _containerDelegate;
-    NSDictionary *_pendingChangeDictionary;
-    DVTStackBacktrace *_invalidationBacktrace;
+    DVTMapTable *_pendingFilePathChangeDictionary;
     int _readOnlyStatus;
-    BOOL _isInvalidated;
     BOOL _hasTransitionedToIdle;
-    BOOL _transitioningToNewFilePath;
     BOOL _containerEdited;
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
 + (BOOL)_shouldTrackReadOnlyStatus;
@@ -629,7 +721,11 @@ typedef struct {
 + (double)_defaltSlowAutosaveDelay;
 + (double)_defaltAutosaveDelay;
 + (BOOL)automaticallyNotifiesObserversOfContainerEdited;
++ (void)resumeFilePathChangeNotifications;
++ (void)suspendFilePathChangeNotifications;
++ (id)_containersWithPendingFilePathChanges;
 + (BOOL)_observeContainerDataFilePathsForChanges;
++ (BOOL)automaticallyNotifiesObserversOfValue;
 + (id)_containerForSessionIdentifier:(id)arg1;
 + (void)_invalidateContainer:(id)arg1;
 + (void)_releaseContainer:(id)arg1;
@@ -643,7 +739,6 @@ typedef struct {
 + (BOOL)isContainerOpenForFilePath:(id)arg1;
 + (id)retainedWrappedWorkspaceForContainerAtFilePath:(id)arg1 fileDataType:(id)arg2 error:(id *)arg3;
 + (id)containersForFilePath:(id)arg1;
-+ (id)retainedContainerForFilePath:(id)arg1;
 + (id)retainedContainerForFilePath:(id)arg1 workspace:(id)arg2;
 + (id)retainedContainerAtFilePath:(id)arg1 fileDataType:(id)arg2 workspace:(id)arg3 error:(id *)arg4;
 + (id)_containerOpenInAnotherWorkspaceErrorForPath:(id)arg1;
@@ -658,10 +753,11 @@ typedef struct {
 @property(copy, nonatomic) DVTFilePath *itemBaseFilePath; // @synthesize itemBaseFilePath=_itemBaseFilePath;
 @property(readonly) DVTFilePath *filePath; // @synthesize filePath=_filePath;
 @property(readonly) DVTExtension *extension; // @synthesize extension=_extension;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
+@property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 @property(readonly) IDEWorkspace *workspace; // @synthesize workspace=_workspace;
 @property(readonly) id <IDEContainerCore> containerCore; // @synthesize containerCore=_containerCore;
 @property(retain) id <IDEContainerDelegate> containerDelegate; // @synthesize containerDelegate=_containerDelegate;
-@property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 - (void)customDataStore:(id)arg1 removeItemAtFilePath:(id)arg2 completionQueue:(id)arg3 completionBlock:(id)arg4;
 - (void)customDataStore:(id)arg1 moveItemAtFilePath:(id)arg2 toFilePath:(id)arg3 completionQueue:(id)arg4 completionBlock:(id)arg5;
 - (void)customDataStore:(id)arg1 makeFilePathsWritable:(id)arg2 completionQueue:(id)arg3 completionBlock:(id)arg4;
@@ -725,8 +821,10 @@ typedef struct {
 - (void)_unregisterForChangesToContainerDataFilePath:(id)arg1;
 - (void)_registerForChangesToContainerDataFilePath:(id)arg1;
 - (void)_filePathDidChangeWithPendingChangeDictionary;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (id)_sessionIdentifier;
 - (void)_invalidateContainerToDiscardInMemoryRepresentation:(BOOL)arg1;
 - (void)_willInvalidateContainerToDiscardInMemoryRepresentation;
@@ -782,7 +880,7 @@ typedef struct {
 + (id)containerTypeDisplayName;
 + (id)containerFileDataType;
 + (void)initialize;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)_respondToFileChangeOnDiskWithFilePath:(id)arg1;
 - (id)initWithFilePath:(id)arg1 extension:(id)arg2 workspace:(id)arg3 error:(id *)arg4;
 - (void)_filePathDidChange:(id)arg1;
@@ -807,9 +905,9 @@ typedef struct {
     NSMutableSet *_customDataStores;
     IDEWorkspaceUserSettings *_userSettings;
     IDEWorkspaceSharedSettings *_sharedSettings;
-    NSMapTable *_blueprintProviderObserverMap;
+    DVTMapTable *_blueprintProviderObserverMap;
     NSMutableSet *_referencedBlueprints;
-    NSMapTable *_testableProviderObserverMap;
+    DVTMapTable *_testableProviderObserverMap;
     NSMutableSet *_referencedTestables;
     BOOL _initialContainerScanComplete;
     NSMutableArray *_referencedRunnableBuildableProducts;
@@ -825,13 +923,15 @@ typedef struct {
     id <DVTObservingToken> _indexableFileQueryObservingToken;
     IDEIndex *_index;
     IDERefactoring *_refactoring;
-    NSMapTable *_fileRefsToResolvedFilePaths;
+    DVTMapTable *_fileRefsToResolvedFilePaths;
     NSMutableSet *_fileRefsToRegisterForIndexing;
+    IDETextIndex *_textIndex;
     IDESourceControlWorkspaceMonitor *_sourceControlWorkspaceMonitor;
     IDEWorkspaceSnapshotManager *_snapshotManager;
     DVTFilePath *_wrappedXcode3ProjectPath;
     IDEContainer *_wrappedXcode3Project;
     id <DVTObservingToken> _wrappedXcode3ProjectValidObservingToken;
+    id <DVTObservingToken> _newWrappedXcode3ProjectObservingToken;
     NSHashTable *_pendingReferencedFileReferences;
     NSHashTable *_pendingReferencedContainers;
     IDEConcreteClientTracker *_clientTracker;
@@ -839,17 +939,22 @@ typedef struct {
     id <DVTObservingToken> _finishedLoadingObservingToken;
     NSDictionary *_Problem9887530_preferredStructurePaths;
     BOOL _simpleFilesFocused;
+    DVTHashTable *_sourceControlStatusUpdatePendingFileReferences;
+    id _openingPerformanceMetricIdentifier;
+    DVTStackBacktrace *_finishedLoadingBacktrace;
+    NSMutableOrderedSet *_initialOrderedReferencedBlueprintProviders;
     BOOL _hasPostedIndexingRegistrationBatchNotification;
     BOOL _didFinishLoadingFirstStage;
     BOOL _finishedLoading;
+    BOOL _postLoadingPerformanceMetricsAllowed;
+    BOOL _willInvalidate;
     BOOL _pendingFileReferencesAndContainers;
     BOOL _didProcessFileReferencesForProblem8727051;
     BOOL _isCleaningBuildFolder;
     BOOL _indexingAndRefactoringRestartScheduled;
     BOOL _sourceControlStatusUpdatePending;
-    NSHashTable *_sourceControlStatusUpdatePendingFileReferences;
-    id _openingPerformanceMetricIdentifier;
-    DVTStackBacktrace *_finishedLoadingBacktrace;
+    BOOL _didFinishBuildingInitialBlueprintProviderOrderedSet;
+    NSMapTable *_pendingExecutionNotificationTokens;
 }
 
 + (BOOL)_shouldTrackReadOnlyStatus;
@@ -868,7 +973,9 @@ typedef struct {
 + (BOOL)_shouldLoadUISubsystems;
 + (BOOL)automaticallyNotifiesObserversOfFileRefsWithContainerLoadingIssues;
 + (void)initialize;
+@property(readonly, nonatomic) BOOL postLoadingPerformanceMetricsAllowed; // @synthesize postLoadingPerformanceMetricsAllowed=_postLoadingPerformanceMetricsAllowed;
 @property BOOL isCleaningBuildFolder; // @synthesize isCleaningBuildFolder=_isCleaningBuildFolder;
+@property(readonly) IDETextIndex *textIndex; // @synthesize textIndex=_textIndex;
 @property(nonatomic) BOOL finishedLoading; // @synthesize finishedLoading=_finishedLoading;
 @property(nonatomic) BOOL pendingFileReferencesAndContainers; // @synthesize pendingFileReferencesAndContainers=_pendingFileReferencesAndContainers;
 @property BOOL initialContainerScanComplete; // @synthesize initialContainerScanComplete=_initialContainerScanComplete;
@@ -883,11 +990,13 @@ typedef struct {
 - (void)invalidate;
 - (void)initializeIndexAndRefactoring:(id)arg1;
 - (void)_setupSourceControlWorkspaceMonitor;
+- (void)beginTextIndexing;
 - (id)tearDownIndexAndRefactoring;
 - (void)_restartIndexingAndRefactoring;
 - (void)_scheduleIndexingAndRefactoringRestart;
 - (void)_updateIndexableFiles:(id)arg1;
 - (void)_processIndexRegistrationBatch:(id)arg1;
+- (void)_enqueueIndexRegistrationBatchNotification;
 - (void)_updateIndexableSources:(id)arg1;
 @property(readonly) IDEContainer<DVTCustomDataStoring> *representingCustomDataStore;
 - (void)_updateWrappedXcode3Project;
@@ -922,6 +1031,7 @@ typedef struct {
 @property(readonly) NSSet *referencedTestables;
 @property(readonly) NSSet *referencedTestableProviders;
 @property(readonly) NSSet *referencedBlueprints;
+- (id)containerGraphOrderForBlueprintProviders:(id)arg1;
 @property(readonly) NSSet *referencedBlueprintProviders;
 @property(readonly) NSSet *referencedContainers;
 - (void)_referencedContainersDidUpdate;
@@ -929,6 +1039,7 @@ typedef struct {
 - (void)_referencedTestablesOfProvider:(id)arg1 didChange:(id)arg2;
 - (void)_referencedBlueprintsDidUpdateForProvider:(id)arg1;
 - (void)_setupContainerQueries;
+- (void)_addBlueprintProviderToOrderedSet:(id)arg1;
 - (id)_Problem9887530_preferredStructurePathForContainerAtPath:(id)arg1;
 - (id)_Problem9887530_preferredStructurePaths;
 - (id)_Problem9887530_preferredStructurePathsForContainerToContainerFileReferences:(id)arg1;
@@ -938,9 +1049,11 @@ typedef struct {
 - (void)cancelTrackedClients;
 - (id)clientsNotSupportingCancellation;
 - (id)clientsRequiringCancellationPrompt;
-- (id)registerClientWithName:(id)arg1;
+- (id)registerUncancellableClientWithName:(id)arg1;
 - (id)registerClientWithName:(id)arg1 promptForCancellation:(BOOL)arg2 cancellationBlock:(id)arg3;
 @property(readonly) IDEConcreteClientTracker *clientTracker;
+- (BOOL)_cancelOngoingBuildWithCompletionBlockIfNeeded:(id)arg1;
+- (void)_setupBuildCompletedNotificationForExecutionEnvironment:(id)arg1 completionBlock:(id)arg2;
 - (BOOL)setContainerFilePath:(id)arg1 error:(id *)arg2;
 - (BOOL)_setContainerFilePath:(id)arg1 upgradeToWorkspace:(BOOL)arg2 error:(id *)arg3;
 - (void)_changeContainerFilePath:(id)arg1 inContext:(id)arg2 upgradeToWorkspace:(BOOL)arg3;
@@ -997,34 +1110,43 @@ typedef struct {
 
 @end
 
-@interface IDEContainerItem : DVTModelObject <DVTInvalidation, DVTReferenceResolverClient>
+@interface IDEContainerItem : DVTModelObject <DVTInvalidation_New, DVTReferenceResolverClient>
 {
     IDEGroup *_superitem;
     NSMutableDictionary *_properties;
-    NSString<DVTMacroExpansion> *_path;
+    NSString *_path;
     DVTReferenceResolver *_resolver;
-    DVTStackBacktrace *_invalidationBacktrace;
     struct {
-        unsigned int isInvalidated:1;
         unsigned int observingForBuildProductsRelative:1;
         unsigned int observingForCurrentSDKRelative:1;
         unsigned int observingForSourceTreeRelative:1;
     } _flags;
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (id)keyPathsForValuesAffectingExpectedFilePath;
 + (id)keyPathsForValuesAffectingWrapsLines;
 + (id)keyPathsForValuesAffectingIndentWidth;
 + (id)keyPathsForValuesAffectingTabWidth;
 + (id)keyPathsForValuesAffectingUsesTabs;
 + (BOOL)automaticallyNotifiesObserversOfContainer;
-+ (id)customResolutionStrategies;
++ (id)supportedCustomResolutionStrategies;
++ (id)supportedResolutionStrategies;
 + (void)initialize;
-@property(readonly) NSString<DVTMacroExpansion> *path; // @synthesize path=_path;
-@property(readonly) DVTReferenceResolver *resolver; // @synthesize resolver=_resolver;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
+@property(readonly) NSString *path; // @synthesize path=_path;
+@property(readonly) DVTReferenceResolver *resolver; // @synthesize resolver=_resolver;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (void)_takePathAndResolutionStrategiesFromContainerItem:(id)arg1;
+@property(readonly) DVTFilePath *expectedFilePath;
 @property(readonly) DVTFilePath *resolvedFilePath;
 - (BOOL)_getPathAndResolutionStrategiesForAbsolutePath:(id)arg1 path:(id *)arg2 resolutionStrategies:(id *)arg3;
 - (BOOL)_getPath:(id *)arg1 forStrategies:(id)arg2;
@@ -1143,12 +1265,14 @@ typedef struct {
     DVTFilePath *_watchedFilePath;
     DVTFilePath *_oldWatchedFilePath;
     DVTFilePath *_resolvedFilePath;
+    DVTFileDataType *_presumedFileDataType;
     DVTFileDataType *_lastKnownFileDataType;
     DVTFileDataType *_lastDiscoveredFileDataType;
     DVTFileDataType *_discoveredFileDataType;
     DVTExtension *_referencedContainerExtension;
     IDEContainer *_referencedContainer;
     BOOL _workaroundForProblem8727051;
+    BOOL _stopResolvingReferencedContainers;
     int _sourceControlLocalStatus;
     int _sourceControlServerStatus;
     unsigned long long _conflictStateForUpdateOrMerge;
@@ -1158,6 +1282,7 @@ typedef struct {
     BOOL _sourceControlLocalStatusNeedsUpdate;
     BOOL _sourceControlServerStatusNeedsUpdate;
     BOOL _sourceControlConflictStatusNeedsUpdate;
+    BOOL _waitingForChangeNotificationsToResume;
 }
 
 + (BOOL)automaticallyNotifiesObserversOfAggregateSourceControlConflictStatus;
@@ -1166,12 +1291,16 @@ typedef struct {
 + (BOOL)automaticallyNotifiesObserversOfConflictStateForUpdateOrMerge;
 + (BOOL)automaticallyNotifiesObserversOfSourceControlServerStatus;
 + (BOOL)automaticallyNotifiesObserversOfSourceControlLocalStatus;
++ (id)keyPathsForValuesAffectingExpectedFilePath;
 + (id)keyPathsForValuesAffectingName;
 + (id)fileReferenceAssociatesForPath:(id)arg1 forAllPathsToSameFile:(BOOL)arg2;
++ (id)fileReferenceAssociatesForPath:(id)arg1 forAllPathsToSameFile:(BOOL)arg2 workspace:(id)arg3;
++ (id)_fileReferenceAssociatesForPath:(id)arg1 forAllPathsToSameFile:(BOOL)arg2 workspace:(id)arg3;
 + (void)initialize;
 + (id)keyPathsForValuesAffectingIdeModelObjectTypeIdentifier;
 @property(copy, nonatomic) DVTFileDataType *assignedFileDataType; // @synthesize assignedFileDataType=_assignedFileDataType;
 - (BOOL)structureEditSetName:(id)arg1 inContext:(id)arg2;
+- (void)_performMove:(id)arg1 newFilePath:(id)arg2 newPath:(id)arg3 inContext:(id)arg4;
 - (id)_structureEditNameForSuggestedName:(id)arg1;
 - (BOOL)canStructureEditName;
 - (BOOL)structureEditRemoveSubitemsAtIndexes:(id)arg1 error:(id *)arg2;
@@ -1183,9 +1312,10 @@ typedef struct {
 - (id)structureEditInsertSubitems:(id)arg1 atIndex:(unsigned long long)arg2;
 - (BOOL)canStructureEditInsertSubitems:(id)arg1 atIndex:(unsigned long long)arg2;
 - (BOOL)allowUserModificationOfSubitems;
+- (BOOL)allowRemovingContainerGroup;
 - (void)fileReferenceWasConfigured;
 - (void)_takeConfigurationFromFileReference:(id)arg1;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)debugPrintInnerStructure;
 - (void)_updateSourceControlStatusIfNeeded;
 - (void)_updateAggregateSourceControlConflictStatus;
@@ -1199,6 +1329,7 @@ typedef struct {
 - (void)_updateSourceControlServerStatus;
 @property int sourceControlServerStatus;
 - (void)_updateSourceControlLocalStatus;
+- (void)_updateSourceControlStatus;
 @property int sourceControlLocalStatus;
 - (unsigned long long)aggregateSourceControlConflictStatus;
 - (int)aggregateSourceControlServerStatus;
@@ -1208,14 +1339,16 @@ typedef struct {
 - (void)observeValueForKeyPath:(id)arg1 ofObject:(id)arg2 change:(id)arg3 context:(void *)arg4;
 - (id)_referencedContainer;
 @property(readonly) IDEContainer *referencedContainer;
+- (void)_recalculateReferencedContainer;
 - (BOOL)_workaroundForProblem8727051;
-- (void)_invalidateReferencedContainerExtension;
 @property(readonly) DVTExtension *referencedContainerExtension;
 - (BOOL)_isBuildProductReference;
 - (void)_invalidateFileDataType;
 @property(readonly) DVTFileDataType *discoveredFileDataType;
 @property(readonly) DVTFileDataType *lastKnownFileDataType;
+@property(readonly) DVTFileDataType *presumedFileDataType;
 - (void)_assignedFileDataTypeDidChange;
+@property(readonly) DVTFilePath *expectedFilePath;
 - (BOOL)_resolvedFilePathIsValid;
 - (void)_resolvedFilePathDidChange:(id)arg1;
 - (void)_invalidateResolvedFilePathUsingPath:(id)arg1 resolutionStrategies:(id)arg2;
@@ -1234,6 +1367,7 @@ typedef struct {
 - (void)dvt_encodeAttributesWithXMLArchiver:(id)arg1;
 - (void)dvt_awakeFromXMLUnarchiver:(id)arg1;
 - (id)ideModelObjectTypeIdentifier;
+@property(readonly) NSString *sourceControlRepositoryURLString;
 @property(readonly) NSString *sourceControlCurrentRevision;
 
 @end
@@ -1261,9 +1395,6 @@ typedef struct {
     int _sourceControlLocalStatus;
     int _sourceControlServerStatus;
     unsigned long long _conflictStateForUpdateOrMerge;
-    BOOL _sourceControlLocalStatusNeedsUpdate;
-    BOOL _sourceControlServerStatusNeedsUpdate;
-    BOOL _conflictStateForUpdateOrMergeNeedsUpdate;
 }
 
 + (Class)_groupClassForGroup:(id)arg1;
@@ -1281,6 +1412,7 @@ typedef struct {
 + (id)keyPathsForValuesAffectingSourceControlServerStatus;
 + (id)keyPathsForValuesAffectingSourceControlLocalStatus;
 @property(copy, nonatomic) NSString *name; // @synthesize name=_name;
+@property(readonly, getter=isLocationKnown) BOOL locationKnown;
 - (BOOL)createNewSubgroupAtIndex:(unsigned long long)arg1;
 - (id)_availableNameBasedOn:(id)arg1;
 - (id)_subgroupNamed:(id)arg1;
@@ -1298,9 +1430,10 @@ typedef struct {
 - (BOOL)allowUserModificationOfSubitems;
 - (BOOL)_acceptsItem:(id)arg1;
 - (BOOL)_isSubitemOfItem:(id)arg1;
+- (BOOL)allowRemovingContainerGroup;
 - (void)_takeConfigurationFromGroup:(id)arg1;
 - (void)_copyAndInsertSubitems:(id)arg1 atIndex:(unsigned long long)arg2;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)debugPrintInnerStructure;
 - (void)_invalidateComputedSourceControlStatus;
 - (void)_setConflictStateForUpdateOrMergeNeedsUpdate;
@@ -1450,7 +1583,7 @@ typedef struct {
     IDEGroup *_unarchivingGroup;
     NSMutableDictionary *_unarchivingProperties;
     DVTDirectoryBasedCustomDataStore *_customDataStore;
-    NSMapTable *_unsavedXMLDataForCustomDataStoreSpecifier;
+    DVTMapTable *_unsavedXMLDataForCustomDataStoreSpecifier;
     BOOL _hasUnhandledArchiveData;
 }
 
@@ -1470,7 +1603,7 @@ typedef struct {
 - (id)readCustomDataWithSpecifier:(id)arg1 error:(id *)arg2;
 - (id)customDataOwnershipsForGrouping:(id)arg1;
 - (id)customDataSpecifiersForGrouping:(id)arg1 ownership:(id)arg2;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)_handleFilePathDidChange:(id)arg1;
 - (BOOL)writeToFilePath:(id)arg1 forceWrite:(BOOL)arg2 error:(id *)arg3;
 - (id)_xmlData;
@@ -1489,7 +1622,7 @@ typedef struct {
 
 @end
 
-@interface IDEScheme : NSObject <DVTInvalidation>
+@interface IDEScheme : NSObject <DVTInvalidation_New>
 {
     NSString *_identifier;
     IDEBuildSchemeAction *_buildSchemeAction;
@@ -1511,8 +1644,6 @@ typedef struct {
     BOOL _isShown;
     unsigned long long _orderHint;
     BOOL _dataStoreClosed;
-    BOOL _isValid;
-    DVTStackBacktrace *_invalidationBacktrace;
     BOOL _deferredSaveScheduled;
     BOOL _registeredForIsBuildableNotifications;
     NSNumber *_isArchivable;
@@ -1520,6 +1651,11 @@ typedef struct {
     NSNumber *_isInstallable;
     id _isInstallableNotificationToken;
     BOOL _hasUnsupportedArchiveData;
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
+    NSError *_loadError;
 }
 
 + (BOOL)automaticallyNotifiesObserversOfOrderHint;
@@ -1530,10 +1666,13 @@ typedef struct {
 + (id)keyPathsForValuesAffectingAnalyzable;
 + (id)keyPathsForValuesAffectingProfilable;
 + (id)keyPathsForValuesAffectingRunnable;
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
 + (id)schemeFromXMLData:(id)arg1 withRunContextManager:(id)arg2 customDataStoreContainer:(id)arg3 customDataSpecifier:(id)arg4 isShown:(BOOL)arg5 orderHint:(unsigned long long)arg6 error:(id *)arg7;
 + (id)schemeWithRunContextManager:(id)arg1 customDataStoreContainer:(id)arg2 customDataSpecifier:(id)arg3;
-@property(retain) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
-@property(nonatomic, getter=isValid) BOOL valid; // @synthesize valid=_isValid;
+@property(retain) NSError *loadError; // @synthesize loadError=_loadError;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
+@property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 @property(readonly) DVTCustomDataSpecifier *customDataSpecifier; // @synthesize customDataSpecifier=_customDataSpecifier;
 @property(retain, nonatomic) IDEContainer<DVTCustomDataStoring> *customDataStoreContainer; // @synthesize customDataStoreContainer=_customDataStoreContainer;
 @property(readonly) IDERunContextManager *runContextManager; // @synthesize runContextManager=_runContextManager;
@@ -1604,7 +1743,10 @@ typedef struct {
 @property(readonly, getter=isProfilable) BOOL profilable;
 @property(readonly, getter=isRunnable) BOOL runnable;
 @property(readonly, getter=isBuildable) BOOL buildable;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 @property(readonly) BOOL isClosed;
 - (void)customDataStoreContainerClosing:(id)arg1;
 - (void)performDelayedSave:(id)arg1;
@@ -1612,6 +1754,7 @@ typedef struct {
 - (void)resolveBuildablesFromImport;
 - (id)description;
 - (id)initFromUnarchiver:(BOOL)arg1 runContextManager:(id)arg2 customDataStoreContainer:(id)arg3 customDataSpecifier:(id)arg4 isShown:(BOOL)arg5 orderHint:(unsigned long long)arg6;
+- (void)_createDefaultSchemeActions;
 
 @end
 
@@ -1639,23 +1782,27 @@ typedef struct {
 
 @end
 
-@interface IDESchemeAction : NSObject <DVTXMLUnarchiving, DVTInvalidation>
+@interface IDESchemeAction : NSObject <DVTXMLUnarchiving, DVTInvalidation_New>
 {
-    BOOL _isInvalidated;
-    DVTStackBacktrace *_invalidationBacktrace;
     BOOL _hasAwoken;
     IDEScheme *_runContext;
     NSMutableArray *_prePhaseExecutionActions;
     NSMutableArray *_postPhaseExecutionActions;
     IDESchemeBuildableReference *_buildableReferenceToUseForMacroExpansion;
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
++ (BOOL)automaticallyNotifiesObserversOfValue;
 + (BOOL)shouldAllowCustomPhaseActions;
 + (void)initialize;
-@property(retain) IDESchemeBuildableReference *buildableReferenceToUseForMacroExpansion; // @synthesize buildableReferenceToUseForMacroExpansion=_buildableReferenceToUseForMacroExpansion;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
+@property(retain) IDESchemeBuildableReference *buildableReferenceToUseForMacroExpansion; // @synthesize buildableReferenceToUseForMacroExpansion=_buildableReferenceToUseForMacroExpansion;
 @property(readonly) IDEScheme *runContext; // @synthesize runContext=_runContext;
-- (id)updateDYLDSettingInEnvironment:(id)arg1 withBuildProducts:(id)arg2 runDestination:(id)arg3;
+- (id)updateSearchPathSettingsInEnvironment:(id)arg1 withBuildProducts:(id)arg2 runDestination:(id)arg3;
 - (void)addPostActions:(id)arg1 fromXMLUnarchiver:(id)arg2;
 - (void)addPreActions:(id)arg1 fromXMLUnarchiver:(id)arg2;
 - (void)dvt_encodeRelationshipsWithXMLArchiver:(id)arg1;
@@ -1678,7 +1825,9 @@ typedef struct {
 - (void)removeObjectFromPrePhaseExecutionActionsAtIndex:(unsigned long long)arg1;
 - (void)insertObject:(id)arg1 inPrePhaseExecutionActionsAtIndex:(unsigned long long)arg2;
 @property(copy) NSArray *prePhaseExecutionActions; // @dynamic prePhaseExecutionActions;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
 @property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (id)expandMacrosInString:(id)arg1 forSchemeCommand:(int)arg2;
 - (id)setUpActionDependenciesForCorePhaseOperation:(id)arg1 shouldRunPostActionsBlock:(id)arg2 prePhaseEnvironmentPopulationBlock:(void)arg3 postPhaseEnvironmentPopulationBlock:(id)arg4 runDestination:(void)arg5 schemeCommand:(id)arg6 error:(void)arg7;
@@ -1707,7 +1856,7 @@ typedef struct {
     NSMutableArray *_testBuildableEntries;
     BOOL _buildablesDidChangeNotificationEnabled;
     BOOL _isBuildablesDidChangeNotificationPending;
-    NSMapTable *_overridingBuildPropertiesForBuildable;
+    DVTMapTable *_overridingBuildPropertiesForBuildable;
 }
 
 + (id)keyPathsForValuesAffectingAvailableBuildConfigurations;
@@ -1811,6 +1960,7 @@ typedef struct {
 - (void)dvt_awakeFromXMLUnarchiver:(id)arg1;
 - (id)initFromXMLUnarchiver:(id)arg1 archiveVersion:(float)arg2;
 - (id)initWithBuildableReference:(id)arg1 buildAction:(id)arg2 explicityManaged:(BOOL)arg3;
+- (id)description;
 
 @end
 
@@ -1821,14 +1971,16 @@ typedef struct {
     NSDictionary *_additionalOptionEntriesDict;
     NSMutableArray *_additionalSourceCodeEntries;
     NSMutableArray *_additionalDSYMEntries;
+    NSString *_debugAsWhichUser;
+    unsigned int _debugProcessAsUID;
     int _launchStyle;
     BOOL _useCustomWorkingDirectory;
     NSString *_customWorkingDirectory;
     NSString *_resolvedCustomWorkingDirectory;
     BOOL _ignoresPersistentStateOnLaunch;
     BOOL _debugDocumentVersioning;
-    BOOL _enablesOpenGLESFrameCapture;
-    short _shouldAllowOpenGLESOptions;
+    int _enableOpenGLFrameCaptureMode;
+    int _enableOpenGLPerformanceAnalysisMode;
     NSMutableArray *_modulesToLoadDebugSymbolsFor;
     NSString *_selectedDebuggerIdentifier;
     NSString *_selectedLauncherIdentifier;
@@ -1836,25 +1988,36 @@ typedef struct {
     IDEDeviceAppDataReference *_deviceAppDataReference;
     BOOL _allowLocationSimulation;
     IDELocationScenarioReference *_locationScenarioReference;
+    IDESchemeOptionReference *_routingCoverageFileReference;
+    NSNumber *_simulatorIPhoneDisplay;
+    NSNumber *_simulatorIPadDisplay;
     NSString *_buildConfiguration;
 }
 
++ (id)keyPathsForValuesAffectingDebugProcessAsUID;
 + (id)keyPathsForValuesAffectingRunnable;
 + (id)keyPathsForValuesAffectingDoesNonActionWork;
 + (id)keyPathsForValuesAffectingSubtitle;
 + (void)initialize;
 @property(copy) NSString *buildConfiguration; // @synthesize buildConfiguration=_buildConfiguration;
-@property BOOL enablesOpenGLESFrameCapture; // @synthesize enablesOpenGLESFrameCapture=_enablesOpenGLESFrameCapture;
+@property int enableOpenGLPerformanceAnalysisMode; // @synthesize enableOpenGLPerformanceAnalysisMode=_enableOpenGLPerformanceAnalysisMode;
+@property int enableOpenGLFrameCaptureMode; // @synthesize enableOpenGLFrameCaptureMode=_enableOpenGLFrameCaptureMode;
 @property BOOL debugDocumentVersioning; // @synthesize debugDocumentVersioning=_debugDocumentVersioning;
 @property BOOL ignoresPersistentStateOnLaunch; // @synthesize ignoresPersistentStateOnLaunch=_ignoresPersistentStateOnLaunch;
+@property(retain) NSNumber *simulatorIPadDisplay; // @synthesize simulatorIPadDisplay=_simulatorIPadDisplay;
+@property(retain) NSNumber *simulatorIPhoneDisplay; // @synthesize simulatorIPhoneDisplay=_simulatorIPhoneDisplay;
+@property(retain) IDESchemeOptionReference *routingCoverageFileReference; // @synthesize routingCoverageFileReference=_routingCoverageFileReference;
 @property(retain) IDELocationScenarioReference *locationScenarioReference; // @synthesize locationScenarioReference=_locationScenarioReference;
 @property BOOL allowLocationSimulation; // @synthesize allowLocationSimulation=_allowLocationSimulation;
 @property(retain) IDEDeviceAppDataReference *deviceAppDataReference; // @synthesize deviceAppDataReference=_deviceAppDataReference;
 @property(copy, nonatomic) NSString *customWorkingDirectory; // @synthesize customWorkingDirectory=_customWorkingDirectory;
 @property BOOL useCustomWorkingDirectory; // @synthesize useCustomWorkingDirectory=_useCustomWorkingDirectory;
 @property int launchStyle; // @synthesize launchStyle=_launchStyle;
+@property(nonatomic) unsigned int debugProcessAsUID; // @synthesize debugProcessAsUID=_debugProcessAsUID;
+@property(copy) NSString *debugAsWhichUser; // @synthesize debugAsWhichUser=_debugAsWhichUser;
 @property(copy) NSString *selectedLauncherIdentifier; // @synthesize selectedLauncherIdentifier=_selectedLauncherIdentifier;
 @property(readonly) NSDictionary *additionalOptionEntriesDict; // @synthesize additionalOptionEntriesDict=_additionalOptionEntriesDict;
+- (void)addRoutingCoverageFileReference:(id)arg1 fromXMLUnarchiver:(id)arg2;
 - (void)addLocationScenarioReference:(id)arg1 fromXMLUnarchiver:(id)arg2;
 - (void)addDeviceAppData:(id)arg1 fromXMLUnarchiver:(id)arg2;
 - (void)addMacroExpansion:(id)arg1 fromXMLUnarchiver:(id)arg2;
@@ -1871,8 +2034,11 @@ typedef struct {
 - (BOOL)needsNewSchemeVersionForAppDataPackage;
 - (void)setUseCustomWorkingDirectoryFromUTF8String:(char *)arg1 fromXMLUnarchiver:(id)arg2;
 @property(readonly) BOOL shouldAllowOpenGLESOptions;
+- (void)setSimulatorIPadDisplayFromUTF8String:(char *)arg1 fromXMLUnarchiver:(id)arg2;
+- (void)setSimulatorIPhoneDisplayFromUTF8String:(char *)arg1 fromXMLUnarchiver:(id)arg2;
 - (void)setAllowLocationSimulationFromUTF8String:(char *)arg1 fromXMLUnarchiver:(id)arg2;
-- (void)setEnablesOpenGLESFrameCaptureFromUTF8String:(char *)arg1 fromXMLUnarchiver:(id)arg2;
+- (void)setEnableOpenGLPerformanceAnalysisModeFromUTF8String:(char *)arg1 fromXMLUnarchiver:(id)arg2;
+- (void)setEnableOpenGLFrameCaptureModeFromUTF8String:(char *)arg1 fromXMLUnarchiver:(id)arg2;
 - (void)setDebugDocumentVersioningFromUTF8String:(char *)arg1 fromXMLUnarchiver:(id)arg2;
 - (void)setIgnoresPersistentStateOnLaunchFromUTF8String:(char *)arg1 fromXMLUnarchiver:(id)arg2;
 - (void)dvt_encodeAttributesWithXMLArchiver:(id)arg1;
@@ -1986,17 +2152,26 @@ typedef struct {
 
 @end
 
-@interface IDEContainerQuery : NSObject
+@interface IDEContainerQuery : NSObject <DVTInvalidation_New>
 {
     id <DVTModelObject><DVTInvalidation> _containerGraphObject;
     id <DVTObservingToken> _containerGraphObjectValidObservationToken;
     id _skipSubgraphBlock;
     id _predicateBlock;
     NSMutableSet *_matches;
+    NSMutableSet *_visitedContainerGraphObjects;
     BOOL _inObjectsDidChangeNotification;
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
 + (BOOL)automaticallyNotifiesObserversOfMatches;
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
+@property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 - (void)_objectsDidChange:(id)arg1;
 - (void)_updateWithInsertedMatches:(id)arg1 deletedMatches:(id)arg2;
 - (void)_traverseContainerGraphObjects:(id)arg1 forDeletion:(BOOL)arg2 insertedMatches:(id)arg3 deletedMatches:(id)arg4;
@@ -2008,7 +2183,11 @@ typedef struct {
 - (void)_removeContainerGraphObject:(id)arg1 deletedMatches:(id)arg2;
 - (void)_addContainerGraphObject:(id)arg1 insertedMatches:(id)arg2;
 @property(readonly) NSSet *matches;
-- (void)cancelQuery;
+- (void)primitiveInvalidate;
+- (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)_cancelQueryIfNeeded;
 - (id)initWithContainerGraphObject:(id)arg1 skipSubgraphBlock:(id)arg2 predicateBlock:(void)arg3;
 
 @end
@@ -2028,7 +2207,7 @@ typedef struct {
     IDELaunchSession *_selectedLaunchSession;
     IDELaunchSession *_currentLaunchSession;
     IDEBreakpointManager *_breakpointManager;
-    NSMapTable *_productNamesToBuildableProductsMapping;
+    DVTMapTable *_productNamesToBuildableProductsMapping;
     IDELogStore *_logStore;
     id <IDEPreBuildSavingDelegate> _preBuildSavingDelegate;
     BOOL _handlingLaunchSessionStateChange;
@@ -2042,7 +2221,7 @@ typedef struct {
 + (void)initialize;
 @property(retain) id <IDEPreBuildSavingDelegate> preBuildSavingDelegate; // @synthesize preBuildSavingDelegate=_preBuildSavingDelegate;
 @property(retain) id <IDEClientTracking> clientTracker; // @synthesize clientTracker=_clientTracker;
-@property(copy) NSMapTable *productNamesToBuildableProductsMapping; // @synthesize productNamesToBuildableProductsMapping=_productNamesToBuildableProductsMapping;
+@property(copy) DVTMapTable *productNamesToBuildableProductsMapping; // @synthesize productNamesToBuildableProductsMapping=_productNamesToBuildableProductsMapping;
 @property(readonly) int lastBuildResult; // @synthesize lastBuildResult=_lastBuildResult;
 @property(readonly) int buildState; // @synthesize buildState=_buildState;
 @property(readonly) NSSet *pendingBuildOperations; // @synthesize pendingBuildOperations=_pendingBuildOperations;
@@ -2054,12 +2233,13 @@ typedef struct {
 @property(retain) NSOperationQueue *operationQueue; // @synthesize operationQueue=_operationQueue;
 @property(retain) IDEExecutionTracker *currentExecutionTracker; // @synthesize currentExecutionTracker=_currentExecutionTracker;
 - (void)observeValueForKeyPath:(id)arg1 ofObject:(id)arg2 change:(id)arg3 context:(void *)arg4;
-- (void)_addMissingErrorForFailedBuildToRecorder:(id)arg1;
+- (void)_addMissingErrorForFailedBuildToRecorder:(id)arg1 buildLog:(id)arg2;
 - (void)_handleLaunchSession:(id)arg1 stateChange:(id)arg2;
 - (void)_detectNameConflict:(char *)arg1 sameScheme:(char *)arg2 forLaunchSession:(id)arg3 add:(BOOL)arg4;
 - (void)_detectNameConflict:(char *)arg1 sameScheme:(char *)arg2 forLaunchSession:(id)arg3 otherLaunchSession:(id)arg4;
 - (void)_setStatusForExecutionTrackerInLaunchSession:(id)arg1 nameConflict:(BOOL)arg2 sameScheme:(BOOL)arg3;
 - (void)_noteLaunchSessionTargetOutputStateChanged:(id)arg1;
+- (void)_addSyntheticLaunchSessionForDebuggingAdditionRun:(id)arg1;
 - (void)_setSelectedLaunchSessionForTabChange:(id)arg1;
 @property(readonly) IDEActivityLogSection *latestBuildLog;
 @property(readonly) NSArray *logRecords;
@@ -2145,22 +2325,31 @@ typedef struct {
 
 @interface IDEExecutionTracker : NSObject
 {
+    BOOL _isFinished;
     NSString *_statusDisplayName;
     DVTFilePath *_statusImageFilePath;
     IDELaunchSession *_launchSession;
     NSMutableArray *_subtrackers;
+    NSError *_error;
 }
 
++ (void)initialize;
+@property(retain) NSError *error; // @synthesize error=_error;
 @property(retain) IDELaunchSession *launchSession; // @synthesize launchSession=_launchSession;
 @property(retain) DVTFilePath *statusImageFilePath; // @synthesize statusImageFilePath=_statusImageFilePath;
 @property(retain) NSString *statusDisplayName; // @synthesize statusDisplayName=_statusDisplayName;
+@property BOOL isFinished; // @synthesize isFinished=_isFinished;
+- (id)description;
 - (void)setStatusDisplayName:(id)arg1 statusImageFilePath:(id)arg2;
-- (void)observeValueForKeyPath:(id)arg1 ofObject:(id)arg2 change:(id)arg3 context:(void *)arg4;
 - (void)addSubtracker:(id)arg1;
+- (void)_updateIsFinished;
 - (void)cancel;
-@property(readonly) BOOL isFinished;
 @property(readonly) BOOL statusChanged;
 - (id)init;
+
+// Remaining properties
+@property(readonly) NSMutableArray *mutableSubtrackers; // @dynamic mutableSubtrackers;
+@property(readonly) NSArray *subtrackers; // @dynamic subtrackers;
 
 @end
 
@@ -2227,6 +2416,7 @@ typedef struct {
     NSArray *_moduleNamePatternsToLoadDebugSymbolsFor;
     DVTFilePath *_runnableLocation;
     DVTFilePath *_replacementRunnableLocation;
+    unsigned int _debugProcessAsUID;
     DVTFilePath *_workingDirectory;
     NSDictionary *_additionalDeviceSubstitutionPaths;
     NSArray *_commandLineArgs;
@@ -2244,11 +2434,20 @@ typedef struct {
     NSString *_deviceAppDataPackage;
     BOOL _allowLocationSimulation;
     IDELocationScenarioReference *_locationScenarioReference;
-    BOOL _enablesOpenGLESFrameCapture;
+    IDESchemeOptionReference *_routingCoverageFileReference;
+    int _enableOpenGLFrameCaptureMode;
+    int _enableOpenGLPerformanceAnalysisMode;
+    NSNumber *_simulatorIPhoneDisplay;
+    NSNumber *_simulatorIPadDisplay;
+    id _debugServiceObject;
 }
 
-+ (id)launchParametersWithSchemeIdentifier:(id)arg1 schemeName:(id)arg2 launcherIdentifier:(id)arg3 debuggerIdentifier:(id)arg4 launchStyle:(int)arg5 moduleNamePatternsToLoadDebugSymbolsFor:(id)arg6 runnableLocation:(id)arg7 workingDirectory:(id)arg8 commandLineArgs:(id)arg9 environmentVariables:(id)arg10 architecture:(id)arg11 platformIdentifier:(id)arg12 buildConfiguration:(id)arg13 buildableProduct:(id)arg14 deviceAppDataPackage:(id)arg15 allowLocationSimulation:(BOOL)arg16 locationScenarioReference:(id)arg17 enablesOpenGLESFrameCapture:(BOOL)arg18;
-@property(readonly) BOOL enablesOpenGLESFrameCapture; // @synthesize enablesOpenGLESFrameCapture=_enablesOpenGLESFrameCapture;
++ (id)launchParametersWithSchemeIdentifier:(id)arg1 schemeName:(id)arg2 launcherIdentifier:(id)arg3 debuggerIdentifier:(id)arg4 launchStyle:(int)arg5 moduleNamePatternsToLoadDebugSymbolsFor:(id)arg6 runnableLocation:(id)arg7 debugProcessAsUID:(unsigned int)arg8 workingDirectory:(id)arg9 commandLineArgs:(id)arg10 environmentVariables:(id)arg11 architecture:(id)arg12 platformIdentifier:(id)arg13 buildConfiguration:(id)arg14 buildableProduct:(id)arg15 deviceAppDataPackage:(id)arg16 allowLocationSimulation:(BOOL)arg17 locationScenarioReference:(id)arg18 routingCoverageFileReference:(id)arg19 enableOpenGLFrameCaptureMode:(int)arg20 enableOpenGLPerformanceAnalysisMode:(int)arg21 simulatorIPhoneDisplay:(id)arg22 simulatorIPadDisplay:(id)arg23;
+@property(readonly) NSNumber *simulatorIPadDisplay; // @synthesize simulatorIPadDisplay=_simulatorIPadDisplay;
+@property(readonly) NSNumber *simulatorIPhoneDisplay; // @synthesize simulatorIPhoneDisplay=_simulatorIPhoneDisplay;
+@property(readonly) int enableOpenGLPerformanceAnalysisMode; // @synthesize enableOpenGLPerformanceAnalysisMode=_enableOpenGLPerformanceAnalysisMode;
+@property(readonly) int enableOpenGLFrameCaptureMode; // @synthesize enableOpenGLFrameCaptureMode=_enableOpenGLFrameCaptureMode;
+@property(readonly) IDESchemeOptionReference *routingCoverageFileReference; // @synthesize routingCoverageFileReference=_routingCoverageFileReference;
 @property(readonly) IDELocationScenarioReference *locationScenarioReference; // @synthesize locationScenarioReference=_locationScenarioReference;
 @property BOOL allowLocationSimulation; // @synthesize allowLocationSimulation=_allowLocationSimulation;
 @property(readonly) NSString *deviceAppDataPackage; // @synthesize deviceAppDataPackage=_deviceAppDataPackage;
@@ -2256,6 +2455,7 @@ typedef struct {
 @property(readonly) id <IDEBuildableProduct> buildableProduct; // @synthesize buildableProduct=_buildableProduct;
 @property(readonly) NSString *buildConfiguration; // @synthesize buildConfiguration=_buildConfiguration;
 @property(readonly) NSString *platformIdentifier; // @synthesize platformIdentifier=_platformIdentifier;
+@property(retain) id debugServiceObject; // @synthesize debugServiceObject=_debugServiceObject;
 @property int debugServiceFD; // @synthesize debugServiceFD=_debugServiceFD;
 @property BOOL debugAsAService; // @synthesize debugAsAService=_debugAsAService;
 @property(copy) NSString *remoteInstallPath; // @synthesize remoteInstallPath=_remoteInstallPath;
@@ -2264,6 +2464,7 @@ typedef struct {
 @property(copy) NSDictionary *testingEnvironmentVariables; // @synthesize testingEnvironmentVariables=_testingEnvironmentVariables;
 @property(copy) NSArray *testingCommandLineArgs; // @synthesize testingCommandLineArgs=_testingCommandLineArgs;
 @property(readonly) DVTFilePath *workingDirectory; // @synthesize workingDirectory=_workingDirectory;
+@property(readonly) unsigned int debugProcessAsUID; // @synthesize debugProcessAsUID=_debugProcessAsUID;
 @property(copy) DVTFilePath *replacementRunnableLocation; // @synthesize replacementRunnableLocation=_replacementRunnableLocation;
 @property(readonly) NSArray *moduleNamePatternsToLoadDebugSymbolsFor; // @synthesize moduleNamePatternsToLoadDebugSymbolsFor=_moduleNamePatternsToLoadDebugSymbolsFor;
 @property(readonly) int launchStyle; // @synthesize launchStyle=_launchStyle;
@@ -2306,6 +2507,7 @@ typedef struct {
     id <IDETraceInferiorSession> _currentTraceInferiorSession;
     NSArray *_debuggingAdditions;
     int _state;
+    NSError *_alertError;
     IDELaunchParametersSnapshot *_launchParameters;
     DVTFileDataType *_runnableType;
     int _runnablePID;
@@ -2315,12 +2517,15 @@ typedef struct {
     NSString *_runnableDisplayName;
     int _schemeCommand;
     NSMutableSet *_consoleAdaptors;
-    NSMapTable *_targetConsoleAdaptorToTerminationToken;
+    DVTMapTable *_targetConsoleAdaptorToTerminationToken;
     int _targetOutputState;
     IDELocationSimulator *_locationSimulator;
 }
 
 + (BOOL)automaticallyNotifiesObserversOfTargetOutputState;
++ (void)terminateLaunchSession:(id)arg1 inWorkspace:(id)arg2;
++ (id)createLaunchSessionForDebuggingAddition:(id)arg1 inWorkspace:(id)arg2 launchParameters:(id)arg3 runnableDisplayName:(id)arg4 runDestination:(id)arg5;
++ (id)synthesizeDebuggingAdditionSession:(id)arg1 inWorkspace:(id)arg2 launchParameters:(id)arg3 runnableDisplayName:(id)arg4 runDestination:(id)arg5;
 + (void)initialize;
 @property(readonly) IDELocationSimulator *locationSimulator; // @synthesize locationSimulator=_locationSimulator;
 @property int schemeCommand; // @synthesize schemeCommand=_schemeCommand;
@@ -2331,13 +2536,16 @@ typedef struct {
 @property int runnablePID; // @synthesize runnablePID=_runnablePID;
 @property(readonly) DVTFileDataType *runnableType; // @synthesize runnableType=_runnableType;
 @property(retain) IDELaunchParametersSnapshot *launchParameters; // @synthesize launchParameters=_launchParameters;
+@property(copy) NSError *alertError; // @synthesize alertError=_alertError;
 @property(nonatomic) int state; // @synthesize state=_state;
 @property(readonly) NSArray *debuggingAdditions; // @synthesize debuggingAdditions=_debuggingAdditions;
 @property(retain) id <IDETraceInferiorSession> currentTraceInferiorSession; // @synthesize currentTraceInferiorSession=_currentTraceInferiorSession;
 @property(retain, nonatomic) id <IDEDebugSession> currentDebugSession; // @synthesize currentDebugSession=_currentDebugSession;
 @property(retain) IDEExecutionTracker *executionTracker; // @synthesize executionTracker=_executionTracker;
 @property(readonly) IDEExecutionEnvironment *executionEnvironment; // @synthesize executionEnvironment=_executionEnvironment;
+@property(readonly) BOOL supportsDebugSession;
 - (BOOL)isAlive;
+@property(readonly) BOOL isCurrentlyTracing;
 - (void)_willExpire;
 - (void)_didStart;
 - (void)_removeConsoleAdaptorObservations:(id)arg1;
@@ -2348,14 +2556,22 @@ typedef struct {
 @property(readonly) NSMutableSet *kvoConsoleAdaptors;
 @property(readonly) int CPUType;
 @property(readonly) IDERunDestination *runDestination;
-@property(readonly) NSDictionary *environmentVariables;
-@property(readonly) NSArray *commandLineArgs;
-@property(readonly) DVTFilePath *workingDirectory;
 - (id)initWithExecutionEnvironment:(id)arg1 launchParameters:(id)arg2 runnableDisplayName:(id)arg3 runnableType:(id)arg4 runDestination:(id)arg5;
 
 // Remaining properties
 @property(copy) NSArray *debugSessions; // @dynamic debugSessions;
 @property(readonly) NSMutableArray *mutableDebugSessions; // @dynamic mutableDebugSessions;
+
+@end
+
+@interface IDESyntheticLaunchSession : IDELaunchSession
+{
+    NSString *_debuggingAdditionIdentifier;
+}
+
+@property(retain) NSString *debuggingAdditionIdentifier; // @synthesize debuggingAdditionIdentifier=_debuggingAdditionIdentifier;
+- (void)_didStart;
+- (BOOL)supportsDebugSession;
 
 @end
 
@@ -2367,22 +2583,6 @@ typedef struct {
 @property(readonly) NSMutableDictionary *compositeEnvironmentVariables;
 @property(readonly) DVTFilePath *filePathToBinary;
 @property(readonly) DVTFilePath *filePath;
-
-@end
-
-@interface IDETaskLauncher : IDERunOperationPathWorker
-{
-    NSTask *_task;
-    BOOL _handledAppLaunch;
-}
-
-@property(retain) NSTask *task; // @synthesize task=_task;
-- (void)applicationDidLaunch:(id)arg1;
-- (void)taskDidTerminate:(id)arg1;
-- (void)terminate;
-- (void)_setFinishedRunning;
-- (void)start;
-- (void)_setupPTY;
 
 @end
 
@@ -2445,11 +2645,12 @@ typedef struct {
     BOOL _diagnosticMode;
     BOOL _enabledWAL;
     NSMutableArray *_errors;
-    DVTDispatchLock *_errorLock;
+    DVTDispatchLock *_dataLock;
     IDEIndexDBStringStorage *_directoryStringStorage;
     IDEIndexDBStringStorage *_filenameStringStorage;
     IDEIndexDBStringStorage *_spellingStringStorage;
     IDEIndexDBStringStorage *_resolutionStringStorage;
+    IDEIndexDBStringStorage *_completionStringStorage;
     NSDictionary *_rootPathsTrie;
     NSMutableDictionary *_rootPathsCache;
 }
@@ -2472,18 +2673,22 @@ typedef struct {
 - (void)findFilenameStringsContaining:(id)arg1 anchorStart:(BOOL)arg2 anchorEnd:(BOOL)arg3 subsequence:(BOOL)arg4 lowercase:(BOOL)arg5 cancelWhen:(id)arg6 forEachResult:(void)arg7;
 - (void)findStringsContaining:(id)arg1 inStorage:(id)arg2 anchorStart:(BOOL)arg3 anchorEnd:(BOOL)arg4 subsequence:(BOOL)arg5 lowercase:(BOOL)arg6 cancelWhen:(id)arg7 forEachResult:(void)arg8;
 - (id)filePathForDirectoryAtOffset:(long long)arg1 fileAtOffset:(long long)arg2;
+- (char *)completionCStringAtOffset:(long long)arg1;
 - (char *)resolutionCStringAtOffset:(long long)arg1;
 - (char *)spellingCStringAtOffset:(long long)arg1;
 - (char *)filenameCStringAtOffset:(long long)arg1;
 - (char *)directoryCStringAtOffset:(long long)arg1;
 - (char *)cStringAtOffset:(long long)arg1 inStorage:(id)arg2;
+- (id)completionStringAtOffset:(long long)arg1;
 - (id)resolutionStringAtOffset:(long long)arg1;
 - (id)spellingStringAtOffset:(long long)arg1;
 - (id)filenameStringAtOffset:(long long)arg1;
 - (id)directoryStringAtOffset:(long long)arg1;
 - (id)stringAtOffset:(long long)arg1 inStorage:(id)arg2;
+- (long long)offsetOfCompletionCString:(const char *)arg1 addIfMissing:(BOOL)arg2;
 - (long long)offsetOfResolutionCString:(const char *)arg1 addIfMissing:(BOOL)arg2;
 - (long long)offsetOfSpellingCString:(const char *)arg1 addIfMissing:(BOOL)arg2;
+- (long long)offsetOfCompletionString:(id)arg1 addIfMissing:(BOOL)arg2;
 - (long long)offsetOfResolutionString:(id)arg1 addIfMissing:(BOOL)arg2;
 - (long long)offsetOfSpellingString:(id)arg1 addIfMissing:(BOOL)arg2;
 - (long long)offsetOfFilenameString:(id)arg1 addIfMissing:(BOOL)arg2;
@@ -2499,6 +2704,7 @@ typedef struct {
 - (void)purgeStaleData:(id)arg1;
 - (BOOL)spliceChanges:(id)arg1 toMainFile:(id)arg2 target:(id)arg3;
 - (void)registerHotFile:(id)arg1;
+- (void)clearPCHFailures;
 - (void)unregisterTarget:(id)arg1 dirtyFiles:(id)arg2;
 - (void)registerTarget:(id)arg1 outOfDateCallback:(id)arg2;
 - (id)auxiliaryFiles:(id)arg1 mainFile:(id)arg2;
@@ -2567,6 +2773,7 @@ typedef struct {
 
 + (void)initialize;
 - (id)database;
+- (void)dealloc;
 - (void)finalize;
 - (void)close;
 - (void)wait;
@@ -2628,6 +2835,7 @@ typedef struct {
 + (void)initialize;
 @property(readonly, nonatomic) long long objectCount; // @synthesize objectCount=_objectCount;
 @property(readonly, nonatomic) IDEIndexDBTransaction *dbTransaction; // @synthesize dbTransaction=_dbTransaction;
+- (void)dealloc;
 - (void)finalize;
 - (void)close;
 - (long long)realObjectIdForId:(long long)arg1;
@@ -2690,6 +2898,7 @@ typedef struct {
 - (long long)realGroupIdForId:(long long)arg1;
 - (long long)realUnitIdForId:(long long)arg1;
 - (long long)realFileIdForId:(long long)arg1;
+- (void)dealloc;
 - (void)finalize;
 - (void)close;
 - (void)logStatistics;
@@ -2701,6 +2910,7 @@ typedef struct {
 - (void)unregisterTarget:(id)arg1 dirtyFiles:(id)arg2;
 - (void)registerTarget:(id)arg1 outOfDateCallback:(id)arg2;
 - (id)auxiliaryFiles:(id)arg1 mainFile:(id)arg2;
+- (long long)numberOfKnownFiles;
 - (id)timestampForFile:(id)arg1;
 - (id)mainFilesForFile:(id)arg1;
 - (id)mainFilesForFile:(id)arg1 followPCH:(BOOL)arg2;
@@ -2712,7 +2922,7 @@ typedef struct {
 
 @end
 
-@interface IDEIndexNewFile : NSObject
+@interface IDEIndexNewFile : NSObject <IDEIndexNewFileBase>
 {
     DVTFilePath *_path;
     NSDate *_modified;
@@ -2745,15 +2955,15 @@ typedef struct {
 @property(readonly, nonatomic) DVTFilePath *path; // @synthesize path=_path;
 @property(readonly, nonatomic) NSString *signature;
 - (id)newFileWithPath:(id)arg1 modified:(id)arg2;
-- (id)newSymbolWithName:(id)arg1 kind:(id)arg2 role:(int)arg3 language:(id)arg4 resolution:(id)arg5 lineNumber:(long long)arg6 locator:(id)arg7 container:(id)arg8;
-- (void)addSymbolWithName:(id)arg1 kind:(id)arg2 role:(int)arg3 language:(id)arg4 resolution:(id)arg5 lineNumber:(long long)arg6 locator:(id)arg7 container:(id)arg8;
-- (id)newSymbolWithCName:(const char *)arg1 kind:(id)arg2 role:(int)arg3 language:(id)arg4 resolution:(const char *)arg5 lineNumber:(long long)arg6 locator:(id)arg7 container:(id)arg8;
-- (void)addSymbolWithCName:(const char *)arg1 kind:(id)arg2 role:(int)arg3 language:(id)arg4 resolution:(const char *)arg5 lineNumber:(long long)arg6 locator:(id)arg7 container:(id)arg8;
-- (void)createSymbolWithName:(const char *)arg1 kind:(id)arg2 role:(int)arg3 language:(id)arg4 resolution:(const char *)arg5 lineNumber:(long long)arg6 locator:(id)arg7 container:(id)arg8 pSymbol:(id *)arg9;
+- (id)newSymbolWithName:(id)arg1 kind:(id)arg2 role:(int)arg3 language:(id)arg4 resolution:(id)arg5 lineNumber:(long long)arg6 column:(long long)arg7 locator:(id)arg8 completionString:(void *)arg9 container:(id)arg10;
+- (void)addSymbolWithName:(id)arg1 kind:(id)arg2 role:(int)arg3 language:(id)arg4 resolution:(id)arg5 lineNumber:(long long)arg6 column:(long long)arg7 locator:(id)arg8 completionString:(void *)arg9 container:(id)arg10;
+- (id)newSymbolWithCName:(const char *)arg1 kind:(id)arg2 role:(int)arg3 language:(id)arg4 resolution:(const char *)arg5 lineNumber:(long long)arg6 column:(long long)arg7 locator:(id)arg8 completionString:(void *)arg9 container:(id)arg10;
+- (void)addSymbolWithCName:(const char *)arg1 kind:(id)arg2 role:(int)arg3 language:(id)arg4 resolution:(const char *)arg5 lineNumber:(long long)arg6 column:(long long)arg7 locator:(id)arg8 completionString:(void *)arg9 container:(id)arg10;
+- (void)createSymbolWithName:(const char *)arg1 kind:(id)arg2 role:(int)arg3 language:(id)arg4 resolution:(const char *)arg5 lineNumber:(long long)arg6 column:(long long)arg7 locator:(id)arg8 completionString:(void *)arg9 container:(id)arg10 pSymbol:(id *)arg11;
 - (id)description;
 - (void)freeMemory;
 - (void)dontSubmitSymbols;
-- (long long)submitSymbolsTo:(id)arg1;
+- (long long)submitSymbolsTo:(id)arg1 nReferences:(long long *)arg2;
 - (long long)realSymbolIdForId:(long long)arg1;
 @property(readonly, nonatomic) long long realGroupId;
 @property(readonly, nonatomic) long long realFileId;
@@ -2768,60 +2978,82 @@ typedef struct {
 {
     IDEIndexNewFile *_file;
     long long _lineNumber;
+    long long _column;
     long long _symbolId;
     unsigned long long _containerSeq;
 }
 
 @property(nonatomic) unsigned long long containerSeq; // @synthesize containerSeq=_containerSeq;
 @property(nonatomic) long long symbolId; // @synthesize symbolId=_symbolId;
+@property(readonly, nonatomic) long long column; // @synthesize column=_column;
 @property(readonly, nonatomic) long long lineNumber; // @synthesize lineNumber=_lineNumber;
 @property(readonly, nonatomic) IDEIndexNewFile *file; // @synthesize file=_file;
 @property(readonly, nonatomic) long long realSymbolId;
-- (id)initWithFile:(id)arg1 lineNumber:(long long)arg2;
+- (id)initWithFile:(id)arg1 lineNumber:(long long)arg2 column:(long long)arg3;
 
 @end
 
-@interface IDEIndexSymbol : NSObject
+@interface IDEIndexSymbol : IDEIndexSymbolOccurrence <IDEAutoImportable>
 {
-    NSObject<IDEIndexQueryProvider> *_queryProvider;
     NSString *_name;
+    NSString *_displayName;
+    NSString *_qualifiedDisplayName;
     DVTSourceCodeSymbolKind *_symbolKind;
     DVTSourceCodeLanguage *_symbolLanguage;
     NSString *_resolution;
     long long _rawKind;
     long long _rawLanguage;
-    BOOL _lookedForModelOccurrence;
+    BOOL _haveModelOccurrence;
     BOOL _isVirtual;
-    IDEIndexSymbolOccurrence *_modelOccurrence;
 }
 
 + (id)newSymbolOfKind:(id)arg1 language:(id)arg2 name:(id)arg3 resolution:(id)arg4 forQueryProvider:(id)arg5;
 + (id)newSymbolOfRawKind:(long long)arg1 rawLanguage:(long long)arg2 name:(id)arg3 resolution:(id)arg4 forQueryProvider:(id)arg5;
 + (id)newSymbolOfRawKind:(long long)arg1 kind:(id)arg2 rawLanguage:(long long)arg3 language:(id)arg4 name:(id)arg5 resolution:(id)arg6 forQueryProvider:(id)arg7;
 @property(nonatomic) BOOL isVirtual; // @synthesize isVirtual=_isVirtual;
-@property(nonatomic) long long rawLanguage; // @synthesize rawLanguage=_rawLanguage;
-@property(retain, nonatomic) DVTSourceCodeLanguage *symbolLanguage; // @synthesize symbolLanguage=_symbolLanguage;
-@property(nonatomic) long long rawKind; // @synthesize rawKind=_rawKind;
-@property(retain, nonatomic) DVTSourceCodeSymbolKind *symbolKind; // @synthesize symbolKind=_symbolKind;
-@property(retain, nonatomic) NSString *resolution; // @synthesize resolution=_resolution;
-@property(retain, nonatomic) NSString *name; // @synthesize name=_name;
-@property(nonatomic) NSObject<IDEIndexQueryProvider> *queryProvider; // @synthesize queryProvider=_queryProvider;
+@property(readonly, nonatomic) long long rawLanguage; // @synthesize rawLanguage=_rawLanguage;
+@property(readonly, nonatomic) DVTSourceCodeLanguage *symbolLanguage; // @synthesize symbolLanguage=_symbolLanguage;
+@property(readonly, nonatomic) long long rawKind; // @synthesize rawKind=_rawKind;
+@property(readonly, nonatomic) DVTSourceCodeSymbolKind *symbolKind; // @synthesize symbolKind=_symbolKind;
+@property(readonly, nonatomic) NSString *resolution; // @synthesize resolution=_resolution;
+@property(readonly, nonatomic) NSString *name; // @synthesize name=_name;
+@property(readonly, nonatomic, getter=isAutoImportable) BOOL autoImportable;
+@property(readonly, nonatomic) DVTFilePath *filePathToHeaderToImport;
+@property(readonly, nonatomic) NSString *completionString;
 - (id)qualifiedDisplayName;
 - (id)_containerName;
 - (id)displayName;
 - (id)_nameFromFile;
+- (id)references;
 - (id)referencingFiles;
 - (id)containerSymbol;
 - (id)containerSymbols;
-- (id)definitions;
+@property(readonly, nonatomic) IDEIndexCollection *definitions;
 - (id)declarations;
 - (id)occurrences;
+- (id)correspondingSymbol;
+- (id)location;
+- (id)file;
+- (long long)column;
+- (long long)lineNumber;
+- (long long)role;
+- (long long)objectId;
+- (void)setObjectId:(long long)arg1 role:(long long)arg2 lineNumber:(long long)arg3 column:(long long)arg4 file:(id)arg5;
+- (void)setRole:(long long)arg1 location:(id)arg2;
+- (void)setOccurrence:(id)arg1;
+- (id)occurrence;
+- (void)setModelOccurrenceObjectId:(long long)arg1 role:(long long)arg2 lineNumber:(long long)arg3 column:(long long)arg4 file:(id)arg5;
+- (void)setModelOccurrenceRole:(long long)arg1 location:(id)arg2;
 - (void)setModelOccurrence:(id)arg1;
 - (id)modelOccurrence;
-- (BOOL)isInProject;
+@property(readonly, nonatomic, getter=isInProject) BOOL inProject;
 - (BOOL)isEqual:(id)arg1;
 - (unsigned long long)hash;
 - (id)description;
+- (void)setRawKind:(long long)arg1 kind:(id)arg2 rawLanguage:(long long)arg3 language:(id)arg4 name:(id)arg5 resolution:(id)arg6;
+
+// Remaining properties
+@property(readonly, nonatomic) NSObject<IDEIndexQueryProvider> *queryProvider;
 
 @end
 
@@ -2831,6 +3063,7 @@ typedef struct {
     DVTDocumentLocation *_location;
     long long _objectId;
     long long _lineNumber;
+    long long _column;
     DVTFilePath *_file;
     BOOL _lookedForCorrespondingSymbol;
     IDEIndexSymbol *_correspondingSymbol;
@@ -2838,15 +3071,23 @@ typedef struct {
 }
 
 + (id)newSymbolOccurrenceForSymbol:(id)arg1 role:(long long)arg2 location:(id)arg3 forQueryProvider:(id)arg4;
-+ (id)newSymbolOccurrenceForSymbol:(id)arg1 objectId:(long long)arg2 role:(long long)arg3 lineNumber:(long long)arg4 file:(id)arg5 forQueryProvider:(id)arg6;
-@property(retain, nonatomic) DVTDocumentLocation *location; // @synthesize location=_location;
-@property(nonatomic) NSObject<IDEIndexQueryProvider> *queryProvider; // @synthesize queryProvider=_queryProvider;
-@property(retain, nonatomic) DVTFilePath *file; // @synthesize file=_file;
-@property(nonatomic) long long lineNumber; // @synthesize lineNumber=_lineNumber;
-@property(nonatomic) long long role; // @synthesize role=_role;
-@property(nonatomic) long long objectId; // @synthesize objectId=_objectId;
++ (id)newSymbolOccurrenceForSymbol:(id)arg1 objectId:(long long)arg2 role:(long long)arg3 lineNumber:(long long)arg4 column:(long long)arg5 file:(id)arg6 forQueryProvider:(id)arg7;
+@property(readonly, nonatomic) NSObject<IDEIndexQueryProvider> *queryProvider; // @synthesize queryProvider=_queryProvider;
+@property(readonly, nonatomic) long long column; // @synthesize column=_column;
+@property(readonly, nonatomic) long long lineNumber; // @synthesize lineNumber=_lineNumber;
+@property(readonly, nonatomic) long long role; // @synthesize role=_role;
+@property(readonly, nonatomic) long long objectId; // @synthesize objectId=_objectId;
+- (id)callees;
+@property(readonly, nonatomic) DVTDocumentLocation *location;
+@property(readonly, nonatomic) DVTFilePath *file;
+- (id)occurrence;
+- (id)containerSymbol;
+- (id)description;
+- (void)setOccurrence:(id)arg1;
+- (void)setRole:(long long)arg1 location:(id)arg2;
+- (void)setObjectId:(long long)arg1 role:(long long)arg2 lineNumber:(long long)arg3 column:(long long)arg4 file:(id)arg5;
 - (id)correspondingSymbol;
-- (id)initWithCorrespondingSymbol:(id)arg1;
+- (id)initWithCorrespondingSymbol:(id)arg1 forQueryProvider:(id)arg2;
 
 @end
 
@@ -2904,6 +3145,8 @@ typedef struct {
     NSMutableDictionary *_identifiersToIndexables;
     NSMutableDictionary *_indexablesToProductHeaders;
     NSMutableDictionary *_copiedHeadersToSources;
+    NSMutableDictionary *_sourceHeadersToIndexables;
+    NSSet *_preferredTargets;
     IDEIndexDatabase *_workspaceDatabase;
     long long _purgeCount;
     DVTDispatchLock *_stateLock;
@@ -2914,13 +3157,13 @@ typedef struct {
     BOOL _isCancelled;
     BOOL _isInErrorRecoveryMode;
     BOOL _isReadOnly;
+    BOOL _cleanedUpOldPCHs;
     id _indexableFileWasAddedNotificationObservingToken;
     id _indexableFileWillBeRemovedNotificationObservingToken;
     id _indexableDidRenameFileNotificationObservingToken;
     id _buildablesDidChangeNotificationObservingToken;
     id _buildSettingsDidChangeNotificationObservingToken;
     id _buildOperationDidStopNotificationObservingToken;
-    id _indexingMetric;
 }
 
 + (BOOL)languageSupportsSymbolColoring:(id)arg1;
@@ -2929,6 +3172,7 @@ typedef struct {
 + (id)_dataSourceExtensionForFile:(id)arg1 withLanguage:(id)arg2;
 + (void)syncPerformBlockOnMainThread:(id)arg1;
 + (void)initialize;
++ (BOOL)includeAutoImportResults;
 + (BOOL)indexFollowsActiveScheme;
 + (id)schedulingLogAspect;
 + (id)clangInvocationLogAspect;
@@ -2936,7 +3180,6 @@ typedef struct {
 + (id)deferredMetricLogAspect;
 + (id)metricLogAspect;
 + (id)logAspect;
-@property(retain, nonatomic) DVTPerformanceMetric *indexingMetric; // @synthesize indexingMetric=_indexingMetric;
 @property(readonly, nonatomic) DVTFilePath *databaseFile; // @synthesize databaseFile=_databaseFile;
 @property(readonly, nonatomic) IDEIndexDatabase *database; // @synthesize database=_workspaceDatabase;
 - (id)mainFilesForFile:(id)arg1;
@@ -2948,13 +3191,20 @@ typedef struct {
 - (void)_activeRunContextDidChange:(id)arg1;
 - (void)_clearAllCachedBuildSettings;
 - (void)_computePreferredTargets;
+- (BOOL)isPreferredTarget:(id)arg1;
 - (id)databaseQueryProvider;
 - (id)queryProviderForLocation:(id)arg1 highPriority:(BOOL)arg2;
+- (void)dontDeferJobForFile:(id)arg1 indexable:(id)arg2;
+- (void)registerHotFile:(id)arg1;
 - (id)queryProviderForFile:(id)arg1 highPriority:(BOOL)arg2;
 - (id)resolutionForName:(id)arg1 kind:(id)arg2 containerName:(id)arg3;
+- (id)indexableForCopiedHeader:(id)arg1;
 - (id)effectivePathForHeader:(id)arg1;
+- (void)_initCopiedHeaders;
+- (void)_cleanupOldPCHs;
 - (void)didCancelIndexingPCHFile:(id)arg1;
-- (id)createPCHFile:(id)arg1 willIndex:(BOOL)arg2 arguments:(id)arg3 prefix:(id)arg4;
+- (BOOL)createPCHFile:(id)arg1 prefix:(id)arg2 arguments:(id)arg3 willIndex:(BOOL)arg4 translationUnit:(id *)arg5;
+- (void)clearPCHFailuresForDatabase:(id)arg1;
 - (void)databaseDidReportError:(id)arg1;
 - (void)databaseDidLoad:(id)arg1;
 - (void)databaseDidOpen:(id)arg1;
@@ -2984,6 +3234,7 @@ typedef struct {
 - (void)suspendIndexing;
 @property(readonly, nonatomic) BOOL shouldAllowRefactoring;
 @property(readonly, nonatomic) BOOL isQuiescent;
+- (void)doWhenFilesReady:(id)arg1;
 - (void)willRegisterMoreFiles:(BOOL)arg1;
 - (void)unregisterFile:(id)arg1;
 - (void)registerFile:(id)arg1;
@@ -2998,6 +3249,8 @@ typedef struct {
 @property(readonly) DVTFilePath *workspaceBuildProductsDirPath;
 @property(readonly) DVTFilePath *headerMapFilePath;
 - (void)observeValueForKeyPath:(id)arg1 ofObject:(id)arg2 change:(id)arg3 context:(void *)arg4;
+- (BOOL)isCurrentForWorkspace:(id)arg1;
+- (void)beginTextIndexing;
 - (id)initWithWorkspace:(id)arg1;
 - (id)initWithFolder:(id)arg1;
 - (id)initWithFolder:(id)arg1 forWorkspace:(id)arg2;
@@ -3014,14 +3267,17 @@ typedef struct {
 - (id)_localizedPhraseForDependentObjCCompilationUnit:(id)arg1 errorLanguages:(id)arg2 sharedLanguageIdentifier:(id)arg3 sharedIndexableObject:(id)arg4;
 - (id)_localizedDescriptionForObjCCompilationUnit:(id)arg1 errorLanguages:(id)arg2;
 - (BOOL)_errorLanguages:(id *)arg1 forFilePath:(id)arg2 indexableObjects:(id)arg3;
+- (id)allAutoImportItemsMatchingKind:(id)arg1 symbolLanguage:(id)arg2;
+- (id)allAutoImportItemsMatchingKind:(id)arg1;
 - (id)filesWithSymbolOccurrencesMatchingName:(id)arg1 kind:(id)arg2;
 - (id)allClassesWithMembers:(id)arg1;
 - (id)classesWithMembers:(id)arg1;
 - (id)membersMatchingName:(id)arg1 kinds:(id)arg2 forInterfaces:(id)arg3;
 - (id)membersMatchingKinds:(id)arg1 forInterfaces:(id)arg2;
 - (id)symbolsForResolutions:(id)arg1;
+- (id)parsedCodeCommentAtLocation:(id)arg1 withCurrentFileContentDictionary:(id)arg2;
 - (id)codeDiagnosticsAtLocation:(id)arg1 withCurrentFileContentDictionary:(id)arg2;
-- (id)codeCompletionsAtLocation:(id)arg1 withCurrentFileContentDictionary:(id)arg2 sortedUsingBlock:(id)arg3;
+- (id)codeCompletionsAtLocation:(id)arg1 withCurrentFileContentDictionary:(id)arg2 completionContext:(id *)arg3 sortedUsingBlock:(id)arg4;
 - (id)topLevelSymbolsInFile:(id)arg1;
 - (unsigned long long)countOfSymbolsMatchingKind:(id)arg1 workspaceOnly:(BOOL)arg2;
 - (id)allSymbolsMatchingKind:(id)arg1 workspaceOnly:(BOOL)arg2 cancelWhen:(id)arg3;
@@ -3048,7 +3304,7 @@ typedef struct {
 - (id)topLevelClassesWorkspaceOnly:(BOOL)arg1 cancelWhen:(id)arg2;
 - (id)topLevelClassesWorkspaceOnly:(BOOL)arg1;
 - (id)topLevelClasses;
-- (id)filesContaining:(id)arg1 anchorStart:(BOOL)arg2 anchorEnd:(BOOL)arg3 subsequence:(BOOL)arg4 ignoreCase:(BOOL)arg5;
+- (id)filesContaining:(id)arg1 anchorStart:(BOOL)arg2 anchorEnd:(BOOL)arg3 subsequence:(BOOL)arg4 ignoreCase:(BOOL)arg5 cancelWhen:(id)arg6;
 - (id)filesIncludedByFile:(id)arg1;
 - (id)filesIncludingFile:(id)arg1;
 
@@ -3285,6 +3541,7 @@ typedef struct {
 @property(readonly) NSString *title;
 @property(readonly) id representedObject;
 - (void)setRepresentedObject:(id)arg1;
+- (void)dealloc;
 - (void)finalize;
 @property(readonly) unsigned long long sectionType;
 - (id)initWithTitle:(id)arg1;
@@ -3299,25 +3556,24 @@ typedef struct {
 
 @interface IDEActivityLogSectionRecorder : NSObject
 {
-    NSMutableArray *_parentRecorders;
+    DVTPointerArray *_parentRecorders;
     NSMutableArray *_childRecorders;
     IDEActivityLogSection *_section;
     NSMutableArray *_observations;
     NSMutableArray *_changesToPost;
     BOOL _hasScheduledChangePosting;
-    NSMapTable *_rememberedMessagesByKey;
+    DVTMapTable *_rememberedMessagesByKey;
     struct _NSRange _mostRecentTextRange;
     id _completionBlock;
-    DVTStackBacktrace *_initBacktrace;
-    DVTStackBacktrace *_stopBacktrace;
-    NSMapTable *_severityToLimitTable;
-    NSMapTable *_severityToCountTable;
+    NSMutableDictionary *_severityToLimitTable;
+    NSMutableDictionary *_severityToCountTable;
     int _lock;
     BOOL _hasAddedErrorMessages;
-    BOOL _hasRequestedStop;
+    int _hasRequestedStop;
+    BOOL _hasAddedAnyErrorMessages;
 }
 
-@property BOOL hasAddedAnyErrorMessages; // @synthesize hasAddedAnyErrorMessages=_hasAddedErrorMessages;
+@property BOOL hasAddedAnyErrorMessages; // @synthesize hasAddedAnyErrorMessages=_hasAddedAnyErrorMessages;
 - (id)addObserverUsingBlock:(id)arg1;
 - (void)setCommandDetailDescription:(id)arg1;
 - (void)addContextInfoMessageWithTitle:(id)arg1;
@@ -3326,11 +3582,8 @@ typedef struct {
 - (void)addNoticeMessageWithTitle:(id)arg1;
 - (void)addWarningMessageWithTitle:(id)arg1;
 - (void)addErrorMessageWithTitle:(id)arg1;
-- (void)noteDescendantLogSectionDidClose:(id)arg1 inSupersection:(id)arg2;
-- (void)noteDescendantLogSection:(id)arg1 didAppendText:(id)arg2;
-- (void)noteDescendantLogSection:(id)arg1 didAddSubsection:(id)arg2;
 - (void)stopRecordingWithInfo:(id)arg1;
-- (void)_stopRecordingWithInfo:(id)arg1 sync:(BOOL)arg2;
+- (void)_stopRecordingWithInfo:(id)arg1;
 - (void)childRecorderDidStopRecording:(id)arg1;
 - (void)addSubmessage:(id)arg1 toMessage:(id)arg2;
 - (void)addMessage:(id)arg1 ignoreMessageLimit:(BOOL)arg2;
@@ -3340,7 +3593,6 @@ typedef struct {
 - (struct _NSRange)appendTextFormat:(id)arg1;
 - (struct _NSRange)appendText:(id)arg1;
 - (void)addSubsection:(id)arg1;
-- (void)_addSubsection:(id)arg1 sync:(BOOL)arg2;
 - (BOOL)_attachToParentRecorderIfStillRecording:(id)arg1;
 - (BOOL)hasReachedAllMessageLimits;
 - (BOOL)hasReachedMessageLimitForSeverity:(unsigned long long)arg1;
@@ -3351,6 +3603,9 @@ typedef struct {
 - (id)addUnitTestSectionWithTitle:(id)arg1;
 - (id)addCommandSectionWithTitle:(id)arg1 detailDescription:(id)arg2;
 - (id)addCommandSectionWithDomainType:(id)arg1 title:(id)arg2 detailDescription:(id)arg3;
+- (void)noteDescendantLogSectionDidClose:(id)arg1 inSupersection:(id)arg2;
+- (void)noteDescendantLogSection:(id)arg1 didAppendText:(id)arg2;
+- (void)noteDescendantLogSection:(id)arg1 didAddSubsection:(id)arg2;
 - (void)handleChangeEvent:(id)arg1;
 - (void)setRememberedMessage:(id)arg1 forKey:(id)arg2;
 - (id)rememberedMessageForKey:(id)arg1;
@@ -3369,45 +3624,10 @@ typedef struct {
 + (id)sharedNullObservation;
 - (id)description;
 - (void)cancel;
-@property(readonly, getter=isCancelled) BOOL cancelled;
+- (BOOL)isCancelled;
 - (id)block;
 - (id)init;
 - (id)initWithBlock:(id)arg1;
-
-@end
-
-@interface IDEActivityLog : IDEActivityLogSection
-{
-    id _observer;
-}
-
-+ (id)activityLogWithContentsOfFile:(id)arg1 error:(id *)arg2;
-+ (unsigned long long)serializationFormatVersion;
-+ (id)defaultLogSectionDomainType;
-+ (Class)logRecorderClass;
-+ (id)UUIDWithURL:(id)arg1;
-+ (id)URLWithUUID:(id)arg1;
-- (BOOL)writeToFile:(id)arg1 error:(id *)arg2;
-- (void)dvt_writeToSerializer:(id)arg1;
-- (id)dvt_initFromDeserializer:(id)arg1;
-@property(readonly) IDEActivityLogSectionRecorder *recorder;
-@property(readonly) NSURL *logURL;
-- (id)init;
-- (id)initWithTitle:(id)arg1;
-- (id)initLogWithTitle:(id)arg1;
-- (id)initLogWithDomainType:(id)arg1 title:(id)arg2;
-- (id)initWrapperLogWithTitle:(id)arg1 subsection:(id)arg2;
-- (id)ideModelObjectTypeIdentifier;
-
-@end
-
-@interface IDEActivityLogRecorder : IDEActivityLogSectionRecorder
-{
-}
-
-- (void)setLocalizedResultString:(id)arg1;
-- (id)section;
-- (id)initWithLogSection:(id)arg1;
 
 @end
 
@@ -3431,8 +3651,7 @@ typedef struct {
     NSMutableDictionary *_workingCopyRootDirectories;
     NSMutableArray *_holdingQueue;
     DVTDispatchLock *_holdingQueueLock;
-    DVTDispatchLock *_sharedRepositoryLock;
-    unsigned long long _maxConcurrentOperationCount;
+    long long _maxConcurrentOperationCount;
     BOOL _localStatusCheckingEnabled;
     BOOL _remoteStatusCheckingEnabled;
     BOOL _waitingForAuthentication;
@@ -3441,10 +3660,10 @@ typedef struct {
 + (id)sourceControlProfilingLogAspect;
 + (id)sourceControlAuthenticationLogAspect;
 + (id)sourceControlFileScanningLogAspect;
++ (id)sourceControlReachabilityLogAspect;
 + (id)sourceControlLogAspect;
 + (id)sharedSourceControlManager;
 @property(copy) NSMutableDictionary *workingCopyRootDirectories; // @synthesize workingCopyRootDirectories=_workingCopyRootDirectories;
-@property(readonly) NSArray *repositories; // @synthesize repositories=_repositories;
 @property(readonly) NSArray *extensions; // @synthesize extensions=_extensions;
 - (void)cancelRequest:(id)arg1;
 - (void)performRequest:(id)arg1 withCompletionBlock:(id)arg2;
@@ -3452,7 +3671,7 @@ typedef struct {
 - (void)handleError:(id)arg1 forRequest:(id)arg2 operation:(id)arg3 waitUntilFinished:(BOOL)arg4 withCompletionBlock:(id)arg5;
 - (BOOL)validateRequest:(id)arg1 error:(id *)arg2;
 @property BOOL waitingForAuthentication; // @synthesize waitingForAuthentication=_waitingForAuthentication;
-@property unsigned long long maxConcurrentOperationCount; // @synthesize maxConcurrentOperationCount=_maxConcurrentOperationCount;
+@property long long maxConcurrentOperationCount; // @synthesize maxConcurrentOperationCount=_maxConcurrentOperationCount;
 - (void)_finishLogForRequest:(id)arg1 operation:(id)arg2 withResult:(int)arg3;
 - (void)_startLogForRequest:(id)arg1 operation:(id)arg2;
 - (void)removeAssociatedRepositoryRoot:(id)arg1 withFilePath:(id)arg2;
@@ -3477,9 +3696,9 @@ typedef struct {
 - (id)extensionMatchingIdentifier:(id)arg1;
 - (void)removeRepository:(id)arg1 removePasswordFromKeychain:(BOOL)arg2;
 - (void)addRepository:(id)arg1;
-- (BOOL)containsRepository:(id)arg1;
 - (void)updateUserDefaults;
 - (id)arrayOfRepositoryDictionaries;
+@property(readonly) NSArray *repositories; // @synthesize repositories=_repositories;
 - (id)repositoryForLocation:(id)arg1 sourceControlExtension:(id)arg2;
 - (id)repositoriesForExtension:(id)arg1;
 @property BOOL remoteStatusCheckingEnabled; // @synthesize remoteStatusCheckingEnabled=_remoteStatusCheckingEnabled;
@@ -3499,19 +3718,25 @@ typedef struct {
     NSString *_rawInput;
     NSString *_rawStandardOutput;
     NSString *_rawErrorOutput;
+    unsigned int _scmPowerAssertion;
+    BOOL _waitToParseData;
+    BOOL _allowsSleep;
 }
 
+@property BOOL allowsSleep; // @synthesize allowsSleep=_allowsSleep;
+@property BOOL waitToParseData; // @synthesize waitToParseData=_waitToParseData;
 @property(readonly) IDESourceControlRequest *request; // @synthesize request=_request;
 @property(retain) NSArray *result; // @synthesize result=_result;
 - (void)cancel;
 @property(retain) NSString *rawErrorOutput; // @synthesize rawErrorOutput=_rawErrorOutput;
 @property(retain) NSString *rawStandardOutput; // @synthesize rawStandardOutput=_rawStandardOutput;
 @property(retain) NSString *rawInput; // @synthesize rawInput=_rawInput;
+- (void)observeValueForKeyPath:(id)arg1 ofObject:(id)arg2 change:(id)arg3 context:(void *)arg4;
 - (id)initWithRequest:(id)arg1;
 
 @end
 
-@interface IDESourceControlRequest : NSObject <DVTInvalidation>
+@interface IDESourceControlRequest : NSObject <DVTInvalidation_New>
 {
     IDESourceControlTree *_sourceTree;
     IDESourceControlRemote *_remote;
@@ -3528,15 +3753,22 @@ typedef struct {
     id _domain;
     IDESourceControlExtension *_sourceControlExtension;
     NSString *_message;
-    DVTStackBacktrace *_invalidationBacktrace;
-    BOOL _isInvalidated;
+    IDESourceControlOperation *_operation;
     BOOL _stopAllActivityWhenCanceled;
     BOOL _shouldGenerateLog;
     BOOL _cancelable;
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
-@property BOOL cancelable; // @synthesize cancelable=_cancelable;
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
+@property __weak IDESourceControlOperation *operation; // @synthesize operation=_operation;
+@property BOOL cancelable; // @synthesize cancelable=_cancelable;
 @property(readonly) id domain; // @synthesize domain=_domain;
 @property BOOL shouldGenerateLog; // @synthesize shouldGenerateLog=_shouldGenerateLog;
 @property(retain) IDEActivityLogSection *logSection; // @synthesize logSection=_logSection;
@@ -3551,8 +3783,10 @@ typedef struct {
 @property int type; // @synthesize type=_type;
 @property(retain) IDESourceControlRemote *remote; // @synthesize remote=_remote;
 @property(retain) IDESourceControlTree *sourceTree; // @synthesize sourceTree=_sourceTree;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (void)setShouldGenerateLog:(BOOL)arg1 forDomain:(id)arg2;
 @property(readonly) NSString *longTitle; // @synthesize longTitle=_longTitle;
 @property(readonly) NSString *shortTitle; // @synthesize shortTitle=_shortTitle;
@@ -3652,6 +3886,7 @@ typedef struct {
 @property(retain) id <IDERunOperationWorkerTracker> runnableTracker; // @synthesize runnableTracker=_runnableTracker;
 @property(readonly) IDELaunchSession *launchSession; // @synthesize launchSession=_launchSession;
 @property(readonly) NSString *extensionIdentifier; // @synthesize extensionIdentifier=_extensionIdentifier;
+- (id)description;
 - (void)terminate;
 - (void)finishedWithError:(id)arg1;
 - (void)start;
@@ -3660,26 +3895,30 @@ typedef struct {
 
 @end
 
-@interface IDESourceControlTree : DVTModelTree <DVTInvalidation>
+@interface IDESourceControlTree : DVTModelTree <DVTInvalidation_New>
 {
-    DVTDispatchLock *_childrenChangeLock;
     IDESourceControlManager *_sourceControlManager;
     IDESourceControlExtension *_sourceControlExtension;
-    DVTStackBacktrace *_invalidationBacktrace;
     NSString *_location;
     NSString *_name;
     NSString *_origin;
     int _reachabilityFlags;
     unsigned long long _state;
     long long _reachable;
-    BOOL _isInvalidated;
     BOOL _disallowLoadingChildren;
     BOOL _isObservingReachability;
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
++ (BOOL)automaticallyNotifiesObserversOfValue;
 + (void)initialize;
 + (id)keyPathsForValuesAffectingConnected;
 + (id)treeLoadingModelObjectGraph;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
+@property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 @property BOOL isObservingReachability; // @synthesize isObservingReachability=_isObservingReachability;
 @property long long reachable; // @synthesize reachable=_reachable;
 @property BOOL disallowLoadingChildren; // @synthesize disallowLoadingChildren=_disallowLoadingChildren;
@@ -3690,7 +3929,7 @@ typedef struct {
 @property(copy, nonatomic) NSString *name; // @synthesize name=_name;
 @property(retain) IDESourceControlExtension *sourceControlExtension; // @synthesize sourceControlExtension=_sourceControlExtension;
 @property(readonly) IDESourceControlManager *sourceControlManager; // @synthesize sourceControlManager=_sourceControlManager;
-@property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
+- (id)copyRepository;
 - (id)branchesWithCompletionBlock:(id)arg1;
 - (id)description;
 - (BOOL)isSameAsSourceTreeAtLocation:(id)arg1;
@@ -3700,8 +3939,10 @@ typedef struct {
 @property(readonly) BOOL connected;
 - (void)_setOrigin:(id)arg1;
 - (id)subclass_createRootNode;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (id)dictionaryRepresentation;
 - (id)initWithDictionary:(id)arg1 sourceControlExtension:(id)arg2 sourceControlManager:(id)arg3;
 - (id)initWithLocation:(id)arg1 sourceControlManager:(id)arg2;
@@ -3735,17 +3976,18 @@ typedef struct {
     NSString *_relativeBranchesLocation;
     NSString *_relativeTagsLocation;
     NSMutableArray *_itemsWithStatus;
-    DVTDispatchLock *_itemsWithStatusLock;
     IDESourceControlRequest *_repositorySetupRequest;
     BOOL _authenticated;
     BOOL _doNotAuthenticate;
     BOOL _shouldRetryAuthentication;
+    BOOL _avoidObservingReachability;
 }
 
 + (id)keyPathsForValuesAffectingRelativeTagsLocation;
 + (id)keyPathsForValuesAffectingRelativeBranchesLocation;
 + (id)keyPathsForValuesAffectingRelativeTrunkLocation;
 + (unsigned int)securityProtocolForURL:(id)arg1;
+@property BOOL avoidObservingReachability; // @synthesize avoidObservingReachability=_avoidObservingReachability;
 @property BOOL shouldRetryAuthentication; // @synthesize shouldRetryAuthentication=_shouldRetryAuthentication;
 @property(copy, nonatomic) NSString *relativeTagsLocation; // @synthesize relativeTagsLocation=_relativeTagsLocation;
 @property(copy, nonatomic) NSString *relativeBranchesLocation; // @synthesize relativeBranchesLocation=_relativeBranchesLocation;
@@ -3753,7 +3995,6 @@ typedef struct {
 @property(readonly) IDESourceControlBranch *trunkBranch; // @synthesize trunkBranch=_trunkBranch;
 @property(nonatomic) BOOL doNotAuthenticate; // @synthesize doNotAuthenticate=_doNotAuthenticate;
 @property(nonatomic) BOOL authenticated; // @synthesize authenticated=_authenticated;
-@property(readonly) NSArray *workingTrees; // @synthesize workingTrees=_workingTrees;
 @property(readonly) NSString *root; // @synthesize root=_root;
 - (id)stripBaseURLOrStartingSlash:(id)arg1;
 - (void)checkForExistanceOfPathComponent:(id)arg1 withCompletionBlock:(id)arg2;
@@ -3775,11 +4016,11 @@ typedef struct {
 - (void)setBranches:(id)arg1;
 @property(readonly) NSMutableArray *branches;
 - (void)removeWorkingTree:(id)arg1;
-- (void)addWorkingTree:(id)arg1;
+- (id)addWorkingTree:(id)arg1;
+@property(readonly) NSArray *workingTrees; // @synthesize workingTrees=_workingTrees;
 - (void)endObservingReachability;
 - (void)startObservingReachability;
 - (void)testReachabilityWithCompletionBlock:(id)arg1;
-- (long long)reachable;
 - (BOOL)connected;
 - (id)localURL;
 - (void)authenticateWithCompletionBlock:(id)arg1;
@@ -3798,7 +4039,7 @@ typedef struct {
 - (id)Xcode3AccountName;
 - (id)passwordForSubversionHTTP;
 - (id)internetPassword;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 @property(readonly) BOOL isRemoteDistributedRepository;
 - (id)ideModelObjectTypeIdentifier;
 - (void)clearServerStatus;
@@ -3813,6 +4054,8 @@ typedef struct {
 @property(copy) NSString *user; // @synthesize user=_user;
 @property(readonly) NSURL *URL; // @synthesize URL=_URL;
 - (void)setLocation:(id)arg1;
+- (void)setState:(unsigned long long)arg1;
+- (void)setupTrunkAndBranchesWithCompletionBlock:(id)arg1;
 - (void)setupRepositoryInformationWithCompletionBlock:(id)arg1;
 - (void)setSourceControlExtension:(id)arg1;
 - (id)dictionaryRepresentation;
@@ -3847,7 +4090,8 @@ typedef struct {
 - (id)removeBranchWithName:(id)arg1 message:(id)arg2 force:(BOOL)arg3 completionBlock:(id)arg4;
 - (id)defaultBranchStartingPoint;
 - (void)removeWorkingTree:(id)arg1;
-- (void)addWorkingTree:(id)arg1;
+- (id)addWorkingTree:(id)arg1;
+- (void)setUser:(id)arg1;
 - (void)setupRepositoryInformationWithCompletionBlock:(id)arg1;
 - (id)initWithName:(id)arg1 location:(id)arg2 repository:(id)arg3 sourceControlManager:(id)arg4 sourceControlExtension:(id)arg5;
 
@@ -3858,7 +4102,6 @@ typedef struct {
     IDESourceControlRepository *_repository;
     IDESourceControlBranch *_currentBranch;
     NSMutableArray *_itemsWithStatus;
-    DVTDispatchLock *_itemsWithStatusLock;
     NSOperationQueue *_status_processing_queue;
     DVTFilePath *_filePath;
     NSMutableDictionary *_localStatusRequests;
@@ -3871,7 +4114,6 @@ typedef struct {
 
 @property(readonly) BOOL initialServerStatusUpdateIsComplete; // @synthesize initialServerStatusUpdateIsComplete=_initialServerStatusUpdateIsComplete;
 @property(readonly) BOOL initialLocalStatusUpdateIsComplete; // @synthesize initialLocalStatusUpdateIsComplete=_initialLocalStatusUpdateIsComplete;
-@property(readonly) IDESourceControlRepository *repository; // @synthesize repository=_repository;
 @property(copy) DVTFilePath *filePath; // @synthesize filePath=_filePath;
 - (void)invalidateServerStatus;
 - (void)clearServerStatus;
@@ -3906,8 +4148,10 @@ typedef struct {
 - (unsigned long long)hash;
 @property(readonly) IDESourceControlBranch *currentBranch; // @synthesize currentBranch=_currentBranch;
 - (void)_setRepository:(id)arg1;
+@property(readonly) IDESourceControlRepository *repository; // @synthesize repository=_repository;
 - (void)setLocation:(id)arg1;
-- (void)invalidate;
+- (void)primitiveInvalidate;
+- (void)_updateWorkingTreeOrigin;
 - (id)initWithDictionary:(id)arg1 repository:(id)arg2 sourceControlExtension:(id)arg3 sourceControlManager:(id)arg4;
 - (id)initWithLocation:(id)arg1 sourceControlManager:(id)arg2;
 - (id)_initWithLocation:(id)arg1 sourceControlManager:(id)arg2;
@@ -3924,10 +4168,12 @@ typedef struct {
     NSMutableData *_data;
     NSMutableData *_errorData;
     DVTPerformanceMetric *_metric;
+    BOOL _readyToParseData;
 }
 
 + (id)_authenticationAgentExecutablePath;
 + (id)sourceControlTaskOperationLogAspect;
+@property BOOL readyToParseData; // @synthesize readyToParseData=_readyToParseData;
 @property(retain) NSMutableData *errorData; // @synthesize errorData=_errorData;
 @property(retain) NSMutableData *data; // @synthesize data=_data;
 @property(retain) NSArray *arguments; // @synthesize arguments=_arguments;
@@ -3936,7 +4182,9 @@ typedef struct {
 @property(retain) DVTTask *pipeTask; // @synthesize pipeTask=_pipeTask;
 @property(readonly) DVTTask *task; // @synthesize task=_task;
 - (void)parseDataOrGenerateErrorForTask:(id)arg1 operation:(id)arg2;
+- (void)setWaitToParseData:(BOOL)arg1;
 - (void)main;
+- (id)readDataFromFileHandle:(id)arg1 intoBuffer:(id)arg2 runloopMode:(id)arg3 outstandingOperationCounter:(long long *)arg4 dataParsingBlock:(id)arg5;
 - (id)pipeToOperation;
 - (id)rawErrorOutput;
 - (id)rawStandardOutput;
@@ -3946,26 +4194,31 @@ typedef struct {
 
 @end
 
-@interface IDESourceControlTreeItem : DVTModelTreeNode <DVTInvalidation>
+@interface IDESourceControlTreeItem : DVTModelTreeNode <DVTInvalidation_New>
 {
     IDESourceControlRevision *_headRevision;
+    IDESourceControlRevision *_baseRevision;
     IDESourceControlRevision *_currentRevision;
     NSMutableDictionary *_revisions;
     DVTDispatchLock *_revisionsLock;
     NSString *_name;
     NSString *_pathString;
-    DVTStackBacktrace *_invalidationBacktrace;
     unsigned long long _state;
     int _sourceControlLocalStatus;
     int _sourceControlServerStatus;
     unsigned long long _conflictStateForUpdateOrMerge;
     BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
 + (BOOL)automaticallyNotifiesObserversOfCurrentRevision;
++ (BOOL)automaticallyNotifiesObserversOfValue;
 + (void)initialize;
-@property unsigned long long conflictStateForUpdateOrMerge; // @synthesize conflictStateForUpdateOrMerge=_conflictStateForUpdateOrMerge;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
+@property unsigned long long conflictStateForUpdateOrMerge; // @synthesize conflictStateForUpdateOrMerge=_conflictStateForUpdateOrMerge;
 @property int sourceControlServerStatus; // @synthesize sourceControlServerStatus=_sourceControlServerStatus;
 @property int sourceControlLocalStatus; // @synthesize sourceControlLocalStatus=_sourceControlLocalStatus;
 @property unsigned long long state; // @synthesize state=_state;
@@ -3987,14 +4240,17 @@ typedef struct {
 - (int)aggregateSourceControlLocalStatus;
 - (id)baseRevisionWithCompletionBlock:(id)arg1;
 - (id)headRevisionWithCompletionBlock:(id)arg1;
+- (void)setBASERevision:(id)arg1;
 - (void)setHEADRevision:(id)arg1;
 - (id)description;
 - (id)ideModelObjectTypeIdentifier;
 - (void)repositoryURLStringAtBranch:(id)arg1 completionBlock:(id)arg2;
 @property(readonly) NSString *repositoryURLString;
 - (void)_setPathString:(id)arg1;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (id)initWithPathString:(id)arg1;
 
 // Remaining properties
@@ -4046,7 +4302,7 @@ typedef struct {
 - (id)repositoryURLString;
 - (BOOL)isEqual:(id)arg1;
 - (unsigned long long)hash;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (id)initWithFilePath:(id)arg1;
 
 @end
@@ -4079,7 +4335,7 @@ typedef struct {
 - (id)repositoryURLString;
 - (BOOL)isEqual:(id)arg1;
 - (unsigned long long)hash;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (id)initWithFilePath:(id)arg1;
 
 @end
@@ -4093,6 +4349,15 @@ typedef struct {
 - (id)navigableItem_identifierForRepresentedObjectAtIndex:(unsigned long long)arg1 inRelationshipKeyPath:(id)arg2;
 - (void)addFilePath:(id)arg1;
 @property(readonly) NSMutableArray *workingTreeItems; // @synthesize workingTreeItems=_workingTreeItems;
+
+@end
+
+@interface IDESourceControlDummyItem : NSObject
+{
+    NSString *name;
+}
+
+@property(retain) NSString *name; // @synthesize name;
 
 @end
 
@@ -4111,11 +4376,12 @@ typedef struct {
     unsigned long long _numReferencesSkipped;
     NSArray *_astArgs;
     NSString *_workingDirectory;
+    BOOL _hasCpp;
 }
 
 + (id)createPCHFile:(BOOL)arg1 path:(id)arg2 arguments:(id)arg3 prefix:(id)arg4;
-+ (BOOL)_argumentsHasMissingHeadermap:(id)arg1;
 + (void)logPCHFailure:(id)arg1;
++ (id)substituteNewArgument:(id)arg1 forOldArgument:(id)arg2 inArray:(id)arg3;
 + (id)addHeaderMapInclude:(id)arg1 forBuildProductsDir:(id)arg2 useSpellChecking:(BOOL)arg3 toArguments:(id)arg4;
 + (id)canonicalPathForPath:(id)arg1 index:(id)arg2 arguments:(id)arg3 workingDirectory:(id *)arg4;
 + (id)workingDirFromArgs:(id)arg1;
@@ -4123,8 +4389,10 @@ typedef struct {
 + (BOOL)loggingMemoryUsage;
 + (id)resolutionForName:(id)arg1 kind:(id)arg2 containerName:(id)arg3;
 + (id)dataSourceVersion;
++ (BOOL)displayDiagnostics;
 + (long long)timingMode;
 + (void)initialize;
+@property(readonly, nonatomic) BOOL hasCpp; // @synthesize hasCpp=_hasCpp;
 @property(nonatomic) unsigned long long numReferencesSkipped; // @synthesize numReferencesSkipped=_numReferencesSkipped;
 @property(nonatomic) unsigned long long numSymbolsStored; // @synthesize numSymbolsStored=_numSymbolsStored;
 @property(nonatomic) unsigned long long numVisits; // @synthesize numVisits=_numVisits;
@@ -4136,11 +4404,13 @@ typedef struct {
 @property(readonly, nonatomic) NSMutableArray *containerStack; // @synthesize containerStack=_containerStack;
 @property(readonly, nonatomic) NSMutableDictionary *sourcesToNewFiles; // @synthesize sourcesToNewFiles=_sourcesToNewFiles;
 @property(readonly, nonatomic) IDEIndexingJob *job; // @synthesize job=_job;
+- (int)indexOptionFlags;
+- (CDStruct_9b0a347d *)indexerCallbacks;
 - (BOOL)generateDataForJob:(id)arg1;
 - (BOOL)_addTopLevelFile:(id)arg1 includePath:(id)arg2;
 - (void *)cursorVisitor;
 - (id)_canonicalPathForPath:(id)arg1;
-- (BOOL)_addSymbolWithName:(const char *)arg1 kind:(id)arg2 role:(int)arg3 language:(id)arg4 resolution:(const char *)arg5 line:(long long)arg6 file:(id)arg7 container:(id)arg8 cursor:(CDStruct_a94d320b)arg9;
+- (BOOL)_addSymbolWithName:(const char *)arg1 kind:(id)arg2 role:(int)arg3 language:(id)arg4 resolution:(const char *)arg5 line:(long long)arg6 column:(long long)arg7 file:(id)arg8 container:(id)arg9 cursor:(CDStruct_a94d320b)arg10;
 - (id)initWithSource:(id)arg1;
 
 @end
@@ -4175,19 +4445,23 @@ typedef struct {
 
 @end
 
-@interface IDELogManager : NSObject <DVTInvalidation>
+@interface IDELogManager : NSObject <DVTInvalidation_New>
 {
-    BOOL _isInvalidated;
     id _domainItem;
     NSString *_domainName;
     NSArray *_logProviders;
     NSMutableArray *_logRecords;
     DVTMapTable *_logProviderToRecordsIndex;
     NSSet *_cachedRecentLogRecords;
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
     DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
++ (BOOL)automaticallyNotifiesObserversOfValue;
 + (void)initialize;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 @property(copy) NSString *domainName; // @synthesize domainName=_domainName;
 @property(retain) id domainItem; // @synthesize domainItem=_domainItem;
@@ -4196,8 +4470,10 @@ typedef struct {
 - (void)_handleLogRecordChangesForProvider:(id)arg1;
 - (id)_findLogProviders;
 - (id)extensionsFromExtensionPointIdentifier:(id)arg1;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (id)initWithDomainItem:(id)arg1 domain:(id)arg2;
 
 // Remaining properties
@@ -4206,54 +4482,27 @@ typedef struct {
 
 @end
 
-@interface IDELogProvider : NSObject <DVTInvalidation>
+@interface IDELogProvider : NSObject <DVTInvalidation_New>
 {
-    BOOL _isInvalidated;
     id _domainItem;
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
     DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 @property(readonly) id domainItem; // @synthesize domainItem=_domainItem;
 - (id)ideModelObjectTypeIdentifier;
 @property(readonly) NSArray *logRecords;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (id)initWithDomainItem:(id)arg1;
-
-@end
-
-@interface IDEConsoleItem : NSObject <DVTSimpleSerialization>
-{
-    NSString *_adaptorType;
-    NSString *_content;
-    double _timestamp;
-    int _kind;
-}
-
-+ (id)keyPathsForValuesAffectingError;
-+ (id)keyPathsForValuesAffectingOutputRequestedByUser;
-+ (id)keyPathsForValuesAffectingPrompt;
-+ (id)keyPathsForValuesAffectingOutput;
-+ (id)keyPathsForValuesAffectingInput;
-@property(readonly) double timestamp; // @synthesize timestamp=_timestamp;
-@property int kind; // @synthesize kind=_kind;
-@property(readonly) NSString *content; // @synthesize content=_content;
-@property(readonly) NSString *adaptorType; // @synthesize adaptorType=_adaptorType;
-- (void)dvt_writeToSerializer:(id)arg1;
-- (id)dvt_initFromDeserializer:(id)arg1;
-@property(readonly, getter=isError) BOOL error;
-- (void)setError:(BOOL)arg1;
-@property(readonly, getter=isOutputRequestedByUser) BOOL outputRequestedByUser;
-- (void)setOutputRequestedByUser:(BOOL)arg1;
-@property(readonly, getter=isPrompt) BOOL prompt;
-- (void)setPrompt:(BOOL)arg1;
-@property(readonly, getter=isOutput) BOOL output;
-- (void)setOutput:(BOOL)arg1;
-@property(readonly, getter=isInput) BOOL input;
-- (void)setInput:(BOOL)arg1;
-- (id)description;
-- (id)initWithAdaptorType:(id)arg1 content:(id)arg2 kind:(int)arg3;
 
 @end
 
@@ -4262,34 +4511,37 @@ typedef struct {
     IDELaunchSession *_launchSession;
     NSString *_type;
     struct dispatch_queue_s *_writeSerialQueue;
-    BOOL _usedWithNSTask;
+    NSTimer *_endOfStandardOutputReadTimer;
+    NSTimer *_endOfStandardErrorReadTimer;
     BOOL _finishedReceivingData;
+    BOOL _ignoreFutureOutput;
     NSFileHandle *_standardInput;
     NSFileHandle *_standardOutput;
     NSFileHandle *_standardError;
     NSMutableData *_currentOutputOverflow;
     NSMutableData *_currentErrorOverflow;
     id <IDEConsoleAdaptorDelegateProtocol> _delegate;
-    NSMutableDictionary *_completeContent;
-    NSMutableArray *_completeContentSequences;
-    NSMutableArray *_standardInputSequences;
-    NSMutableArray *_standardOutputSequences;
-    NSMutableArray *_standardErrorSequences;
+    struct __CFDictionary *_completeContent;
+    struct __CFArray *_completeContentSequences;
+    struct __CFArray *_standardInputSequences;
+    struct __CFArray *_standardOutputSequences;
+    struct __CFArray *_standardErrorSequences;
 }
 
 + (id)standardErrorItemsForAdaptors:(id)arg1;
 + (id)standardOutputItemsForAdaptors:(id)arg1;
 + (id)standardInputItemsForAdaptors:(id)arg1;
 + (id)allConsoleItemsForAdaptors:(id)arg1;
-+ (id)_itemsForAdaptors:(id)arg1 sequencesKey:(id)arg2;
++ (id)_itemsForAdaptors:(id)arg1 sequencesSelector:(SEL)arg2;
 + (unsigned long long)_nextContentSequence;
 + (void)initialize;
-@property(readonly) NSArray *standardErrorSequences; // @synthesize standardErrorSequences=_standardErrorSequences;
-@property(readonly) NSArray *standardOutputSequences; // @synthesize standardOutputSequences=_standardOutputSequences;
-@property(readonly) NSArray *standardInputSequences; // @synthesize standardInputSequences=_standardInputSequences;
-@property(readonly) NSArray *completeContentSequences; // @synthesize completeContentSequences=_completeContentSequences;
-@property(readonly) NSDictionary *completeContent; // @synthesize completeContent=_completeContent;
+@property(readonly) struct __CFArray *standardErrorSequences; // @synthesize standardErrorSequences=_standardErrorSequences;
+@property(readonly) struct __CFArray *standardOutputSequences; // @synthesize standardOutputSequences=_standardOutputSequences;
+@property(readonly) struct __CFArray *standardInputSequences; // @synthesize standardInputSequences=_standardInputSequences;
+@property(readonly) struct __CFArray *completeContentSequences; // @synthesize completeContentSequences=_completeContentSequences;
+@property(readonly) struct __CFDictionary *completeContent; // @synthesize completeContent=_completeContent;
 @property(retain) id <IDEConsoleAdaptorDelegateProtocol> delegate; // @synthesize delegate=_delegate;
+@property BOOL ignoreFutureOutput; // @synthesize ignoreFutureOutput=_ignoreFutureOutput;
 @property BOOL finishedReceivingData; // @synthesize finishedReceivingData=_finishedReceivingData;
 @property(readonly) NSString *type; // @synthesize type=_type;
 @property(retain) IDELaunchSession *launchSession; // @synthesize launchSession=_launchSession;
@@ -4297,13 +4549,14 @@ typedef struct {
 - (id)standardOutputItems;
 - (id)standardInputItems;
 - (id)allConsoleItems;
-- (id)_itemsForSequences:(id)arg1;
+- (id)_itemsForSequences:(struct __CFArray *)arg1;
 - (void)_setStandardError:(id)arg1;
 - (void)_setStandardOutput:(id)arg1;
 - (void)_addObserverToReadCompletion:(id)arg1 selector:(SEL)arg2;
 - (void)_getError:(id)arg1;
 - (void)_getOutput:(id)arg1;
-- (void)_findHandleCompletedRead:(id)arg1;
+- (void)_timerFiredToCheckEndOfRead:(id)arg1;
+- (void)_fileHandleCompletedRead:(id)arg1;
 - (id)_getData:(id)arg1 overflowBuffer:(id *)arg2;
 - (void)_setStandardInput:(id)arg1;
 - (void)outputForStandardError:(id)arg1;
@@ -4311,31 +4564,29 @@ typedef struct {
 - (void)outputForStandardOutput:(id)arg1 isPrompt:(BOOL)arg2 isOutputRequestedByUser:(BOOL)arg3;
 - (void)_postOnMainThreadForNotification:(id)arg1 consoleItem:(id)arg2;
 - (void)inputForStandardInput:(id)arg1;
-- (void)_throwExceptionOnMainThread:(id)arg1;
 - (void)inputFromConsole:(id)arg1 echo:(BOOL)arg2;
 - (void)makeExpired;
 - (void)_makeExpired;
 - (void)_addToCompleteContent:(id)arg1 andSupportingSequences:(struct __CFArray *)arg2;
-- (id)initWithType:(id)arg1 standardInput:(id)arg2 standardOutput:(id)arg3 standardError:(id)arg4 usedWithNSTask:(BOOL)arg5;
+- (void)finalize;
+- (void)dealloc;
+- (id)initWithType:(id)arg1 standardInput:(id)arg2 standardOutput:(id)arg3 standardError:(id)arg4;
 
 @end
 
 @interface IDEPseudoTerminal : NSObject
 {
     int _masterFD;
-    NSFileHandle *_masterFileHandle;
-    int _slaveFD;
-    NSFileHandle *_slaveFileHandle;
+    IDEMasterPtyFileHandle *_masterFileHandle;
     NSString *_slaveName;
 }
 
-@property(readonly) NSFileHandle *slaveFileHandle; // @synthesize slaveFileHandle=_slaveFileHandle;
 @property(readonly) NSFileHandle *masterFileHandle; // @synthesize masterFileHandle=_masterFileHandle;
 @property(readonly) NSString *slaveName; // @synthesize slaveName=_slaveName;
-- (BOOL)_openSlaveCounterpart:(int)arg1 error:(id *)arg2;
+@property(readonly) NSFileHandle *slaveFileHandle;
+- (int)_openSlaveCounterpart:(int)arg1 error:(id *)arg2;
 - (BOOL)_openFirstAvailableMasterWithAccessMode:(int)arg1 error:(id *)arg2;
 - (id)initWithAccessMode:(int)arg1 error:(id *)arg2;
-- (void)_closeSlaveFD;
 - (void)_closeMasterFD;
 
 @end
@@ -4344,6 +4595,7 @@ typedef struct {
 {
     IDEIndexDBTempTable *_tempTable;
     NSArray *_instantiatedRows;
+    Class _expectedClass;
 }
 
 @property(readonly, nonatomic) IDEIndexDBTempTable *tempTable; // @synthesize tempTable=_tempTable;
@@ -4355,9 +4607,12 @@ typedef struct {
 - (id)allObjects;
 - (unsigned long long)countByEnumeratingWithState:(CDStruct_70511ce9 *)arg1 objects:(id *)arg2 count:(unsigned long long)arg3;
 - (unsigned long long)instantiateRowsUpto:(unsigned long long)arg1;
+- (void)dealloc;
 - (void)finalize;
 - (void)dropTempTable;
 - (id)description;
+- (void)setExpectedClass:(Class)arg1;
+- (BOOL)_checkExpectedClass:(id)arg1;
 - (id)initWithConnection:(id)arg1;
 - (id)initWithArrayNoCopy:(id)arg1;
 - (id)initWithArray:(id)arg1;
@@ -4397,17 +4652,20 @@ typedef struct {
 
 @interface IDEBuildIssueProvider : IDEIssueProvider
 {
-    NSMapTable *_blueprintToLatestLogSectionObserverMap;
-    NSMapTable *_buildLogToLogNotificationObserverMap;
-    NSMapTable *_blueprintToLatestBuildLogSectionMap;
+    DVTMapTable *_blueprintToLatestLogSectionObserverMap;
+    DVTMapTable *_buildLogToLogNotificationObserverMap;
+    DVTMapTable *_blueprintToLatestBuildLogSectionMap;
     id <DVTObservingToken> _activeBuildOperationStateObserverToken;
     IDEBuildOperation *_activeBuildOperation;
     NSMutableSet *_pendingLogSections;
     IDELogStore *_logStore;
-    NSMapTable *_blueprintToLogRecordMap;
+    DVTMapTable *_blueprintToLogRecordMap;
+    BOOL _changeNotificationPending;
+    NSMutableArray *_pendingChanges;
 }
 
 + (int)providerType;
++ (id)_backgroundScanningQueue;
 + (id)_backgroundLoadingQueue;
 - (id)ideModelObjectTypeIdentifier;
 - (id)imageNameForIssue:(id)arg1;
@@ -4415,6 +4673,8 @@ typedef struct {
 - (void)_buildLogDidUpdateItems:(id)arg1 blueprint:(id)arg2;
 - (void)_scanIssuesInLog:(id)arg1 forBlueprint:(id)arg2 intoArray:(id)arg3 usingSeenMessages:(id)arg4;
 - (void)_addIssueForMessage:(id)arg1 blueprint:(id)arg2 intoArray:(id)arg3 usingSeenMessages:(id)arg4 wasFetchedFromCache:(BOOL)arg5;
+- (void)_postBuildIssueChange:(id)arg1;
+- (void)_asyncPostBuildIssueChange:(id)arg1;
 - (void)_observeLogSection:(id)arg1 forBlueprint:(id)arg2;
 - (void)_currentBuildOperationDidChange;
 - (void)_blueprintsDidChange;
@@ -4422,8 +4682,28 @@ typedef struct {
 - (void)_forgetBlueprint:(id)arg1;
 - (void)_latestBuildLogDidChange;
 - (void)_workspaceFinishedLoading;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (id)initWithIssueManager:(id)arg1 extension:(id)arg2;
+
+@end
+
+@interface IDEBuildIssueChange : NSObject
+{
+    int _type;
+    NSArray *_issues;
+    id _providerContext;
+    IDEContainer *_container;
+    id <IDEBlueprint> _blueprint;
+}
+
++ (id)setChangeWithIssues:(id)arg1 forProviderContext:(id)arg2 container:(id)arg3 blueprint:(id)arg4;
++ (id)additionChangeWithIssues:(id)arg1 forProviderContext:(id)arg2 container:(id)arg3 blueprint:(id)arg4;
+@property(retain, nonatomic) id <IDEBlueprint> blueprint; // @synthesize blueprint=_blueprint;
+@property(retain, nonatomic) IDEContainer *container; // @synthesize container=_container;
+@property(retain, nonatomic) id providerContext; // @synthesize providerContext=_providerContext;
+@property(retain, nonatomic) NSArray *issues; // @synthesize issues=_issues;
+@property(nonatomic) int type; // @synthesize type=_type;
+- (id)initWithType:(int)arg1 issues:(id)arg2 forProviderContext:(id)arg3 container:(id)arg4 blueprint:(id)arg5;
 
 @end
 
@@ -4438,6 +4718,7 @@ typedef struct {
     NSString *_lastArchivedReferencedContainerPath;
     IDEScheme *_scheme;
     id <DVTObservingToken> _referencedContainersObservingToken;
+    id <DVTObservingToken> _schemeValidToken;
     id <DVTObservingToken> _referencedContainerFilePathObservingToken;
     id <DVTObservingToken> _resolvedBuildableNameObservingToken;
     id <DVTObservingToken> _resolvedBlueprintNameObservingToken;
@@ -4509,13 +4790,17 @@ typedef struct {
 - (id)importedFileAtDocumentLocation:(id)arg1 withCurrentFileContentDictionary:(id)arg2 forIndex:(id)arg3;
 - (id)collectionElementTypeSymbolForSymbol:(id)arg1 withCurrentFileContentDictionary:(id)arg2 forIndex:(id)arg3;
 - (id)typeSymbolForSymbol:(id)arg1 withCurrentFileContentDictionary:(id)arg2 forIndex:(id)arg3;
+- (id)typeSymbolForCXType:(CDStruct_9b248d9b)arg1;
 - (id)referencesToSymbolMatchingName:(id)arg1 inContext:(id)arg2 withCurrentFileContentDictionary:(id)arg3 forIndex:(id)arg4;
 - (id)referencesToSymbol:(id)arg1 inContext:(id)arg2 withCurrentFileContentDictionary:(id)arg3 forIndex:(id)arg4;
 - (id)symbolsUsedInContext:(id)arg1 withCurrentFileContentDictionary:(id)arg2 forIndex:(id)arg3;
 - (id)symbolsOccurrencesInContext:(id)arg1 withCurrentFileContentDictionary:(id)arg2 forIndex:(id)arg3;
+- (void)_setModelOccurrenceForCursor:(CDStruct_a94d320b)arg1 symbol:(id)arg2 index:(id)arg3;
 - (id)processedSymbolsInContext:(id)arg1 initFunction:(id)arg2 visitorFunction:(void)arg3 includeSymbolLocations:(id)arg4 withCurrentFileContentDictionary:(void)arg5 forIndex:(BOOL)arg6;
 - (id)codeDiagnosticsAtLocation:(id)arg1 withCurrentFileContentDictionary:(id)arg2 forIndex:(id)arg3;
-- (id)codeCompletionsAtLocation:(id)arg1 withCurrentFileContentDictionary:(id)arg2 sortedUsingBlock:(id)arg3 forIndex:(void)arg4;
+- (id)parsedCodeCommentAtLocation:(id)arg1 withCurrentFileContentDictionary:(id)arg2 forIndex:(id)arg3;
+- (id)_diagnosticItemsFromDiagnosticSet:(void *)arg1 parentDiagnostic:(void *)arg2 location:(id)arg3 forIndex:(id)arg4;
+- (id)codeCompletionsAtLocation:(id)arg1 withCurrentFileContentDictionary:(id)arg2 completionContext:(id *)arg3 sortedUsingBlock:(id)arg4 forIndex:(void)arg5;
 - (id)symbolsMatchingName:(id)arg1 inContext:(id)arg2 withCurrentFileContentDictionary:(id)arg3 forIndex:(id)arg4;
 - (id)_symbolsMatchingName:(id)arg1 inContext:(id)arg2 cxTU:(struct CXTranslationUnitImpl *)arg3 forIndex:(id)arg4;
 - (id)symbolsMatchingName:(id)arg1 inContext:(id)arg2 forIndex:(id)arg3;
@@ -4527,6 +4812,7 @@ typedef struct {
 - (id)pchFile;
 - (void)purgeCaches;
 - (BOOL)hasAST;
+- (void)dealloc;
 - (void)finalize;
 - (void)disposeCIndexAndTU;
 - (void)disposeTokensAndCursors;
@@ -4564,11 +4850,13 @@ typedef struct {
 + (void)initialize;
 - (void)moveItemsAtFilePaths:(id)arg1 toFilePaths:(id)arg2 inContext:(id)arg3 completionBlockDispatchQueue:(struct dispatch_queue_s *)arg4 completionBlock:(id)arg5;
 - (void)copyItemsAtFilePaths:(id)arg1 toFilePaths:(id)arg2 completionBlockDispatchQueue:(struct dispatch_queue_s *)arg3 completionBlock:(id)arg4;
-- (void)addItemsAtFilePaths:(id)arg1 completionBlockDispatchQueue:(struct dispatch_queue_s *)arg2 completionBlock:(id)arg3;
-- (BOOL)_addItemsAtFilePaths:(id)arg1 error:(id *)arg2;
+- (void)addItemsAtFilePaths:(id)arg1 workspace:(id)arg2 force:(BOOL)arg3 completionBlockDispatchQueue:(struct dispatch_queue_s *)arg4 completionBlock:(id)arg5;
+- (BOOL)_addItemsAtFilePaths:(id)arg1 workspace:(id)arg2 force:(BOOL)arg3 error:(id *)arg4;
+- (BOOL)_addPathStrings:(id)arg1 toWorkingTree:(id)arg2 withError:(id *)arg3;
 - (void)removeItemsAtFilePaths:(id)arg1 moveToTrash:(BOOL)arg2 completionBlockDispatchQueue:(struct dispatch_queue_s *)arg3 completionBlock:(id)arg4;
 - (void)createDirectoryAtFilePath:(id)arg1 withIntermediateDirectories:(BOOL)arg2 attributes:(id)arg3 completionBlockDispatchQueue:(struct dispatch_queue_s *)arg4 completionBlock:(id)arg5;
 - (id)init;
+- (void)dealloc;
 - (void)finalize;
 - (void)setupBatchEditMode:(id)arg1;
 - (BOOL)isInBatchEditMode;
@@ -4690,11 +4978,14 @@ typedef struct {
 @interface IDEActivityLogAnalyzerEventStepMessage : IDEActivityLogAnalyzerStepMessage
 {
     NSString *_description;
+    unsigned long long _callDepth;
 }
 
 - (void)dvt_writeToSerializer:(id)arg1;
 - (id)dvt_initFromDeserializer:(id)arg1;
 - (id)locations;
+- (void)setCallDepth:(unsigned long long)arg1;
+- (unsigned long long)callDepth;
 - (void)setDescription:(id)arg1;
 - (id)description;
 - (unsigned long long)totalNumberOfWarnings;
@@ -4739,6 +5030,7 @@ typedef struct {
 + (id)keyPathsForValuesAffectingLogFolderPath;
 + (id)keyPathsForValuesAffectingIndexPrecompiledHeadersFolderPath;
 + (id)keyPathsForValuesAffectingIndexFolderPath;
++ (id)keyPathsForValuesAffectingTextIndexFolderPath;
 + (id)buildIntermediatesFolderPathForSettings:(id)arg1 usingPlaceholderOfType:(int *)arg2;
 + (id)buildProductsFolderPathForSettings:(id)arg1 usingPlaceholderOfType:(int *)arg2;
 + (id)keyPathsForValuesAffectingPrecompiledHeadersFolderPath;
@@ -4762,6 +5054,7 @@ typedef struct {
 @property(readonly) DVTFilePath *logFolderPath;
 @property(readonly) DVTFilePath *indexPrecompiledHeadersFolderPath;
 @property(readonly) DVTFilePath *indexFolderPath;
+@property(readonly) DVTFilePath *textIndexFolderPath;
 @property(readonly) DVTFilePath *precompiledHeadersFolderPath;
 @property(readonly) DVTFilePath *installingBuildFolderPath;
 @property(readonly) DVTFilePath *archivingBuildFolderPath;
@@ -4817,10 +5110,12 @@ typedef struct {
     DVTFilePath *_indexFolderPath;
     DVTFilePath *_indexPrecompiledHeadersFolderPath;
     DVTFilePath *_logFolderPath;
+    DVTFilePath *_textIndexFolderPath;
     unsigned long long _hash;
 }
 
 + (id)workspaceArenaSnapshotForWorkspaceArena:(id)arg1;
+@property(readonly) DVTFilePath *textIndexFolderPath; // @synthesize textIndexFolderPath=_textIndexFolderPath;
 @property(readonly) DVTFilePath *logFolderPath; // @synthesize logFolderPath=_logFolderPath;
 @property(readonly) DVTFilePath *indexPrecompiledHeadersFolderPath; // @synthesize indexPrecompiledHeadersFolderPath=_indexPrecompiledHeadersFolderPath;
 @property(readonly) DVTFilePath *indexFolderPath; // @synthesize indexFolderPath=_indexFolderPath;
@@ -4838,12 +5133,23 @@ typedef struct {
     IDEIndexDatabase *_database;
     BOOL _wasSaved;
     BOOL _hasEnded;
+    NSDate *_startTime;
+    long long _nUnits_C;
+    long long _nUnits_ObjC;
+    long long _nUnits_CXX;
+    long long _nUnits_ObjCXX;
+    long long _nUnits_Other;
+    long long _nPCHs;
+    long long _nSymbols;
+    long long _nReferences;
 }
 
 @property(readonly, nonatomic) BOOL hasEnded; // @synthesize hasEnded=_hasEnded;
 @property(readonly, nonatomic) BOOL wasSaved; // @synthesize wasSaved=_wasSaved;
 @property(readonly, nonatomic) IDEIndexDatabase *database; // @synthesize database=_database;
 - (void)didEnd;
+- (void)recordSymbols:(long long)arg1 references:(long long)arg2;
+- (void)recordUnitWithLanguage:(id)arg1 pch:(BOOL)arg2;
 - (void)endSession;
 - (void)didSave;
 - (id)newMainFileWithPath:(id)arg1 target:(id)arg2 source:(id)arg3 modified:(id)arg4;
@@ -4893,8 +5199,8 @@ typedef struct {
     IDEBreakpointBucket *_watchpointBucket;
     IDEBreakpointBucket *_sharedWorkspaceBucket;
     NSMutableArray *_sharedProjectBuckets;
-    NSMapTable *_userToSharedBuckets;
-    NSMapTable *_sharedToUserBuckets;
+    DVTMapTable *_userToSharedBuckets;
+    DVTMapTable *_sharedToUserBuckets;
     NSMutableArray *_breakpoints;
     NSMutableArray *_fileBreakpoints;
     NSMutableArray *_symbolicBreakpoints;
@@ -4902,7 +5208,6 @@ typedef struct {
     BOOL _breakpointsActivated;
 }
 
-+ (id)_kindsOfManagedBreakpoints;
 + (BOOL)_isBreakpointAtLocation:(id)arg1 location:(id)arg2;
 + (void)initialize;
 @property BOOL breakpointsActivated; // @synthesize breakpointsActivated=_breakpointsActivated;
@@ -4911,7 +5216,6 @@ typedef struct {
 @property(readonly) IDEBreakpointBucket *userWorkspaceBucket; // @synthesize userWorkspaceBucket=_userWorkspaceBucket;
 @property(retain, nonatomic) IDEBreakpointBucket *defaultBucket; // @synthesize defaultBucket=_defaultBucket;
 @property(readonly) IDEWorkspace *workspace; // @synthesize workspace=_workspace;
-- (void)_importLegacyBreakpointsIfNecessary:(id)arg1 userProjectBucket:(id)arg2;
 - (void)observeValueForKeyPath:(id)arg1 ofObject:(id)arg2 change:(id)arg3 context:(void *)arg4;
 - (void)_handleBreakpointsChanged:(id)arg1 forArray:(id)arg2;
 - (void)_addListenersToBucketsBreakpointLists:(id)arg1;
@@ -4919,9 +5223,11 @@ typedef struct {
 - (void)setBreakpointShared:(id)arg1 shared:(BOOL)arg2;
 - (id)fileBreakpointAtDocumentLocation:(id)arg1;
 - (id)pathOfModulesMatchingFileBreakpoint:(id)arg1;
+- (void)removeWatchpoint:(id)arg1;
 - (void)removeBreakpoint:(id)arg1;
 - (BOOL)_managesBucket:(id)arg1;
 - (void)_addBreakpoint:(id)arg1 toBucket:(id)arg2;
+- (void)addWatchpoint:(id)arg1;
 - (void)addBreakpoint:(id)arg1;
 - (id)createWatchpoint:(id)arg1 variableName:(id)arg2;
 - (id)_createAddressBreakpointFrom:(id)arg1 usingLineOfDisassembly:(id)arg2;
@@ -5078,16 +5384,20 @@ typedef struct {
     NSString *_displayText;
     NSString *_displayType;
     NSString *_completionText;
+    NSAttributedString *_descriptionText;
+    NSString *_parentText;
     DVTSourceCodeSymbolKind *_symbolKind;
-    long long _priority;
+    double _priority;
     NSString *_name;
+    BOOL _notRecommended;
 }
 
-@property long long priority; // @synthesize priority=_priority;
+@property double priority; // @synthesize priority=_priority;
 @property(readonly) NSString *name; // @synthesize name=_name;
 @property(readonly) BOOL notRecommended;
 @property(readonly) DVTSourceCodeSymbolKind *symbolKind;
 @property(readonly) NSAttributedString *descriptionText;
+@property(readonly) NSString *parentText;
 @property(readonly) NSString *completionText;
 @property(readonly) NSString *displayType;
 @property(readonly) NSString *displayText;
@@ -5109,9 +5419,14 @@ typedef struct {
 + (id)locationForURL:(id)arg1 locator:(id)arg2;
 @property(readonly, nonatomic) NSDictionary *settings; // @synthesize settings=_settings;
 @property(readonly, nonatomic) IDEIndexDatabase *database; // @synthesize database=_database;
+- (id)allAutoImportCompletionItemsMatchingKind:(id)arg1 symbolLanguage:(id)arg2 forIndex:(id)arg3;
+- (id)allAutoImportCompletionItemsMatchingKind:(id)arg1 forIndex:(id)arg2;
+- (id)completionStringForSymbol:(id)arg1;
 - (BOOL)isProjectSymbol:(id)arg1;
 - (id)timestampForFile:(id)arg1;
+- (id)calleesForSymbolOccurrence:(id)arg1;
 - (id)locationForSymbolOccurrence:(id)arg1;
+- (id)containerSymbolForOccurrence:(id)arg1;
 - (id)correspondingSymbolForOccurrence:(id)arg1;
 - (id)relatedClassForCategory:(id)arg1;
 - (id)propertiesForCategory:(id)arg1;
@@ -5150,9 +5465,19 @@ typedef struct {
 - (id)instanceMethodsForClass:(id)arg1;
 - (id)classMethodsForClass:(id)arg1;
 - (id)childrenForContainer:(id)arg1;
+- (id)getterForProperty:(id)arg1;
+- (id)setterForProperty:(id)arg1;
+- (id)typeOfArgument:(unsigned long long)arg1 forCallable:(id)arg2;
+- (unsigned long long)numArgumentsForCallable:(id)arg1;
+- (id)returnTypeForCallable:(id)arg1;
+- (id)propertyForCallable:(id)arg1;
+- (id)overridingSymbolsForCallable:(id)arg1;
+- (id)overriddenSymbolsForCallable:(id)arg1;
+- (id)referencesForSymbol:(id)arg1;
 - (id)referencingFilesForSymbol:(id)arg1;
 - (id)containerSymbolForSymbol:(id)arg1;
 - (id)containerSymbolsForSymbol:(id)arg1;
+- (id)definitionsForSymbolWithResolutionOffset:(long long)arg1;
 - (id)definitionsForSymbol:(id)arg1;
 - (id)declarationsForSymbol:(id)arg1;
 - (id)occurrencesForSymbol:(id)arg1;
@@ -5166,6 +5491,7 @@ typedef struct {
 - (id)tempTableForSymbols:(id)arg1 shouldDrop:(char *)arg2;
 - (id)kindsStringForKinds:(id)arg1;
 - (id)symbolsForResolutions:(id)arg1 forIndex:(id)arg2;
+- (id)parsedCodeCommentAtLocation:(id)arg1 withCurrentFileContentDictionary:(id)arg2 forIndex:(id)arg3;
 - (id)importedFileAtDocumentLocation:(id)arg1 withCurrentFileContentDictionary:(id)arg2 forIndex:(id)arg3;
 - (id)collectionElementTypeSymbolForSymbol:(id)arg1 withCurrentFileContentDictionary:(id)arg2 forIndex:(id)arg3;
 - (id)typeSymbolForSymbol:(id)arg1 withCurrentFileContentDictionary:(id)arg2 forIndex:(id)arg3;
@@ -5174,7 +5500,7 @@ typedef struct {
 - (id)symbolsUsedInContext:(id)arg1 withCurrentFileContentDictionary:(id)arg2 forIndex:(id)arg3;
 - (id)symbolsOccurrencesInContext:(id)arg1 withCurrentFileContentDictionary:(id)arg2 forIndex:(id)arg3;
 - (id)codeDiagnosticsAtLocation:(id)arg1 withCurrentFileContentDictionary:(id)arg2 forIndex:(id)arg3;
-- (id)codeCompletionsAtLocation:(id)arg1 withCurrentFileContentDictionary:(id)arg2 sortedUsingBlock:(id)arg3 forIndex:(void)arg4;
+- (id)codeCompletionsAtLocation:(id)arg1 withCurrentFileContentDictionary:(id)arg2 completionContext:(id *)arg3 sortedUsingBlock:(id)arg4 forIndex:(void)arg5;
 - (id)topLevelSymbolsInFile:(id)arg1 forIndex:(id)arg2;
 - (id)allSymbolsMatchingNames:(id)arg1 kind:(id)arg2 forIndex:(id)arg3;
 - (id)allSymbolsMatchingName:(id)arg1 kind:(id)arg2 forIndex:(id)arg3;
@@ -5188,7 +5514,7 @@ typedef struct {
 - (id)topLevelProtocolsWorkspaceOnly:(BOOL)arg1 cancelWhen:(id)arg2 forIndex:(void)arg3;
 - (id)topLevelClassesWorkspaceOnly:(BOOL)arg1 cancelWhen:(id)arg2 forIndex:(void)arg3;
 - (id)topLevelSymbolsMatchingKind:(id)arg1 workspaceOnly:(BOOL)arg2 cancelWhen:(id)arg3 forIndex:(void)arg4;
-- (id)filesContaining:(id)arg1 anchorStart:(BOOL)arg2 anchorEnd:(BOOL)arg3 subsequence:(BOOL)arg4 ignoreCase:(BOOL)arg5 forIndex:(id)arg6;
+- (id)filesContaining:(id)arg1 anchorStart:(BOOL)arg2 anchorEnd:(BOOL)arg3 subsequence:(BOOL)arg4 ignoreCase:(BOOL)arg5 cancelWhen:(id)arg6 forIndex:(void)arg7;
 - (id)filesIncludedByFile:(id)arg1 forIndex:(id)arg2;
 - (id)filesIncludingFile:(id)arg1 forIndex:(id)arg2;
 - (void)didSave;
@@ -5200,6 +5526,14 @@ typedef struct {
 @interface _IDEFoundationPrivateClassForFindingBundle : NSObject
 {
 }
+
+@end
+
+@interface IDEInitializationErrorRecoveryAttempter : NSObject
+{
+}
+
+- (BOOL)attemptRecoveryFromError:(id)arg1 optionIndex:(unsigned long long)arg2;
 
 @end
 
@@ -5252,7 +5586,7 @@ typedef struct {
 - (BOOL)containsBreakpoint:(id)arg1;
 - (id)_individualKindOfBreakpointArrayForBreakpoint:(id)arg1;
 - (id)initWithType:(int)arg1 archivingContainer:(id)arg2 error:(id *)arg3;
-- (BOOL)_decodeFromContainer:(id *)arg1;
+- (void)_decodeFromContainer:(id *)arg1;
 - (void)_encodeToContainer;
 - (BOOL)_shouldEncodeDecode;
 @property(readonly) DVTCustomDataSpecifier *archivingDataSpecifier; // @dynamic archivingDataSpecifier;
@@ -5277,19 +5611,14 @@ typedef struct {
     NSString *_targetArchitecture;
     DVTSDK *_targetSDK;
     NSDictionary *_buildSettingOverrides;
+    NSString *_targetIdentifier;
 }
 
-+ (id)validRunDestinationsForRunContext:(id)arg1 executionEnvironment:(id)arg2;
-+ (id)validRunDestinationsForScheme:(id)arg1 schemeCommands:(id)arg2 executionEnvironment:(id)arg3;
-+ (id)defaultRunDestinationForScheme:(id)arg1 fromRunDestinations:(id)arg2;
-+ (void)_checkPathRunnablePlatform:(id)arg1 architectures:(id)arg2 againstDevice:(id)arg3 addingToDestinations:(id)arg4;
-+ (void)_checkBuildable:(id)arg1 againstDevice:(id)arg2 withConfiguration:(id)arg3 workspaceArena:(id)arg4 addingToDestinations:(id)arg5;
-+ (id)runDestinationWithTargetDevice:(id)arg1 architecture:(id)arg2 SDK:(id)arg3;
++ (id)fallbackActiveArchitectureForBuildArchitectures:(id)arg1;
 + (id)keyPathsForValuesAffectingFullDisplayName;
 + (id)keyPathsForValuesAffectingDisplayName;
-+ (id)_cachedRunDestinationForDevice:(id)arg1 architecture:(id)arg2 SDK:(id)arg3;
-+ (void)_cacheRunDestination:(id)arg1;
 + (void)initialize;
+@property(readonly) NSString *targetIdentifier; // @synthesize targetIdentifier=_targetIdentifier;
 @property(readonly) NSDictionary *buildSettingOverrides; // @synthesize buildSettingOverrides=_buildSettingOverrides;
 @property(readonly) DVTSDK *targetSDK; // @synthesize targetSDK=_targetSDK;
 @property(readonly) NSString *targetArchitecture; // @synthesize targetArchitecture=_targetArchitecture;
@@ -5302,7 +5631,7 @@ typedef struct {
 - (id)targetSDKForSorting;
 - (id)targetDeviceForSorting;
 - (id)displayOrder;
-- (BOOL)isValidRunDestinationsForScheme:(id)arg1 schemeCommand:(int)arg2 executionEnvironment:(id)arg3 error:(id *)arg4;
+- (BOOL)isValidRunDestinationForScheme:(id)arg1 schemeCommand:(int)arg2 executionEnvironment:(id)arg3 error:(id *)arg4;
 - (id)description;
 @property(readonly) NSString *fullDisplayName;
 @property(readonly) NSString *displayNameAdditions;
@@ -5372,16 +5701,20 @@ typedef struct {
 
 @end
 
-@interface IDESourceControlWorkspaceMonitor : NSObject <DVTInvalidation>
+@interface IDESourceControlWorkspaceMonitor : NSObject <DVTInvalidation_New>
 {
     IDESourceControlManager *_sourceControlManager;
+    IDEWorkspace *_workspace;
     IDEContainerQuery *_query;
+    NSMutableSet *_persistenceFilePathSet;
+    NSMutableSet *_persistenceMissingFilePathSet;
+    NSMutableDictionary *_workspaceSCMInfo;
     NSMutableSet *_fileRefSet;
     NSDate *_startDate;
     NSDate *_endDate;
     NSMutableArray *_workingTrees;
     DVTDispatchLock *_workingTreesLock;
-    NSMapTable *_workspaceRootForWorkingTreeMapTable;
+    DVTMapTable *_workspaceRootForWorkingTreeMapTable;
     DVTDispatchLock *_workspaceRootMapTableLock;
     IDELogStore *_logStore;
     id <DVTObservingToken> _containerQueryMatchesObserver;
@@ -5391,22 +5724,28 @@ typedef struct {
     double _serverStatusUpdateInterval;
     NSTimer *_statusUpdateTimer;
     struct dispatch_source_s *_scanningTimer;
-    DVTStackBacktrace *_invalidationBacktrace;
     NSString *_developerFolderPathString;
     BOOL _localStatusCheckingEnabled;
     BOOL _remoteStatusCheckingEnabled;
     BOOL _idleNotificationPosted;
-    BOOL _isInvalidated;
     BOOL _isPerformingInitialWorkspaceScan;
+    BOOL _finishedScan;
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
 + (id)keyPathsForValuesAffectingLogRecords;
-@property(retain) IDELogStore *logStore; // @synthesize logStore=_logStore;
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
+@property(retain) IDELogStore *logStore; // @synthesize logStore=_logStore;
 @property BOOL isPerformingInitialWorkspaceScan; // @synthesize isPerformingInitialWorkspaceScan=_isPerformingInitialWorkspaceScan;
 @property(copy) NSTimer *statusUpdateTimer; // @synthesize statusUpdateTimer=_statusUpdateTimer;
 @property double serverStatusUpdateInterval; // @synthesize serverStatusUpdateInterval=_serverStatusUpdateInterval;
-@property(readonly) NSMapTable *workspaceRootForWorkingTreeMapTable; // @synthesize workspaceRootForWorkingTreeMapTable=_workspaceRootForWorkingTreeMapTable;
+@property(readonly) DVTMapTable *workspaceRootForWorkingTreeMapTable; // @synthesize workspaceRootForWorkingTreeMapTable=_workspaceRootForWorkingTreeMapTable;
 @property __weak IDESourceControlManager *sourceControlManager; // @synthesize sourceControlManager=_sourceControlManager;
 - (void)updateLogsWithRequest:(id)arg1;
 @property(readonly) NSArray *logRecords;
@@ -5427,12 +5766,20 @@ typedef struct {
 - (void)evaluteWorkspaceRootForWorkingTree:(id)arg1 relativeToFilePath:(id)arg2;
 - (id)rootDirectoryInWorkspaceForWorkingTree:(id)arg1;
 - (void)_processFileRefsBatch:(id)arg1;
+- (BOOL)_filePathIsInDerivedDataFolder:(id)arg1;
+- (id)_rootDirectoryOfAllWorkingCopies;
 - (void)loadSourceControlLogsForWorkspace:(id)arg1;
 - (void)startScanningWorkspace:(id)arg1;
+- (BOOL)_saveWorkspaceSCMInfo;
+- (id)_loadWorkspaceSCMInfo;
+- (id)_SCMInfoFilePath;
 - (void)addWorkingTree:(id)arg1;
 @property(readonly) NSArray *workingTrees; // @synthesize workingTrees=_workingTrees;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)dvt_11266663_windowDidChangeNotification:(id)arg1;
 - (id)init;
 
 @end
@@ -5531,6 +5878,7 @@ typedef struct {
 - (void)addObject:(id)arg1;
 - (id)objectAtIndex:(unsigned long long)arg1;
 - (unsigned long long)count;
+- (void)dealloc;
 - (void)finalize;
 - (id)initWithCodeCompleteResults:(void *)arg1;
 
@@ -5594,31 +5942,58 @@ typedef struct {
 
 @end
 
-@interface IDEIssueManager : NSObject <DVTInvalidation>
+@interface IDEDocumentIssueSummary : NSObject
+{
+    NSMutableArray *_vendedIssuesBySeqNum;
+    NSMutableDictionary *_issuesIndexedByLineNumber;
+    DVTHashTable *_observers;
+    unsigned long long _errorCount;
+    unsigned long long _warningCount;
+    unsigned long long _noticeCount;
+    unsigned long long _analyzerResultCount;
+    unsigned long long _fixItCount;
+    unsigned long long _maxSeverity;
+}
+
++ (id)keyPathsForValuesAffectingMaxSeverity;
+@property(readonly) unsigned long long fixItCount; // @synthesize fixItCount=_fixItCount;
+@property(readonly) unsigned long long analyzerResultCount; // @synthesize analyzerResultCount=_analyzerResultCount;
+@property(readonly) unsigned long long noticeCount; // @synthesize noticeCount=_noticeCount;
+@property(readonly) unsigned long long warningCount; // @synthesize warningCount=_warningCount;
+@property(readonly) unsigned long long errorCount; // @synthesize errorCount=_errorCount;
+@property(retain) DVTHashTable *observers; // @synthesize observers=_observers;
+@property(retain) NSMutableDictionary *issuesIndexedByLineNumber; // @synthesize issuesIndexedByLineNumber=_issuesIndexedByLineNumber;
+@property(copy, nonatomic) NSArray *vendedIssuesBySeqNum; // @synthesize vendedIssuesBySeqNum=_vendedIssuesBySeqNum;
+@property(readonly) unsigned long long maxSeverity;
+- (void)removeVendedIssuesBySeqNumAtIndexes:(id)arg1;
+- (void)insertVendedIssuesBySeqNum:(id)arg1 atIndexes:(id)arg2;
+- (void)removeObjectFromVendedIssuesBySeqNumAtIndex:(unsigned long long)arg1;
+- (void)insertObject:(id)arg1 inVendedIssuesBySeqNumAtIndex:(unsigned long long)arg2;
+- (id)init;
+
+@end
+
+@interface IDEIssueManager : NSObject <DVTInvalidation_New>
 {
     IDEWorkspace *_workspace;
-    BOOL _isInvalidated;
     NSMutableArray *_issueProviders;
     DVTMapTable *_providerContextToProvisionInfoMap;
     DVTMapTable *_issueToProviderContextMap;
     NSMutableArray *_issueGroups;
-    NSMapTable *_identifierToGroupIndex;
-    NSMapTable *_issueToGroupsIndex;
+    DVTMapTable *_identifierToGroupIndex;
+    DVTMapTable *_issueToGroupsIndex;
     NSMutableSet *_issuesThatWillBeRemoved;
     NSMutableArray *_vendedIssuesWithNoDocument;
     NSMutableSet *_issuesWithNoDocument;
     NSMutableArray *_documentURLsWithVendedIssues;
-    NSMutableDictionary *_documentURLsToVendedIssuesBySeqNumDict;
-    NSMutableDictionary *_documentURLsToIssuesByLineNumDict;
-    NSMutableDictionary *_documentURLToObserversDict;
+    NSMutableDictionary *_documentURLToIssueSummaryDict;
     DVTHashTable *_allDocumentURLObservers;
     unsigned long long _nextIssueSequenceNumber;
-    DVTStackBacktrace *_invalidationBacktrace;
     DVTMapTable *_providerToSessionObservationToken;
     unsigned long long _nextGroupSequenceNumber;
     DVTMapTable *_identifierToGroupSequenceNumberIndex;
     IDEIssueProviderSession *_lastSchemeActionSession;
-    NSMutableArray *_lastSchemeActionIssues;
+    NSMutableSet *_lastSchemeActionIssues;
     id _issueFixedObserver;
     BOOL _liveIssuesEnabled;
     id _liveIssuesEnabledObserver;
@@ -5631,15 +6006,21 @@ typedef struct {
     id <DVTObservingToken> _activeSchemeObserver;
     id <DVTObservingToken> _runDestinationObserver;
     id <DVTObservingToken> _implicitDependenciesObserver;
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
 + (id)issueManagerLogAspect;
 + (id)_issueProviderInfo;
 + (void)_useDebugProviderExtensionPointWithIdentifier:(id)arg1;
++ (BOOL)automaticallyNotifiesObserversOfValue;
 + (void)initialize;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
+@property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 @property(readonly) IDEIssueLogRecordsGroup *issueLogRecordsGroup; // @synthesize issueLogRecordsGroup=_issueLogRecordsGroup;
 @property(readonly, getter=areLiveIssuesEnabled) BOOL liveIssuesEnabled; // @synthesize liveIssuesEnabled=_liveIssuesEnabled;
-@property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 @property(readonly) IDEWorkspace *workspace; // @synthesize workspace=_workspace;
 - (void)_containersOrBlueprintsUpdated;
 - (id)_issuesForProviderContext:(id)arg1;
@@ -5661,6 +6042,8 @@ typedef struct {
 - (void)_vendIssues:(id)arg1 container:(id)arg2 blueprint:(id)arg3 issueToGroupingObjectMap:(id)arg4 session:(id)arg5;
 - (id)_similarExistingIssueForIssue:(id)arg1;
 - (id)_similarExistingIssueForIssue:(id)arg1 container:(id)arg2 blueprint:(id)arg3;
+- (_Bool)_doesIssue:(id)arg1 fromContainer:(id)arg2 andBlueprint:(id)arg3 coalesceWithIssue:(id)arg4;
+- (_Bool)_doesIssue:(id)arg1 coalesceWithIssue:(id)arg2;
 - (id)_identifierForGroupWithBlueprint:(id)arg1 container:(id)arg2;
 - (id)_groupingObjectsForIssue:(id)arg1;
 - (void)_rescindObserverToken:(id)arg1;
@@ -5669,17 +6052,26 @@ typedef struct {
 - (void)_notifyObserver:(id)arg1 forURL:(id)arg2 isPrior:(BOOL)arg3;
 - (id)issuesWithNoDocument;
 - (id)issuesForDocumentURL:(id)arg1;
+- (unsigned long long)maxSeverityOfDocumentAtURL:(id)arg1;
+- (unsigned long long)numberOfFixableDiagnosticItemsInDocumentAtURL:(id)arg1;
+- (unsigned long long)numberOfAnalyzerResultsInDocumentAtURL:(id)arg1;
+- (unsigned long long)numberOfNoticesInDocumentAtURL:(id)arg1;
+- (unsigned long long)numberOfWarningsInDocumentAtURL:(id)arg1;
+- (unsigned long long)numberOfErrorsInDocumentAtURL:(id)arg1;
+- (id)_documentIssueSummaryForURL:(id)arg1;
 @property(readonly) NSArray *documentURLsWithIssues;
 @property(readonly) NSArray *issueGroups; // @synthesize issueGroups=_issueGroups;
 - (void)_updateIssueProviders;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (id)initWithWorkspace:(id)arg1;
 - (id)init;
 
 // Remaining properties
-@property(readonly) NSArray *lastSchemeActionIssues; // @dynamic lastSchemeActionIssues;
-@property(readonly) NSMutableArray *mutableLastSchemeActionIssues; // @dynamic mutableLastSchemeActionIssues;
+@property(readonly) NSSet *lastSchemeActionIssues; // @dynamic lastSchemeActionIssues;
+@property(readonly) NSMutableSet *mutableLastSchemeActionIssues; // @dynamic mutableLastSchemeActionIssues;
 
 @end
 
@@ -5695,7 +6087,7 @@ typedef struct {
 @property(readonly) id observerBlock; // @synthesize observerBlock=_observerBlock;
 @property(readonly) NSURL *documentURL; // @synthesize documentURL=_documentURL;
 - (void)cancel;
-@property(readonly, getter=isCancelled) BOOL cancelled;
+- (BOOL)isCancelled;
 - (id)initWithIssueManager:(id)arg1 documentURL:(id)arg2 options:(unsigned long long)arg3 block:(id)arg4;
 
 @end
@@ -5743,6 +6135,7 @@ typedef struct {
     BOOL _coalesced;
     BOOL _wasFetchedFromCache;
     BOOL _vended;
+    NSArray *_filteredSubissues;
     DVTDocumentLocation *_primaryDocumentLocation;
 }
 
@@ -5756,7 +6149,7 @@ typedef struct {
 @property(readonly) IDEIssue *parentIssue; // @synthesize parentIssue=_parentIssue;
 @property(readonly) IDEActivityLogRecord *originatingLogRecord; // @synthesize originatingLogRecord=_originatingLogRecord;
 @property(readonly) IDEActivityLogMessage *originatingMessage; // @synthesize originatingMessage=_originatingMessage;
-@property(retain) IDEActivityLogMessage *representedMessage; // @synthesize representedMessage=_representedMessage;
+@property(retain, nonatomic) IDEActivityLogMessage *representedMessage; // @synthesize representedMessage=_representedMessage;
 @property(copy, nonatomic) NSArray *subissues; // @synthesize subissues=_subissues;
 @property(readonly) unsigned long long sequenceNumber; // @synthesize sequenceNumber=_sequenceNumber;
 @property(readonly) unsigned long long severity; // @synthesize severity=_severity;
@@ -5777,6 +6170,8 @@ typedef struct {
 - (void)_freeze;
 @property(readonly) NSArray *fixableDiagnosticItems;
 - (void)_setRepresentedMessage:(id)arg1 force:(BOOL)arg2;
+@property(readonly) NSArray *filteredSubissues; // @synthesize filteredSubissues=_filteredSubissues;
+- (void)_setSubissues:(id)arg1 force:(BOOL)arg2;
 - (void)_setSequenceNumber:(unsigned long long)arg1;
 - (id)initWithIssueProvider:(id)arg1 message:(id)arg2 wasFetchedFromCache:(BOOL)arg3;
 - (id)initWithIssueProvider:(id)arg1 message:(id)arg2 originatingLogRecord:(id)arg3 wasFetchedFromCache:(BOOL)arg4;
@@ -5785,18 +6180,23 @@ typedef struct {
 
 @end
 
-@interface IDEIssueProvider : NSObject <DVTInvalidation>
+@interface IDEIssueProvider : NSObject <DVTInvalidation_New>
 {
-    BOOL _isInvalidated;
     IDEIssueManager *_issueManager;
     DVTExtension *_extension;
     IDEIssueProviderSession *_session;
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
     DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
 + (int)providerType;
-@property(retain) IDEIssueProviderSession *_session; // @synthesize _session;
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
+@property(retain) IDEIssueProviderSession *_session; // @synthesize _session;
 @property(readonly) DVTExtension *extension; // @synthesize extension=_extension;
 @property(readonly) IDEIssueManager *issueManager; // @synthesize issueManager=_issueManager;
 @property(readonly) BOOL _filterIssuesByActiveScheme;
@@ -5810,8 +6210,10 @@ typedef struct {
 - (void)addIssues:(id)arg1 forProviderContext:(id)arg2 container:(id)arg3 blueprint:(id)arg4;
 - (void)setIssues:(id)arg1 forProviderContext:(id)arg2 container:(id)arg3 blueprint:(id)arg4;
 - (id)description;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (id)initWithIssueManager:(id)arg1 extension:(id)arg2;
 - (id)init;
 
@@ -5833,10 +6235,10 @@ typedef struct {
     IDEContainer *_container;
     id <IDEBlueprint> _blueprint;
     NSMutableArray *_issueFileGroups;
-    NSMapTable *_issueFileGroupsIndex;
+    DVTMapTable *_issueFileGroupsIndex;
     NSMutableArray *_issuesWithNoFile;
     NSMutableArray *_issueTypeGroups;
-    NSMapTable *_issueTypeGroupsIndex;
+    DVTMapTable *_issueTypeGroupsIndex;
     unsigned long long _errorCount;
     unsigned long long _warningCount;
     unsigned long long _noticeCount;
@@ -5927,7 +6329,7 @@ typedef struct {
 - (id)_locationsOfTextualConflictsAtPath:(id)arg1;
 - (id)_issuesForItemWithStatus:(id)arg1;
 - (void)_scanForIssues;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)_setUpSourceControlObserving;
 - (id)_localizedStringForKey:(id)arg1;
 - (void)_generateLocalizedStrings;
@@ -5954,52 +6356,23 @@ typedef struct {
 
 @end
 
-@interface IDETaskLaunchLocalService : IDERunDeviceService
-{
-}
-
-+ (id)capability;
-- (id)operationWorkerWithLaunchSession:(id)arg1 error:(id *)arg2;
-
-@end
-
-@interface IDETaskLocalService : IDERunDeviceService
-{
-}
-
-+ (id)capability;
-- (id)operationWorkerWithLaunchSession:(id)arg1 error:(id *)arg2;
-- (id)capabilitySequenceForLaunchSession:(id)arg1;
-
-@end
-
 @interface IDERunOperationWorkerGroup : IDERunOperationWorker <IDERunOperationWorkerDelegate, IDERunOperationWorkerTracker>
 {
     NSArray *_subworkers;
-    unsigned long long _completedSubworkers;
     unsigned long long _finishedSubworkers;
+    BOOL _shouldStartNextWorker;
+    unsigned long long _currentWorkerIndex;
 }
 
-@property(readonly) NSArray *subworkers; // @synthesize subworkers=_subworkers;
+- (id)description;
 - (void)allSubworkersDidFinishWithError:(id)arg1;
 - (void)runningDidFinish:(id)arg1 withError:(id)arg2;
 - (void)workerDidComplete:(id)arg1 withError:(id)arg2;
 - (void)terminate;
 - (void)start;
+- (void)_startNextWorker;
 - (id)initWithExtensionIdentifier:(id)arg1 launchSession:(id)arg2;
 - (id)initWithWorkers:(id)arg1 launchSession:(id)arg2;
-
-@end
-
-@interface IDERunOperationSerialWorkerGroup : IDERunOperationWorkerGroup
-{
-    unsigned long long _currentWorkerIndex;
-    BOOL _started;
-}
-
-- (void)workerDidComplete:(id)arg1 withError:(id)arg2;
-- (void)start;
-- (BOOL)_startNextWorker;
 
 @end
 
@@ -6032,25 +6405,32 @@ typedef struct {
 
 @end
 
-@interface IDERefactoring : NSObject <DVTInvalidation>
+@interface IDERefactoring : NSObject <DVTInvalidation_New>
 {
     IDEWorkspace *_workspace;
-    BOOL _invalidated;
-    DVTStackBacktrace *_invalidationBacktrace;
     id _willIndexNotificationObservingToken;
     id _didIndexNotificationObservingToken;
     BOOL _refactoringAllowed;
     id _domainObject;
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
-@property(retain) id domainObject; // @synthesize domainObject=_domainObject;
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
+@property(retain) id domainObject; // @synthesize domainObject=_domainObject;
 @property(readonly) IDEWorkspace *workspace; // @synthesize workspace=_workspace;
 - (id)objCOrCCompilationUnitIndexablesForMainFile:(id)arg1 indexableObjects:(id)arg2;
 - (BOOL)isFileObjCCompilationUnitOrHeader:(id)arg1 error:(id *)arg2;
 - (id)description;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (id)initWithWorkspace:(id)arg1;
 
 @end
@@ -6070,11 +6450,10 @@ typedef struct {
 
 @end
 
-@interface IDEFileReferenceContainerObserver : NSObject <DVTInvalidation>
+@interface IDEFileReferenceContainerObserver : NSObject <DVTInvalidation_New>
 {
     id _skipReferencePredicateBlock;
     id _updateHandlerBlock;
-    DVTStackBacktrace *_invalidationBacktrace;
     NSMutableDictionary *_incrementalResults;
     NSMutableDictionary *_compositeResults;
     id <DVTObservingToken> _matchesKVOToken;
@@ -6082,26 +6461,32 @@ typedef struct {
     NSMutableSet *_incrementalRemovals;
     IDEContainer *_observedContainer;
     NSMutableSet *_observationBlocks;
-    NSMutableSet *_previousFilePaths;
+    NSDictionary *_currentFilePaths;
+    NSSet *_currentFileReferences;
     double _postingDelay;
     struct dispatch_queue_s *_ioQueue;
     NSString *_identifier;
     NSSet *_observedTypes;
     BOOL _processConcurrently;
     BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
 + (void)unregisterObserver:(id)arg1;
 + (id)observerForContainer:(id)arg1 types:(id)arg2 identifier:(id)arg3 updateHandlerBlock:(id)arg4;
 + (id)observerForContainer:(id)arg1 types:(id)arg2 identifier:(id)arg3 updateHandlerBlock:(id)arg4 skipFileReferencePredicate:(void)arg5;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
-@property(nonatomic) BOOL processConcurrently; // @synthesize processConcurrently=_processConcurrently;
-@property(nonatomic) double postingDelay; // @synthesize postingDelay=_postingDelay;
 @property(readonly) NSString *identifier; // @synthesize identifier=_identifier;
 @property(readonly) NSSet *observedTypes; // @synthesize observedTypes=_observedTypes;
 @property(readonly) IDEContainer *observedContainer; // @synthesize observedContainer=_observedContainer;
 - (void)processPendingResults;
-- (void)processResultForPath:(id)arg1 updateType:(long long)arg2;
+- (void)observeValueForKeyPath:(id)arg1 ofObject:(id)arg2 change:(id)arg3 context:(void *)arg4;
+- (void)processResultForPath:(id)arg1 withLastKnownFileType:(id)arg2 updateType:(long long)arg3;
 - (void)postResults;
 - (void)postResultsRetrospectiveResultsToObserverBlock:(id)arg1;
 - (void)setResult:(id)arg1 forPath:(id)arg2;
@@ -6110,8 +6495,10 @@ typedef struct {
 - (void)invalidatePosting;
 - (id)addObserver:(id)arg1;
 - (id)description;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (id)initWithContainer:(id)arg1 types:(id)arg2 identifier:(id)arg3 updateHandlerBlock:(id)arg4 skipFileReferencePredicate:(void)arg5;
 
 @end
@@ -6166,6 +6553,7 @@ typedef struct {
 - (void)_snapshotsSettingsDidChange:(id)arg1;
 - (id)_localizedStringForKey:(id)arg1;
 - (void)_generateLocalizedStrings;
+- (void)dealloc;
 - (void)finalize;
 - (id)initWithWorkspace:(id)arg1;
 
@@ -6180,7 +6568,7 @@ typedef struct {
 + (id)_expressionsInString:(id)arg1;
 + (id)propertiesAffectingPersistenceState;
 + (id)extensionIDForAction:(id)arg1;
-+ (id)extensions;
++ (id)_extensions;
 + (id)_replace:(id)arg1 with:(id)arg2 inString:(id)arg3;
 + (id)_expandMacrosInString:(id)arg1 usingBreakpoint:(id)arg2;
 + (void)initialize;
@@ -6188,16 +6576,34 @@ typedef struct {
 - (id)initFromXMLUnarchiver:(id)arg1 archiveVersion:(float)arg2;
 - (id)_expandExpressionsInString:(id)arg1;
 - (void)extractAndSetExpressionsFromString:(id)arg1;
+- (void)extractAndAddExpressionsFromString:(id)arg1;
+- (void)clearExpressions;
 - (id)expandExpressionsAndMacrosInString:(id)arg1 usingBreakpoint:(id)arg2;
 - (BOOL)haveExpressionsBeenEvaluated;
 - (void)resetExpressionResults;
-- (void)performActionUsingConsole:(id)arg1 andBreakpoint:(id)arg2;
+- (void)performActionUsingContext:(id)arg1 andBreakpoint:(id)arg2;
 - (void)_breakpointActionCommonInit;
 - (id)init;
 
 // Remaining properties
 @property(copy) NSArray *expressions; // @dynamic expressions;
 @property(readonly) NSMutableArray *mutableExpressions; // @dynamic mutableExpressions;
+
+@end
+
+@interface IDEBreakpointActionEvaluationContext : NSObject
+{
+    id <IDEDebugSession> _debugSession;
+    IDEConsoleAdaptor *_consoleAdaptor;
+    unsigned long long _selectedThreadIndex;
+    unsigned long long _selectedFrameIndex;
+}
+
+@property(readonly) unsigned long long selectedFrameIndex; // @synthesize selectedFrameIndex=_selectedFrameIndex;
+@property(readonly) unsigned long long selectedThreadIndex; // @synthesize selectedThreadIndex=_selectedThreadIndex;
+@property(readonly) IDEConsoleAdaptor *consoleAdaptor; // @synthesize consoleAdaptor=_consoleAdaptor;
+@property(readonly) id <IDEDebugSession> debugSession; // @synthesize debugSession=_debugSession;
+- (id)initWithDebugSession:(id)arg1 consoleAdaptor:(id)arg2 selectedThreadIndex:(unsigned long long)arg3 selectedFrameIndex:(unsigned long long)arg4;
 
 @end
 
@@ -6224,8 +6630,7 @@ typedef struct {
 @property(copy) NSString *consoleCommand; // @synthesize consoleCommand=_consoleCommand;
 - (void)dvt_encodeAttributesWithXMLArchiver:(id)arg1;
 - (id)initFromXMLUnarchiver:(id)arg1 archiveVersion:(float)arg2;
-- (void)_reallyPerformActionUsingConsole:(id)arg1 andBreakpoint:(id)arg2;
-- (void)performActionUsingConsole:(id)arg1 andBreakpoint:(id)arg2;
+- (void)performActionUsingContext:(id)arg1 andBreakpoint:(id)arg2;
 - (void)_debuggerCommandActionCommonInit;
 - (id)init;
 
@@ -6244,14 +6649,16 @@ typedef struct {
 @property(copy) NSString *command; // @synthesize command=_command;
 - (void)setWaitUntilDoneFromUTF8String:(char *)arg1 fromXMLUnarchiver:(id)arg2;
 - (void)dvt_encodeAttributesWithXMLArchiver:(id)arg1;
+- (void)dvt_awakeFromXMLUnarchiver:(id)arg1;
 - (id)initFromXMLUnarchiver:(id)arg1 archiveVersion:(float)arg2;
 - (id)_stringForFileHandleData:(id)arg1;
 - (id)_taskWithLaunchPath:(id)arg1 arguments:(id)arg2 consoleAdaptor:(id)arg3;
 - (id)_errorMessageForShellCommandValidity:(int)arg1 shellCommand:(id)arg2;
 - (int)_commandValidity:(id)arg1;
 - (id)_fullPathOfCommand:(int *)arg1;
-- (void)performActionUsingConsole:(id)arg1 andBreakpoint:(id)arg2;
+- (void)performActionUsingContext:(id)arg1 andBreakpoint:(id)arg2;
 - (id)_argumentsArrayForBreakpoint:(id)arg1;
+- (void)_extractExpressionsAndMacrosFromCommandAndArguments;
 - (void)_shellCommandActionCommonInit;
 - (id)init;
 
@@ -6267,7 +6674,7 @@ typedef struct {
 - (void)dvt_encodeAttributesWithXMLArchiver:(id)arg1;
 - (void)dvt_awakeFromXMLUnarchiver:(id)arg1;
 - (id)initFromXMLUnarchiver:(id)arg1 archiveVersion:(float)arg2;
-- (void)performActionUsingConsole:(id)arg1 andBreakpoint:(id)arg2;
+- (void)performActionUsingContext:(id)arg1 andBreakpoint:(id)arg2;
 - (void)_handleScriptChanged;
 - (void)_appleScriptActionCommonInit;
 - (id)init;
@@ -6277,6 +6684,7 @@ typedef struct {
 @interface IDERefactoringBuildSettings : NSObject
 {
     int _status;
+    NSDictionary *_headerMappings;
 }
 
 + (id)plistFileSettings;
@@ -6284,8 +6692,10 @@ typedef struct {
 + (id)nibFileSettings;
 + (id)fileInNoIndexables;
 + (id)noBuildSettingsFound;
+@property(readonly) NSDictionary *headerMappings; // @synthesize headerMappings=_headerMappings;
 @property int status; // @synthesize status=_status;
 - (id)pathForFileName:(id)arg1 includedByFiles:(id)arg2 usingQuotes:(BOOL)arg3;
+@property(readonly) BOOL alwaysSearchUserPaths;
 @property(readonly) NSNumber *arcMode;
 @property(readonly) NSString *languageDialect;
 @property(readonly) NSArray *undefinedMacroNames;
@@ -6319,35 +6729,40 @@ typedef struct {
 
 @end
 
-@interface IDERunContextManager : NSObject <DVTInvalidation>
+@interface IDERunContextManager : NSObject <DVTInvalidation_New>
 {
     IDEWorkspace *_workspace;
     NSMutableSet *_customDataStores;
-    NSMapTable *_storeToSpecifierMap;
-    NSMapTable *_storeToUserDataMap;
+    DVTMapTable *_storeToSpecifierMap;
+    DVTMapTable *_storeToUserDataMap;
     NSMutableArray *_runContexts;
     IDEScheme *_activeRunContext;
     IDERunDestination *_activeRunDestination;
     NSMutableArray *_activeRunDestinationHistory;
-    DVTStackBacktrace *_invalidationBacktrace;
     NSMutableArray *_ignoredChangesDevices;
     NSCountedSet *_schemeNameCounts;
     NSMutableDictionary *_containerReloadingDetails;
     BOOL _bulkChangingBlueprints;
     BOOL _blueprintChangedDuringBulkChanges;
     BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
 + (BOOL)automaticallyNotifiesObserversOfActiveRunDestination;
 + (BOOL)automaticallyNotifiesObserversOfActiveRunContext;
++ (BOOL)automaticallyNotifiesObserversOfValue;
 + (void)initialize;
-@property(readonly) NSCountedSet *schemeNameCounts; // @synthesize schemeNameCounts=_schemeNameCounts;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
+@property(readonly) NSCountedSet *schemeNameCounts; // @synthesize schemeNameCounts=_schemeNameCounts;
 @property(retain, nonatomic) IDERunDestination *activeRunDestination; // @synthesize activeRunDestination=_activeRunDestination;
 @property(retain, nonatomic) IDEScheme *activeRunContext; // @synthesize activeRunContext=_activeRunContext;
 @property(readonly) NSArray *runContexts; // @synthesize runContexts=_runContexts;
 @property(readonly) IDEWorkspace *workspace; // @synthesize workspace=_workspace;
 - (void)setActiveRunContext:(id)arg1 andRunDestination:(id)arg2;
+- (BOOL)validateActiveRunContext:(id *)arg1 error:(id *)arg2;
 - (void)blueprintsDidBulkChange:(id)arg1;
 - (void)blueprintsWillBulkChange:(id)arg1;
 - (void)blueprintsDidChange:(id)arg1;
@@ -6383,8 +6798,10 @@ typedef struct {
 - (void)_startUpdatingRunContexts;
 - (void)_ensureActiveRunContext;
 - (void)_updateMap:(id)arg1 contextForCustomDataStore:(id)arg2 specifier:(id)arg3;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (id)initWithWorkspace:(id)arg1;
 - (id)init;
 
@@ -6397,7 +6814,7 @@ typedef struct {
 + (unsigned long long)_integerFromHexString:(id)arg1;
 + (unsigned long long)_integerAddressFromLineOfDisassembly:(id)arg1;
 + (id)hexAddressFromLineOfDisassembly:(id)arg1;
-+ (id)addressForLineNumber:(unsigned long long)arg1 inDisassemblyAtURL:(id)arg2;
++ (id)addressForLineNumber:(unsigned long long)arg1 inDisassembly:(id)arg2;
 + (unsigned long long)_lineNumberForAddress:(id)arg1 inLinesOfDisassembly:(id)arg2;
 + (unsigned long long)lineNumberForAddress:(id)arg1 inDisassembly:(id)arg2;
 + (BOOL)isDisassemblyStorageURL:(id)arg1;
@@ -6419,15 +6836,15 @@ typedef struct {
 @interface IDEDiagnosticActivityLogMessage : IDEActivityLogMessage
 {
     NSMutableArray *_diagnosticFixItItems;
-    id <IDEDiagnosticItemDelegate> _delegate;
-    id _representedObject;
+    id <IDEDiagnosticItemDelegate> _delegate_dvtWeak;
+    id _representedObject_dvtWeak;
 }
 
 + (id)keyPathsForValuesAffectingFixableDiagnosticItems;
 + (id)diagnosticMessageType;
-@property __weak id representedObject; // @synthesize representedObject=_representedObject;
-@property __weak id <IDEDiagnosticItemDelegate> delegate; // @synthesize delegate=_delegate;
 @property(copy, nonatomic) NSArray *diagnosticFixItItems; // @synthesize diagnosticFixItItems=_diagnosticFixItItems;
+@property __weak id representedObject;
+@property __weak id <IDEDiagnosticItemDelegate> delegate;
 @property(readonly) NSArray *fixableDiagnosticItems;
 - (void)removeObjectFromDiagnosticFixItItemsAtIndex:(unsigned long long)arg1;
 - (void)insertObject:(id)arg1 inDiagnosticFixItItemsAtIndex:(unsigned long long)arg2;
@@ -6435,8 +6852,12 @@ typedef struct {
 @property(readonly) NSString *severityString;
 @property(readonly) int diagnosticSeverity;
 - (id)description;
+- (unsigned long long)hash;
 - (BOOL)isEqual:(id)arg1;
 - (BOOL)isEqualToDiagnosticItem:(id)arg1;
+- (BOOL)isEqualDisregardingTimestampToDiagnosticItem:(id)arg1;
+- (BOOL)_isEqualToDiagnosticItem:(id)arg1 disregardingTimestamp:(BOOL)arg2;
+- (BOOL)_array:(id)arg1 isEqualToArray:(id)arg2;
 - (id)init;
 - (id)initWithSeverity:(int)arg1 title:(id)arg2 location:(id)arg3;
 
@@ -6451,7 +6872,7 @@ typedef struct {
 
 @property(readonly) DVTTextDocumentLocation *replacementLocation; // @synthesize replacementLocation=_replacementLocation;
 @property(readonly) NSString *fixItString; // @synthesize fixItString=_fixItString;
-@property(retain) IDEDiagnosticActivityLogMessage *diagnosticItem; // @synthesize diagnosticItem=_diagnosticItem;
+@property(retain, nonatomic) IDEDiagnosticActivityLogMessage *diagnosticItem; // @synthesize diagnosticItem=_diagnosticItem;
 - (id)description;
 - (BOOL)isEqual:(id)arg1;
 - (BOOL)isEqualToDiagnosticFixItItem:(id)arg1;
@@ -6460,30 +6881,42 @@ typedef struct {
 
 @end
 
-@interface IDESourceControlMultipleStepInvalidationToken : NSObject <DVTInvalidation>
+@interface IDESourceControlMultipleStepInvalidationToken : NSObject <DVTInvalidation_New>
 {
     IDESourceControlRequest *_currentRequest;
     BOOL _isInvalidated;
+    BOOL _isInvalidating;
     DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 @property __weak IDESourceControlRequest *currentRequest; // @synthesize currentRequest=_currentRequest;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 
 @end
 
-@interface IDEBatchFindManager : NSObject <DVTInvalidation>
+@interface IDEBatchFindManager : NSObject <DVTInvalidation_New>
 {
     NSMutableArray *_history;
     unsigned long long _maxHistoryCount;
     DVTMapTable *_findContexts;
     NSString *_archivePath;
     BOOL _isInvalidated;
+    BOOL _isInvalidating;
     DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 @property(readonly) NSArray *findHistory; // @synthesize findHistory=_history;
 @property(nonatomic) unsigned long long maxHistoryCount; // @synthesize maxHistoryCount=_maxHistoryCount;
@@ -6493,28 +6926,30 @@ typedef struct {
 - (void)clearHistory;
 - (void)addHistoryItem:(id)arg1;
 - (void)_removeExtraHistory;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (id)init;
 
 @end
 
 @interface IDEBatchFindHistoryItem : NSObject
 {
-    NSString *_findString;
-    NSString *_description;
+    NSAttributedString *_findAttributedString;
+    NSAttributedString *_description;
     id _payload;
     NSString *_archivePath;
 }
 
-@property(retain) id payload; // @synthesize payload=_payload;
-@property(readonly) NSString *description; // @synthesize description=_description;
-@property(readonly) NSString *findString; // @synthesize findString=_findString;
+@property(retain, nonatomic) id payload; // @synthesize payload=_payload;
+@property(readonly) NSAttributedString *description; // @synthesize description=_description;
+@property(readonly) NSAttributedString *findAttributedString; // @synthesize findAttributedString=_findAttributedString;
 - (void)_unarchivePayloadFromPath:(id)arg1;
 - (void)archivePayloadToPath:(id)arg1;
 - (BOOL)isEqual:(id)arg1;
 - (unsigned long long)hash;
-- (id)initWithFindString:(id)arg1 description:(id)arg2 payload:(id)arg3;
+- (id)initWithFindAttributedString:(id)arg1 description:(id)arg2 payload:(id)arg3;
 
 @end
 
@@ -6536,8 +6971,14 @@ typedef struct {
 @property double lastAccess; // @synthesize lastAccess=_lastAccess;
 @property(readonly, nonatomic) NSDictionary *settings; // @synthesize settings=_settings;
 @property(readonly, nonatomic) IDEIndexDatabase *database; // @synthesize database=_db;
+- (id)definitionsForSymbolWithResolutionOffset:(long long)arg1;
+- (id)allAutoImportCompletionItemsMatchingKind:(id)arg1 symbolLanguage:(id)arg2 forIndex:(id)arg3;
+- (id)allAutoImportCompletionItemsMatchingKind:(id)arg1 forIndex:(id)arg2;
+- (id)completionStringForSymbol:(id)arg1;
 - (BOOL)isProjectSymbol:(id)arg1;
+- (id)calleesForSymbolOccurrence:(id)arg1;
 - (id)locationForSymbolOccurrence:(id)arg1;
+- (id)containerSymbolForOccurrence:(id)arg1;
 - (id)correspondingSymbolForOccurrence:(id)arg1;
 - (id)relatedClassForCategory:(id)arg1;
 - (id)propertiesForCategory:(id)arg1;
@@ -6575,6 +7016,15 @@ typedef struct {
 - (id)instanceMethodsForClass:(id)arg1;
 - (id)classMethodsForClass:(id)arg1;
 - (id)childrenForContainer:(id)arg1;
+- (id)getterForProperty:(id)arg1;
+- (id)setterForProperty:(id)arg1;
+- (id)typeOfArgument:(unsigned long long)arg1 forCallable:(id)arg2;
+- (unsigned long long)numArgumentsForCallable:(id)arg1;
+- (id)returnTypeForCallable:(id)arg1;
+- (id)propertyForCallable:(id)arg1;
+- (id)overridingSymbolsForCallable:(id)arg1;
+- (id)overriddenSymbolsForCallable:(id)arg1;
+- (id)referencesForSymbol:(id)arg1;
 - (id)referencingFilesForSymbol:(id)arg1;
 - (id)containerSymbolForSymbol:(id)arg1;
 - (id)containerSymbolsForSymbol:(id)arg1;
@@ -6597,7 +7047,7 @@ typedef struct {
 - (id)symbolsContaining:(id)arg1 anchorStart:(BOOL)arg2 anchorEnd:(BOOL)arg3 subsequence:(BOOL)arg4 ignoreCase:(BOOL)arg5 cancelWhen:(id)arg6 forIndex:(void)arg7;
 - (id)topLevelProtocolsWorkspaceOnly:(BOOL)arg1 cancelWhen:(id)arg2 forIndex:(void)arg3;
 - (id)topLevelClassesWorkspaceOnly:(BOOL)arg1 cancelWhen:(id)arg2 forIndex:(void)arg3;
-- (id)filesContaining:(id)arg1 anchorStart:(BOOL)arg2 anchorEnd:(BOOL)arg3 subsequence:(BOOL)arg4 ignoreCase:(BOOL)arg5 forIndex:(id)arg6;
+- (id)filesContaining:(id)arg1 anchorStart:(BOOL)arg2 anchorEnd:(BOOL)arg3 subsequence:(BOOL)arg4 ignoreCase:(BOOL)arg5 cancelWhen:(id)arg6 forIndex:(void)arg7;
 - (id)filesIncludedByFile:(id)arg1 forIndex:(id)arg2;
 - (id)filesIncludingFile:(id)arg1 forIndex:(id)arg2;
 - (id)importedFileAtDocumentLocation:(id)arg1 withCurrentFileContentDictionary:(id)arg2 forIndex:(id)arg3;
@@ -6608,7 +7058,8 @@ typedef struct {
 - (id)symbolsUsedInContext:(id)arg1 withCurrentFileContentDictionary:(id)arg2 forIndex:(id)arg3;
 - (id)symbolsOccurrencesInContext:(id)arg1 withCurrentFileContentDictionary:(id)arg2 forIndex:(id)arg3;
 - (id)codeDiagnosticsAtLocation:(id)arg1 withCurrentFileContentDictionary:(id)arg2 forIndex:(id)arg3;
-- (id)codeCompletionsAtLocation:(id)arg1 withCurrentFileContentDictionary:(id)arg2 sortedUsingBlock:(id)arg3 forIndex:(void)arg4;
+- (id)codeCompletionsAtLocation:(id)arg1 withCurrentFileContentDictionary:(id)arg2 completionContext:(id *)arg3 sortedUsingBlock:(id)arg4 forIndex:(void)arg5;
+- (id)parsedCodeCommentAtLocation:(id)arg1 withCurrentFileContentDictionary:(id)arg2 forIndex:(id)arg3;
 - (id)symbolsMatchingName:(id)arg1 inContext:(id)arg2 withCurrentFileContentDictionary:(id)arg3 forIndex:(id)arg4;
 - (id)symbolsMatchingName:(id)arg1 inContext:(id)arg2 forIndex:(id)arg3;
 - (id)topLevelSymbolsInFile:(id)arg1 forIndex:(id)arg2;
@@ -6656,7 +7107,7 @@ typedef struct {
 - (void)dvt_encodeAttributesWithXMLArchiver:(id)arg1;
 - (void)dvt_awakeFromXMLUnarchiver:(id)arg1;
 - (id)initFromXMLUnarchiver:(id)arg1 archiveVersion:(float)arg2;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (id)_expandMacrosInString:(id)arg1;
 - (void)setBuildableReferenceToUseForMacroExpansion:(id)arg1;
 - (id)buildableReferenceToUseForMacroExpansion;
@@ -6961,6 +7412,7 @@ typedef struct {
 @property(readonly) NSString *name; // @synthesize name=_name;
 @property(readonly) NSString *identifier; // @synthesize identifier=_identifier;
 @property(readonly) id <IDETestable> testable; // @synthesize testable=_testable;
+- (long long)localizedStandardCompare:(id)arg1;
 - (unsigned long long)hash;
 - (BOOL)isEqual:(id)arg1;
 - (id)description;
@@ -7058,13 +7510,13 @@ typedef struct {
     NSString *_name;
     IDEBuildParameters *_buildParameters;
     IDEActivityLogSection *_activityLogSection;
-    NSArray *_currentBuildTasks;
     BOOL _cleanupDidRun;
+    NSArray *_currentBuildTasks;
 }
 
 + (void)initialize;
-@property(retain) IDEActivityLogSection *activityLogSection; // @synthesize activityLogSection=_activityLogSection;
 @property(retain) NSArray *currentBuildTasks; // @synthesize currentBuildTasks=_currentBuildTasks;
+@property(retain) IDEActivityLogSection *activityLogSection; // @synthesize activityLogSection=_activityLogSection;
 @property(readonly) IDEBuildParameters *buildParameters; // @synthesize buildParameters=_buildParameters;
 @property(readonly) NSString *name; // @synthesize name=_name;
 @property(readonly) id <IDEBuildable> buildable; // @synthesize buildable=_buildable;
@@ -7088,6 +7540,7 @@ typedef struct {
     int _buildCommand;
     IDEBuildableSnapshot *_snapshot;
     NSArray *_exclusiveSourceFiles;
+    NSArray *_warningsToEmit;
     int _result;
     IDEActivityLogSection *_activityLogSection;
     NSString *_localizedDescription;
@@ -7095,16 +7548,24 @@ typedef struct {
     BOOL _restorePersistedBuildResults;
     id <DVTCancellationBlockCompletion> _cancellationToken;
     NSMutableSet *_generatedFileInfo;
+    NSMutableArray *_buildTaskStatistics;
     NSDictionary *_copiedFilePathsFromBuildOperation;
     NSDictionary *_copiedFilePathsFromBuildableProduct;
+    DVTSystemStatisticsMeasurement *_initialSystemStats;
     id _activityLogSectionDidChangeBlock;
     id _resultDidChangeBlock;
     id _didStartExecutingBlock;
     id _didFinishExecutingBlock;
     id _updateBuildStatusBlock;
+    IDEBuildStatisticsSection *_buildStatisticsSection;
+    BOOL _dontActuallyRunCommands;
+    DVTDynamicLogController *_builderTimingDataLogController;
 }
 
 + (void)initialize;
+@property DVTDynamicLogController *builderTimingDataLogController; // @synthesize builderTimingDataLogController=_builderTimingDataLogController;
+@property BOOL dontActuallyRunCommands; // @synthesize dontActuallyRunCommands=_dontActuallyRunCommands;
+@property IDEBuildStatisticsSection *buildStatisticsSection; // @synthesize buildStatisticsSection=_buildStatisticsSection;
 @property(copy) NSDictionary *copiedFilePathsFromBuildableProduct; // @synthesize copiedFilePathsFromBuildableProduct=_copiedFilePathsFromBuildableProduct;
 @property(copy) NSDictionary *copiedFilePathsFromBuildOperation; // @synthesize copiedFilePathsFromBuildOperation=_copiedFilePathsFromBuildOperation;
 @property(copy) id updateBuildStatus; // @synthesize updateBuildStatus=_updateBuildStatusBlock;
@@ -7119,9 +7580,12 @@ typedef struct {
 @property(copy) NSString *localizedDescription; // @synthesize localizedDescription=_localizedDescription;
 @property(retain, nonatomic) IDEActivityLogSection *activityLogSection; // @synthesize activityLogSection=_activityLogSection;
 @property(nonatomic) int result; // @synthesize result=_result;
+@property(copy) NSArray *warningsToEmit; // @synthesize warningsToEmit=_warningsToEmit;
 @property(readonly) IDEBuildableSnapshot *snapshot; // @synthesize snapshot=_snapshot;
 @property(readonly) int buildCommand; // @synthesize buildCommand=_buildCommand;
 - (id)description;
+- (void)_logBuilderTimingDataIfNecessary;
+- (void)addBuildTaskStatistics:(id)arg1;
 - (void)addGeneratedFileInfo:(id)arg1;
 - (void)main;
 - (id)init;
@@ -7159,10 +7623,11 @@ typedef struct {
     int _buildCommand;
     NSArray *_buildables;
     IDEBuildParameters *_buildParameters;
-    NSMapTable *_buildParametersForBuildable;
+    DVTMapTable *_buildParametersForBuildable;
     BOOL _parallelizeBuildables;
     BOOL _buildImplicitDependencies;
     BOOL _restorePersistedBuildResults;
+    BOOL _dontActuallyRunCommands;
     int _state;
     int _result;
     IDEActivityLogSection *_buildLog;
@@ -7171,21 +7636,32 @@ typedef struct {
     DVTDispatchLock *_operationLock;
     NSOperationQueue *_builderQueue;
     IDEBuildOperationQueueSet *_buildTaskQueueSet;
-    NSMapTable *_buildablesToBuilders;
+    DVTMapTable *_buildablesToBuilders;
     unsigned long long _buildersBuilt;
     id <DVTCancellationBlockCompletion> _cancellationToken;
     NSMutableSet *_generatedFileInfo;
     NSMutableDictionary *_copiedFilePathsMap;
     NSMutableArray *_buildSetupErrorStrings;
     NSMutableArray *_buildSetupWarningStrings;
+    NSMutableArray *_buildSetupNoticeStrings;
+    NSDate *_stopTime;
+    NSDate *_startTime;
+    DVTDynamicLogController *_builderTimingDataLogController;
+    IDEBuildStatisticsSection *_buildStatisticsSection;
 }
 
 + (id)buildParametersForPurpose:(int)arg1 configurationName:(id)arg2 workspaceArena:(id)arg3 overridingProperties:(id)arg4 activeRunDestination:(id)arg5 activeArchitecture:(id)arg6;
++ (id)buildParametersForPurpose:(int)arg1 schemeCommand:(id)arg2 configurationName:(id)arg3 workspaceArena:(id)arg4 overridingProperties:(id)arg5 activeRunDestination:(id)arg6 activeArchitecture:(id)arg7;
 + (void)initialize;
+@property IDEBuildStatisticsSection *buildStatisticsSection; // @synthesize buildStatisticsSection=_buildStatisticsSection;
+@property(readonly) BOOL dontActuallyRunCommands; // @synthesize dontActuallyRunCommands=_dontActuallyRunCommands;
+@property DVTDynamicLogController *builderTimingDataLogController; // @synthesize builderTimingDataLogController=_builderTimingDataLogController;
+@property(copy) NSDate *startTime; // @synthesize startTime=_startTime;
+@property(copy) NSDate *stopTime; // @synthesize stopTime=_stopTime;
 @property(retain) IDEBuildOperationStatus *buildStatus; // @synthesize buildStatus=_buildStatus;
 @property float percentComplete; // @synthesize percentComplete=_percentComplete;
 @property unsigned long long buildersBuilt; // @synthesize buildersBuilt=_buildersBuilt;
-@property(readonly) NSMapTable *buildablesToBuilders; // @synthesize buildablesToBuilders=_buildablesToBuilders;
+@property(readonly) DVTMapTable *buildablesToBuilders; // @synthesize buildablesToBuilders=_buildablesToBuilders;
 @property(readonly) IDEBuildOperationQueueSet *buildTaskQueueSet; // @synthesize buildTaskQueueSet=_buildTaskQueueSet;
 @property(readonly) NSOperationQueue *builderQueue; // @synthesize builderQueue=_builderQueue;
 @property(readonly) int result; // @synthesize result=_result;
@@ -7202,18 +7678,21 @@ typedef struct {
 - (void)stopWithResultCode:(int)arg1;
 - (void)lastBuilderDidFinish;
 - (void)_cancelAllBuilders;
+- (void)cancel;
 - (void)start;
 - (void)addOperationsForBuildables;
 - (id)_addOperationForBuildableIfNeeded:(id)arg1;
 - (id)_addOperationForBuildableIfNeeded:(id)arg1 recursionDetectionArray:(id)arg2;
 - (void)setupCallbackBlocksOnNewBuilder:(id)arg1;
 - (void)_updateBuildStatusWithStateDescription:(id)arg1 fileProgressString:(id)arg2;
+- (void)_takeMemorySnapshotsWithLog:(id)arg1;
 - (BOOL)isFinished;
 - (BOOL)isExecuting;
 - (BOOL)isConcurrent;
 - (void)changeMaximumOperationConcurrencyUsingThrottleFactor:(double)arg1;
 - (id)copiedFilePathsMap;
 - (void)addCopiedFilePathsFromDictionary:(id)arg1;
+- (void)addBuildSetupNoticeString:(id)arg1;
 - (void)addBuildSetupWarningString:(id)arg1;
 - (void)addBuildSetupErrorString:(id)arg1;
 - (void)addGeneratedFileInfo:(id)arg1;
@@ -7224,7 +7703,10 @@ typedef struct {
 @property(readonly) NSString *configurationName;
 - (id)buildParametersForBuildable:(id)arg1;
 - (void)setBuildParameters:(id)arg1 forBuildable:(id)arg2;
+- (id)initWithBuildOperationDescription:(id)arg1 purpose:(int)arg2 buildCommand:(int)arg3 configurationName:(id)arg4 buildables:(id)arg5 buildLog:(id)arg6 executionEnvironment:(id)arg7 overridingProperties:(id)arg8 activeRunDestination:(id)arg9 activeArchitecture:(id)arg10 parallelizeBuildables:(BOOL)arg11 dontActuallyRunCommands:(BOOL)arg12 buildImplicitDependencies:(BOOL)arg13 restorePersistedBuildResults:(BOOL)arg14;
 - (id)initWithBuildOperationDescription:(id)arg1 purpose:(int)arg2 buildCommand:(int)arg3 configurationName:(id)arg4 buildables:(id)arg5 buildLog:(id)arg6 executionEnvironment:(id)arg7 overridingProperties:(id)arg8 activeRunDestination:(id)arg9 activeArchitecture:(id)arg10 parallelizeBuildables:(BOOL)arg11 buildImplicitDependencies:(BOOL)arg12 restorePersistedBuildResults:(BOOL)arg13;
+- (id)initWithBuildOperationDescription:(id)arg1 purpose:(int)arg2 buildCommand:(int)arg3 schemeCommand:(id)arg4 configurationName:(id)arg5 buildables:(id)arg6 buildLog:(id)arg7 executionEnvironment:(id)arg8 overridingProperties:(id)arg9 activeRunDestination:(id)arg10 activeArchitecture:(id)arg11 parallelizeBuildables:(BOOL)arg12 buildImplicitDependencies:(BOOL)arg13 restorePersistedBuildResults:(BOOL)arg14;
+- (id)initWithBuildOperationDescription:(id)arg1 purpose:(int)arg2 buildCommand:(int)arg3 schemeCommand:(id)arg4 configurationName:(id)arg5 buildables:(id)arg6 buildLog:(id)arg7 executionEnvironment:(id)arg8 overridingProperties:(id)arg9 activeRunDestination:(id)arg10 activeArchitecture:(id)arg11 parallelizeBuildables:(BOOL)arg12 dontActuallyRunCommands:(BOOL)arg13 buildImplicitDependencies:(BOOL)arg14 restorePersistedBuildResults:(BOOL)arg15;
 
 @end
 
@@ -7261,13 +7743,15 @@ typedef struct {
     id _activityLogSectionDidChangeBlock;
     id _exitCodeWasSetBlock;
     id _updateBuildStatusForBuildTaskBlock;
-    int _exitCode;
     BOOL _restorePersistedBuildResults;
+    int _exitCode;
+    BOOL _dontActuallyRun;
 }
 
 + (id)defaultProperties;
 + (id)buildTaskWithIdentifier:(id)arg1 restorePersistedBuildResults:(BOOL)arg2 properties:(id)arg3;
 + (void)initialize;
+@property BOOL dontActuallyRun; // @synthesize dontActuallyRun=_dontActuallyRun;
 @property(copy) id updateBuildStatusForBuildTask; // @synthesize updateBuildStatusForBuildTask=_updateBuildStatusForBuildTaskBlock;
 @property(copy) id exitCodeWasSet; // @synthesize exitCodeWasSet=_exitCodeWasSetBlock;
 @property(copy) id activityLogSectionDidChange; // @synthesize activityLogSectionDidChange=_activityLogSectionDidChangeBlock;
@@ -7280,6 +7764,8 @@ typedef struct {
 - (id)longDescription;
 - (id)description;
 - (void)main;
+@property(readonly) IDEBuildTaskStatistics *buildTaskStatistics;
+- (void)addStatisticsDataToStatisticsSection:(id)arg1;
 - (id)init;
 - (id)initWithIdentifier:(id)arg1 restorePersistedBuildResults:(BOOL)arg2 properties:(id)arg3;
 
@@ -7298,6 +7784,7 @@ typedef struct {
 @property(readonly) NSString *workingDirectory;
 @property(readonly) NSDictionary *environmentEntries;
 @property(readonly) NSArray *commandLine;
+- (void)dealloc;
 - (void)finalize;
 - (id)initWithIdentifier:(id)arg1 restorePersistedBuildResults:(BOOL)arg2 properties:(id)arg3;
 
@@ -7325,6 +7812,7 @@ typedef struct {
 - (id)description;
 - (void)unregisterCurrentBuilder:(id)arg1;
 - (void)registerCurrentBuilder:(id)arg1;
+- (void)dealloc;
 - (void)finalize;
 - (id)init;
 - (id)initWithPath:(id)arg1 error:(id *)arg2;
@@ -7367,6 +7855,7 @@ typedef struct {
 - (BOOL)isValid;
 - (void)invalidate;
 - (id)dependencyGraph;
+- (void)dealloc;
 - (void)finalize;
 - (id)init;
 - (id)initInDependencyGraph:(id)arg1;
@@ -7608,11 +8097,11 @@ typedef struct {
 {
     id _modelObjectDidChangeObserver;
     id <DVTObservingToken> _referencedContainersObserverToken;
-    NSMapTable *_referencedContainersToIssueObserverTokensMapTable;
-    NSMapTable *_referencedContainersToProviderContextsMapTable;
+    DVTMapTable *_referencedContainersToIssueObserverTokensMapTable;
+    DVTMapTable *_referencedContainersToProviderContextsMapTable;
     id <DVTObservingToken> _blueprintsObserverToken;
-    NSMapTable *_blueprintsToIssueObserverTokensMapTable;
-    NSMapTable *_blueprintsToProviderContextsMapTable;
+    DVTMapTable *_blueprintsToIssueObserverTokensMapTable;
+    DVTMapTable *_blueprintsToProviderContextsMapTable;
 }
 
 + (int)providerType;
@@ -7623,7 +8112,7 @@ typedef struct {
 - (void)_referencedContainersDidChange;
 - (id)_integrityIssuesForDataSource:(id)arg1;
 - (id)_issueForMessage:(id)arg1;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (id)initWithIssueManager:(id)arg1 extension:(id)arg2;
 
 @end
@@ -7644,10 +8133,11 @@ typedef struct {
 
 @end
 
-@interface IDEBuildParameters : NSObject
+@interface IDEBuildParameters : NSObject <NSCopying, NSMutableCopying>
 {
     IDEWorkspaceArenaSnapshot *_workspaceArenaSnapshot;
     NSString *_buildAction;
+    NSNumber *_schemeCommand;
     NSString *_configurationName;
     IDERunDestination *_activeRunDestination;
     NSString *_activeArchitecture;
@@ -7660,6 +8150,7 @@ typedef struct {
 @property(readonly) NSString *activeArchitecture; // @synthesize activeArchitecture=_activeArchitecture;
 @property(readonly) IDERunDestination *activeRunDestination; // @synthesize activeRunDestination=_activeRunDestination;
 @property(readonly) NSString *configurationName; // @synthesize configurationName=_configurationName;
+@property(readonly) NSNumber *schemeCommand; // @synthesize schemeCommand=_schemeCommand;
 @property(readonly) NSString *buildAction; // @synthesize buildAction=_buildAction;
 @property(readonly) IDEWorkspaceArenaSnapshot *workspaceArenaSnapshot; // @synthesize workspaceArenaSnapshot=_workspaceArenaSnapshot;
 - (id)description;
@@ -7681,6 +8172,7 @@ typedef struct {
 @property(copy) NSString *activeArchitecture; // @dynamic activeArchitecture;
 @property(retain) IDERunDestination *activeRunDestination; // @dynamic activeRunDestination;
 @property(copy) NSString *configurationName; // @dynamic configurationName;
+@property(retain) NSNumber *schemeCommand; // @dynamic schemeCommand;
 @property(copy) NSString *buildAction; // @dynamic buildAction;
 @property(copy) IDEWorkspaceArenaSnapshot *workspaceArenaSnapshot; // @dynamic workspaceArenaSnapshot;
 - (id)copyWithZone:(struct _NSZone *)arg1;
@@ -7696,7 +8188,7 @@ typedef struct {
 - (void)cancelTrackedClients;
 - (id)clientsNotSupportingCancellation;
 - (id)clientsRequiringCancellationPrompt;
-- (id)registerClientWithName:(id)arg1;
+- (id)registerUncancellableClientWithName:(id)arg1;
 - (id)registerClientWithName:(id)arg1 promptForCancellation:(BOOL)arg2 cancellationBlock:(id)arg3;
 - (id)init;
 
@@ -7707,6 +8199,7 @@ typedef struct {
     NSMutableSet *_clientTrackingTokensRequiringCancellation;
     NSMutableSet *_clientTrackingTokensRequiringCancellationPrompt;
     NSMutableSet *_clientTrackingTokensNotSupportingCancellation;
+    BOOL _isCancelling;
 }
 
 - (void)_clientCancellationTimeout;
@@ -7714,7 +8207,7 @@ typedef struct {
 - (void)unregisterClient:(id)arg1;
 - (id)clientsNotSupportingCancellation;
 - (id)clientsRequiringCancellationPrompt;
-- (id)registerClientWithName:(id)arg1;
+- (id)registerUncancellableClientWithName:(id)arg1;
 - (id)registerClientWithName:(id)arg1 promptForCancellation:(BOOL)arg2 cancellationBlock:(id)arg3;
 
 @end
@@ -7884,7 +8377,7 @@ typedef struct {
 @interface IDEBuildArbitrator : NSObject
 {
     NSOperationQueue *_serializationQueue;
-    NSMapTable *_fileProducingBuildTasksByFilePath;
+    DVTMapTable *_fileProducingBuildTasksByFilePath;
     DVTMapTable *_registeringBuildersByFilePath;
     DVTMapTable *_registeredFilePathsByBuilder;
 }
@@ -8043,6 +8536,7 @@ typedef struct {
 - (void)removeSelfWithCompletionBlock:(id)arg1;
 @property(readonly) BOOL isRemoved;
 @property(readonly) BOOL isRecording;
+@property(readonly) NSString *highLevelStatus;
 @property(readonly) NSString *signature;
 @property(readonly) DVTFileDataType *documentType;
 @property(readonly, nonatomic) double timeStoppedRecording;
@@ -8067,11 +8561,14 @@ typedef struct {
 {
     DVTFilePath *_path;
     NSMutableDictionary *_infoDictionary;
-    IDEArchivedApplication *_application;
+    IDEArchivedContent *_archivedContent;
     BOOL _savePending;
+    BOOL _estimateInProgress;
 }
 
-+ (long long)_computedApproximateAppStoreFileSizeForArchive:(id)arg1 platform:(id)arg2;
++ (long long)_computedApproximateAppStoreFileSizeForArchiveContentPath:(id)arg1 forPlatform:(id)arg2;
++ (long long)_fileSizeForPathString:(id)arg1;
++ (BOOL)_zipDirectoryAtPath:(id)arg1 destination:(id)arg2 excluding:(id)arg3;
 + (id)_availableArchivePathInDirectory:(id)arg1 withName:(id)arg2 creationDate:(id)arg3 usingFileManager:(id)arg4;
 + (id)_archivePlistPathForArchivePath:(id)arg1;
 + (BOOL)_copyProductDefinitionPlistFromDirectory:(id)arg1 toArchiveWithPath:(id)arg2 usingFileManager:(id)arg3 error:(id *)arg4;
@@ -8087,8 +8584,10 @@ typedef struct {
 + (id)_dSYMDirectoryPathForArchivePath:(id)arg1;
 + (id)keyPathsForValuesAffectingProductsDirectoryPath;
 + (id)_productsDirectoryPathForArchivePath:(id)arg1;
-@property(readonly) IDEArchivedApplication *application; // @synthesize application=_application;
+@property BOOL estimateInProgress; // @synthesize estimateInProgress=_estimateInProgress;
+@property(readonly) IDEArchivedContent *archivedContent; // @synthesize archivedContent=_archivedContent;
 @property(retain) DVTFilePath *path; // @synthesize path=_path;
+- (void)estimateSizeInBackgroundForPlatform:(id)arg1;
 - (void)_saveArchive:(id)arg1;
 - (void)markDirty;
 - (id)objectForEnterpriseDistributionKey:(id)arg1;
@@ -8097,6 +8596,7 @@ typedef struct {
 @property(copy) NSString *statusString;
 @property(copy) NSString *comment;
 @property long long estimatedAppStoreFileSize;
+@property BOOL estimatedAppStoreFileSizeIsValid;
 @property(readonly) NSDate *creationDate;
 @property(readonly) unsigned long long version;
 @property(readonly) NSString *schemeName;
@@ -8105,36 +8605,25 @@ typedef struct {
 @property(readonly) DVTFilePath *dSYMDirectoryPath;
 @property(readonly) DVTFilePath *productsDirectoryPath;
 @property(readonly) NSMutableDictionary *infoDictionary;
+@property(readonly) IDEArchivedApplication *application;
 - (id)_initWithPath:(id)arg1 infoDictionary:(id)arg2;
 
 @end
 
-@interface IDEArchivedApplication : NSObject
+@interface IDEArchivedApplication : IDEArchivedContent
 {
-    IDEArchive *_archive;
 }
 
 + (id)keyPathsForValuesAffectingIconPath;
 + (id)keyPathsForValuesAffectingApplicationPath;
-+ (id)_subBundlesInPath:(id)arg1;
 + (id)_codesigningIdentityFromApplicationPath:(id)arg1;
-+ (id)_archivedApplicationIconPathsForArchive:(id)arg1;
-+ (id)_archivedApplicationShortBundleVersionStringForArchive:(id)arg1;
-+ (id)_archivedApplicationPathForArchive:(id)arg1;
-+ (id)_archivedApplicationSigningIdentityForArchive:(id)arg1;
-+ (id)_archivedApplicationBundleIdentifierForArchive:(id)arg1;
-+ (id)_archivedApplicationInfoDictForArchive:(id)arg1;
-+ (BOOL)validArchivedApplicationInfoInArchive:(id)arg1;
-+ (id)archivedApplicationInfoForApplicationInArchiveProductsDirectory:(id)arg1;
-+ (id)_soleArchivedApplicationRelativePathInDirectory:(id)arg1;
-@property IDEArchive *archive; // @synthesize archive=_archive;
++ (id)archivedContentPathPlistKey;
++ (id)archivedContentPropertiesPlistKey;
++ (BOOL)fillInfoDictionary:(id)arg1 forContentAtPath:(id)arg2 inArchiveProductsDirectory:(id)arg3;
++ (id)soleArchivedContentRelativePathInDirectory:(id)arg1;
 @property(readonly) NSArray *iconPaths;
 @property(readonly) DVTFilePath *applicationPath;
-@property(readonly) NSString *shortBundleVersionString;
 @property(readonly) NSString *signingIdentity;
-@property(readonly) NSString *bundleIdentifier;
-@property(readonly) NSArray *subBundles;
-- (id)initWithArchive:(id)arg1;
 
 @end
 
@@ -8156,7 +8645,7 @@ typedef struct {
 
 + (int)providerType;
 @property(readonly) IDETestManager *testManager; // @synthesize testManager=_testManager;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (id)displayNameForIssueTypeIdentifier:(id)arg1;
 - (id)_documentLocationForFilePath:(id)arg1 lineNumber:(id)arg2 timestamp:(id)arg3;
 - (id)_headingNameForTest:(id)arg1;
@@ -8196,7 +8685,7 @@ typedef struct {
     id <DVTObservingToken> _launchSessionObservance;
     NSString *_savedPartialContent;
     NSMutableArray *_testsStack;
-    NSMapTable *_consoleAdaptorsToFinishedRecievingDataObservationTokens;
+    DVTMapTable *_consoleAdaptorsToFinishedRecievingDataObservationTokens;
     BOOL _isRunningUnitTests;
     IDEOCUnitTestOutputParser *outputParser;
 }
@@ -8369,10 +8858,10 @@ typedef struct {
 @interface IDEContainerItemCore : NSObject <IDEContainerItemCore>
 {
     id <IDEGroupCore> _parentGroup;
-    NSString<DVTMacroExpansion> *_path;
+    NSString *_path;
 }
 
-@property(copy) NSString<DVTMacroExpansion> *path; // @synthesize path=_path;
+@property(copy) NSString *path; // @synthesize path=_path;
 @property(retain) id <IDEGroupCore> parentGroup; // @synthesize parentGroup=_parentGroup;
 @property(readonly) id <IDEContainerCore> parentContainer;
 
@@ -8388,7 +8877,7 @@ typedef struct {
 // Remaining properties
 @property(readonly) id <IDEContainerCore> parentContainer;
 @property(retain) id <IDEGroupCore> parentGroup;
-@property(copy) NSString<DVTMacroExpansion> *path;
+@property(copy) NSString *path;
 
 @end
 
@@ -8406,7 +8895,7 @@ typedef struct {
 
 // Remaining properties
 @property(retain) id <IDEGroupCore> parentGroup;
-@property(copy) NSString<DVTMacroExpansion> *path;
+@property(copy) NSString *path;
 
 @end
 
@@ -8523,9 +9012,10 @@ typedef struct {
 
 @interface IDEAlert : NSObject
 {
+    NSSet *_cachedProperties;
     NSString *_identifier;
-    double _executionPriority;
     BOOL _enabled;
+    double _executionPriority;
 }
 
 + (id)createAlertForAlertIdentifier:(id)arg1 propertyList:(id)arg2;
@@ -8545,10 +9035,16 @@ typedef struct {
 - (int)alertPropertyListVersion;
 - (id)initWithPropertyList:(id)arg1;
 - (id)propertyList;
+- (BOOL)isEqual:(id)arg1;
 - (long long)compare:(id)arg1;
 - (id)description;
 - (void)runForEvent:(id)arg1 inWorkspace:(id)arg2 context:(id)arg3 completionBlock:(id)arg4;
 - (void)prepareToRunForEvent:(id)arg1 inWorkspace:(id)arg2 context:(id)arg3;
+- (id)valuesForProperty:(id)arg1;
+- (BOOL)validatePropertyValues:(id)arg1;
+- (void)enumeratePropertyPermutationsWithBlock:(id)arg1;
+- (void)_permuteAlert:(id)arg1 byVaryingProperty:(id)arg2 in:(id)arg3 values:(id)arg4 withBlock:(id)arg5;
+- (id)properties;
 - (BOOL)canRunOnCurrentOS;
 - (id)title;
 - (id)group;
@@ -8627,17 +9123,24 @@ typedef struct {
 
 @end
 
-@interface IDEContainerReadOnlyListeningItem : IDEContainerReadOnlyItem <DVTInvalidation>
+@interface IDEContainerReadOnlyListeningItem : IDEContainerReadOnlyItem <DVTInvalidation_New>
 {
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
     DVTStackBacktrace *_invalidationBacktrace;
-    BOOL _invalidated;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 - (void)parentFilePathDidChange;
 - (void)filePathDidChange;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (id)initWithFilePath:(id)arg1 container:(id)arg2;
 
 @end
@@ -8663,7 +9166,7 @@ typedef struct {
 @interface IDETestableReference : NSObject <DVTXMLUnarchiving>
 {
     IDESchemeBuildableReference *_buildableReference;
-    NSArray *_skippedTests;
+    NSMutableArray *_skippedTests;
     IDEDeviceAppDataReference *_deviceAppDataReference;
     IDELocationScenarioReference *_locationScenarioReference;
     BOOL _skipped;
@@ -8687,6 +9190,7 @@ typedef struct {
 - (void)resolveBuildableFromImport;
 - (id)testableName;
 - (id)testable;
+- (id)description;
 - (id)init;
 - (id)initWithTestable:(id)arg1 scheme:(id)arg2;
 
@@ -8757,13 +9261,14 @@ typedef struct {
 
 @end
 
-@interface IDEIndexingEngine : NSObject
+@interface IDEIndexingEngine : NSObject <NSCopying>
 {
     IDEIndex *_index;
     struct dispatch_queue_s *_engine_queue;
     NSMutableArray *_waitingLoadJobs;
     NSMutableArray *_waitingFileJobs;
     NSMutableSet *_waitingDeferredJobs;
+    NSMutableSet *_waitingHeldJobs;
     NSMutableDictionary *_registeredIndexables;
     NSMutableDictionary *_rootPaths;
     NSMutableSet *_registeredFiles;
@@ -8783,21 +9288,25 @@ typedef struct {
     BOOL _mightNotResume;
     BOOL _waitingForSessionToEnd;
     BOOL _aborted;
+    BOOL _registeredFilesAdded;
     BOOL _waitingForMoreFiles;
     BOOL _waitingForMoreIndexables;
     BOOL _waitingToStartDeferredJob;
     BOOL _doingDeferredJobs;
     BOOL _dontDeferJobs;
     BOOL _lastLogWasDeferred;
+    BOOL _initializedTextIndex;
     id _abortCallback;
     DVTPerformanceMetric *_indexingMetric;
     long long _nCompleted;
     double _throttleFactor;
     NSDictionary *_notifiedDeferred;
+    NSMutableArray *_filesReadyBlocks;
 }
 
 + (void)runFileJob:(id)arg1;
 + (void)runLoadJob:(id)arg1;
++ (void)setClangOnly:(BOOL)arg1;
 + (id)auxDataSourceVersion;
 + (id)auxDataSource;
 + (void)initialize;
@@ -8805,6 +9314,8 @@ typedef struct {
 @property(readonly, nonatomic) IDEIndex *index; // @synthesize index=_index;
 - (void)reset;
 - (void)abort:(id)arg1;
+@property(readonly, nonatomic) BOOL hasHeldJobs;
+@property(readonly, nonatomic) BOOL isLoading;
 @property(readonly, nonatomic) BOOL isActive;
 @property(readonly, nonatomic) BOOL isQuiescent;
 - (void)_endActivity;
@@ -8825,19 +9336,24 @@ typedef struct {
 - (void)_deferJob:(id)arg1;
 - (void)_cancelJobs;
 - (void)_scheduleJob:(id)arg1;
+- (void)retryHeldJobs;
+- (void)dontDeferJobForFile:(id)arg1 indexable:(id)arg2;
 - (void)dontDeferJobs;
 - (void)indexFile:(id)arg1 indexable:(id)arg2 dirtyFile:(id)arg3;
 - (void)stopIndexing;
 - (void)resumeIndexing;
 - (void)suspendIndexing;
 - (void)suspendIndexing:(BOOL)arg1;
+- (void)clearHotFiles;
 - (void)registerHotFile:(id)arg1;
+- (void)doWhenFilesReady:(id)arg1;
 - (void)willRegisterMoreFiles:(BOOL)arg1;
 - (void)unregisterFile:(id)arg1;
 - (void)registerFile:(id)arg1;
 - (void)unregisterIndexable:(id)arg1;
 - (void)indexableChanged:(id)arg1 addOnly:(BOOL)arg2;
 - (void)registerIndexable:(id)arg1;
+- (void)dealloc;
 - (void)finalize;
 - (id)copyWithZone:(struct _NSZone *)arg1;
 - (id)initWithIndex:(id)arg1;
@@ -8855,11 +9371,14 @@ typedef struct {
     BOOL _canceled;
     BOOL _completed;
     BOOL _deferred;
+    BOOL _treatAsDeferred;
+    BOOL _onHold;
     NSSet *_oldDirtyFiles;
 }
 
 + (void)initialize;
 @property(readonly, nonatomic) NSSet *oldDirtyFiles; // @synthesize oldDirtyFiles=_oldDirtyFiles;
+@property(nonatomic, getter=isOnHold) BOOL onHold; // @synthesize onHold=_onHold;
 @property(nonatomic, getter=isDeferred) BOOL deferred; // @synthesize deferred=_deferred;
 @property(retain, nonatomic) NSDictionary *settings; // @synthesize settings=_settings;
 @property(retain, nonatomic) IDEIndexImportSession *session; // @synthesize session=_session;
@@ -8867,12 +9386,14 @@ typedef struct {
 @property(readonly, nonatomic) DVTFilePath *file; // @synthesize file=_file;
 @property(readonly, nonatomic) id <IDEIndexable> indexable; // @synthesize indexable=_indexable;
 @property(readonly, nonatomic) IDEIndexingEngine *engine; // @synthesize engine=_engine;
+- (void)didCompleteWithLanguage:(id)arg1 pch:(BOOL)arg2;
 - (void)didComplete;
 - (BOOL)shouldContinue;
 - (id)newMainFileWithSource:(id)arg1 modified:(id)arg2;
 - (void)indexFile:(id)arg1 indexable:(id)arg2;
 - (void)cancel;
 - (void)run;
+- (void)treatAsDeferred;
 @property(readonly, nonatomic) NSString *target;
 @property(readonly, nonatomic) IDEIndex *index;
 - (void)addDirtyFile:(id)arg1;
@@ -8886,6 +9407,8 @@ typedef struct {
     struct dispatch_queue_s *_control_queue;
     long long _width;
     long long _lastThrottledWidth;
+    BOOL _onBatteryPower;
+    double _timeBatteryChecked;
     NSMutableArray *_engines;
     NSMutableDictionary *_hotFilesByEngine;
     NSMutableDictionary *_priorityIndicesByEngine;
@@ -8898,12 +9421,12 @@ typedef struct {
 @property(readonly, nonatomic) long long width; // @synthesize width=_width;
 - (void)_scheduleJobs;
 - (long long)_throttledWidth;
-- (long long)setWidth:(long long)arg1;
 - (void)ping;
 - (void)cancelJobsForEngine:(id)arg1;
 - (void)scheduleJob:(id)arg1;
 - (void)clearHotFilesForEngine:(id)arg1;
 - (void)addHotFile:(id)arg1 forEngine:(id)arg2;
+- (void)dealloc;
 - (void)finalize;
 - (id)init;
 
@@ -8934,8 +9457,8 @@ typedef struct {
 }
 
 + (id)capability;
-- (void)simulateLocationWithLatitude:(id)arg1 longitude:(id)arg2 error:(id *)arg3;
-- (void)stopLocationSimulationWithError:(id *)arg1;
+- (BOOL)simulateLocationWithLatitude:(id)arg1 longitude:(id)arg2 error:(id *)arg3;
+- (BOOL)stopLocationSimulationWithError:(id *)arg1;
 
 @end
 
@@ -9061,6 +9584,7 @@ typedef struct {
 + (id)keyPathsForValuesAffectingTimeStoppedRecording;
 + (id)keyPathsForValuesAffectingIsRecording;
 - (double)timeStoppedRecording;
+- (id)highLevelStatus;
 - (id)signature;
 - (id)documentType;
 - (double)timeStartedRecording;
@@ -9109,11 +9633,13 @@ typedef struct {
     double _timeStoppedRecording;
     DVTFileDataType *_documentType;
     NSString *_signature;
+    NSString *_highLevelStatus;
 }
 
 + (id)keyPathsForValuesAffectingIsRecording;
 @property(retain, nonatomic) IDEActivityLogSection *recorderLog; // @synthesize recorderLog=_recorderLog;
 @property(nonatomic) double timeStoppedRecording; // @synthesize timeStoppedRecording=_timeStoppedRecording;
+- (id)highLevelStatus;
 - (id)signature;
 - (id)documentType;
 - (double)timeStartedRecording;
@@ -9172,8 +9698,9 @@ typedef struct {
 @property(readonly) DVTFilePath *filePath; // @synthesize filePath=_filePath;
 - (void)addOperationsForBuildables;
 - (id)_buildableWhichIncludesFilePath:(id)arg1 startingWithBuildable:(id)arg2 recursionDetectionSet:(id)arg3;
-- (id)initWithBuildOperationDescription:(id)arg1 purpose:(int)arg2 configurationName:(id)arg3 buildables:(id)arg4 buildLog:(id)arg5 executionEnvironment:(id)arg6 overridingProperties:(id)arg7 activeRunDestination:(id)arg8 activeArchitecture:(id)arg9 parallelizeBuildables:(BOOL)arg10 buildImplicitDependencies:(BOOL)arg11 restorePersistedBuildResults:(BOOL)arg12;
 - (id)initWithBuildOperationDescription:(id)arg1 purpose:(int)arg2 buildCommand:(int)arg3 configurationName:(id)arg4 buildables:(id)arg5 filePath:(id)arg6 buildLog:(id)arg7 executionEnvironment:(id)arg8 overridingProperties:(id)arg9 activeRunDestination:(id)arg10 activeArchitecture:(id)arg11 considerImplicitDependencies:(BOOL)arg12 restorePersistedBuildResults:(BOOL)arg13;
+- (id)initWithBuildOperationDescription:(id)arg1 purpose:(int)arg2 buildCommand:(int)arg3 schemeCommand:(id)arg4 configurationName:(id)arg5 buildables:(id)arg6 buildLog:(id)arg7 executionEnvironment:(id)arg8 overridingProperties:(id)arg9 activeRunDestination:(id)arg10 activeArchitecture:(id)arg11 parallelizeBuildables:(BOOL)arg12 dontActuallyRunCommands:(BOOL)arg13 buildImplicitDependencies:(BOOL)arg14 restorePersistedBuildResults:(BOOL)arg15;
+- (id)initWithBuildOperationDescription:(id)arg1 purpose:(int)arg2 buildCommand:(int)arg3 schemeCommand:(id)arg4 configurationName:(id)arg5 buildables:(id)arg6 filePath:(id)arg7 buildLog:(id)arg8 executionEnvironment:(id)arg9 overridingProperties:(id)arg10 activeRunDestination:(id)arg11 activeArchitecture:(id)arg12 considerImplicitDependencies:(BOOL)arg13 restorePersistedBuildResults:(BOOL)arg14;
 
 @end
 
@@ -9199,7 +9726,6 @@ typedef struct {
 {
     IDEIndex *_index;
     struct dispatch_queue_s *_qp_queue;
-    NSSet *_preferredTargets;
     NSMutableArray *_masterBlocks;
     NSMutableArray *_recentQueryProviders;
     NSTimer *_purgeTimer;
@@ -9215,24 +9741,19 @@ typedef struct {
 - (void)purgeQPsUsingPCH:(id)arg1;
 - (void)purgeAllQPs;
 - (id)queryProviderForFile:(id)arg1 highPriority:(BOOL)arg2;
+- (void)dealloc;
 - (void)finalize;
-- (void)setPreferredTargets:(id)arg1;
 - (id)initWithIndex:(id)arg1;
 
 @end
 
-@interface IDELocationScenarioReference : NSObject <DVTXMLUnarchiving>
+@interface IDELocationScenarioReference : IDESchemeOptionReference
 {
-    NSString *_identifier;
     int _referenceType;
-    NSString *_resolvedAbsolutePath;
 }
 
-@property(copy) NSString *resolvedAbsolutePath; // @synthesize resolvedAbsolutePath=_resolvedAbsolutePath;
 @property int referenceType; // @synthesize referenceType=_referenceType;
-@property(copy) NSString *identifier; // @synthesize identifier=_identifier;
 - (void)dvt_encodeRelationshipsWithXMLArchiver:(id)arg1;
-- (void)setIdentifierFromUTF8String:(char *)arg1 fromXMLUnarchiver:(id)arg2;
 - (void)dvt_encodeAttributesWithXMLArchiver:(id)arg1;
 - (id)initFromXMLUnarchiver:(id)arg1 archiveVersion:(float)arg2;
 
@@ -9262,7 +9783,6 @@ typedef struct {
     DVTFilePath *_filePath;
     BOOL _hasLoadedContent;
     BOOL _valid;
-    NSError *_loadingError;
     BOOL _isCurrentLocation;
 }
 
@@ -9280,6 +9800,7 @@ typedef struct {
 @property(readonly) NSString *name;
 @property(readonly) NSArray *locations; // @dynamic locations;
 - (id)_locationsFromReferencedGPXFileWithError:(id *)arg1;
+- (id)initWithWorkspace:(id)arg1 referencingFilePath:(id)arg2;
 - (id)initWithIdentifier:(id)arg1 referencingFilePath:(id)arg2;
 - (id)initWithIdentifier:(id)arg1 locations:(id)arg2 speed:(id)arg3 autorepeat:(BOOL)arg4;
 - (id)initWithIdentifier:(id)arg1 locations:(id)arg2;
@@ -9325,6 +9846,25 @@ typedef struct {
 
 @end
 
+@interface IDEIndexCodeCompletionContext : NSObject
+{
+    unsigned long long _contexts;
+    unsigned int _containerKind;
+    NSString *_containerUSR;
+    BOOL _containerIsIncomplete;
+    NSString *_partialSelector;
+    NSSet *_includedFiles;
+}
+
+@property(copy) NSSet *includedFiles; // @synthesize includedFiles=_includedFiles;
+@property(copy) NSString *partialSelector; // @synthesize partialSelector=_partialSelector;
+@property BOOL containerIsIncomplete; // @synthesize containerIsIncomplete=_containerIsIncomplete;
+@property(copy) NSString *containerResolution; // @synthesize containerResolution=_containerUSR;
+@property unsigned int containerKind; // @synthesize containerKind=_containerKind;
+@property unsigned long long contexts; // @synthesize contexts=_contexts;
+
+@end
+
 @interface IDEBuildOperationDescription : NSObject
 {
     NSString *_objectToBuildName;
@@ -9350,12 +9890,53 @@ typedef struct {
     DVTRegularExpression *_testCaseFinishedRegex;
     DVTRegularExpression *_testCaseFailedRegex;
     NSArray *_performanceTestParsers;
+    struct dispatch_queue_s *_processingQueue;
 }
 
 + (void)_initializeRegularExpressionsIfNeeded;
 @property(retain, nonatomic) id <IDEOCUnitTestOutputParserDelegate> delegate; // @synthesize delegate=_delegate;
 - (void)processConsoleText:(id)arg1;
+- (void)finalize;
 - (id)init;
+
+@end
+
+@interface IDEIndexAutoImportItemCollection : IDEIndexCollection
+{
+    DVTSourceCodeSymbolKind *_symbolKind;
+}
+
+@property(retain, nonatomic) DVTSourceCodeSymbolKind *symbolKind; // @synthesize symbolKind=_symbolKind;
+- (id)instantiateRow:(struct sqlite3_stmt *)arg1;
+- (id)tempTableSchema;
+
+@end
+
+@interface IDEIndexAutoImportItem : NSObject <IDEAutoImportable>
+{
+    IDEIndexDatabase *_database;
+    BOOL _checkedAutoImportability;
+    long long _resolutionOffset;
+    NSString *_name;
+    NSString *_completionString;
+    DVTFilePath *_filePathToHeaderToImport;
+    BOOL _inProject;
+    NSString *_resolution;
+    DVTSourceCodeSymbolKind *_symbolKind;
+    BOOL _autoImportable;
+}
+
+@property(readonly, nonatomic) DVTSourceCodeSymbolKind *symbolKind; // @synthesize symbolKind=_symbolKind;
+@property(readonly, nonatomic) NSString *resolution; // @synthesize resolution=_resolution;
+@property(readonly, nonatomic, getter=isInProject) BOOL inProject; // @synthesize inProject=_inProject;
+@property(readonly, nonatomic) DVTFilePath *filePathToHeaderToImport; // @synthesize filePathToHeaderToImport=_filePathToHeaderToImport;
+@property(readonly, nonatomic) NSString *completionString; // @synthesize completionString=_completionString;
+@property(readonly, nonatomic) NSString *name; // @synthesize name=_name;
+- (unsigned long long)hash;
+- (BOOL)isEqual:(id)arg1;
+@property(readonly, nonatomic) IDEIndexCollection *definitions;
+@property(readonly, nonatomic, getter=isAutoImportable) BOOL autoImportable; // @synthesize autoImportable=_autoImportable;
+- (id)initWithName:(id)arg1 completionString:(id)arg2 resolution:(id)arg3 file:(id)arg4 inProject:(BOOL)arg5 symbolKind:(id)arg6 database:(id)arg7 resolutionOffset:(long long)arg8;
 
 @end
 
@@ -9365,12 +9946,13 @@ typedef struct {
     int _argc;
     const char **_argv;
     BOOL _isPCHFile;
-    BOOL _shouldSave;
+    BOOL _shouldCreate;
     unsigned int _tuOptions;
     void *_cxIndex;
     struct CXTranslationUnitImpl *_cxTranslationUnit;
 }
 
++ (void)initialize;
 - (void)dealloc;
 - (void)finalize;
 - (void)discard;
@@ -9382,7 +9964,7 @@ typedef struct {
 - (void)indexUsingDataSource:(id)arg1;
 @property(readonly, nonatomic) struct CXTranslationUnitImpl *cxTranslationUnit;
 - (void)resetArguments:(id)arg1;
-- (id)initPCHWithPath:(id)arg1 arguments:(id)arg2 shouldSave:(BOOL)arg3;
+- (id)initPCHWithPath:(id)arg1 arguments:(id)arg2 shouldCreate:(BOOL)arg3;
 - (id)initWithPath:(id)arg1 arguments:(id)arg2 usesPCHFile:(BOOL)arg3;
 
 @end
@@ -9415,6 +9997,377 @@ typedef struct {
 
 @end
 
+@interface IDETextIndex : NSObject <DVTLibraryFragmentFilterDelegate, DVTInvalidation>
+{
+    struct dispatch_queue_s *_indexQueue;
+    unsigned long long _maxConcurrentOperationCount;
+    DVTLibraryFragmentFilter *_searchIndex;
+    IDEWorkspace *_workspace;
+    NSArray *_dataProviders;
+    int _readyFlag;
+    BOOL _isInvalidated;
+    DVTStackBacktrace *_invalidationBacktrace;
+    NSMutableSet *_scheduledJobs;
+    unsigned long long _nRunningJobs;
+    double _startTime;
+    long long _nCompleted;
+    struct dispatch_queue_s *_updateQueue;
+    double _timeOfLastUpdateRequest;
+    BOOL _updatePending;
+    struct dispatch_queue_s *_saveQueue;
+    double _timeOfLastSaveRequest;
+    BOOL _savePending;
+}
+
++ (void)_logMissingProviderForFileDataType:(id)arg1;
++ (long long)defaultMaxConcurrentOperationCount;
++ (id)logAspect;
++ (void)initialize;
+@property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
+- (id)_dataProviderForFileDataType:(id)arg1;
+- (void)_initDataProviders;
+- (id)filePathsPossiblyContainingString:(id)arg1 indexedFilePaths:(id *)arg2;
+- (void)_finishIndexing;
+- (void)_reportProgress:(double)arg1;
+- (void)_startIndexing;
+- (void)_postNotificationName:(id)arg1 userInfo:(id)arg2;
+- (void)_scheduleJobs;
+- (void)setMaxConcurrentOperationCount:(unsigned long long)arg1;
+- (void)scheduleJob:(id)arg1;
+- (void)scheduleJobs:(id)arg1;
+- (void)libraryFragmentFilter:(id)arg1 didRemoveFilterForIdentifier:(id)arg2;
+- (void)libraryFragmentFilter:(id)arg1 didAddFilterForIdentifier:(id)arg2;
+- (void)_removeIndexEntriesForPathStrings:(id)arg1;
+- (void)_removeIndexEntryForPathString:(id)arg1;
+- (void)_indexFileInPath:(id)arg1;
+- (id)_collectFilePathsForTextIndex;
+- (void)_scheduleUpdate;
+- (void)updateTextIndex;
+- (void)_updateIfReady;
+- (void)beginTextIndexing;
+- (id)_indexFolderPath;
+- (void)_scheduleSave;
+- (void)_saveTextIndex;
+- (void)_loadTextIndex;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)invalidate;
+- (void)dealloc;
+- (void)finalize;
+- (id)initWithWorkspace:(id)arg1;
+- (id)init;
+
+@end
+
+@interface IDETextIndexDataProvider : NSObject
+{
+    NSArray *_fileDataTypes;
+    IDEWorkspace *_workspace;
+}
+
+@property(readonly) IDEWorkspace *workspace; // @synthesize workspace=_workspace;
+@property(readonly) NSArray *fileDataTypes; // @synthesize fileDataTypes=_fileDataTypes;
+- (id)textRepresentationOfContentsAtPath:(id)arg1;
+- (id)initWithFileDataTypes:(id)arg1 workspace:(id)arg2;
+
+@end
+
+@interface IDETextIndexPropertyListDataProvider : IDETextIndexDataProvider
+{
+}
+
+- (id)textRepresentationOfContentsAtPath:(id)arg1;
+
+@end
+
+@interface IDETextIndexTextDataProvider : IDETextIndexDataProvider
+{
+}
+
+- (id)textRepresentationOfContentsAtPath:(id)arg1;
+
+@end
+
+@interface IDETextIndexRTFDataProvider : IDETextIndexDataProvider
+{
+}
+
+- (id)textRepresentationOfContentsAtPath:(id)arg1;
+
+@end
+
+@interface IDESchemeOptionReference : NSObject <DVTXMLUnarchiving>
+{
+    NSString *_identifier;
+    NSString *_resolvedReference;
+    NSString *resolvedReference;
+}
+
+@property(copy) NSString *resolvedReference; // @synthesize resolvedReference;
+@property(copy) NSString *identifier; // @synthesize identifier=_identifier;
+- (id)resolvedReferenceForWorkspace:(id)arg1;
+- (void)dvt_encodeRelationshipsWithXMLArchiver:(id)arg1;
+- (void)setIdentifierFromUTF8String:(char *)arg1 fromXMLUnarchiver:(id)arg2;
+- (void)dvt_encodeAttributesWithXMLArchiver:(id)arg1;
+- (id)initFromXMLUnarchiver:(id)arg1 archiveVersion:(float)arg2;
+
+@end
+
+@interface IDEConsoleItem : NSObject <DVTSimpleSerialization>
+{
+    NSString *_adaptorType;
+    NSString *_content;
+    double _timestamp;
+    int _kind;
+}
+
++ (id)keyPathsForValuesAffectingError;
++ (id)keyPathsForValuesAffectingOutputRequestedByUser;
++ (id)keyPathsForValuesAffectingPrompt;
++ (id)keyPathsForValuesAffectingOutput;
++ (id)keyPathsForValuesAffectingInput;
+@property(readonly) double timestamp; // @synthesize timestamp=_timestamp;
+@property int kind; // @synthesize kind=_kind;
+@property(readonly) NSString *content; // @synthesize content=_content;
+@property(readonly) NSString *adaptorType; // @synthesize adaptorType=_adaptorType;
+- (void)dvt_writeToSerializer:(id)arg1;
+- (id)dvt_initFromDeserializer:(id)arg1;
+@property(readonly, getter=isError) BOOL error;
+- (void)setError:(BOOL)arg1;
+@property(readonly, getter=isOutputRequestedByUser) BOOL outputRequestedByUser;
+- (void)setOutputRequestedByUser:(BOOL)arg1;
+@property(readonly, getter=isPrompt) BOOL prompt;
+- (void)setPrompt:(BOOL)arg1;
+@property(readonly, getter=isOutput) BOOL output;
+- (void)setOutput:(BOOL)arg1;
+@property(readonly, getter=isInput) BOOL input;
+- (void)setInput:(BOOL)arg1;
+- (id)description;
+- (id)initWithAdaptorType:(id)arg1 content:(id)arg2 kind:(int)arg3;
+
+@end
+
+@interface IDEMasterPtyFileHandle : NSFileHandle
+{
+    NSFileHandle *_masterFileHandle;
+    NSFileHandle *_slaveFileHandle;
+    BOOL _readObserverAdded;
+    BOOL _isInGotData;
+}
+
+@property(readonly) NSFileHandle *slaveFileHandle; // @synthesize slaveFileHandle=_slaveFileHandle;
+- (int)fileDescriptor;
+- (void)waitForDataInBackgroundAndNotify;
+- (void)waitForDataInBackgroundAndNotifyForModes:(id)arg1;
+- (void)acceptConnectionInBackgroundAndNotify;
+- (void)acceptConnectionInBackgroundAndNotifyForModes:(id)arg1;
+- (void)readToEndOfFileInBackgroundAndNotify;
+- (void)readToEndOfFileInBackgroundAndNotifyForModes:(id)arg1;
+- (void)readInBackgroundAndNotify;
+- (void)_gotData:(id)arg1;
+- (void)readInBackgroundAndNotifyForModes:(id)arg1;
+- (void)closeFile;
+- (void)synchronizeFile;
+- (void)truncateFileAtOffset:(unsigned long long)arg1;
+- (void)seekToFileOffset:(unsigned long long)arg1;
+- (unsigned long long)seekToEndOfFile;
+- (unsigned long long)offsetInFile;
+- (void)writeData:(id)arg1;
+- (id)readDataOfLength:(unsigned long long)arg1;
+- (id)readDataToEndOfFile;
+- (id)availableData;
+- (void)dealloc;
+- (id)initWithFileDescriptor:(int)arg1 slaveFileDescriptor:(int)arg2;
+
+@end
+
+@interface IDEIndexCallableSymbol : IDEIndexSymbol
+{
+}
+
+- (id)typeOfArgument:(unsigned long long)arg1;
+- (unsigned long long)numArguments;
+- (id)returnType;
+- (id)property;
+- (id)overridingSymbols;
+- (id)overriddenSymbols;
+
+@end
+
+@interface IDEBuildTaskStatistics : NSObject
+{
+    double _elapsedSystemTime;
+    long long _numberOfVMPageouts;
+    double _elapsedUserTime;
+    long long _numberOfVMPageins;
+    unsigned long long _ordinal;
+    NSString *_commandString;
+    double _elapsedWallClockTime;
+}
+
+@property double elapsedWallClockTime; // @synthesize elapsedWallClockTime=_elapsedWallClockTime;
+@property(copy) NSString *commandString; // @synthesize commandString=_commandString;
+@property unsigned long long ordinal; // @synthesize ordinal=_ordinal;
+@property long long numberOfVMPageins; // @synthesize numberOfVMPageins=_numberOfVMPageins;
+@property double elapsedUserTime; // @synthesize elapsedUserTime=_elapsedUserTime;
+@property long long numberOfVMPageouts; // @synthesize numberOfVMPageouts=_numberOfVMPageouts;
+@property double elapsedSystemTime; // @synthesize elapsedSystemTime=_elapsedSystemTime;
+- (id)buildTaskStatisticsByAddingStatistics:(id)arg1 withCommandString:(id)arg2;
+- (id)copyWithNewCommandString:(id)arg1;
+- (id)copyWithZone:(struct _NSZone *)arg1;
+- (id)initWithCommandString:(id)arg1 ordinal:(unsigned long long)arg2 systemStatisticsMeasurement:(id)arg3 elapsedUserTime:(double)arg4 elapsedSystemTime:(double)arg5;
+
+@end
+
+@interface IDECertificateUtilitiesUIInitializer : NSObject <IDEInitialization>
+{
+}
+
++ (BOOL)ide_initializeWithOptions:(int)arg1 error:(id *)arg2;
+
+@end
+
+@interface IDEArchivedInAppContent : IDEArchivedContent
+{
+}
+
++ (id)keyPathsForValuesAffectingInAppContentPath;
++ (id)archivedContentPathPlistKey;
++ (id)archivedContentPropertiesPlistKey;
++ (BOOL)fillInfoDictionary:(id)arg1 forContentAtPath:(id)arg2 inArchiveProductsDirectory:(id)arg3;
++ (id)soleArchivedContentRelativePathInDirectory:(id)arg1;
+@property(readonly) DVTFilePath *inAppContentPath;
+
+@end
+
+@interface IDEArchivedContent : NSObject
+{
+    IDEArchive *_archive;
+}
+
++ (BOOL)fillInfoDictionary:(id)arg1 forContentAtPath:(id)arg2 inArchiveProductsDirectory:(id)arg3;
++ (id)soleArchivedContentRelativePathInDirectory:(id)arg1;
++ (id)archivedContentPathPlistKey;
++ (id)archivedContentPropertiesPlistKey;
++ (id)keyPathsForValuesAffectingContentPath;
++ (id)_archivedContentPathForArchive:(id)arg1;
++ (id)_archivedContentShortBundleVersionStringForArchive:(id)arg1;
++ (id)_archivedContentBundleVersionForArchive:(id)arg1;
++ (id)_archivedContentBundleIdentifierForArchive:(id)arg1;
++ (id)archivedContentInfoDictForArchive:(id)arg1;
++ (BOOL)validArchivedContentInfoInArchive:(id)arg1;
++ (id)archivedContentWithArchive:(id)arg1;
++ (BOOL)fillArchivedContentInfoInArchiveInfoDictionary:(id)arg1 forContentInArchiveProductsDirectory:(id)arg2;
++ (id)contentClasses;
+@property(readonly) IDEArchive *archive; // @synthesize archive=_archive;
+@property(readonly) NSString *shortBundleVersionString;
+@property(readonly) NSString *bundleVersion;
+@property(readonly) NSString *bundleIdentifier;
+@property(readonly) DVTFilePath *contentPath;
+- (id)initWithArchive:(id)arg1;
+
+@end
+
+@interface IDEIndexPropertySymbol : IDEIndexSymbol
+{
+}
+
+- (id)getter;
+- (id)setter;
+
+@end
+
+@interface IDERunDestinationManager : NSObject
+{
+    DVTMapTable *_runDestinationsByDeviceCache;
+}
+
++ (id)sharedRunDestinationManager;
+- (id)validRunDestinationsForScheme:(id)arg1 schemeCommands:(id)arg2 executionEnvironment:(id)arg3;
+- (id)validRunDestinationsForScheme:(id)arg1 executionEnvironment:(id)arg2;
+- (id)defaultRunDestinationForScheme:(id)arg1 fromRunDestinations:(id)arg2;
+- (id)runDestinationWithTargetDevice:(id)arg1 architecture:(id)arg2 SDK:(id)arg3;
+- (id)_cachedRunDestinationForDevice:(id)arg1 architecture:(id)arg2 SDK:(id)arg3;
+- (void)_cacheRunDestination:(id)arg1;
+- (id)init;
+
+@end
+
+@interface IDEBuildStatisticsData : NSObject <IDEBuildStatisticsData>
+{
+    NSString *_title;
+    unsigned long long _ordinal;
+    NSString *_commandString;
+    double _elapsedUserTime;
+    DVTSystemStatisticsMeasurement *_endSystemStats;
+    double _elapsedSystemTime;
+    DVTSystemStatisticsMeasurement *_startSystemStats;
+}
+
+@property DVTSystemStatisticsMeasurement *startSystemStats; // @synthesize startSystemStats=_startSystemStats;
+@property double elapsedSystemTime; // @synthesize elapsedSystemTime=_elapsedSystemTime;
+@property DVTSystemStatisticsMeasurement *endSystemStats; // @synthesize endSystemStats=_endSystemStats;
+@property double elapsedUserTime; // @synthesize elapsedUserTime=_elapsedUserTime;
+@property(copy) NSString *commandString; // @synthesize commandString=_commandString;
+@property unsigned long long ordinal; // @synthesize ordinal=_ordinal;
+@property(copy) NSString *title; // @synthesize title=_title;
+- (void)emitContentsForAspect:(id)arg1 logLevel:(int)arg2 indentLevel:(unsigned long long)arg3 withBlock:(id)arg4;
+- (id)defaultEmissionStringWithIndentLevel:(unsigned long long)arg1;
+@property(readonly) long long numberOfVMPageouts;
+@property(readonly) long long numberOfVMPageins;
+@property(readonly) double elapsedWallClockTime;
+@property(readonly) double endWallClockTime;
+@property(readonly) double startWallClockTime;
+- (id)initWithTitle:(id)arg1 commandString:(id)arg2 ordinal:(unsigned long long)arg3 startSystemStatisticsMeasurement:(id)arg4 endSystemStatisticsMeasurement:(id)arg5 elapsedUserTime:(double)arg6 elapsedSystemTime:(double)arg7;
+
+@end
+
+@interface IDEBuildStatisticsSection : NSObject <IDEBuildStatisticsData>
+{
+    NSMutableDictionary *_statisticsSectionList;
+    NSMutableArray *_statisticsDataList;
+    unsigned long long _ordinalGenerator;
+    double _elapsedUserTime;
+    double _elapsedSystemTime;
+    long long _numberOfVMPageins;
+    long long _numberOfVMPageouts;
+    DVTDispatchLock *_dispatchLock;
+    DVTSystemStatisticsMeasurement *_startSystemStats;
+    DVTSystemStatisticsMeasurement *_endSystemStats;
+    NSString *_title;
+    unsigned long long _ordinal;
+    id _contentsEmissionBlock;
+}
+
+@property(copy) id contentsEmissionBlock; // @synthesize contentsEmissionBlock=_contentsEmissionBlock;
+@property unsigned long long ordinal; // @synthesize ordinal=_ordinal;
+@property(copy) NSString *title; // @synthesize title=_title;
+@property DVTSystemStatisticsMeasurement *endSystemStats; // @synthesize endSystemStats=_endSystemStats;
+@property DVTSystemStatisticsMeasurement *startSystemStats; // @synthesize startSystemStats=_startSystemStats;
+- (id)description;
+- (void)emitContentsForAspect:(id)arg1 logLevel:(int)arg2 indentLevel:(unsigned long long)arg3 withBlock:(id)arg4;
+- (id)defaultEmissionStringWithIndentLevel:(unsigned long long)arg1;
+@property(readonly) long long numberOfVMPageouts;
+@property(readonly) long long numberOfVMPageins;
+@property(readonly) double elapsedSystemTime;
+@property(readonly) double elapsedUserTime;
+@property(readonly) double elapsedWallClockTime;
+@property(readonly) double endWallClockTime;
+@property(readonly) double startWallClockTime;
+- (void)recordEndSystemStats;
+- (void)recordStartSystemStats;
+- (id)children;
+- (id)dataObjects;
+- (id)subsections;
+- (void)addBuildStatisticsData:(id)arg1;
+- (void)addBuildStatisticsSection:(id)arg1;
+- (void)addNewBuildStatisticsDataWithTitle:(id)arg1 commandString:(id)arg2 startSystemStatisticsMeasurement:(id)arg3 endSystemStatisticsMeasurement:(id)arg4 elapsedUserTime:(double)arg5 elapsedSystemTime:(double)arg6;
+- (id)buildStatisticsSectionWithTitleFormat:(id)arg1;
+- (unsigned long long)_newOrdinal;
+- (id)initWithTitle:(id)arg1;
+- (id)initWithTitle:(id)arg1 ordinal:(unsigned long long)arg2;
+
+@end
+
 @interface DVTExtension (DVTExtensionSortAdditions)
 - (long long)nameCompare:(id)arg1;
 @end
@@ -9436,6 +10389,14 @@ typedef struct {
 - (id)ideIndex_normalizedFoldedString;
 @end
 
+@interface DVTDocumentLocation (IDEActivityLogMessageAdditions)
+- (id)activityLogMessage_locationString;
+@end
+
+@interface DVTTextDocumentLocation (IDEActivityLogMessageAdditions)
+- (id)activityLogMessage_locationString;
+@end
+
 @interface DVTFilePath (IDESourceControlStatus_Private)
 - (id)IDESourceControl_importantFileReferences;
 @end
@@ -9453,6 +10414,13 @@ typedef struct {
 - (id)workingTreeItem_createIfNecessary:(BOOL)arg1;
 - (id)workingTreeItem;
 - (void)workingTreeItemWithCompletionBlock:(id)arg1;
+@end
+
+@interface DVTFilePath (PersistenceFSEventsMonitoring)
+- (BOOL)subpathsChangedSinceDate:(id)arg1 withBlock:(id)arg2;
+- (id)relativePathOnVolume;
+- (void)doneAddingChangedFilesFromStream:(struct __FSEventStream *)arg1;
+- (void)addChangedFilePath:(char *)arg1;
 @end
 
 @interface NSNumber (IDESourceControlAdditions)

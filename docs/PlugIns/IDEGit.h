@@ -8,9 +8,9 @@
 
 /*
  * File: /Applications/Xcode.app/Contents/PlugIns/IDEGit.ideplugin/Contents/MacOS/IDEGit
- * UUID: 0E51BEDA-4000-3D07-B0DB-38CA56F427AC
+ * UUID: 61FA2238-169D-309C-81A9-3280F375D5E1
  * Arch: Intel x86-64 (x86_64)
- *       Current version: 1169.0.0, Compatibility version: 1.0.0
+ *       Current version: 2060.0.0, Compatibility version: 1.0.0
  *       Minimum Mac OS X version: 10.7.0
  *
  *       Objective-C Garbage Collection: Required
@@ -42,6 +42,19 @@
 - (Class)superclass;
 - (unsigned long long)hash;
 - (BOOL)isEqual:(id)arg1;
+
+@optional
+- (id)debugDescription;
+@end
+
+@protocol __ARCLiteIndexedSubscripting__
+- (void)setObject:(id)arg1 atIndexedSubscript:(unsigned long long)arg2;
+- (id)objectAtIndexedSubscript:(unsigned long long)arg1;
+@end
+
+@protocol __ARCLiteKeyedSubscripting__
+- (void)setObject:(id)arg1 forKeyedSubscript:(id)arg2;
+- (id)objectForKeyedSubscript:(id)arg1;
 @end
 
 @interface GitController : NSObject <IDESourceControlProtocol>
@@ -59,6 +72,7 @@
 }
 
 + (void)parseForStatusAndPathWithLine:(id)arg1 withFullPath:(id)arg2 puttingIntoDictionary:(id)arg3;
++ (id)dvtFilePathForPathString:(id)arg1 withFullPath:(id)arg2;
 - (id)errorFromErrorMessage:(id)arg1;
 - (id)defaultArguments;
 - (id)launchPath;
@@ -80,6 +94,24 @@
 }
 
 - (id)initWithRequest:(id)arg1;
+
+@end
+
+@interface GitResetOperation : GitOperation
+{
+}
+
+- (id)initWithRequest:(id)arg1;
+
+@end
+
+@interface GitRevertOperation : GitOperation
+{
+    NSOperationQueue *_operationQueue;
+}
+
+@property(retain) NSOperationQueue *operationQueue; // @synthesize operationQueue=_operationQueue;
+- (void)main;
 
 @end
 
@@ -112,7 +144,17 @@
 
 @end
 
-@interface GitLogOperation : GitOperation
+@interface GitLogOperation : IDESourceControlOperation
+{
+    NSOperationQueue *_operationQueue;
+}
+
+@property(retain) NSOperationQueue *operationQueue; // @synthesize operationQueue=_operationQueue;
+- (void)main;
+
+@end
+
+@interface GitLogFilesOperation : GitOperation
 {
 }
 
@@ -254,6 +296,14 @@
 @end
 
 @interface GitRemoveRemoteOperation : GitOperation
+{
+}
+
+- (id)initWithRequest:(id)arg1;
+
+@end
+
+@interface GitEditRemoteOperation : GitOperation
 {
 }
 

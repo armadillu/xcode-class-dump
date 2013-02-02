@@ -30,9 +30,9 @@ struct _NSRange {
 
 /*
  * File: /Applications/Xcode.app/Contents/PlugIns/IDEArchivedApplicationsViewer.ideplugin/Contents/MacOS/IDEArchivedApplicationsViewer
- * UUID: 45F363E7-208A-36A3-90BB-48950DBE0F77
+ * UUID: 72F9ED9B-2F4E-308A-9EDC-8B518288B312
  * Arch: Intel x86-64 (x86_64)
- *       Current version: 1187.0.0, Compatibility version: 1.0.0
+ *       Current version: 2053.0.0, Compatibility version: 1.0.0
  *       Minimum Mac OS X version: 10.7.0
  *
  *       Objective-C Garbage Collection: Required
@@ -53,9 +53,20 @@ struct _NSRange {
 @protocol IDEOrganizerSource <NSObject, DVTStatefulObject>
 
 @optional
+- (void)organizerSourceWillCloseInWindowController:(id)arg1;
 - (void)organizerSourceWillAppearInWindowController:(id)arg1;
 - (void)openFileURL:(id)arg1 withFileType:(id)arg2;
 - (void)searchWithString:(id)arg1;
+@end
+
+@protocol ITunesSoftwareServiceUploadDelegate <NSObject>
+
+@optional
+- (void)softwareService:(id)arg1 didCompleteUploadForApplication:(id)arg2;
+- (BOOL)softwareService:(id)arg1 shouldContinueUploadForApplication:(id)arg2;
+- (void)softwareService:(id)arg1 didUpdatePercentageComplete:(id)arg2 forApplication:(id)arg3;
+- (void)softwareService:(id)arg1 didUpdateStatusMessage:(id)arg2 forApplication:(id)arg3;
+- (void)softwareService:(id)arg1 willBeginUploadForApplication:(id)arg2;
 @end
 
 @protocol NSControlTextEditingDelegate <NSObject>
@@ -90,6 +101,9 @@ struct _NSRange {
 - (Class)superclass;
 - (unsigned long long)hash;
 - (BOOL)isEqual:(id)arg1;
+
+@optional
+- (id)debugDescription;
 @end
 
 @protocol NSOpenSavePanelDelegate <NSObject>
@@ -170,6 +184,16 @@ struct _NSRange {
 - (id)tableView:(id)arg1 viewForTableColumn:(id)arg2 row:(long long)arg3;
 @end
 
+@protocol __ARCLiteIndexedSubscripting__
+- (void)setObject:(id)arg1 atIndexedSubscript:(unsigned long long)arg2;
+- (id)objectAtIndexedSubscript:(unsigned long long)arg1;
+@end
+
+@protocol __ARCLiteKeyedSubscripting__
+- (void)setObject:(id)arg1 forKeyedSubscript:(id)arg2;
+- (id)objectForKeyedSubscript:(id)arg1;
+@end
+
 @interface AAVArchivedApplicationsViewController : IDEViewController <NSTableViewDelegate, NSTableViewDataSource, NSSplitViewDelegate, IDEOrganizerSource, IDEInitialization>
 {
     NSSplitView *_mainSplitView;
@@ -182,10 +206,15 @@ struct _NSRange {
     NSArrayController *_archivesArrayController;
     DVTScopeBarView *_scopeBar;
     NSView *_detailView;
+    NSTextField *_identifierLabel;
+    NSTextField *_identifierField;
     IDENavigatorDataCell *_archiveGroupCell;
     NSMutableDictionary *_archiveGroupBacking;
     NSString *_filterString;
     unsigned int _hasSelectedArchive:1;
+    id <DVTObservingToken> _profilesLoadedObserver;
+    id <DVTObservingToken> _archivesObserver;
+    id <DVTObservingToken> _archivesArrayObserver;
 }
 
 + (void)revealArchive:(id)arg1;
@@ -193,13 +222,19 @@ struct _NSRange {
 + (BOOL)ide_initializeWithOptions:(int)arg1 error:(id *)arg2;
 @property _Bool hasSelectedArchive; // @synthesize hasSelectedArchive=_hasSelectedArchive;
 @property(copy) NSString *filterString; // @synthesize filterString=_filterString;
+- (void)primitiveInvalidate;
+- (void)estimateSizeOfArchive:(id)arg1;
+- (void)distributeArchive:(id)arg1;
+- (void)validateArchive:(id)arg1;
 - (void)revealArchive:(id)arg1;
 - (BOOL)tableView:(id)arg1 doCommandBySelector:(SEL)arg2;
 - (void)deleteArchive:(id)arg1;
 - (void)contextMenu_deleteArchive:(id)arg1;
 - (void)_deleteArchives:(id)arg1;
 - (void)deleteArchiveSheetDidEnd:(id)arg1 returnCode:(long long)arg2 contextInfo:(void *)arg3;
+- (void)contextMenu_showArchiveInFinder:(id)arg1;
 - (void)showArchiveInFinder:(id)arg1;
+- (BOOL)validateMenuItem:(id)arg1;
 - (void)performArchiveAction:(id)arg1;
 - (void)performArchiveActionNamed:(id)arg1;
 - (void)splitViewDidResizeSubviews:(id)arg1;
@@ -213,6 +248,7 @@ struct _NSRange {
 - (void)_updateArchiveGroups;
 - (id)_groupKeyForArchive:(id)arg1;
 @property(readonly) NSArray *archiveGroups;
+- (void)organizerSourceWillAppearInWindowController:(id)arg1;
 - (void)_layout;
 - (void)loadView;
 - (_Bool)areProfilesLoaded;
@@ -251,26 +287,29 @@ struct _NSRange {
 {
 }
 
-+ (id)uploadApplicationArchiveAtPath:(id)arg1 username:(id)arg2 password:(id)arg3 description:(id)arg4 willBeginCallback:(id)arg5 updatePercentageCallback:(void)arg6 shouldContinueCallback:(id)arg7 didCompleteCallback:(void)arg8;
++ (id)uploadApplicationArchiveAtPath:(id)arg1 username:(id)arg2 password:(id)arg3 description:(id)arg4 willBeginCallback:(id)arg5 updatePercentageCallback:(void)arg6 updateMessageCallback:(id)arg7 shouldContinueCallback:(void)arg8 didCompleteCallback:(id)arg9;
 + (id)validateApplicationArchiveAtPath:(id)arg1 username:(id)arg2 password:(id)arg3 description:(id)arg4;
 + (id)service;
 
 @end
 
-@interface AAVITunesConnectProxyDelegate : NSObject
+@interface AAVITunesConnectProxyDelegate : NSObject <ITunesSoftwareServiceUploadDelegate>
 {
     id willBeginCallback;
     id updatePercentageCallback;
+    id updateMessageCallback;
     id shouldContinueCallback;
     id didCompleteCallback;
 }
 
 @property(copy) id didCompleteCallback; // @synthesize didCompleteCallback;
 @property(copy) id shouldContinueCallback; // @synthesize shouldContinueCallback;
+@property(copy) id updateMessageCallback; // @synthesize updateMessageCallback;
 @property(copy) id updatePercentageCallback; // @synthesize updatePercentageCallback;
 @property(copy) id willBeginCallback; // @synthesize willBeginCallback;
 - (void)softwareService:(id)arg1 didCompleteUploadForApplication:(id)arg2;
 - (BOOL)softwareService:(id)arg1 shouldContinueUploadForApplication:(id)arg2;
+- (void)softwareService:(id)arg1 didUpdateStatusMessage:(id)arg2 forApplication:(id)arg3;
 - (void)softwareService:(id)arg1 didUpdatePercentageComplete:(id)arg2 forApplication:(id)arg3;
 - (void)softwareService:(id)arg1 willBeginUploadForApplication:(id)arg2;
 
@@ -305,14 +344,18 @@ struct _NSRange {
     id <DVTObservingToken> viewToken;
     _Bool showImportDevProfileButtons;
     NSPopUpButton *applicationPopup;
+    NSPopUpButton *iapPopup;
 }
 
 + (id)keyPathsForValuesAffectingWarningTabMessageDetails;
 + (id)keyPathsForValuesAffectingWarningTabMessage;
 + (id)keyPathsForValuesAffectingInstallerIdentityObject;
 + (id)keyPathsForValuesAffectingCodesignIdentityObject;
++ (id)keyPathsForValuesAffectingSelectedIapRecord;
++ (id)keyPathsForValuesAffectingIapRecords;
 + (id)keyPathsForValuesAffectingSelectedApplication;
 + (id)keyPathsForValuesAffectingApplications;
+@property(retain) NSPopUpButton *iapPopup; // @synthesize iapPopup;
 @property(retain) NSPopUpButton *applicationPopup; // @synthesize applicationPopup;
 @property _Bool showImportDevProfileButtons; // @synthesize showImportDevProfileButtons;
 @property(retain) id <DVTObservingToken> viewToken; // @synthesize viewToken;
@@ -343,6 +386,9 @@ struct _NSRange {
 - (_Bool)_directDistribution;
 @property(readonly) _Bool supportsInstallerSigning;
 @property(readonly) _Bool supportsCodeSigning;
+- (void)setSelectedIapRecord:(id)arg1;
+- (id)selectedIapRecord;
+@property(readonly) NSArray *iapRecords;
 - (void)setSelectedApplication:(id)arg1;
 - (id)selectedApplication;
 @property(readonly) NSArray *applications;
@@ -432,6 +478,7 @@ struct _NSRange {
 
 + (BOOL)wantsOverlayEffect;
 - (void)viewDidInstall;
+- (id)assistantTitle;
 
 @end
 
@@ -444,6 +491,7 @@ struct _NSRange {
 + (id)defaultViewNibName;
 @property double progress; // @synthesize progress;
 - (void)viewDidInstall;
+- (id)assistantTitle;
 - (void)loadView;
 
 @end
@@ -620,20 +668,26 @@ struct _NSRange {
 {
     NSString *_username;
     NSString *_password;
-    NSArray *applications;
+    NSArray *_applications;
+    NSDictionary *_iapRecords;
     _Bool _useKeychain;
     NSURLProtectionSpace *_protectionSpace;
-    id selectedApplication;
+    id <ITunesSoftwareApplicationDescription> _selectedApplication;
+    id <ITunesSoftwareApplicationDescription> _selectedIapRecord;
     NSArray *validationErrors;
     NSError *lastError;
 }
 
++ (id)keyPathsForValuesAffectingSelectedIapRecord;
++ (id)keyPathsForValuesAffectingSelectedApplication;
 @property(retain) NSError *lastError; // @synthesize lastError;
 @property(copy) NSArray *validationErrors; // @synthesize validationErrors;
-@property(retain) id selectedApplication; // @synthesize selectedApplication;
 @property(retain) NSURLProtectionSpace *protectionSpace; // @synthesize protectionSpace=_protectionSpace;
-@property(copy) NSArray *applications; // @synthesize applications;
+@property(copy) NSDictionary *iapRecords; // @synthesize iapRecords=_iapRecords;
+@property(copy) NSArray *applications; // @synthesize applications=_applications;
 @property(copy) NSString *password; // @synthesize password=_password;
+@property(retain) id <ITunesSoftwareApplicationDescription> selectedIapRecord; // @synthesize selectedIapRecord=_selectedIapRecord;
+@property(retain) id <ITunesSoftwareApplicationDescription> selectedApplication; // @synthesize selectedApplication=_selectedApplication;
 @property(copy) NSString *username; // @synthesize username=_username;
 @property _Bool useKeychain; // @synthesize useKeychain=_useKeychain;
 - (void)_savePasswordToKeychain;
@@ -653,12 +707,15 @@ struct _NSRange {
 
 @interface AAVValidationIssue : NSObject
 {
+    _Bool isError;
     NSString *issueText;
-    NSImage *issueImage;
 }
 
-@property(retain) NSImage *issueImage; // @synthesize issueImage;
++ (id)issuesFromResponse:(id)arg1;
++ (id)keyPathsForValuesAffectingIssueImage;
 @property(copy) NSString *issueText; // @synthesize issueText;
+@property _Bool isError; // @synthesize isError;
+@property(readonly) NSImage *issueImage;
 
 @end
 
@@ -675,12 +732,12 @@ struct _NSRange {
 @interface IDEArchive (AAVArchiveViewerExtensions)
 - (id)aav_validateForDirectDistribution;
 - (void)performArchiveAction:(id)arg1;
+@property(readonly) NSString *aav_identifierLabel;
 @property(readonly) IDEArchivePackager *aav_packager;
 @property(readonly) NSArray *aav_archiveActions;
 @property(readonly) NSImage *aav_displayIcon;
 @property(readonly) NSArray *aav_displayIcons;
 - (id)aav_version;
-- (BOOL)aav_showEstimatedSize;
 @property(readonly) NSString *aav_archiveType;
 @property(readonly) NSString *aav_humanReadablePlatformName;
 @property(readonly) NSString *aav_platformName;

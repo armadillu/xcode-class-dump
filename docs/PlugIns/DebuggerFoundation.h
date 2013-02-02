@@ -19,9 +19,9 @@ struct _NSRange {
 
 /*
  * File: /Applications/Xcode.app/Contents/PlugIns/DebuggerFoundation.ideplugin/Contents/MacOS/DebuggerFoundation
- * UUID: 764C4576-5E99-3A08-B097-5D5218BB0F4A
+ * UUID: DF93DC84-0802-3E79-9EC4-C4423D0F5E77
  * Arch: Intel x86-64 (x86_64)
- *       Current version: 1185.0.0, Compatibility version: 1.0.0
+ *       Current version: 2083.0.0, Compatibility version: 1.0.0
  *       Minimum Mac OS X version: 10.7.0
  *
  *       Objective-C Garbage Collection: Required
@@ -31,19 +31,27 @@ struct _NSRange {
 - (id)valueForKey:(id)arg1 forLazyDictionary:(id)arg2;
 @end
 
+@protocol DVTCancellable <NSObject>
+@property(readonly, getter=isCancelled) BOOL cancelled;
+- (void)cancel;
+@end
+
 @protocol IDEDataValue <NSObject>
 @property(readonly) BOOL childValuesCountValid;
 @property(readonly) NSArray *childValues;
 @property(readonly) BOOL hasChildValues;
 @property(readonly) BOOL inScope;
-@property(readonly) BOOL formattedSummaryHasChanged;
-@property(readonly) NSString *formattedSummary;
+@property(readonly) NSAttributedString *primitiveFormattedSummary;
+@property(readonly) NSAttributedString *formattedSummary;
 @property(readonly) BOOL typeHasChanged;
 @property(readonly) NSString *type;
 @property(readonly) BOOL valueHasChanged;
 @property(readonly) BOOL isValueEditable;
 @property(copy) NSString *value;
 @property(readonly) NSString *name;
+
+@optional
+@property(readonly) BOOL treatSummaryAsValue;
 @end
 
 @protocol IDEDebugCompressionStrategy <NSObject>
@@ -64,6 +72,7 @@ struct _NSRange {
 @end
 
 @protocol IDEDebugSession <NSObject>
+@property(getter=isPausedForScripting) BOOL pausedForScripting;
 @property(readonly) NSMutableArray *loadedSharedLibraries;
 @property(readonly) DVTTextDocumentLocation *instructionPointerLocation;
 @property(readonly) BOOL breakpointsActivated;
@@ -76,6 +85,7 @@ struct _NSRange {
 - (void)loadDebugSymbolsForSharedLibrary:(id)arg1;
 - (BOOL)shouldAcceptFromDebugSession:(id)arg1 error:(id *)arg2;
 - (BOOL)shouldRelinquishToDebugSession:(id)arg1 error:(id *)arg2;
+- (void)executeDebuggerCommand:(id)arg1 threadID:(unsigned long long)arg2 frameID:(unsigned long long)arg3;
 - (void)requestStop:(struct NSObject *)arg1;
 - (void)requestContinueToLocation:(id)arg1 inContext:(struct NSObject *)arg2;
 - (void)requestContinue:(struct NSObject *)arg1;
@@ -109,6 +119,19 @@ struct _NSRange {
 - (Class)superclass;
 - (unsigned long long)hash;
 - (BOOL)isEqual:(id)arg1;
+
+@optional
+- (id)debugDescription;
+@end
+
+@protocol __ARCLiteIndexedSubscripting__
+- (void)setObject:(id)arg1 atIndexedSubscript:(unsigned long long)arg2;
+- (id)objectAtIndexedSubscript:(unsigned long long)arg1;
+@end
+
+@protocol __ARCLiteKeyedSubscripting__
+- (void)setObject:(id)arg1 forKeyedSubscript:(id)arg2;
+- (id)objectForKeyedSubscript:(id)arg1;
 @end
 
 @interface DBGDebugSession : NSObject <IDEDebugSession>
@@ -117,14 +140,15 @@ struct _NSRange {
     IDERunOperationWorker *_debugLauncher;
     int _state;
     int _coalescedState;
+    BOOL _pausedForScripting;
     DBGProcess *_targetProcess;
     BOOL _hasExitCode;
     long long _exitCode;
     BOOL _breakpointsActivated;
     id <DBGDebugSessionBreakpointDelegate> _breakpointDelegate;
     id <DBGDebugSessionBreakpointLocationDelegate> _breakpointLocationDelegate;
-    id <DVTObservingToken> _breakpointListObserverToken;
     NSMapTable *_breakpointsToTokens;
+    NSMapTable *_watchpointsToTokens;
     DVTTextDocumentLocation *_instructionPointerLocation;
     DVTTextDocumentLocation *_instructionPointerLocationForDisassembly;
     BOOL _lazySymbolLoadingEnabled;
@@ -132,13 +156,18 @@ struct _NSRange {
     IDEConsoleAdaptor *_debuggerConsoleAdapter;
     NSMutableArray *_loadedSharedLibraries;
     NSMutableSet *_dataValuesObservers;
-    NSMapTable *_breakpointsToIdentifiers;
+    DVTMapTable *_breakpointsToIdentifiers;
+    DVTMapTable *_watchpointsToIdentifiers;
+    DVTDispatchLock *_breakpointsAndWatchpointsToIdentifiersLock;
     NSError *_alertError;
     int _logFD;
     NSDate *_loggingInitializedDate;
+    id <DVTObservingToken> _targetControlStateObservingToken;
+    id <DVTObservingToken> _breakpontsActivationObservingToken;
+    id <DVTObservingToken> _breakpointListObserverToken;
 }
 
-+ (BOOL)_isPrintCommand:(id)arg1;
++ (id)createErrorForFailureToLaunchExecutable:(id)arg1 launchSession:(id)arg2;
 + (id)keyPathsForValuesAffectingBreakpointsActivated;
 + (id)keyPathsForValuesAffectingProcess;
 + (void)initialize;
@@ -151,23 +180,35 @@ struct _NSRange {
 @property(retain) IDEConsoleAdaptor *debuggerConsoleAdaptor; // @synthesize debuggerConsoleAdaptor=_debuggerConsoleAdapter;
 @property(copy) DVTTextDocumentLocation *instructionPointerLocationForDisassembly; // @synthesize instructionPointerLocationForDisassembly=_instructionPointerLocationForDisassembly;
 @property(copy) DVTTextDocumentLocation *instructionPointerLocation; // @synthesize instructionPointerLocation=_instructionPointerLocation;
-@property(readonly) IDERunOperationWorker *debugLauncher; // @synthesize debugLauncher=_debugLauncher;
+@property(retain) IDERunOperationWorker *debugLauncher; // @synthesize debugLauncher=_debugLauncher;
 @property(readonly) IDELaunchSession *launchSession; // @synthesize launchSession=_launchSession;
 @property long long exitCode; // @synthesize exitCode=_exitCode;
 @property BOOL hasExitCode; // @synthesize hasExitCode=_hasExitCode;
 @property(retain) DBGProcess *targetProcess; // @synthesize targetProcess=_targetProcess;
+@property(getter=isPausedForScripting) BOOL pausedForScripting; // @synthesize pausedForScripting=_pausedForScripting;
 @property int coalescedState; // @synthesize coalescedState=_coalescedState;
 @property int state; // @synthesize state=_state;
+- (BOOL)isWatchpointValid:(id)arg1;
 - (BOOL)isBreakpointValid:(id)arg1;
+- (void)setIdentifier:(unsigned long long)arg1 forWatchpoint:(id)arg2;
+- (unsigned long long)identifierForWatchpoint:(id)arg1;
+- (id)watchpointForIdentifier:(unsigned long long)arg1;
 - (void)setIdentifier:(unsigned long long)arg1 forBreakpoint:(id)arg2;
 - (unsigned long long)identifierForBreakpoint:(id)arg1;
 - (id)breakpointForIdentifier:(unsigned long long)arg1;
+@property(readonly) NSString *devicePathSubstitutionPairsString;
+- (void)logDebugStringWithTimestampUsingFormat:(id)arg1;
+- (void)logDebugStringWithFormat:(id)arg1;
+- (void)logDebugStringWithTimestamp:(id)arg1;
 - (void)logDebugString:(id)arg1;
+@property(readonly) BOOL isLoggingEnabled;
 - (BOOL)initializeLogging;
 @property(readonly) NSString *logFilename;
 @property(readonly) NSString *logSuffix;
 - (struct _NSRange)rangeOfExpressionForFullTextAtPrompt:(id)arg1;
+- (id)commandsExpectingExpressions;
 - (unsigned long long)availableCompletionTypes:(unsigned long long)arg1 fullTextAfterPrompt:(id)arg2;
+- (BOOL)supportsSteppingIntoCallSymbol;
 - (BOOL)supportsWatchpoints;
 - (BOOL)canContinueToLocation:(id)arg1 withinBlockAtRange:(struct _NSRange)arg2;
 - (id)localizedStringForState:(int)arg1;
@@ -180,6 +221,7 @@ struct _NSRange {
 - (BOOL)consoleShouldTrackInputHistory;
 - (id)pathToInstrospectionSupportDyLib;
 - (void)loadDebugSymbolsForSharedLibrary:(id)arg1;
+- (void)executeDebuggerCommand:(id)arg1 threadID:(unsigned long long)arg2 frameID:(unsigned long long)arg3;
 - (void)requestMovePCInStackFrame:(id)arg1 toLineNumber:(unsigned long long)arg2;
 @property(readonly) BOOL supportsPCAnnotationDragging;
 @property(readonly) BOOL supportsMultiplePCAnnotation;
@@ -202,10 +244,9 @@ struct _NSRange {
 - (void)_recreateBreakpointIfNeccessary:(id)arg1;
 - (void)_createBreakpointIfNeccessary:(id)arg1;
 - (void)_handleTargetProcessStateChanged;
-- (void)_handleLaunchSessionEnded;
-- (void)_handleLaunchSessionStateChanged;
 - (void)_handleLaunchSessionTargetOutputStateChanged;
 - (void)_outputExitString;
+- (void)_handleExceptionBreakpointExceptionNameChanged:(id)arg1;
 - (void)_handleExceptionBreakpointStopOnStyleChanged:(id)arg1;
 - (void)_handleExceptionBreakpointScopeChanged:(id)arg1;
 - (void)_handleSymbolicBreakpointModuleNameChanged:(id)arg1;
@@ -221,6 +262,8 @@ struct _NSRange {
 - (void)_handleBreakpointsDeleted:(id)arg1;
 - (void)_handleBreakpointsCreated:(id)arg1;
 - (void)_handleBreakpointsListChanged:(id)arg1;
+- (void)_removeWatchpointObservers:(id)arg1;
+- (void)_addWatchpointObservers:(id)arg1;
 - (void)_removeBreakpointObservers:(id)arg1;
 - (void)_addBreakpointObservers:(id)arg1;
 @property(readonly) BOOL breakpointsActivated; // @synthesize breakpointsActivated=_breakpointsActivated;
@@ -261,8 +304,8 @@ struct _NSRange {
 @property(nonatomic) BOOL usesPIDInName; // @synthesize usesPIDInName=_usesPIDInName;
 @property(nonatomic) int PID; // @synthesize PID=_PID;
 @property(copy, nonatomic) NSString *name; // @synthesize name=_name;
-@property(retain) DBGStackFrame *currentStackFrame; // @synthesize currentStackFrame=_currentStackFrame;
-@property(retain) DBGThread *currentThread; // @synthesize currentThread=_currentThread;
+@property(retain, nonatomic) DBGStackFrame *currentStackFrame; // @synthesize currentStackFrame=_currentStackFrame;
+@property(retain, nonatomic) DBGThread *currentThread; // @synthesize currentThread=_currentThread;
 @property(copy, nonatomic) NSArray *threads; // @synthesize threads=_threads;
 @property(nonatomic) int controlState; // @synthesize controlState=_controlState;
 @property(readonly) NSString *associatedProcessUUID; // @synthesize associatedProcessUUID=_associatedProcessUUID;
@@ -271,6 +314,7 @@ struct _NSRange {
 - (id)stackFrameForThreadID:(unsigned long long)arg1 frameID:(unsigned long long)arg2;
 - (void)removeMemoryData:(id)arg1;
 - (void)autoUpdateAllMemoryDatas;
+- (id)readMemoryAtAddress:(unsigned long long)arg1 numberOfBytes:(unsigned long long)arg2 resultHandler:(id)arg3;
 - (void)rawMemoryDataForAddressExpression:(id)arg1 numberOfBytes:(unsigned long long)arg2 resultHandler:(id)arg3;
 - (id)memoryDataForUUID:(id)arg1;
 - (id)memoryDataForAddressOfExpression:(id)arg1 numberOfBytes:(unsigned long long)arg2;
@@ -294,6 +338,16 @@ struct _NSRange {
 @property(readonly) NSArray *memoryDatas; // @dynamic memoryDatas;
 @property(copy) NSMutableSet *mutableCodeModules; // @dynamic mutableCodeModules;
 @property(retain) NSMutableArray *mutableMemoryDatas; // @dynamic mutableMemoryDatas;
+
+@end
+
+@interface DBGReadMemoryCancellableToken : NSObject <DVTCancellable>
+{
+    BOOL _isCancelled;
+}
+
+- (BOOL)isCancelled;
+- (void)cancel;
 
 @end
 
@@ -330,8 +384,7 @@ struct _NSRange {
 @property(readonly) DBGProcess *parentProcess; // @synthesize parentProcess=_parentProcess;
 - (void)requestUnsuspend;
 - (void)requestSuspend;
-- (void)requestStackFrames:(unsigned long long)arg1 resultHandler:(id)arg2;
-- (void)refreshStackFramesAndSetFirstFrame;
+- (void)requestStackFrames:(unsigned long long)arg1 resultQueue:(struct dispatch_queue_s *)arg2 resultHandler:(id)arg3;
 - (BOOL)refreshStackFrames;
 - (unsigned long long)hash;
 - (BOOL)isEqual:(id)arg1;
@@ -367,6 +420,8 @@ struct _NSRange {
     NSURL *_fileURL;
     NSNumber *_lineNumber;
     NSString *_instructionPointerAddressString;
+    DBGDataValue *_returnValue;
+    BOOL _returnValueIsValid;
     DBGDisassemblyInstructionList *_disassembly;
     id <DBGStackFrameDelegate> _delegate;
     id <DVTObservingToken> _debugSessionStateObserver;
@@ -378,6 +433,7 @@ struct _NSRange {
 @property(retain) id <DBGStackFrameDelegate> delegate; // @synthesize delegate=_delegate;
 @property(retain) DBGDisassemblyInstructionList *disassembly; // @synthesize disassembly=_disassembly;
 @property(retain) DBGCodeModule *module; // @synthesize module=_module;
+@property BOOL returnValueIsValid; // @synthesize returnValueIsValid=_returnValueIsValid;
 @property(copy) NSString *instructionPointerAddressString; // @synthesize instructionPointerAddressString=_instructionPointerAddressString;
 @property(copy) NSNumber *lineNumber; // @synthesize lineNumber=_lineNumber;
 @property(copy) NSURL *fileURL; // @synthesize fileURL=_fileURL;
@@ -387,11 +443,15 @@ struct _NSRange {
 @property(copy, nonatomic) NSNumber *frameNumber; // @synthesize frameNumber=_frameNumber;
 @property(retain) DBGThread *parentThread; // @synthesize parentThread=_parentThread;
 - (void)requestDataValueForExpression:(id)arg1 atBlockStartAddress:(id)arg2 onQueue:(struct dispatch_queue_s *)arg3 withResultBlock:(id)arg4;
-- (void)requestDataValueForSymbol:(id)arg1 atLocation:(id)arg2 onQueue:(struct dispatch_queue_s *)arg3 withResultBlock:(id)arg4;
+- (void)requestDataValueForSymbol:(id)arg1 symbolKind:(id)arg2 atLocation:(id)arg3 onQueue:(struct dispatch_queue_s *)arg4 withResultBlock:(id)arg5;
 @property(readonly) NSURL *disassemblyURL;
 - (void)_provideCachedDisassemblyOnMainThread:(id)arg1;
 - (void)_doRequestDissassembly:(id)arg1;
 - (void)requestDisassembly:(id)arg1;
+- (void)primitiveSetReturnValueIsValid:(BOOL)arg1;
+- (void)primitiveSetReturnValue:(id)arg1;
+@property(retain) DBGDataValue *returnValue; // @synthesize returnValue=_returnValue;
+- (void)primitiveSetInstructionPointerAddressString:(id)arg1;
 @property(readonly) NSString *displayName; // @synthesize displayName=_displayName;
 - (id)description;
 - (unsigned long long)hash;
@@ -438,16 +498,17 @@ struct _NSRange {
     id <DVTObservingToken> _childValuesObservationToken;
     NSAttributedString *_unescapedAttributedFormattedSummary;
     NSAttributedString *_escapedAttributedFormattedSummary;
+    id <DVTObservingToken> _valueObserver;
+    id <DVTObservingToken> _inScopeObserver;
 }
 
 + (id)summaryUnavailableAttributedString;
 + (id)summaryUnavailableString;
-+ (id)keyPathsForValuesAffectingAttributedFormattedSummary;
 + (id)keyPathsForValuesAffectingFormattedSummary;
 + (id)keyPathsForValuesAffectingTypeHasChanged;
 + (id)keyPathsForValuesAffectingType;
 + (id)kvoChildPathForValuePath:(id)arg1;
-@property(retain) NSDictionary *lazyChildValuesByName; // @synthesize lazyChildValuesByName=_lazyChildValuesByName;
+@property(retain, nonatomic) DBGLazyObservableDictionary *lazyChildValuesByName; // @synthesize lazyChildValuesByName=_lazyChildValuesByName;
 @property(retain) DBGDataValueSummaryFormatter *summaryFormatter; // @synthesize summaryFormatter=_summaryFormatter;
 @property BOOL containsFunctionExpressions; // @synthesize containsFunctionExpressions=_containsFunctionExpressions;
 @property int valueValidity; // @synthesize valueValidity=_valueValidity;
@@ -459,24 +520,26 @@ struct _NSRange {
 - (id)_paddingForLevel:(unsigned long long)arg1;
 - (void)_handleChildValuesChanged;
 - (id)valueForKey:(id)arg1 forLazyDictionary:(id)arg2;
+- (id)_childWithName:(id)arg1;
+- (void)watch;
+@property(readonly) NSString *realName;
 @property(readonly) BOOL childValuesCountValid;
 @property(readonly) NSArray *childValues;
 @property(readonly) BOOL hasChildValues;
 @property(readonly) BOOL inScope;
 - (void)_updateSummaryFormatterIfNecessary;
 - (void)_updateSummaryFormatter;
+- (BOOL)wantsToProvideSummary;
 - (id)_attributedStringByEscapeNewlines:(id)arg1;
-@property(readonly) NSAttributedString *attributedFormattedSummary;
+@property(readonly) NSAttributedString *primitiveFormattedSummary;
+@property(readonly) NSAttributedString *formattedSummary;
 - (void)_summaryFormatterInvalidated:(id)arg1;
-@property(readonly) BOOL formattedSummaryHasChanged;
-@property(readonly) NSString *formattedSummary;
 @property(readonly) BOOL typeHasChanged;
 @property(readonly) NSString *type;
 @property(readonly) BOOL valueHasChanged;
 @property(readonly) BOOL isValueEditable;
 @property(copy) NSString *value;
 @property(readonly) NSString *name;
-- (unsigned long long)indexOfChildValueWithName:(id)arg1;
 @property(readonly) DBGDataValue *parent;
 @property(readonly) BOOL dynamicTypeHasChanged;
 @property(readonly) BOOL summaryHasChanged;
@@ -487,8 +550,12 @@ struct _NSRange {
 - (void)setDynamicType:(id)arg1;
 @property(readonly) DBGDataType *staticType;
 @property(readonly) NSString *expressionPath;
+@property(readonly) NSMutableSet *requestedChildrenByName; // @synthesize requestedChildrenByName=_requestedChildrenByName;
 - (id)initWithStackFrame:(id)arg1;
 - (id)init;
+
+// Remaining properties
+@property(readonly) BOOL treatSummaryAsValue;
 
 @end
 
@@ -500,6 +567,7 @@ struct _NSRange {
 
 + (BOOL)isZombie:(id)arg1;
 @property(readonly) NSString *typeName; // @synthesize typeName=_typeName;
+- (id)description;
 @property(readonly) NSString *typeNameWithoutQualifiers;
 @property(readonly) BOOL isBOOLOrBoolean;
 @property(readonly) BOOL isUnknownType;
@@ -532,6 +600,7 @@ struct _NSRange {
     NSNumber *_timestamp;
 }
 
++ (id)logAspect;
 + (id)keyPathsForValuesAffectingTimestamp;
 + (id)keyPathsForValuesAffectingName;
 @property(readonly) DVTFilePath *filePath; // @synthesize filePath=_filePath;
@@ -650,12 +719,13 @@ struct _NSRange {
 + (id)summaryFormatterDirectories;
 + (id)legacyCustomDataFormattersPath;
 + (id)sharedManager;
-- (void)writeUserDefinedFormatters;
-- (void)loadUserDefinedFormatters;
+- (void)_writeUserDefinedFormatters;
+- (void)_loadUserDefinedFormatters;
 - (void)addSummaryFormatters:(id)arg1 fromXMLUnarchiver:(id)arg2;
 - (void)dvt_encodeRelationshipsWithXMLArchiver:(id)arg1;
 - (void)dvt_encodeAttributesWithXMLArchiver:(id)arg1;
 - (void)setSummaryFormat:(id)arg1 forType:(id)arg2;
+- (id)_defaultSummaryFormatForType:(id)arg1;
 - (id)summaryFormatForType:(id)arg1;
 - (id)summaryFormatForDataValue:(id)arg1;
 - (id)_sessionSpecficInfo:(id)arg1;
@@ -671,11 +741,13 @@ struct _NSRange {
     NSString *_type;
     DBGSummaryPart *_formatRoot;
     DVTFilePath *_dylibPath;
+    BOOL _userDefined;
 }
 
 + (id)zombieFormatForType:(id)arg1;
 + (BOOL)writeSummaryFormats:(id)arg1 toPath:(id)arg2;
 + (id)legacySummaryFormatsAtPath:(id)arg1;
+@property BOOL userDefined; // @synthesize userDefined=_userDefined;
 @property(readonly) DVTFilePath *dylibPath; // @synthesize dylibPath=_dylibPath;
 @property(readonly) NSString *type; // @synthesize type=_type;
 @property(readonly) NSString *formatString; // @synthesize formatString=_formatString;
@@ -841,14 +913,18 @@ struct _NSRange {
 }
 
 + (id)defaultMetrics;
+- (void)disassemblyFetchCompleted:(id)arg1;
+- (void)disassemblyFetchStarted:(id)arg1;
+- (void)formattedSummaryFetchCompleted:(id)arg1;
+- (void)formattedSummaryFetchStarted:(id)arg1;
 - (void)nonPrimaryPCUpdateCompleted;
 - (void)nonPrimaryPCUpdateStarted;
 - (void)stackFrameFetchCompleted:(id)arg1;
 - (void)stackFrameFetchStarted:(id)arg1;
 - (void)variablesViewUpdateCompleted;
 - (void)variablesViewUpdateStarted;
-- (void)perceievedStepCompleted;
-- (void)perceievedStepStarted;
+- (void)perceivedStepCompleted;
+- (void)perceivedStepStarted;
 
 @end
 

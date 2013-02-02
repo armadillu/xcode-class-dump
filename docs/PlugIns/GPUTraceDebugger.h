@@ -8,7 +8,7 @@
 
 /*
  * File: /Applications/Xcode.app/Contents/PlugIns/GPUTraceDebugger.ideplugin/Contents/MacOS/GPUTraceDebugger
- * UUID: CACE011E-9A00-3E7C-B24D-C9C3E3D134FA
+ * UUID: 783938A5-71B7-3286-B101-FFC97E44FE72
  * Arch: Intel x86-64 (x86_64)
  *       Current version: 1.0.0, Compatibility version: 1.0.0
  *       Minimum Mac OS X version: 10.7.0
@@ -47,6 +47,19 @@
 - (Class)superclass;
 - (unsigned long long)hash;
 - (BOOL)isEqual:(id)arg1;
+
+@optional
+- (id)debugDescription;
+@end
+
+@protocol __ARCLiteIndexedSubscripting__
+- (void)setObject:(id)arg1 atIndexedSubscript:(unsigned long long)arg2;
+- (id)objectAtIndexedSubscript:(unsigned long long)arg1;
+@end
+
+@protocol __ARCLiteKeyedSubscripting__
+- (void)setObject:(id)arg1 forKeyedSubscript:(id)arg2;
+- (id)objectForKeyedSubscript:(id)arg1;
 @end
 
 @interface GPUDebuggingAddition : NSObject <IDEDebuggingAddition>
@@ -54,18 +67,23 @@
     NSString *_identifier;
     IDELaunchSession *_launchSession;
     GPUInferiorSession *_gpuSession;
+    GPUDebuggerController *_debuggerController;
     NSString *_locCaptureUnavailReason;
+    BOOL _breakpointsActiveBeforeCapture;
+    BOOL _isFakeDebugSession;
 }
 
 + (BOOL)shouldInstantiateInLaunchSession:(id)arg1;
+@property BOOL isFakeDebugSession; // @synthesize isFakeDebugSession=_isFakeDebugSession;
+@property BOOL breakpointsActiveBeforeCapture; // @synthesize breakpointsActiveBeforeCapture=_breakpointsActiveBeforeCapture;
 @property(copy) NSString *localizedCaptureUnavailabilityReason; // @synthesize localizedCaptureUnavailabilityReason=_locCaptureUnavailReason;
+@property(readonly) GPUDebuggerController *debuggerController; // @synthesize debuggerController=_debuggerController;
 @property(readonly) GPUInferiorSession *gpuSession; // @synthesize gpuSession=_gpuSession;
 @property(readonly) IDELaunchSession *launchSession; // @synthesize launchSession=_launchSession;
 @property(readonly) NSString *identifier; // @synthesize identifier=_identifier;
+@property(readonly) BOOL isDebuggingLoadedArchive;
 - (void)invalidate;
 - (BOOL)isValid;
-- (void)captureGPUTraceFromBreakpoint:(id)arg1;
-- (void)captureGPUTrace;
 - (void)processFinalLaunchParameters:(id)arg1;
 - (id)adjustedLaunchParametersForLaunchParameters:(id)arg1;
 - (void)_loadInferiorSessionForDeviceIdentifier:(id)arg1 forAppWithName:(id)arg2 error:(id *)arg3;
@@ -78,7 +96,7 @@
 {
 }
 
-- (void)performActionUsingConsole:(id)arg1 andBreakpoint:(id)arg2;
+- (void)performActionUsingContext:(id)arg1 andBreakpoint:(id)arg2;
 - (id)displayName;
 
 @end

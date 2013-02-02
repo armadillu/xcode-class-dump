@@ -21,13 +21,18 @@ struct CGSize {
     double _field2;
 };
 
+struct _NSRange {
+    unsigned long long _field1;
+    unsigned long long _field2;
+};
+
 #pragma mark -
 
 /*
  * File: /Applications/Xcode.app/Contents/PlugIns/PlistEditor.ideplugin/Contents/MacOS/PlistEditor
- * UUID: 3AEFC7D7-054C-3765-8218-AAACF500BFCA
+ * UUID: B783E2CD-2077-3C09-9696-14F777E5747D
  * Arch: Intel x86-64 (x86_64)
- *       Current version: 1168.0.0, Compatibility version: 1.0.0
+ *       Current version: 2053.0.0, Compatibility version: 1.0.0
  *       Minimum Mac OS X version: 10.7.0
  *
  *       Objective-C Garbage Collection: Required
@@ -46,6 +51,7 @@ struct CGSize {
 @protocol DVTFindBarFindable
 
 @optional
+- (struct _NSRange)selectedRangeForFindBar:(id)arg1;
 - (id)startingLocationForFindBar:(id)arg1 findingBackwards:(BOOL)arg2;
 - (void)dvtFindBar:(id)arg1 didUpdateCurrentResult:(id)arg2;
 - (void)dvtFindBar:(id)arg1 didUpdateResults:(id)arg2;
@@ -85,6 +91,7 @@ struct CGSize {
 - (struct CGRect)expressionFrameForExpression:(id)arg1;
 
 @optional
+@property(readonly, nonatomic) NSString *selectedText;
 @property(readonly) DVTSourceExpression *quickHelpExpression;
 - (void)unregisterMouseOverExpressionObserver:(id)arg1;
 - (void)registerMouseOverExpressionObserver:(id)arg1;
@@ -103,6 +110,7 @@ struct CGSize {
 - (BOOL)replaceFindResults:(id)arg1 withString:(id)arg2 withError:(id *)arg3;
 
 @optional
+- (BOOL)replaceFindResults:(id)arg1 inSelection:(struct _NSRange)arg2 withString:(id)arg3 withError:(id *)arg4;
 - (BOOL)replaceTextWithContentsOfURL:(id)arg1 error:(id *)arg2;
 @end
 
@@ -130,10 +138,23 @@ struct CGSize {
 - (Class)superclass;
 - (unsigned long long)hash;
 - (BOOL)isEqual:(id)arg1;
+
+@optional
+- (id)debugDescription;
 @end
 
 @protocol NSUserInterfaceValidations
 - (BOOL)validateUserInterfaceItem:(id)arg1;
+@end
+
+@protocol __ARCLiteIndexedSubscripting__
+- (void)setObject:(id)arg1 atIndexedSubscript:(unsigned long long)arg2;
+- (id)objectAtIndexedSubscript:(unsigned long long)arg1;
+@end
+
+@protocol __ARCLiteKeyedSubscripting__
+- (void)setObject:(id)arg1 forKeyedSubscript:(id)arg2;
+- (id)objectForKeyedSubscript:(id)arg1;
 @end
 
 @interface IDEPlistEditor : IDEEditor <DVTPlistViewControllerProtocol, DVTSourceExpressionSource, DVTFindBarFindable, NSUserInterfaceValidations>
@@ -171,6 +192,7 @@ struct CGSize {
 // Remaining properties
 @property(readonly) DVTStackBacktrace *invalidationBacktrace;
 @property(readonly) DVTSourceExpression *quickHelpExpression;
+@property(readonly, nonatomic) NSString *selectedText;
 @property(readonly, nonatomic, getter=isValid) BOOL valid;
 
 @end

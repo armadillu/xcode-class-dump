@@ -30,56 +30,22 @@ struct _NSRange {
 
 typedef struct {
     double _field1;
-    unsigned long long _field2;
-    unsigned long long _field3;
-    double _field4;
-    long long _field5;
-} CDStruct_80222dd0;
-
-typedef struct {
-    double _field1;
-    double _field2;
-    double _field3;
-    char _field4;
-    char _field5;
-} CDStruct_961d3510;
-
-typedef struct {
-    double _field1;
     double _field2;
     double _field3;
     double _field4;
 } CDStruct_d2b197d1;
 
 typedef struct {
-    struct CGPoint start;
-    struct CGPoint end;
-} CDStruct_f6143a38;
-
-typedef struct {
     struct CGRect _field1[8];
 } CDStruct_648df176;
-
-typedef struct {
-    CDStruct_f6143a38 _field1;
-} CDStruct_474337f7;
-
-typedef struct {
-    struct CGRect rect;
-    unsigned long long rectEdge;
-    struct {
-        double start;
-        double length;
-    } range;
-} CDStruct_700ccd87;
 
 #pragma mark -
 
 /*
  * File: /Applications/Xcode.app/Contents/PlugIns/IDEInterfaceBuilderCocoaIntegration.ideplugin/Contents/MacOS/IDEInterfaceBuilderCocoaIntegration
- * UUID: EE42467E-9648-3DD0-BEAB-86A0287C337C
+ * UUID: 9E209751-5C1E-3A9A-BEAE-002EAA6CE599
  * Arch: Intel x86-64 (x86_64)
- *       Current version: 2182.0.0, Compatibility version: 1.0.0
+ *       Current version: 3084.0.0, Compatibility version: 1.0.0
  *       Minimum Mac OS X version: 10.7.0
  *
  *       Objective-C Garbage Collection: Required
@@ -104,14 +70,22 @@ typedef struct {
 - (Class)classForDocumentArchiver:(id)arg1;
 @end
 
+@protocol IBNSLayoutConstraintPrioritySliderDelegate <NSObject>
+- (void)constraintPrioritySlider:(id)arg1 didStopTrackingAtPoint:(struct CGPoint)arg2;
+- (void)constraintPrioritySlider:(id)arg1 didContinueTrackingAtPoint:(struct CGPoint)arg2;
+- (void)constraintPrioritySlider:(id)arg1 didStartTrackingAtPoint:(struct CGPoint)arg2;
+@end
+
+@protocol IBNSSplitViewInspectorHoldingPriorityCellDelegate
+- (void)mouseExitedTableViewCell:(id)arg1;
+- (void)mouseEnteredTableViewCell:(id)arg1;
+@end
+
 @protocol IBWindowContentBorderThicknessTarget <NSObject>
 - (BOOL)autorecalculatesContentBorderThicknessForEdge:(unsigned long long)arg1;
 - (void)setAutorecalculatesContentBorderThickness:(BOOL)arg1 forEdge:(unsigned long long)arg2;
 - (double)contentBorderThicknessForEdge:(unsigned long long)arg1;
 - (void)setContentBorderThickness:(double)arg1 forEdge:(unsigned long long)arg2;
-@end
-
-@protocol IDECommandHandler <NSObject, NSUserInterfaceValidations>
 @end
 
 @protocol IDEInitialization
@@ -168,6 +142,9 @@ typedef struct {
 - (Class)superclass;
 - (unsigned long long)hash;
 - (BOOL)isEqual:(id)arg1;
+
+@optional
+- (id)debugDescription;
 @end
 
 @protocol NSRuleEditorDelegate <NSObject>
@@ -260,6 +237,7 @@ typedef struct {
 - (void)textView:(id)arg1 doubleClickedOnCell:(id)arg2 inRect:(struct CGRect)arg3;
 - (void)textView:(id)arg1 clickedOnCell:(id)arg2 inRect:(struct CGRect)arg3;
 - (BOOL)textView:(id)arg1 clickedOnLink:(id)arg2;
+- (id)textView:(id)arg1 willShowSharingServicePicker:(id)arg2 forItems:(id)arg3;
 - (id)textView:(id)arg1 URLForContentsOfTextAttachment:(id)arg2 atIndex:(unsigned long long)arg3;
 - (id)textView:(id)arg1 didCheckTextInRange:(struct _NSRange)arg2 types:(unsigned long long)arg3 options:(id)arg4 results:(id)arg5 orthography:(id)arg6 wordCount:(long long)arg7;
 - (id)textView:(id)arg1 willCheckTextInRange:(struct _NSRange)arg2 options:(id)arg3 types:(unsigned long long *)arg4;
@@ -287,8 +265,14 @@ typedef struct {
 @property(copy) NSString *identifier;
 @end
 
-@protocol NSUserInterfaceValidations
-- (BOOL)validateUserInterfaceItem:(id)arg1;
+@protocol __ARCLiteIndexedSubscripting__
+- (void)setObject:(id)arg1 atIndexedSubscript:(unsigned long long)arg2;
+- (id)objectAtIndexedSubscript:(unsigned long long)arg1;
+@end
+
+@protocol __ARCLiteKeyedSubscripting__
+- (void)setObject:(id)arg1 forKeyedSubscript:(id)arg2;
+- (id)objectForKeyedSubscript:(id)arg1;
 @end
 
 @interface IBDocumentArchivingSchemaBitmaskIBWindowStrutMask : IBDocumentArchivingSchemaBitmask
@@ -895,7 +879,6 @@ typedef struct {
     IBBindingManager *bindingManager;
 }
 
-+ (BOOL)supportsAutolayout;
 + (id)systemMediaRepository;
 + (id)systemImageResources;
 + (id)systemIDEImageResourcesByName;
@@ -913,28 +896,27 @@ typedef struct {
 + (id)typeForContentsOfURL:(id)arg1 error:(id *)arg2;
 + (id)strippedFileWrapperForContentsOfURL:(id)arg1 error:(id *)arg2;
 + (long long)allSystemsTarget;
-- (void)transformAllLocalizableStringsInDocumentUsingBlock:(id)arg1;
 - (id)objectIDsForStringsFileKey:(id)arg1 context:(id)arg2;
 - (id)willApplyStringsFileAtPath:(SEL)arg1 context:(id)arg2;
-- (BOOL)applyStringsFileAtPath:(id)arg1 error:(id *)arg2;
+- (BOOL)systemTargetSupportsInternationalizationOrError:(id *)arg1;
 - (BOOL)supportsUserDefinedRuntimeAttributesForObject:(id)arg1;
 - (Class)classForUserDefinedRuntimeAttributesPlaceholderForObject:(id)arg1;
+- (id)autolayoutDescriptiveTextForPriority:(float)arg1;
+- (void)frameDecider:(id)arg1 didPropagateFrameSize:(struct CGSize)arg2 toView:(id)arg3;
+- (void)frameDecider:(id)arg1 didPropagateFrame:(struct CGRect)arg2 toView:(id)arg3;
+- (void)internalFrameDecider:(id)arg1 didPropagateFrameSize:(struct CGSize)arg2 toView:(id)arg3;
+- (double)priorityForRunningLiveViewResizingFrameDecison;
 - (Class)arbitrationUnitClass;
-- (Class)layoutSymbolicConstantClass;
-- (Class)layoutConstraintClass;
+- (Class)autolayoutEngineClass;
 - (id)autolayoutDocumentDependencyVersion;
 - (id)autolayoutDocumentDependencyExtension;
-- (void)debugMenuVerifyConstraintIntegrity:(id)arg1;
 - (id)verify;
+- (void)verifyViewBasedTableViewsHaveCorrectColumnState;
+- (void)verifyImageCellTypes;
+- (void)verifySplitViewsInCanvasAreLayingOutAutolayoutFriendlyOnZinOrLater;
 - (id)verifyPopUpContentObjectBindings;
 - (void)verifyPopoversContentViewController;
-- (void)verifyViewsHaveCorrectFrames;
 - (void)verifyNonAmbiguousLayouts;
-- (void)verifyConstraints;
-- (id)verifyConstraintIntegrity;
-- (id)constraintIntegrityIssueMessageWithFormat:(id)arg1;
-- (id)constraintIntegrityIssueMessageObjectDescriptionAttributes;
-- (id)constraintIntegrityIssueMessageTextAttributes;
 - (void)verifyAMPathPopUpButtonMenus;
 - (void)verifyPredicateEditorChildren;
 - (void)verifySegmentedControlStyles;
@@ -992,7 +974,7 @@ typedef struct {
 - (id)validatedIB2ClassesPlistFromData:(id)arg1 error:(id *)arg2;
 - (BOOL)isBundleBasedFileType:(id)arg1;
 - (id)decodeDocumentOfType:(id)arg1 withCoder:(id)arg2;
-- (id)fileWrapperOfType:(id)arg1 error:(id *)arg2;
+- (id)fileWrapperOfType:(id)arg1 options:(id)arg2 error:(id *)arg3;
 - (id)archiveTypeForFileType:(id)arg1;
 - (void)encodeDesignableNibWithCoder:(id)arg1;
 - (void)unarchiveDocumentManagedDataForObject:(id)arg1 withDocumentUnarchiver:(id)arg2;
@@ -1000,7 +982,6 @@ typedef struct {
 - (id)hybridPackageType;
 - (id)internalCompiledPackageWithOptions:(id)arg1 error:(id *)arg2;
 - (id)compiledKeyedObjectsDataWithOptions:(id)arg1 error:(id *)arg2;
-- (void)convertStringsToLocalizableStringsForDocument:(id)arg1;
 - (void)launchSimulatorForCompiledDocumentAtPath:(id)arg1 withEnvironment:(id)arg2 context:(id)arg3;
 - (id)environmentForSimulatingAtPath:(id)arg1 context:(id)arg2;
 - (id)taskForSimulatingNibAtPath:(id)arg1;
@@ -1046,6 +1027,7 @@ typedef struct {
     id <DVTFontTextFieldDataSource> fontDataSource;
 }
 
+- (id)operatingSystemName;
 @property(readonly) id <DVTFontTextFieldDataSource> fontDataSource;
 - (Class)documentClass;
 - (id)windowPasteboardType;
@@ -1112,7 +1094,7 @@ typedef struct {
 - (BOOL)areKnobsLockedForObject:(id)arg1;
 - (CDStruct_648df176)activeKnobRectsForObject:(id)arg1;
 - (id)viewForClippingToWhenDrawingSelectionKnobsForObject:(id)arg1;
-- (void)resizeChild:(id)arg1 fromKnob:(long long)arg2 withEvent:(id)arg3;
+- (void)resizeChild:(id)arg1 fromKnob:(unsigned long long)arg2 withEvent:(id)arg3;
 - (void)tryToDragTableColumn:(id)arg1 withLeftMouseDown:(id)arg2 andLeftMouseDragged:(id)arg3;
 - (void)detachDraggedObjects:(id)arg1 dragContext:(id)arg2;
 - (void)reattachDraggedObjects:(id)arg1 dragContext:(id)arg2;
@@ -1172,7 +1154,7 @@ typedef struct {
 
 + (Class)ibDropTargetResolverClass;
 - (BOOL)interceptEvent:(id)arg1;
-- (void)resizeChild:(id)arg1 fromKnob:(long long)arg2 withEvent:(id)arg3;
+- (void)resizeChild:(id)arg1 fromKnob:(unsigned long long)arg2 withEvent:(id)arg3;
 - (BOOL)interceptMouseDragged:(id)arg1;
 - (id)lastMouseDown;
 - (void)dragTableCellView:(id)arg1 withLeftMouseDown:(id)arg2 andLeftMouseDragged:(id)arg3;
@@ -1324,9 +1306,9 @@ typedef struct {
     NSString *title;
 }
 
-@property(copy) NSString *title; // @synthesize title;
-@property BOOL showsSubmenuIndicator; // @synthesize showsSubmenuIndicator;
-@property long long style; // @synthesize style;
+@property(copy, nonatomic) NSString *title; // @synthesize title;
+@property(nonatomic) BOOL showsSubmenuIndicator; // @synthesize showsSubmenuIndicator;
+@property(nonatomic) long long style; // @synthesize style;
 - (void)drawRect:(struct CGRect)arg1;
 - (struct CGRect)titleRect;
 - (struct CGRect)submenuIndicatorRect;
@@ -1427,14 +1409,17 @@ typedef struct {
     IBLibraryObjectTemplate *tableCellViewTemplate;
     IBLibraryObjectTemplate *textOnlyTableCellViewTemplate;
     IBLibraryObjectTemplate *enterFullScreenTemplate;
+    IBLibraryObjectTemplate *pageControllerTemplate;
     IBCocoaPopoverLibraryObjectTemplate *popoverTemplate;
     IBCocoaSourceListLibraryObjectTemplate *sourceListTemplate;
+    IBLibraryObjectTemplate *byteCountFormatter;
 }
 
 - (id)pasteboardObjectsForTemplate:(id)arg1;
 - (id)windowTemplateForWindowObjectTemplate:(id)arg1;
 - (void)document:(id)arg1 didAddDraggedObjects:(id)arg2 fromDraggedObjectLibraryTemplate:(id)arg3;
 - (BOOL)isMenuItemTemplate:(id)arg1;
+- (BOOL)shouldIncludeTemplate:(id)arg1;
 
 @end
 
@@ -1477,6 +1462,7 @@ typedef struct {
 
 + (id)minimumTargetRuntime;
 + (id)defaultTargetRuntime;
+- (BOOL)shouldIncludeLibraryObjectTemplate:(id)arg1 fromController:(id)arg2;
 - (id)createUserAssetTemplateController;
 
 @end
@@ -1653,7 +1639,7 @@ typedef struct {
     id <DVTObservingToken> _didRemoveConnectionToken;
     id <DVTObservingToken> _willRemoveObjectToken;
     id <DVTObservingToken> _indexDidChangeToken;
-    DVTDelayedValidator *_refreshInvalidator;
+    DVTDelayedInvocation *_refreshInvalidator;
     struct {
         unsigned int _establishingBinding:1;
         unsigned int _refreshing:1;
@@ -1682,7 +1668,7 @@ typedef struct {
 - (void)documentWillRemoveObject:(id)arg1;
 - (id)inspectedDocument;
 - (void)viewDidUninstall;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)viewDidInstall;
 - (void)setContent:(id)arg1;
 - (id)initWithNibName:(id)arg1 bundle:(id)arg2;
@@ -1769,8 +1755,7 @@ typedef struct {
     NSOperationQueue *_availableTransfomersQueue;
     BOOL _lookingUpAvailableTransformers;
     NSArray *_acceptableValueTransformerNames;
-    DVTDelayedValidator *_valueTransformerNamesValidator;
-    NSTimer *_valueTransformerLookupSpinnerTimer;
+    DVTDelayedInvocation *_valueTransformerNamesInvocation;
     id <DVTObservingToken> _classDescriberObservingToken;
     NSOperationQueue *_modelKeyPathValidationQueue;
     BOOL _bound;
@@ -1814,7 +1799,6 @@ typedef struct {
 - (void)objectDidBeginEditing:(id)arg1;
 - (void)viewWillUninstall;
 - (void)viewDidInstall;
-- (void)stopShowingValueTransformersSpinner:(id)arg1;
 - (id)binding;
 - (BOOL)hasControllerKeys;
 - (id)controllerKeys;
@@ -1832,7 +1816,7 @@ typedef struct {
 - (void)refreshSliceViewState;
 - (void)updateValueTransformerNames;
 - (void)invalidateValueTransformerNames;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)_reset;
 - (void)stopObservingClassDescriber;
 - (void)startObservingClassDescriber;
@@ -1886,15 +1870,13 @@ typedef struct {
     BOOL toolbarSheetIsUp;
 }
 
-- (void)resizeFrameViewWithEvent:(id)arg1 fromEditorCanvasFrameKnob:(long long)arg2;
+- (void)resizeFrameViewWithEvent:(id)arg1 fromEditorCanvasFrameKnob:(unsigned long long)arg2;
 - (CDStruct_d2b197d1)canvasAlignmentInsetForEditorFrame;
 - (BOOL)childEditorShouldDrawActivationDarkening:(id)arg1;
 - (BOOL)canSizeSelectionToFit;
 - (void)sizeSelectionToFit:(id)arg1;
-- (void)drawOverlay;
 - (void)drawSelectionHighlightForObject:(id)arg1;
 - (void)selectionOwner:(id)arg1 didSelect:(id)arg2 andDeselect:(id)arg3;
-- (void)setShowingSelection:(BOOL)arg1;
 - (void)didActivate;
 - (void)willEditChild:(id)arg1 inFrameController:(id)arg2;
 - (void)positionChildEditorFrame;
@@ -1930,11 +1912,13 @@ typedef struct {
     NSView *contentView;
     NSView *contentViewContainer;
     NSImage *cachedWindowImage;
+    BOOL _liveResizing;
 }
 
 + (id)windowViewForWindow:(id)arg1 andContentView:(id)arg2;
+@property BOOL liveResizing; // @synthesize liveResizing=_liveResizing;
 - (void)drawRect:(struct CGRect)arg1;
-- (id)cachedWindowImage;
+- (void)drawEverything;
 - (void)maskRoundedBottomCorners;
 - (void)invalidateCachedWindowImage;
 - (id)borderView;
@@ -1970,7 +1954,7 @@ typedef struct {
 @property int contentResizingMode;
 @property(retain) NSView *contentView;
 - (id)windowShadow;
-@property NSWindow *windowToMimic;
+@property(retain) NSWindow *windowToMimic;
 - (void)viewWillMoveToWindow:(id)arg1;
 - (void)awakeFromNib;
 - (id)initWithFrame:(struct CGRect)arg1;
@@ -2056,7 +2040,7 @@ typedef struct {
 - (BOOL)interceptEvent:(id)arg1;
 - (void)tryToDragSubviewsWithLeftMouseDown:(id)arg1 andLeftMouseDragged:(id)arg2;
 - (void)reattachDraggedObjects:(id)arg1 dragContext:(id)arg2;
-- (void)drawSelection;
+- (id)selectionMaskForObject:(id)arg1;
 - (void)noteDescendant:(id)arg1 didChangeProperty:(id)arg2 fromValue:(id)arg3;
 - (id)editedSplitView;
 
@@ -2681,8 +2665,6 @@ typedef struct {
 }
 
 + (Class)ibDropTargetResolverClass;
-- (void)drawActivationDarkening;
-- (void)drawHighlightForObject:(id)arg1;
 - (void)dragSelectionWithMouseDown:(id)arg1 andMouseDragged:(id)arg2;
 - (void)detachDraggedObjects:(id)arg1 dragContext:(id)arg2;
 - (void)reattachDraggedObjects:(id)arg1 dragContext:(id)arg2;
@@ -2690,12 +2672,14 @@ typedef struct {
 - (id)draggedImageState:(id)arg1;
 - (id)draggedImageStateForMenuItems:(id)arg1;
 - (id)draggedImageStateForIdentifiedItems:(id)arg1;
-- (void)resizeFrameViewWithEvent:(id)arg1 fromEditorCanvasFrameKnob:(long long)arg2;
+- (void)resizeFrameViewWithEvent:(id)arg1 fromEditorCanvasFrameKnob:(unsigned long long)arg2;
 - (void)selectionOwner:(id)arg1 didSelect:(id)arg2 andDeselect:(id)arg3;
 - (BOOL)interceptEvent:(id)arg1;
 - (BOOL)interceptKeyEvent:(id)arg1;
 - (void)editKeyEquivalentForItem:(id)arg1 withEvent:(id)arg2;
 - (void)noteDescendant:(id)arg1 didChangeProperty:(id)arg2 fromValue:(id)arg3;
+- (BOOL)effectiveDrawsActivationDarkening;
+- (BOOL)forbidsShowingSelectionIndicators;
 - (id)lastMouseDown;
 - (void)didActivate;
 - (id)menuView;
@@ -2707,8 +2691,8 @@ typedef struct {
 {
 }
 
-- (void)drawActivationDarkening;
-- (void)drawHighlightForObject:(id)arg1;
+- (BOOL)effectiveDrawsActivationDarkening;
+- (BOOL)forbidsShowingSelectionIndicators;
 - (BOOL)interceptEvent:(id)arg1;
 - (BOOL)shouldCloseWithEvent:(id)arg1;
 - (BOOL)isEditingSubmenu;
@@ -2800,7 +2784,7 @@ typedef struct {
 - (BOOL)shouldChildHaveResizeKnobs:(id)arg1;
 - (id)stringEditingContextForEvent:(id)arg1;
 - (id)fontForTitleEditing;
-- (id)trackerForChild:(id)arg1 withView:(id)arg2 fromKnob:(long long)arg3;
+- (id)trackerForChild:(id)arg1 withView:(id)arg2 fromKnob:(unsigned long long)arg3;
 - (id)editedView;
 - (id)itemView;
 - (id)allowedItemsView;
@@ -3164,7 +3148,7 @@ typedef struct {
 
 @interface IBBindingAutocompletingTextField : NSTextField <NSTextViewDelegate>
 {
-    DVTDelayedValidator *progressIndicatorValidator;
+    DVTDelayedInvocation *progressIndicatorInvocation;
     BOOL shouldShowProgressIndicator;
 }
 
@@ -3293,7 +3277,7 @@ typedef struct {
     NSStepper *yStepper;
     NSStepper *zStepper;
     NSStepper *wStepper;
-    DVTDelayedValidator *validator;
+    DVTDelayedInvocation *delayedInvocation;
 }
 
 - (id)bindAndConfigure;
@@ -3329,7 +3313,7 @@ typedef struct {
     NSStepper *rotateStepper;
     NSStepper *stretchStepper;
     NSStepper *scaleStepper;
-    DVTDelayedValidator *validator;
+    DVTDelayedInvocation *delayedInvocation;
 }
 
 - (id)bindAndConfigure;
@@ -3474,170 +3458,26 @@ typedef struct {
 
 @end
 
-@interface IBNSLayoutConstraint : IBLayoutConstraint
+@interface IBCocoaAutolayoutEngine : IBAutolayoutEngine
 {
-    BOOL contentTypeNeedsToBeInferred;
-    NSView *containingView;
-    double scoringType;
-    long long contentType;
-}
-
-+ (Class)pasteboardRepresentationClass;
-+ (double)minimumPriority;
-+ (double)maximumPriority;
-+ (id)explicitLayoutConstraintWithItem:(id)arg1 attribute:(unsigned long long)arg2 constant:(id)arg3;
-+ (id)explicitLayoutConstraintWithFirstItem:(id)arg1 firstAttribute:(unsigned long long)arg2 relation:(long long)arg3 secondItem:(id)arg4 secondAttribute:(unsigned long long)arg5 constant:(id)arg6;
-+ (id)systemRequiredLayoutConstraintWithItem:(id)arg1 attribute:(unsigned long long)arg2 constant:(id)arg3;
-+ (id)systemRequiredLayoutConstraintWithFirstItem:(id)arg1 firstAttribute:(unsigned long long)arg2 relation:(long long)arg3 secondItem:(id)arg4 secondAttribute:(unsigned long long)arg5 constant:(id)arg6;
-+ (id)userDefinedLayoutConstraintWithItem:(id)arg1 attribute:(unsigned long long)arg2 constant:(id)arg3;
-+ (id)userDefinedLayoutConstraintWithFirstItem:(id)arg1 firstAttribute:(unsigned long long)arg2 relation:(long long)arg3 secondItem:(id)arg4 secondAttribute:(unsigned long long)arg5 constant:(id)arg6;
-+ (id)keyPathsForValuesAffectingIbInspectedMinimumConstant;
-+ (id)keyPathsForValuesAffectingIbInspectedPriority;
-+ (id)keyPathsForValuesAffectingIbInspectedMultiplier;
-+ (id)keyPathsForValuesAffectingIbInspectedRelation;
-+ (id)keyPathsForValuesAffectingIbInspectedConstant;
-+ (id)keyPathsForValuesAffectingIbInspectedNonNilConstantValue;
-+ (id)keyPathsForValuesAffectingIbInspectedCanEditMultiplier;
-+ (id)keyPathsForValuesAffectingIbInspectedCanChangeLayoutDirection;
-+ (id)keyPathsForValuesAffectingIbInspectedCanEditConstantSymbolically;
-+ (id)keyPathsForValuesAffectingIbInspectedCanEditConstant;
-+ (id)keyPathsForValuesAffectingIbInspectedConstantInspectionType;
-+ (id)keyPathsForValuesAffectingIbInspectedCanEditRelation;
-+ (id)keyPathsForValuesAffectingIbInspectedInspectorHeaderTitle;
-+ (id)keyPathsForValuesAffectingIbDefaultImage;
-+ (id)keyPathsForValuesAffectingIbDefaultLabel;
-+ (id)keyPathsForValuesAffectingIbTypeLabel;
-+ (id)keyPathsForValuesAffectingIbInspectedUserInterfaceDirection;
-@property(nonatomic) long long contentType; // @synthesize contentType;
-@property double scoringType; // @synthesize scoringType;
-@property(retain) NSView *containingView; // @synthesize containingView;
-- (void)ibVerifyInDocument:(id)arg1;
-- (BOOL)isSatisfiedAccordingToFrameworkMetricsWithLayoutDirection:(long long)arg1 substitutingConstant:(id)arg2;
-- (double)knownMagnitudeOfAnyRoundingAdjustment;
-- (BOOL)mayRequireRoundingAdjustment;
-- (double)roundingAdjustmentWithUserInterfaceLayoutDirection:(long long)arg1;
-- (CDStruct_474337f7)geometricDescriptionInCoordinateSpaceOfView:(id)arg1 userInterfaceLayoutDirection:(long long)arg2;
-- (id)suggestedViewForGeometricDescription;
-- (CDStruct_474337f7)relativeGeometricDescriptionInCoordinateSpaceOfView:(id)arg1 userInterfaceLayoutDirection:(long long)arg2;
-- (CDStruct_474337f7)absoluteGeometricDescriptionInCoordinateSpaceOfView:(id)arg1 userInterfaceLayoutDirection:(long long)arg2 ofItem:(id)arg3 attribute:(unsigned long long)arg4;
-- (id)constraintByReversingFirstAndSecondItem;
-- (id)generateNSLayoutConstraint;
-- (unsigned long long)hashOfComponents;
-- (BOOL)hasComponentsEqualToComponentsOfConstraint:(id)arg1;
-- (long long)geometricCompare:(id)arg1 withUserInterfaceLayoutDirection:(long long)arg2;
-- (long long)compare:(id)arg1 withUserInterfaceLayoutDirection:(long long)arg2;
-- (id)pasteboardRepresentationForDocument:(id)arg1;
-@property(getter=isUserDefined) BOOL userDefined;
-- (void)setPriority:(double)arg1;
-- (void)setConstant:(id)arg1;
-- (void)setMultiplier:(double)arg1;
-- (void)setRelation:(long long)arg1;
-- (id)description;
-- (CDStruct_80222dd0)scoreVector;
-@property(readonly) double inferredScoringType;
-- (long long)inferredContentType;
-- (id)copyWithZone:(struct _NSZone *)arg1;
-- (void)encodeWithCoder:(id)arg1;
-- (id)initWithCoder:(id)arg1;
-- (id)initWithPasteboardRepresentation:(id)arg1 identifierToObjectMapping:(id)arg2;
-- (id)initWithFirstItem:(id)arg1 firstAttribute:(unsigned long long)arg2 relation:(long long)arg3 secondItem:(id)arg4 secondAttribute:(unsigned long long)arg5 constant:(id)arg6;
-- (void)ibDocument:(id)arg1 didAddConnection:(id)arg2;
-- (double)ibInspectedMinimumConstant;
-- (void)setIbInspectedPriority:(double)arg1;
-- (double)ibInspectedPriority;
-- (void)setIbInspectedMultiplier:(double)arg1;
-- (double)ibInspectedMultiplier;
-- (void)setIbInspectedRelation:(long long)arg1;
-- (long long)ibInspectedRelation;
-@property(copy) NSNumber *ibInspectedConstant; // @dynamic ibInspectedConstant;
-@property(readonly) NSNumber *ibInspectedNonNilConstantValue; // @dynamic ibInspectedNonNilConstantValue;
-- (BOOL)ibInspectedCanEditMultiplier;
-- (BOOL)ibInspectedCanChangeLayoutDirection;
-- (BOOL)ibInspectedCanEditConstantSymbolically;
-- (BOOL)ibInspectedCanEditConstant;
-- (unsigned long long)ibInspectedConstantInspectionType;
-- (BOOL)ibInspectedCanEditRelation;
-- (void)modifyPropertyOfConstraintUsingBlock:(id)arg1;
-- (id)ibInspectedInspectorHeaderTitle;
-- (id)ibDefaultImage;
-- (id)ibDefaultLabel;
-- (id)ibTypeLabel;
-- (void)setIbInspectedUserInterfaceDirection:(unsigned long long)arg1;
-- (unsigned long long)ibInspectedUserInterfaceDirection;
-- (void)ibPromoteToUserConstraint;
-- (id)ibRuntimeClassName;
-
-@end
-
-@interface IBNSLayoutConstraintEngine : NSObject
-{
-    IBMutableIdentityDictionary *representedConstraintToRealConstraintMap;
-    IBMutableIdentityDictionary *realConstraintToRepresentedConstraintMap;
-    NSMutableSet *customLayoutViewsThatStartedWithAmbiguousLayout;
-    IBNSLayoutConstraint *systemRequiredBorderViewHeightConstraint;
-    IBNSLayoutConstraint *systemRequiredBorderViewWidthConstraint;
-    IBMutableIdentityDictionary *representedViewToRealViewMap;
-    IBMutableIdentityDictionary *realViewToRepresentedViewMap;
-    NSSet *additionalRepresentedConstraintsRequiredToCopyViewHierarchy;
-    NSSet *realConstraintsForViewsRequiringAdditionalEngineConstraints;
     NSWindowTemplate *topLevelRealWindowTemplate;
-    unsigned long long options;
-    NSView *topLevelRealView;
-    BOOL haveUpdatedTopLevelSystemRequiredConstraintsForTheFirstTime;
-    BOOL allowsResizingTopLevelView;
     NSWindow *window;
-    IBAutolayoutArbitrationUnit *arbitrationUnit;
 }
 
 + (id)defaultWindowForContentViewSize:(struct CGSize)arg1;
-+ (id)layoutConstraintEngineForViewHierarchyOfView:(id)arg1 inDocument:(id)arg2 options:(unsigned long long)arg3;
-@property(readonly) unsigned long long options; // @synthesize options;
-@property(readonly) IBAutolayoutArbitrationUnit *arbitrationUnit; // @synthesize arbitrationUnit;
 @property(readonly) NSWindow *window; // @synthesize window;
-- (void)setContentHuggingPriority:(float)arg1 onRepresentationOfView:(id)arg2 forOrientation:(long long)arg3;
-- (void)setContentCompressionResistancePriority:(float)arg1 onRepresentationOfView:(id)arg2 forOrientation:(long long)arg3;
-- (double)evaluatedConstantOfConstraint:(id)arg1;
-- (void)withAutomaticOptimizationDisabled:(id)arg1;
-- (BOOL)constraintIsRedundant:(id)arg1;
-- (id)candidateRedundantConstraints;
-- (void)setConstant:(double)arg1 ofConstraint:(id)arg2;
-- (void)removeConstraint:(id)arg1;
-- (void)addConstraint:(id)arg1 toView:(id)arg2;
-- (id)constraintsMakingSystemOverConstrainedByAddingConstraint:(id)arg1 toView:(id)arg2;
-- (BOOL)shouldIgnoreRepresentedConstraint:(id)arg1;
-- (void)updateTopLevelSystemRequiredConstraints;
-- (void)removeSystemRequiredWidthAndHeightConstraintsOnRepresentedWindowBorderView;
-- (void)addSystemRequiredWidthAndHeightConstraintsToRepresentedWindowBorderView;
-- (void)addExplicitConstraintsForViewsRequiringAdditionalEngineConstraints;
-- (void)iterateViewsAndGenerateRepresentedConstraintsAndMapToRealConstraints;
-- (id)addRepresentedConstraintForRealConstraint:(id)arg1;
-- (id)representedConstraintBySubstitutingRealViewsForRepresentedViewsOfConstraint:(id)arg1;
-- (id)debugDescription;
-@property BOOL shouldIntegralize;
-- (struct CGSize)attemptToSetWindowContentViewSize:(struct CGSize)arg1;
-@property(readonly) BOOL allowsResizingTopLevelView;
-@property(readonly) NSView *topMostView;
-@property(readonly) NSWindowTemplate *windowTemplate;
-- (void)setAllowsResizingTopLevelView:(BOOL)arg1;
-@property(readonly) NSSet *allRealConstraints;
-- (void)setLayoutFrame:(struct CGRect)arg1 forView:(id)arg2;
-- (struct CGRect)layoutBoundsForView:(id)arg1;
-- (struct CGRect)layoutFrameForView:(id)arg1 inCoordinateSpaceOfView:(id)arg2;
-- (struct CGRect)layoutFrameForView:(id)arg1;
-- (BOOL)ambiguityIsAccurateForView:(id)arg1;
-- (BOOL)hasAmbiguousLayoutForView:(id)arg1;
-- (BOOL)hasAmbiguousLayout;
-- (BOOL)hasRepresentationOfConstraint:(id)arg1;
-- (void)setRealConstraint:(id)arg1 forRepresentedConstraint:(id)arg2;
-- (id)realConstraintForRepresentedConstraint:(id)arg1;
-- (void)setRepresentedConstraint:(id)arg1 forRealConstraint:(id)arg2;
-- (id)representedConstraintForRealConstraint:(id)arg1;
-- (BOOL)hasRepresentationOfView:(id)arg1;
-- (void)mapLayoutEngineView:(id)arg1 toCanvasView:(id)arg2;
-- (id)realViewForRepresentedView:(id)arg1;
-- (id)representedViewForRealView:(id)arg1;
-@property(readonly) NSArray *realViewsOrderedBreadthFirst;
+- (id)candidateRedundantRepresentedConstraints;
+- (id)viewForApplyingSystemRequiredConstraints;
+- (BOOL)tryToAddConstraint:(id)arg1 toRepresentedView:(id)arg2 roundingAdjustment:(double)arg3 mutuallyExclusiveConstraints:(id *)arg4;
+- (void)invalidateConstraintsForRepresentedViews:(id)arg1;
+- (void)updateConstraintsIfNeeded;
+- (void)layoutIfNeeded;
+- (Class)viewClass;
 @property(readonly) IBDocument *document;
+- (id)internalEngine;
+- (struct CGSize)attemptToSetWindowContentViewSize:(struct CGSize)arg1;
+@property(readonly) NSWindowTemplate *windowTemplate;
+- (id)prepareViewHierarchyAndReturnAddedRepresentedConstraintsForRepresentedViews;
 - (id)initWithArbitrationUnit:(id)arg1 options:(unsigned long long)arg2;
 
 @end
@@ -3663,546 +3503,48 @@ typedef struct {
 
 @end
 
-@interface IBNSLayoutConstraintArbiter : NSObject
-{
-    NSMutableSet *viewsThatHaveHadCandidatesUnconditionallyGeneratedAtLeastOnce;
-    DVTPerformanceMetric *arbitrationPerformanceMetric;
-    NSSet *constraintsInDocumentBeforeArbitration;
-    NSSet *viewsRequiringFullArbitration;
-    NSMutableSet *constraintsToRemove;
-    NSMutableSet *constraintsToAdd;
-    IBNSLayoutConstraintEngine *engine;
-}
-
-+ (BOOL)attemptToAddConstraint:(id)arg1 byModifyingLayoutEngine:(id)arg2 mutableConstraintsToAdd:(id)arg3 mutableConstraintsToRemove:(id)arg4 inDocument:(id)arg5;
-+ (BOOL)canConsiderRemovalOfRedundantConstraint:(id)arg1;
-+ (BOOL)canConsiderRemovalOfOverConstrainingConstraint:(id)arg1;
-+ (void)initialize;
-+ (void)arbitrateConstraintsByModifyingLayoutEngine:(id)arg1 constraintsToAdd:(id *)arg2 constraintsToRemove:(id *)arg3 options:(id)arg4;
-@property(readonly) IBNSLayoutConstraintEngine *engine; // @synthesize engine;
-- (void)arbitrateConstraintsToAdd:(id *)arg1 andConstraintsToRemove:(id *)arg2 options:(id)arg3;
-- (void)removeRedundantConstraintsWithOptions:(id)arg1;
-- (void)addApplicableCandidateConstraints;
-- (void)assertThatArbitrationFailedToTakeLessThanNumberOfPasses:(unsigned long long)arg1;
-- (void)addTemporaryExplicitConstraintsForView:(id)arg1;
-- (void)addApplicableCandidateConstraintsForView:(id)arg1;
-- (void)addApplicableCandidateConstraints:(id)arg1 forView:(id)arg2;
-- (BOOL)shouldStopAfterAttemptingToAddAxisSpecificConstraint:(id)arg1;
-- (id)viewsNeedingContinuedArbitrationMappedToReasonString;
-- (void)findViewsNeedingConstraints:(id *)arg1 andViewsNotNeedingConstraintsButWithIncorrectFrame:(id *)arg2;
-- (BOOL)shouldGenerateTemporaryConstraintsForView:(id)arg1;
-- (BOOL)shouldGenerateConstraintsForView:(id)arg1;
-- (BOOL)viewHasAmbiguousLayoutOrIncorrectFrame:(id)arg1 reasonString:(id *)arg2;
-- (BOOL)viewRequiresUnconditionalGenerationOfCandidates:(id)arg1 reason:(id *)arg2;
-- (void)verifyAllRealViewsHaveWindow;
-- (BOOL)viewIsTopMostInEngine:(id)arg1;
-- (BOOL)constraintWasInDocumentBeforeArbitration:(id)arg1;
-- (id)generateCandidateConstraintsForView:(id)arg1 withOptions:(unsigned long long)arg2;
-- (id)document;
-- (id)initWithMutableLayoutEngine:(id)arg1;
-
-// Remaining properties
-@property(copy) NSSet *constraintsToAdd; // @dynamic constraintsToAdd;
-@property(copy) NSSet *constraintsToRemove; // @dynamic constraintsToRemove;
-@property(readonly) NSMutableSet *mutableConstraintsToAdd; // @dynamic mutableConstraintsToAdd;
-@property(readonly) NSMutableSet *mutableConstraintsToRemove; // @dynamic mutableConstraintsToRemove;
-
-@end
-
-@interface IBNSViewEditorLayoutConstraintDrawable : NSObject
-{
-    CDStruct_f6143a38 line;
-    unsigned long long type;
-    NSColor *color;
-    double movementPriority;
-    CDStruct_700ccd87 leftOrBottomEdge;
-    CDStruct_700ccd87 rightOrTopEdge;
-    BOOL selected;
-    double lineThickness;
-    IBNSLayoutConstraint *constraint;
-    BOOL dashed;
-    NSAttributedString *badgeString;
-    BOOL shouldAlwaysDrawGuideLinesIfNeeded;
-    BOOL insetToAvoidOtherDrawables;
-    CDStruct_f6143a38 originalLineBeforeInsettingToAvoidOtherDrawables;
-}
-
-@property CDStruct_f6143a38 originalLineBeforeInsettingToAvoidOtherDrawables; // @synthesize originalLineBeforeInsettingToAvoidOtherDrawables;
-@property(getter=isInsetToAvoidOtherDrawables) BOOL insetToAvoidOtherDrawables; // @synthesize insetToAvoidOtherDrawables;
-@property BOOL shouldAlwaysDrawGuideLinesIfNeeded; // @synthesize shouldAlwaysDrawGuideLinesIfNeeded;
-@property(copy) NSAttributedString *badgeString; // @synthesize badgeString;
-@property(getter=isDashed) BOOL dashed; // @synthesize dashed;
-@property(readonly) IBNSLayoutConstraint *constraint; // @synthesize constraint;
-@property double lineThickness; // @synthesize lineThickness;
-@property(getter=isSelected) BOOL selected; // @synthesize selected;
-@property(readonly) CDStruct_700ccd87 rightOrTopEdge; // @synthesize rightOrTopEdge;
-@property(readonly) CDStruct_700ccd87 leftOrBottomEdge; // @synthesize leftOrBottomEdge;
-@property(readonly) double movementPriority; // @synthesize movementPriority;
-@property(copy) NSColor *color; // @synthesize color;
-@property(readonly) unsigned long long type; // @synthesize type;
-@property CDStruct_f6143a38 line; // @synthesize line;
-- (BOOL)constraintIsVertical;
-- (BOOL)isVertical;
-- (id)initWithConstraint:(id)arg1 line:(CDStruct_f6143a38)arg2 type:(unsigned long long)arg3 color:(id)arg4 movementPriority:(double)arg5;
-- (id)initWithConstraint:(id)arg1 line:(CDStruct_f6143a38)arg2 type:(unsigned long long)arg3 color:(id)arg4 movementPriority:(double)arg5 leftOrBottomEdge:(CDStruct_700ccd87)arg6 rightOrTopEdge:(CDStruct_700ccd87)arg7;
-
-@end
-
 @interface IBNSViewEditor : IBViewEditor
 {
-    DVTDelayedValidator *_constraintUpdatingValidator;
-    long long _constraintHidingCount;
-    NSSet *_viewsInvolvedWithSelectedConstraints;
-    NSArray *_currentConstraintDrawableGuideLines;
-    NSDictionary *_constraintToConstraintDrawablesMap;
-    id <DVTObservingToken> _kvoObservingTokenForDocument;
-    NSArray *_currentConstraintDrawables;
-    NSArray *_orderedConstraintsToDraw;
-    NSSet *_viewsToDrawConstraintsFor;
-    NSSet *_selectedConstraints;
-    IBMutableIdentityDictionary *_observingTokensByView;
 }
 
-+ (void)setEnforcesCurrentSizesWhenAligningViews:(BOOL)arg1;
-+ (BOOL)enforcesCurrentSizesWhenAligningViews;
-+ (void)setUpgradesRedundantConstraintsToUserConstraintsForFrameDecideThenConstraintAddition:(BOOL)arg1;
-+ (BOOL)upgradesRedundantConstraintsToUserConstraintsForFrameDecideThenConstraintAddition;
-+ (void)setUpgradesRedundantConstraintsToUserConstraintsForPureConstraintAddition:(BOOL)arg1;
-+ (BOOL)upgradesRedundantConstraintsToUserConstraintsForPureConstraintAddition;
-+ (id)keyPathsForInvalidatingConstraints;
 + (Class)ibDropTargetResolverClass;
-@property(copy) NSSet *selectedConstraints; // @synthesize selectedConstraints=_selectedConstraints;
-@property(copy, nonatomic) NSSet *viewsToDrawConstraintsFor; // @synthesize viewsToDrawConstraintsFor=_viewsToDrawConstraintsFor;
-@property(copy) NSArray *orderedConstraintsToDraw; // @synthesize orderedConstraintsToDraw=_orderedConstraintsToDraw;
-@property(copy) NSArray *currentConstraintDrawables; // @synthesize currentConstraintDrawables=_currentConstraintDrawables;
-@property(retain) id <DVTObservingToken> kvoObservingTokenForDocument; // @synthesize kvoObservingTokenForDocument=_kvoObservingTokenForDocument;
-@property(copy) NSDictionary *constraintToConstraintDrawablesMap; // @synthesize constraintToConstraintDrawablesMap=_constraintToConstraintDrawablesMap;
-@property(copy) NSArray *currentConstraintDrawableGuideLines; // @synthesize currentConstraintDrawableGuideLines=_currentConstraintDrawableGuideLines;
-@property(copy) NSSet *viewsInvolvedWithSelectedConstraints; // @synthesize viewsInvolvedWithSelectedConstraints=_viewsInvolvedWithSelectedConstraints;
-- (void)alignEdgeTop:(id)arg1;
-- (void)alignEdgeBottom:(id)arg1;
-- (void)alignEdgeRight:(id)arg1;
-- (void)alignEdgeLeft:(id)arg1;
-- (void)alignMiddleInContainer:(id)arg1;
-- (void)alignCenterInContainer:(id)arg1;
-- (void)alignMidY:(id)arg1;
-- (void)alignMidX:(id)arg1;
-- (void)alignBaselines:(id)arg1;
-- (void)alignViews:(id)arg1 withAttribute:(unsigned long long)arg2;
-- (void)alignViews:(id)arg1 toView:(id)arg2 withAttribute:(unsigned long long)arg3;
-- (void)debugMenuItemMakeSelectedConstraintsUserDefined:(id)arg1;
-- (void)insertEqualHeightsConstraint:(id)arg1;
-- (void)insertEqualWidthsConstraint:(id)arg1;
-- (void)insertEqualSizeConstraintForAttribute:(unsigned long long)arg1;
-- (void)addConstraintsRequiringFrameDecision:(id)arg1 options:(id)arg2 frameDecisionBlock:(id)arg3;
-- (void)insertBottomSpacingToSuperviewConstraint:(id)arg1;
-- (void)insertTopSpacingToSuperviewConstraint:(id)arg1;
-- (void)insertTrailingSpacingToSuperviewConstraint:(id)arg1;
-- (void)insertLeadingSpacingToSuperviewConstraint:(id)arg1;
-- (void)insertSpacingToSuperviewConstraintForAttribute:(unsigned long long)arg1;
-- (void)insertVerticalSpacingConstraint:(id)arg1;
-- (void)insertHorizontalSpacingConstraint:(id)arg1;
-- (void)insertSpacingConstraintForVerticalOrientation:(BOOL)arg1;
-- (void)insertHeightConstraint:(id)arg1;
-- (void)insertWidthConstraint:(id)arg1;
-- (void)insertAbsoluteConstraintForAttribute:(unsigned long long)arg1;
-- (id)viewsEligibleForAbsoluteConstraintAdditions;
-- (long long)nextLogicalLayoutRelationForAddingNewConstraintToView:(id)arg1 forConstraintsMatchingBlock:(id)arg2;
-- (id)arbitrationOptionsForArbitrationBeforeConstraintAddition;
-- (id)arbitrationOptionsForFrameDecideThenConstraintAddition;
-- (id)arbitrationOptionsForPureConstraintAddition;
-- (BOOL)validateUserInterfaceItem:(id)arg1;
-- (id)objectsForSelectingAll;
-- (void)moveSelectedViewsWithKeyEvent:(id)arg1;
-- (void)didDeactivate;
-- (void)didActivate;
-- (void)didClose;
-- (void)didOpen;
-- (void)stopObservingOnDeactivation;
-- (void)startObservingOnActivation;
-- (BOOL)child:(id)arg1 shouldBeSelectedOnMouseDraggedWithEvent:(id)arg2;
-- (id)connectionSourceForEvent:(id)arg1;
-- (BOOL)interceptMouseDown:(id)arg1;
-- (id)constraintAtPointInMeasurementOverlay:(struct CGPoint)arg1;
-- (void)selectConstraintsIfPossible:(id)arg1 withEvent:(id)arg2;
-- (void)selectConstraintsIfPossible:(id)arg1;
-- (void)selectConstraintsIfPossible:(id)arg1 withSelectionCallbackBlock:(id)arg2;
-- (id)determineConstraintsToSelectAndWarnIfAnyConstraintWasRemovedFromDocument:(id)arg1;
-- (void)resetCursorRects;
-- (void)didResizeEditedObjectOrAncestorEditedObject:(id)arg1 withEvent:(id)arg2 fromKnob:(long long)arg3;
-- (void)willResizeEditedObjectOrAncestorEditedObject:(id)arg1 withEvent:(id)arg2 fromKnob:(long long)arg3;
-- (void)resizeChild:(id)arg1 fromKnob:(long long)arg2 withEvent:(id)arg3;
-- (void)noteDescendant:(id)arg1 didChangeProperty:(id)arg2 fromValue:(id)arg3;
-- (void)noteAncestor:(id)arg1 didChangeProperty:(id)arg2 fromValue:(id)arg3;
-- (void)updateConstraintVisibilityBasedUponSelection;
-- (void)selectionOwner:(id)arg1 didSelect:(id)arg2 andDeselect:(id)arg3;
-- (void)addEffectiveViewsInvolvedInConstraintToDraw:(id)arg1 toCollection:(id)arg2;
-- (void)clearAllConstraintDrawing;
-- (void)updateConstraintsForViews;
-- (void)willDrawOverlay;
-- (void)pushOrderedConstraintsToDraw:(id)arg1;
-- (void)invalidateConstraintsForViews;
-- (id)constraintsToDrawForView:(id)arg1;
-- (BOOL)constraintItemIsLegitimateItemForDrawing:(id)arg1 relativeToView:(id)arg2;
-- (void)invalidateDrawingAreaForCurrentDrawablesAndGuideLines;
-- (struct CGRect)drawingAreaForDrawableBadge:(id)arg1;
-- (struct CGRect)drawingAreaForDrawable:(id)arg1;
-- (void)updateConstraintDrawablesAndGuideLines;
-- (void)drawOverlay;
-- (void)drawSelectionHighlightForObject:(id)arg1;
-- (void)drawConstraintItem:(id)arg1;
-- (void)determineConstraintDrawableGuideLines:(CDStruct_f6143a38 *)arg1 maxGuideLineCount:(unsigned long long)arg2 forDrawables:(id)arg3 givenMovedDrawableIndexes:(id)arg4;
-- (id)moveDrawablesToAvoidOverlapping:(id)arg1 givenMoveableDrawableIndexes:(id)arg2 movingToAvoidDrawablesAtIndexes:(id)arg3 insettingToAvoidDrawablesAtIndexes:(id)arg4;
-- (BOOL)attemptToInsetDrawable:(id)arg1 toAvoidDrawable:(id)arg2;
-- (BOOL)isDrawable:(id)arg1 intersectingDrawable:(id)arg2;
-- (void)drawGuideLine:(CDStruct_f6143a38)arg1;
-- (void)drawViewEditorDrawable:(id)arg1;
-- (void)drawBadgeForViewEditorDrawable:(id)arg1;
-- (void)drawRelativeConstraintAlignmentLineWithLine:(CDStruct_f6143a38)arg1 withColor:(id)arg2 strokeColor:(id)arg3 lineThickness:(double)arg4 dashed:(BOOL)arg5;
-- (void)drawLimitedSpaceDualTBeamWithDrawable:(id)arg1 withColor:(id)arg2 strokeColor:(id)arg3 lineThickness:(double)arg4 dashed:(BOOL)arg5;
-- (void)drawLimitedSpaceConnectionWithLine:(CDStruct_f6143a38)arg1 withColor:(id)arg2 strokeColor:(id)arg3 lineThickness:(double)arg4 dashed:(BOOL)arg5;
-- (void)drawConstraintStraightLine:(CDStruct_f6143a38)arg1 withColor:(id)arg2 strokeColor:(id)arg3 lineThickness:(double)arg4 dashed:(BOOL)arg5;
-- (void)drawIBeamWithLine:(CDStruct_f6143a38)arg1 withColor:(id)arg2 strokeColor:(id)arg3 lineThickness:(double)arg4 dashed:(BOOL)arg5;
-- (id)dashedBezierPathLineForLine:(CDStruct_f6143a38)arg1 withThickness:(double)arg2 onDashLength:(double)arg3 offDashLength:(double)arg4 phase:(double)arg5;
-- (id)constraintDrawablesForConstraint:(id)arg1;
-- (id)relativeConstraintDrawableForConstraint:(id)arg1;
-- (id)absoluteConstraintDrawableForConstraint:(id)arg1 item:(id)arg2 attribute:(unsigned long long)arg3;
-- (struct CGRect)rectIncludingBadgeForDrawable:(id)arg1;
-- (struct CGRect)rectForDrawableBadge:(id)arg1;
-- (struct CGRect)rectForDrawingOverlayForConstraintItem:(id)arg1;
-- (struct CGRect)rectForDrawingConstraintItem:(id)arg1;
-- (struct CGRect)rectForGuideLine:(CDStruct_f6143a38)arg1;
-- (id)hitRectsForConstraint:(id)arg1 inCoordinateSpaceOfView:(id)arg2;
-- (struct CGRect)hitRectForDrawable:(id)arg1;
-- (struct CGRect)rectForDrawable:(id)arg1;
-- (struct CGRect)rectForLimitedSpaceDualTBeamForDrawable:(id)arg1;
-- (struct CGRect)rectForConstraintLineWithLine:(CDStruct_f6143a38)arg1 lineThickness:(double)arg2;
-- (struct CGRect)rectForIBeamWithLine:(CDStruct_f6143a38)arg1;
-- (struct CGRect)layoutRectInOverlayCoordinatesForConstraintItem:(id)arg1;
-- (BOOL)constraintIsVisible:(id)arg1;
-- (id)constraintUpdatingValidator;
-- (void)withConstraintDrawingHidden:(id)arg1;
-- (void)finishHidingConstraintDrawing;
-- (void)beginHidingConstraintDrawing;
-- (void)updateConstraintHidingCount:(long long)arg1;
-@property(readonly, nonatomic) BOOL hidesConstraints;
-- (void)stopObservingDocument;
-- (void)startObservingDocument;
-- (void)stopObservingView:(id)arg1 forKeyPaths:(id)arg2 andNotifications:(id)arg3;
-- (void)startObservingView:(id)arg1 forKeyPaths:(id)arg2 andNotifications:(id)arg3;
-@property(readonly) IBMutableIdentityDictionary *observingTokensByView; // @synthesize observingTokensByView=_observingTokensByView;
-- (id)equalSizeBadgeString;
-- (id)greaterThanOrEqualToBadgeString;
-- (id)lessThanOrEqualToBadgeString;
-- (id)constraintBadgeStrokeColor;
-- (id)constraintBadgeGradient;
-- (id)constraintBadgeShadow;
-- (id)involvedViewOverlayChiselColor;
-- (id)involvedViewOverlayInnerPathGradient;
-- (id)involvedViewOverlayOuterStrokeColor;
-- (id)selectedConstraintShadow;
-- (id)selectedConstraintLineColor;
-- (id)guideLineColor;
-- (id)relativeAlignmentConstraintLineColor;
-- (id)relativeConstraintLineColor;
-- (id)absoluteConstraintLineColor;
-- (id)standardConstraintLineColor;
-- (id)measurementOverlay;
-- (id)initWithEditedObject:(id)arg1 parentEditor:(id)arg2 frameController:(id)arg3;
 
 @end
 
-@interface IBNSLayoutConstraintCandidateGenerator : NSObject
+@interface IBAutolayoutWindowResizingFrameDecider : IBAutolayoutFrameDecider
 {
+    NSView *_contentView;
 }
 
-+ (id)candidateVerticalSpacingConstraintBetweenDescendant:(id)arg1 andDescendant:(id)arg2 ofView:(id)arg3 inDocument:(id)arg4;
-+ (BOOL)canHaveVerticalSpacingConstraintBetweenDescendant:(id)arg1 andDescendant:(id)arg2 ofView:(id)arg3;
-+ (id)candidateHorizontalSpacingConstraintBetweenDescendant:(id)arg1 andDescendant:(id)arg2 ofView:(id)arg3 inDocument:(id)arg4;
-+ (BOOL)canHaveHorizontalSpacingConstraintBetweenDescendant:(id)arg1 andDescendant:(id)arg2 ofView:(id)arg3;
-+ (id)candidateLayoutConstraintsForDescendants:(id)arg1 ofView:(id)arg2 inDocument:(id)arg3 layoutEngine:(id)arg4 withOptions:(unsigned long long)arg5;
-+ (id)candidateLayoutConstraintsUsingLayoutGuideGeneratorForDescendants:(id)arg1 ofView:(id)arg2 inDocument:(id)arg3 layoutEngine:(id)arg4 withOptions:(unsigned long long)arg5;
-+ (id)candidateExplicitConstraintsForDescendants:(id)arg1 ofView:(id)arg2 inDocument:(id)arg3 withOptions:(unsigned long long)arg4;
-+ (id)candidateExplicitConstraintForDescendant:(id)arg1 ofView:(id)arg2 attribute:(unsigned long long)arg3 inDocument:(id)arg4;
-+ (id)candidateLayoutConstraintsForExactMatchesForDescendants:(id)arg1 ofView:(id)arg2 layoutGuideMatches:(id)arg3 returningMatchedGuideMatches:(id *)arg4 returningMatchedViews:(id *)arg5 inDocument:(id)arg6 layoutEngine:(id)arg7 withOptions:(unsigned long long)arg8;
-+ (id)layoutConstraintForDescendant:(id)arg1 ofView:(id)arg2 andLayoutGuideMatch:(id)arg3 inDocument:(id)arg4 withOptions:(unsigned long long)arg5;
-+ (void)setExplicitConstraintGenerationStrategy:(unsigned long long)arg1;
-+ (unsigned long long)explicitConstraintGenerationStrategy;
-+ (void)initialize;
-
-@end
-
-@interface IBNSLayoutSymbolicConstant : IBLayoutSymbolicConstant
-{
-}
-
-- (id)symbolicValue;
-- (id)shortDescription;
-
-@end
-
-@interface IBNSLayoutViewMovementCacheKey : NSObject
-{
-    NSView *_coordinateSpaceView;
-    NSView *_sizingView;
-    NSValue *_sizeValue;
-}
-
-@property(readonly) NSValue *sizeValue; // @synthesize sizeValue=_sizeValue;
-@property(readonly) NSView *sizingView; // @synthesize sizingView=_sizingView;
-@property(readonly) NSView *coordinateSpaceView; // @synthesize coordinateSpaceView=_coordinateSpaceView;
-- (id)description;
-- (unsigned long long)hash;
-- (BOOL)isEqual:(id)arg1;
-- (id)copyWithZone:(struct _NSZone *)arg1;
-- (id)initWithSize:(struct CGSize)arg1 sizingView:(id)arg2 coordinateSpaceView:(id)arg3;
-
-@end
-
-@interface IBNSLayoutConstraintFrameDecider : NSObject
-{
-    IBMutableIdentityDictionary *ancestorSizeToDescendantToLayoutFrameCacheEntryTable;
-    IBNSLayoutConstraintEngine *engine;
-}
-
-+ (void)decideAndSetFramesOfAllViewHierarchiesInDocument:(id)arg1;
-+ (void)decideAndSetFramesOfEntireViewHierarchyToReflectChangeInConstraintsOfViewHierarchy:(id)arg1 inDocument:(id)arg2;
-+ (id)frameDeciderAllowingTopLevelResizingForViewHierarchyOfView:(id)arg1 inDocument:(id)arg2;
-@property(readonly) IBNSLayoutConstraintEngine *engine; // @synthesize engine;
-- (BOOL)isEdge:(unsigned long long)arg1 ofAncestor:(id)arg2 fixedDuringResizeOfSubview:(id)arg3 fromKnob:(long long)arg4;
-- (BOOL)isEdge:(unsigned long long)arg1 ofSiblingView:(id)arg2 changingOneToOneWhenResizingView:(id)arg3 fromEdge:(unsigned long long)arg4;
-- (BOOL)isEdge:(unsigned long long)arg1 ofDescendant:(id)arg2 fixedInPositionOnWindowDuringResizeOfAncestor:(id)arg3 fromKnob:(long long)arg4;
-- (BOOL)isDistanceFromEdge:(unsigned long long)arg1 ofDescendant:(id)arg2 toSameEdgeOfAncestor:(id)arg3 changingOneToOneWithKnob:(long long)arg4;
-- (CDStruct_961d3510)viewMovementResultForView:(id)arg1 forSizingView:(id)arg2 alongEdge:(unsigned long long)arg3 inCoordinateSpaceOfView:(id)arg4;
-- (struct CGRect)cachedLayoutRectForView:(id)arg1 afterSizingView:(id)arg2 toLayoutSize:(struct CGSize)arg3 inCoordinateSpaceOfView:(id)arg4;
-- (void)sizeView:(id)arg1 toLayoutSize:(struct CGSize)arg2;
-- (void)decideAndSetFramesOfEntireViewHierarchyOfRootItem:(id)arg1;
-- (void)decideAndSetFramesOfEntireViewHierarchyToReflectChangeInConstraintsOfViewHierarchy:(id)arg1;
-- (void)propagateAllLayoutEngineFramesToCanvas;
-- (void)propagateLayoutEngineFrameToCanvasForView:(id)arg1;
-- (void)propagateSize:(struct CGSize)arg1 toCanvasForView:(id)arg2;
-- (void)propagateFrame:(struct CGRect)arg1 toCanvasForView:(id)arg2;
-- (id)document;
-- (id)initWithLayoutEngine:(id)arg1;
-
-@end
-
-@interface IBNSLayoutConstraintViewSizingFrameDecider : IBNSLayoutConstraintFrameDecider
-{
-    BOOL enforceSuggestedOrigin;
-    NSView *sizingView;
-}
-
-+ (void)decideAndSetFramesOfEntireViewHierarchyForSizingView:(id)arg1 toLayoutSize:(struct CGSize)arg2 suggestedLayoutOrigin:(struct CGPoint)arg3 enforceSuggestedOrigin:(BOOL)arg4 allowTopLevelResize:(BOOL)arg5 inDocument:(id)arg6;
-+ (id)frameDeciderForSizingView:(id)arg1 enforceSuggestedOrigin:(BOOL)arg2 allowTopLevelResize:(BOOL)arg3 inDocument:(id)arg4;
-- (void)sizeView:(id)arg1 toLayoutSize:(struct CGSize)arg2;
-- (void)decideAndSetFramesOfEntireViewHierarchyForSizingViewToLayoutSize:(struct CGSize)arg1 suggestedLayoutOrigin:(struct CGPoint)arg2;
-- (void)sizeView:(id)arg1 toLayoutSize:(struct CGSize)arg2 suggestedLayoutOrigin:(struct CGPoint)arg3;
-- (id)initWithLayoutEngine:(id)arg1 sizingView:(id)arg2 enforceSuggestedOrigin:(BOOL)arg3;
-
-@end
-
-@interface IBNSLayoutConstraintViewLiveResizingFrameDecider : IBNSLayoutConstraintFrameDecider
-{
-    IBNSLayoutConstraint *heightConstraint;
-    IBNSLayoutConstraint *widthConstraint;
-    NSView *sizingView;
-}
-
-+ (id)frameDeciderForLiveResizingView:(id)arg1 inDocument:(id)arg2 options:(id)arg3;
-+ (void)configureEngine:(id)arg1 forLiveResizingView:(id)arg2 inDocument:(id)arg3 returningWidthConstraint:(id *)arg4 returningHeightConstraint:(id *)arg5 options:(id)arg6;
-+ (BOOL)shouldLiveResizeViewUsingExplicitSizingConstraints:(id)arg1;
-+ (void)adjustContentReactionPrioritiesForConfiguringEngine:(id)arg1 forLiveResizingView:(id)arg2 inDocument:(id)arg3 options:(id)arg4;
-+ (void)addTemporarySizingConstraintsForConfiguringEngine:(id)arg1 forLiveResizingView:(id)arg2 inDocument:(id)arg3 returningWidthConstraint:(id *)arg4 returningHeightConstraint:(id *)arg5 options:(id)arg6;
-+ (void)removeExplicitSizingConstraintsForConfiguringEngine:(id)arg1 forLiveResizingView:(id)arg2 inDocument:(id)arg3 options:(id)arg4;
-+ (void)stripOrAddAncestorAndDescendantAndSiblingConstraintsForConfiguringEngine:(id)arg1 forLiveResizingView:(id)arg2 inDocument:(id)arg3 options:(id)arg4;
-+ (BOOL)shouldRemoveAbsoluteInequalityConstraintsOnLiveResizingView;
-+ (BOOL)shouldRemoveAbsoluteEqualityConstraintsOnLiveResizingView;
-+ (BOOL)shouldRemoveAbsoluteConstraintsWhenBreakingConstraintsToAncestorsAndSiblings;
-+ (BOOL)shouldRemoveAbsoluteConstraintsWhenBreakingConstraintsToDescendants;
-+ (void)setAbsoluteConstraintBreakageStrategyMask:(unsigned long long)arg1;
-+ (unsigned long long)absoluteConstraintBreakageStrategyMask;
-+ (void)initialize;
-- (void)decideAndSetFramesOfEntireViewHierarchyForLiveResizingViewToLayoutSize:(struct CGSize)arg1;
-- (void)sizeView:(id)arg1 toLayoutSize:(struct CGSize)arg2;
-- (id)initWithLayoutEngine:(id)arg1 sizingView:(id)arg2 widthConstraint:(id)arg3 heightConstraint:(id)arg4;
-
-@end
-
-@interface IBNSLayoutConstraintWindowResizingFrameDecider : IBNSLayoutConstraintFrameDecider
-{
-    NSView *contentView;
-}
-
-+ (void)decideAndSetFramesOfEntireViewHierarchyForResizingWindowContentView:(id)arg1 toLayoutSize:(struct CGSize)arg2 inDocument:(id)arg3;
-+ (id)frameDeciderForResizingWindowContentView:(id)arg1 inDocument:(id)arg2;
-@property(retain) NSView *contentView; // @synthesize contentView;
-- (BOOL)isEdge:(unsigned long long)arg1 ofDescendant:(id)arg2 fixedInPositionOnWindowDuringResizeOfAncestor:(id)arg3 fromKnob:(long long)arg4;
-- (BOOL)isDistanceFromEdge:(unsigned long long)arg1 ofDescendant:(id)arg2 toSameEdgeOfAncestor:(id)arg3 changingOneToOneWithKnob:(long long)arg4;
-- (void)sizeView:(id)arg1 toLayoutSize:(struct CGSize)arg2;
++ (void)decideAndSetFramesOfEntireViewHierarchyForResizingWindowContentView:(id)arg1 toLayoutSize:(struct CGSize)arg2 layoutInfo:(id)arg3 delegate:(id)arg4;
++ (id)frameDeciderForResizingWindowContentView:(id)arg1 layoutInfo:(id)arg2 delegate:(id)arg3;
+@property(retain) NSView *contentView; // @synthesize contentView=_contentView;
+@property(readonly) IBCocoaAutolayoutEngine *engine;
+- (BOOL)isEdge:(unsigned long long)arg1 ofDescendant:(id)arg2 fixedInPositionOnWindowDuringResizeOfAncestor:(id)arg3 fromKnob:(unsigned long long)arg4;
+- (BOOL)isDistanceFromEdge:(unsigned long long)arg1 ofDescendant:(id)arg2 toSameEdgeOfAncestor:(id)arg3 changingOneToOneWithKnob:(unsigned long long)arg4;
 - (void)decideAndSetFramesOfEntireViewHierarchyForResizingWindowContentViewToLayoutSize:(struct CGSize)arg1;
-
-@end
-
-@interface IBNSLayoutConstraintConstraintAdditionFrameDecider : IBNSLayoutConstraintFrameDecider
-{
-}
-
-+ (void)decideAndSetFramesOfEntireViewHierarchyByAddingConstraints:(id)arg1 forMakingViewsHaveTheSameSize:(id)arg2 inDocument:(id)arg3;
-+ (void)decideAndSetFramesOfEntireViewHierarchyByAddingConstraints:(id)arg1 forAligningViews:(id)arg2 byEnforcingCurrentSizes:(BOOL)arg3 inDocument:(id)arg4;
-+ (void)decideAndSetFramesOfEntireViewHierarchyByAddingConstraints:(id)arg1 inDocument:(id)arg2;
-+ (id)frameDeciderForAddingConstraints:(id)arg1 inDocument:(id)arg2;
-- (void)decideAndSetFramesOfEntireViewHierarchyByAddingConstraints:(id)arg1 forAligningViews:(id)arg2 byEnforcingCurrentSizes:(BOOL)arg3;
-- (void)decideAndSetFramesOfEntireViewHierarchyByAddingConstraints:(id)arg1;
-
-@end
-
-@interface IBAutolayoutDebuggingCommands : NSObject <IDECommandHandler>
-{
-}
-
-+ (id)handlerForAction:(SEL)arg1 withSelectionSource:(id)arg2;
-- (void)debugMenuItemToggleBreakInequalityAbsoluteConstraints:(id)arg1;
-- (void)debugMenuItemToggleBreakEqualityAbsoluteConstraints:(id)arg1;
-- (void)debugMenuItemToggleBreakAbsoluteConstraintsToAncestorsAndSiblings:(id)arg1;
-- (void)debugMenuItemToggleBreakAbsoluteConstraintsToDescendants:(id)arg1;
-- (void)toggleValueOfAutolayoutLiveResizingAbsoluteConstraintBreakageStrategy:(unsigned long long)arg1;
-- (void)debugMenuItemToggleApplyConstraintsToDescendants:(id)arg1;
-- (void)debugMenuItemToggleApplyConstraintsToSiblingsAndAncestors:(id)arg1;
-- (void)toggleValueOfAutolayoutLiveResizingStrategy:(unsigned long long)arg1;
-- (void)debugMenuItemToggleUpgradeRedundantConstraintsForFrameDecideThenConstraintAddition:(id)arg1;
-- (void)debugMenuItemToggleUpgradeRedundantConstraintsForPureConstraintAddition:(id)arg1;
-- (void)debugMenuItemToggleEnforceCurrentViewSizesWhenAligning:(id)arg1;
-- (void)debugMenuItemUseQuadrantContainingBoundsExplicitConstraints:(id)arg1;
-- (void)debugMenuItemUseQuadrantContainingCenterPointExplicitConstraints:(id)arg1;
-- (void)debugMenuItemUseUpperLeadingExplicitConstraints:(id)arg1;
-- (BOOL)validateUserInterfaceItem:(id)arg1;
 
 @end
 
 @interface IBNSViewTracker : IBViewTracker
 {
-    NSEvent *currentResizingEvent;
-    BOOL shouldResizeLikeWindow;
-    IBNSLayoutConstraintFrameDecider *frameDecider;
+    BOOL _shouldResizeLikeWindow;
 }
 
-+ (void)setAutolayoutLiveResizingStrategyMask:(unsigned long long)arg1;
-+ (unsigned long long)autolayoutLiveResizingStrategyMask;
-+ (void)initialize;
-@property(readonly) IBNSLayoutConstraintFrameDecider *frameDecider; // @synthesize frameDecider;
-- (void)trackWithEvent:(id)arg1;
-- (void)placeSubviewInFrame:(struct CGRect)arg1 event:(id)arg2;
 - (void)placeSubviewForAutolayoutDocumentApplyingConstraintsInLayoutFrame:(struct CGRect)arg1;
-- (BOOL)shouldConsiderSelectionEdge:(unsigned long long)arg1 toSiblingEdge:(unsigned long long)arg2 guideFromSelection:(id)arg3 toView:(id)arg4;
-- (BOOL)isEdge:(unsigned long long)arg1 ofAncestor:(id)arg2 fixedDuringResizeOfSubview:(id)arg3 fromKnob:(long long)arg4;
-- (BOOL)isEdge:(unsigned long long)arg1 ofSubview:(id)arg2 fixedInPositionOnWindowDuringResizeFromKnob:(long long)arg3;
-- (BOOL)isDistanceFromSubviewEdge:(unsigned long long)arg1 ofSubview:(id)arg2 toSameEdgeOfSuperviewChangingOneToOneWithKnob:(long long)arg3;
+- (BOOL)shouldPinEditorCanvasFrameForResizing;
 - (BOOL)shouldSizeUsingFrameDeciderForEvent:(id)arg1;
-- (id)canvasView;
-- (id)editorCanvasFrame;
 - (id)generateFrameDeciderForPlacingSubviewInFrameWithInitialEvent:(id)arg1;
-- (id)initWithTrackedView:(id)arg1 measurementTarget:(id)arg2 frameController:(id)arg3 knob:(long long)arg4;
+- (id)initWithTrackedView:(id)arg1 measurementTarget:(id)arg2 frameController:(id)arg3 knob:(unsigned long long)arg4;
 
 @end
 
-@interface IBNSLayoutConstraintPriorityInspectorPropertyValueTransformer : NSValueTransformer
+@interface IBCocoaAutolayoutArbitrationUnit : IBIDEAutolayoutArbitrationUnit
 {
 }
 
-+ (BOOL)allowsReverseTransformation;
-- (id)transformedValue:(id)arg1;
-- (id)reverseTransformedValue:(id)arg1;
-
-@end
-
-@interface IBNSLayoutConstraintPriorityInspectorProperty : IDEInspectorProperty
-{
-    IBNSLayoutConstraintPrioritySlider *slider;
-    NSPopover *popover;
-    IBNSLayoutConstraintPriorityPopoverViewController *popoverViewController;
-}
-
-- (void)constraintPrioritySlider:(id)arg1 didStopTrackingAtPoint:(struct CGPoint)arg2;
-- (void)constraintPrioritySlider:(id)arg1 didContinueTrackingAtPoint:(struct CGPoint)arg2;
-- (void)constraintPrioritySlider:(id)arg1 didStartTrackingAtPoint:(struct CGPoint)arg2;
-- (void)unbindAndTearDown;
-- (id)bindAndConfigure;
-- (void)userDidChangeValue:(id)arg1;
-- (void)syncPopoverWithSliderKnob;
-- (BOOL)canTileIntoColumnsWithWidth:(double)arg1;
-- (BOOL)canTileIntoColumnsWithProperty:(id)arg1;
-- (double)baseline;
-
-@end
-
-@interface IBNSLayoutConstraintPrioritySlider : NSSlider
-{
-    id delegate;
-}
-
-+ (Class)cellClass;
-@property(retain) id <IBNSLayoutConstraintPrioritySliderDelegate> delegate; // @synthesize delegate;
-- (void)cellDidStopTrackingFromLastPoint:(struct CGPoint)arg1 to:(struct CGPoint)arg2 mouseIsUp:(BOOL)arg3;
-- (void)cellDidContinueTrackingFromLastPoint:(struct CGPoint)arg1 to:(struct CGPoint)arg2;
-- (void)cellDidStartTrackingAt:(struct CGPoint)arg1;
-
-@end
-
-@interface IBNSLayoutConstraintPrioritySliderCell : NSSliderCell
-{
-    BOOL isStartingTracking;
-}
-
-- (void)stopTracking:(struct CGPoint)arg1 at:(struct CGPoint)arg2 inView:(id)arg3 mouseIsUp:(BOOL)arg4;
-- (BOOL)continueTracking:(struct CGPoint)arg1 at:(struct CGPoint)arg2 inView:(id)arg3;
-- (BOOL)startTrackingAt:(struct CGPoint)arg1 inView:(id)arg2;
-- (id)prioritySlider;
-
-@end
-
-@interface IBNSLayoutConstraintPriorityPopoverViewController : NSViewController
-{
-    NSString *descriptiveText;
-    double priority;
-}
-
-@property(copy) NSString *descriptiveText; // @synthesize descriptiveText;
-@property double priority; // @synthesize priority;
-
-@end
-
-@interface IBNSLayoutConstraintPasteboardRepresentation : IBLayoutConstraintPasteboardRepresentation
-{
-    double scoringType;
-    long long contentType;
-}
-
-@property(readonly) long long contentType; // @synthesize contentType;
-@property(readonly) double scoringType; // @synthesize scoringType;
-- (id)description;
-- (void)encodeWithCoder:(id)arg1;
-- (id)initWithCoder:(id)arg1;
-- (id)initWithLayoutConstraint:(id)arg1 forDocument:(id)arg2;
-
-@end
-
-@interface IBNSAutolayoutArbitrationUnit : IBAutolayoutArbitrationUnit
-{
-}
-
-+ (id)topMostObjectOfClass:(Class)arg1 inLineageToArbitrationUnitRootContainingObject:(id)arg2 inDocument:(id)arg3;
-+ (id)allArbitrationUnitsInDocument:(id)arg1;
-+ (id)arbitrationUnitsAtAndBelowObjects:(id)arg1 inDocument:(id)arg2;
-+ (id)arbitrationUnitForObject:(id)arg1 inDocument:(id)arg2;
-+ (id)arbitrationUnitsAtAndBelowObject:(id)arg1 inDocument:(id)arg2;
-+ (id)arbitrationUnitsAtAndBelowObject:(id)arg1 stoppingAtLeaves:(BOOL)arg2 inDocument:(id)arg3;
-+ (void)recursivelyBuildArbitrationUnitsAndAddToArray:(id)arg1 nextObject:(id)arg2 currentUnit:(id)arg3 inDocument:(id)arg4 stoppingAtLeaves:(BOOL)arg5;
-+ (id)arbitrationUnitRootForObject:(id)arg1 inDocument:(id)arg2;
-+ (BOOL)objectShouldBeArbitrationUnitRoot:(id)arg1 inDocument:(id)arg2;
-- (void)arbitrateWithOptions:(id)arg1;
-- (void)dispatchWillArbitrateMessageToObjectsInUnit;
-- (void)recursiveDispatchWillArbitrateMessageToObject:(id)arg1 parent:(id)arg2;
+- (id)runArbitrationWithOptions:(id)arg1;
+- (id)document;
 
 @end
 
@@ -4226,73 +3568,76 @@ typedef struct {
 
 @end
 
-@interface IBAutolayoutConstraintAdditionValidationState : NSObject
+@interface IBNSSplitViewHoldingPrioritiesInspectorProperty : IDEInspectorProperty <IBNSLayoutConstraintPrioritySliderDelegate, NSTableViewDelegate, NSTableViewDataSource, IBNSSplitViewInspectorHoldingPriorityCellDelegate>
 {
-    BOOL _canAddTrailingToSuperviewSpacingConstraints;
-    BOOL _canAddLeadingToSuperviewSpacingConstraints;
-    BOOL _canAddBottomToSuperviewSpacingConstraints;
-    BOOL _canAddTopToSuperviewSpacingConstraints;
-    BOOL _canAddHorizontalSpacingConstraint;
-    BOOL _canAddVerticalSpacingConstraint;
-    BOOL _canAddExplicitHeightConstraints;
-    BOOL _canAddExplicitWidthConstraints;
-    BOOL _canAddEqualHeightsConstraint;
-    BOOL _canAddEqualWidthsConstraint;
-    NSView *_containingView;
-    NSSet *_selectedViews;
-    NSSet *_selection;
-    IBDocument *_document;
+    NSTableView *_tableView;
+    NSPopover *_popover;
+    double _minimumValue;
+    double _maximumValue;
+    IBCancellationToken *_highlightToken;
+    IBNSLayoutConstraintPriorityPopoverViewController *_popoverViewController;
+    IBNSSplitViewInspectorLayoutView *_layoutContainerView;
 }
 
-@property(readonly) IBDocument *document; // @synthesize document=_document;
-@property(readonly) NSSet *selection; // @synthesize selection=_selection;
-@property(readonly) NSSet *selectedViews; // @synthesize selectedViews=_selectedViews;
-@property(readonly) NSView *containingView; // @synthesize containingView=_containingView;
-@property(readonly) BOOL canAddEqualWidthsConstraint; // @synthesize canAddEqualWidthsConstraint=_canAddEqualWidthsConstraint;
-@property(readonly) BOOL canAddEqualHeightsConstraint; // @synthesize canAddEqualHeightsConstraint=_canAddEqualHeightsConstraint;
-@property(readonly) BOOL canAddExplicitWidthConstraints; // @synthesize canAddExplicitWidthConstraints=_canAddExplicitWidthConstraints;
-@property(readonly) BOOL canAddExplicitHeightConstraints; // @synthesize canAddExplicitHeightConstraints=_canAddExplicitHeightConstraints;
-@property(readonly) BOOL canAddVerticalSpacingConstraint; // @synthesize canAddVerticalSpacingConstraint=_canAddVerticalSpacingConstraint;
-@property(readonly) BOOL canAddHorizontalSpacingConstraint; // @synthesize canAddHorizontalSpacingConstraint=_canAddHorizontalSpacingConstraint;
-@property(readonly) BOOL canAddTopToSuperviewSpacingConstraints; // @synthesize canAddTopToSuperviewSpacingConstraints=_canAddTopToSuperviewSpacingConstraints;
-@property(readonly) BOOL canAddBottomToSuperviewSpacingConstraints; // @synthesize canAddBottomToSuperviewSpacingConstraints=_canAddBottomToSuperviewSpacingConstraints;
-@property(readonly) BOOL canAddLeadingToSuperviewSpacingConstraints; // @synthesize canAddLeadingToSuperviewSpacingConstraints=_canAddLeadingToSuperviewSpacingConstraints;
-@property(readonly) BOOL canAddTrailingToSuperviewSpacingConstraints; // @synthesize canAddTrailingToSuperviewSpacingConstraints=_canAddTrailingToSuperviewSpacingConstraints;
-- (BOOL)canAddConstraintsForActionSelector:(SEL)arg1;
-- (BOOL)isKnownConstraintAdditionActionSelector:(SEL)arg1;
-- (void)updateValidationState;
-- (BOOL)selectedViewsAreAllSiblings;
-- (id)initWithSelection:(id)arg1 document:(id)arg2 containingView:(id)arg3;
+@property(retain, nonatomic) IBNSSplitViewInspectorLayoutView *layoutContainerView; // @synthesize layoutContainerView=_layoutContainerView;
+@property(retain, nonatomic) IBNSLayoutConstraintPriorityPopoverViewController *popoverViewController; // @synthesize popoverViewController=_popoverViewController;
+@property(retain, nonatomic) IBCancellationToken *highlightToken; // @synthesize highlightToken=_highlightToken;
+@property(nonatomic) double maximumValue; // @synthesize maximumValue=_maximumValue;
+@property(nonatomic) double minimumValue; // @synthesize minimumValue=_minimumValue;
+@property(retain, nonatomic) NSPopover *popover; // @synthesize popover=_popover;
+@property(retain, nonatomic) NSTableView *tableView; // @synthesize tableView=_tableView;
+- (id)tableView:(id)arg1 viewForTableColumn:(id)arg2 row:(long long)arg3;
+- (long long)numberOfRowsInTableView:(id)arg1;
+- (void)mouseExitedTableViewCell:(id)arg1;
+- (void)mouseEnteredTableViewCell:(id)arg1;
+- (void)constraintPrioritySlider:(id)arg1 didStopTrackingAtPoint:(struct CGPoint)arg2;
+- (void)constraintPrioritySlider:(id)arg1 didContinueTrackingAtPoint:(struct CGPoint)arg2;
+- (void)constraintPrioritySlider:(id)arg1 didStartTrackingAtPoint:(struct CGPoint)arg2;
+- (void)syncPopoverWithSliderKnobOfSlider:(id)arg1;
+- (id)labelForAdjusterAtRow:(long long)arg1;
+- (void)updateHoldingPriority:(id)arg1;
+- (id)ibInspectorController;
+- (void)unbindAndTearDown;
+- (id)bindAndConfigure;
+- (void)invalidateTableViewAndLayout;
+- (id)inspectedSplitView;
+- (void)setInspectedHoldingPriorities:(id)arg1;
+- (id)inspectedHoldingPriorities;
 
 @end
 
-@interface IBCocoaCanvasViewController : IBCanvasViewController
+@interface IBNSSplitViewInspectorHoldingPriorityCell : NSTableCellView
 {
-    IBImageButton *actionAreaAlignButton;
-    IBImageButton *actionAreaPinButton;
-    IBImageButton *actionAreaLiveAutoresizingBehaviorButton;
-    id <DVTObservingToken> useAutolayoutObservingToken;
-    BOOL showingAutoLayoutActionArea;
+    NSNumber *_trackingRectTag;
+    NSTextField *_numberField;
+    id <IBNSSplitViewInspectorHoldingPriorityCellDelegate> _delegate;
+    NSStepper *_stepper;
+    IBNSLayoutConstraintPrioritySlider *_slider;
 }
 
-+ (id)defaultViewNibBundle;
-+ (id)defaultViewNibName;
-@property(getter=isShowingAutoLayoutActionArea) BOOL showingAutoLayoutActionArea; // @synthesize showingAutoLayoutActionArea;
-- (BOOL)validateUserInterfaceItem:(id)arg1;
-- (void)toggleLiveAutoresizingBehaviorApplyConstraintsToSiblingsAndAncestors:(id)arg1;
-- (void)toggleLiveAutoresizingBehaviorApplyConstraintsToDescendants:(id)arg1;
-- (void)viewWillUninstall;
-- (void)viewDidInstall;
-- (void)setDocumentEditor:(id)arg1;
-- (void)invalidate;
+@property(retain, nonatomic) IBNSLayoutConstraintPrioritySlider *slider; // @synthesize slider=_slider;
+@property(retain, nonatomic) NSStepper *stepper; // @synthesize stepper=_stepper;
+@property(nonatomic) __weak id <IBNSSplitViewInspectorHoldingPriorityCellDelegate> delegate; // @synthesize delegate=_delegate;
+@property(retain, nonatomic) NSTextField *numberField; // @synthesize numberField=_numberField;
+@property(retain) NSNumber *trackingRectTag; // @synthesize trackingRectTag=_trackingRectTag;
+- (void)mouseExited:(id)arg1;
+- (void)mouseEntered:(id)arg1;
+- (void)viewDidMoveToWindow;
 
 @end
 
-@interface IBCocoaDocumentEditor : IBDocumentEditor
+@interface IBNSSplitViewInspectorLayoutView : DVTLayoutView_ML
 {
+    NSView *_headerView;
+    NSTableView *_tableView;
 }
 
-- (Class)canvasViewControllerClass;
+@property(retain, nonatomic) NSTableView *tableView; // @synthesize tableView=_tableView;
+@property(retain, nonatomic) NSView *headerView; // @synthesize headerView=_headerView;
+- (BOOL)isFlipped;
+- (void)layoutBottomUp;
+- (void)layoutTopDown;
+- (void)awakeFromNib;
 
 @end
 
@@ -4715,10 +4060,11 @@ typedef struct {
 - (id)ibInspectedTitle;
 - (void)setIbInspectedImage:(id)arg1;
 - (id)ibInspectedImage;
+- (id)ibLocalAdditionalIbtoolDescriptionKeyPaths;
 - (id)ibEquivalentSourceForToOneOutlet:(id)arg1;
 - (BOOL)ibWouldClipContentWithCellSize:(struct CGSize)arg1;
 - (Class)ibPreferredControlClass;
-- (double)ibBaselineForFrame:(struct CGRect)arg1 atIndex:(long long)arg2;
+- (id)ibBaselineForFrame:(struct CGRect)arg1 atIndex:(long long)arg2;
 - (id)ibDefaultDataValueForTableView:(id)arg1;
 - (id)ibWidgetType;
 - (Class)ibEditorClass;
@@ -4835,7 +4181,8 @@ typedef struct {
 - (double)ibInspectedContentViewMarginsWidth;
 - (void)setIbInspectedContentViewMarginsHeight:(double)arg1;
 - (double)ibInspectedContentViewMarginsHeight;
-- (BOOL)ibVerifyFrameAndBoundsIntegralityForDocument:(id)arg1;
+- (id)ibApplicableInspectorsForCategory:(id)arg1 suggestion:(id)arg2;
+- (BOOL)ibVerifyFrameAndBoundsIntegrality;
 - (BOOL)ibChildView:(id)arg1 shouldUseConstraintsInsteadOfAutoresizingWhenAddedToDocument:(id)arg2;
 - (void)ibAwakeInDocument:(id)arg1;
 - (void)ibWarnings:(id)arg1 forDocument:(id)arg2 withComputationContext:(id)arg3;
@@ -4858,10 +4205,6 @@ typedef struct {
 @end
 
 @interface NSView (IBAppKitViewIntegration)
-+ (id)keyPathsForIbInspectedVerticalContentCompressionResistancePriority;
-+ (id)keyPathsForValuesAffectingIbInspectedHorizontalContentCompressionResistancePriority;
-+ (id)keyPathsForValuesAffectingIbInspectedVerticalContentHuggingPriority;
-+ (id)keyPathsForValuesAffectingIbInspectedHorizontalContentHuggingPriority;
 + (id)keyPathsForValuesAffectingIbInspectedCompositingFilter;
 + (id)keyPathsForValuesAffectingIbInspectedBackgroundFilters;
 + (id)keyPathsForValuesAffectingIbInspectedContentFilters;
@@ -4875,94 +4218,14 @@ typedef struct {
 + (id)keyPathsForValuesAffectingIbInspectedAllViewsForRenderTree;
 + (id)keyPathsForValuesAffectingIbInspectedControl;
 + (id)ibSwizzledNSViewLayoutMetrics;
-- (id)ibSwizzledNSViewObjectsForSubgroupWithIdentifier:(id)arg1;
-- (id)ibSwizzledNSViewImageForSubgroupWithIdentifier:(id)arg1;
-- (id)ibSwizzledNSViewTitleForSubgroupWithIdentifier:(id)arg1;
-- (id)ibSwizzledNSViewSubgroupIdentifiers;
-- (void)setIbInspectedVerticalContentCompressionResistancePriority:(double)arg1;
-- (double)ibInspectedVerticalContentCompressionResistancePriority;
-- (void)setIbShadowedVerticalContentCompressionResistancePriority:(double)arg1;
-- (double)ibShadowedVerticalContentCompressionResistancePriority;
-- (void)setIbInspectedHorizontalContentCompressionResistancePriority:(double)arg1;
-- (double)ibInspectedHorizontalContentCompressionResistancePriority;
-- (void)setIbShadowedHorizontalContentCompressionResistancePriority:(double)arg1;
-- (double)ibShadowedHorizontalContentCompressionResistancePriority;
-- (void)setIbInspectedVerticalContentHuggingPriority:(double)arg1;
-- (double)ibInspectedVerticalContentHuggingPriority;
-- (void)setIbShadowedVerticalContentHuggingPriority:(double)arg1;
-- (double)ibShadowedVerticalContentHuggingPriority;
-- (void)setIbInspectedHorizontalContentHuggingPriority:(double)arg1;
-- (double)ibInspectedHorizontalContentHuggingPriority;
-- (void)setIbShadowedHorizontalContentHuggingPriority:(double)arg1;
-- (double)ibShadowedHorizontalContentHuggingPriority;
-- (void)ibChangeInspectedContentPriorityInBlock:(id)arg1;
-- (void)ibChangePrimitiveContentPriorityInBlock:(id)arg1;
-- (void)ibSwizzledNSViewDebug_setContentHuggingPriority:(float)arg1 forOrientation:(long long)arg2;
-- (void)ibSwizzledNSViewDebug_setContentCompressionResistancePriority:(float)arg1 forOrientation:(long long)arg2;
-- (void)ibSwizzledNSViewDebug_setFrameOrigin:(struct CGPoint)arg1;
-- (void)ibSwizzledNSViewDebug_setFrameSize:(struct CGSize)arg1;
-- (void)ibSwizzledNSViewDebug_removeFromSuperview;
-- (void)ibSwizzledNSViewDebug_addSubview:(id)arg1;
-- (BOOL)ibCanMakeNonAutolayoutSafeCallsTo_setContentHuggingPriority:(float)arg1 forOrientation:(long long)arg2;
-- (BOOL)ibCanMakeNonAutolayoutSafeCallsTo_setContentCompressionResistancePriority:(float)arg1 forOrientation:(long long)arg2;
-- (BOOL)ibCanMakeNonAutolayoutSafeCallsTo_setFrameOrigin:(struct CGPoint)arg1;
-- (BOOL)ibCanMakeNonAutolayoutSafeCallsTo_setFrameSize:(struct CGSize)arg1;
-- (BOOL)ibCanMakeNonAutolayoutSafeCallsTo_removeFromSuperview;
-- (BOOL)ibCanMakeNonAutolayoutSafeCallsTo_addSubview:(id)arg1;
-- (BOOL)ibIsLegalArbitrationUnitRoot;
-- (void)ibPropagatePropertiesToCopyOfReceiver:(id)arg1 forLayoutEngine:(id)arg2;
-- (void)ibMapCopyOfReceiver:(id)arg1 intoLayoutEngine:(id)arg2;
-- (BOOL)ibPrefersToVerticallyResizeWithContainer;
-- (BOOL)ibPrefersToHorizontallyResizeWithContainer;
-- (double)ibPriorityStrongerThanInternalWeakSizeConstraintsForCompressingViewInLayoutEngineForOrientation:(unsigned long long)arg1;
-- (unsigned long long)ibOrientationsWithInternalConstraintsThatWeaklyDefineViewSize;
-- (unsigned long long)ibCustomSubviewLayoutStrategy;
+- (BOOL)ibCanEmbedDirectlyInSplitView;
 - (Class)ibSwizzledNSViewTrackerClass;
 - (Class)ibSwizzledNSViewEditorClass;
-- (BOOL)ibShouldApplyConstraintsWhenAutoresizingByDefault;
-- (struct CGRect)ibSwizzledNSViewRectForChild:(id)arg1 inFrameController:(id)arg2;
 - (id)ibSwizzledNSViewWindow:(SEL)arg1 forUpdatingConstraintsInDocument:(id *)arg2;
-- (void)ibNSViewNonRecursiveDisableAutolayoutInDocument:(id)arg1;
-- (void)ibSwizzledNSViewDisableAutolayoutInDocument:(id)arg1;
-- (void)ibSwizzledNSViewEnableAutolayoutInDocument:(id)arg1 context:(id)arg2;
 - (void)ibSwizzledNSViewBeginArchivingDocument:(id)arg1 withContext:(id)arg2;
-- (BOOL)ibSwizzledNSViewNeedsToCompileWithCopyOfDocument:(id)arg1;
-- (void)ibSwizzledNSViewDidExtractObjects:(id)arg1 fromPasteboard:(id)arg2 intoDocument:(id)arg3 context:(id)arg4;
-- (void)ibSwizzledNSViewDidPutObjects:(id)arg1 onPasteboard:(id)arg2 fromDocument:(id)arg3 context:(id)arg4;
-- (void)ibSwizzledNSViewDidRemoveChildren:(id)arg1 fromDocument:(id)arg2;
-- (void)ibSwizzledNSViewRemoveChildren:(id)arg1;
-- (BOOL)ibSwizzledNSViewCanRemoveChildren:(id)arg1;
-- (void)ibSwizzledNSViewDidSuggestLayout:(struct CGRect)arg1 inView:(id)arg2 context:(id)arg3;
-- (void)ibSwizzledNSViewSetFrameSize:(struct CGSize)arg1 withSuggestedFrameOrigin:(struct CGPoint)arg2 allowResizingTopLevelView:(BOOL)arg3;
-- (BOOL)ibUseFrameDecisionForSuggestingLayout;
-- (BOOL)ibShouldUpdateConstraintsForSuggestLayoutInDocument:(id)arg1;
-- (void)ibSwizzledNSViewDidFinishMovingDescendantViews:(id)arg1 withLayoutGuideMatches:(id)arg2 inDocument:(id)arg3;
-- (void)ibUpdateConstraintsForContainingViewHierarchyInDocument:(id)arg1 options:(id)arg2;
-- (void)ibArbitrationUnitWasCreatedWithReceiverAsRootUnderParent:(id)arg1;
-- (id)ibSwizzledNSViewAcceptContentsOfPasteboard:(id)arg1 inDocument:(id)arg2 insertionContext:(id)arg3;
-- (void)ibSwizzledNSViewWillRemoveFromDocument:(id)arg1 previouslyMemberOfGroup:(id)arg2;
-- (void)ibSwizzledNSViewDidAddToDocument:(id)arg1 phase:(unsigned long long)arg2;
-- (void)ibUpdateTranslatingAutoresizingMaskIntoConstraintsStateInDocument:(id)arg1;
-- (id)ibEffectiveContainingViewForConstraintsInDocument:(id)arg1;
-- (id)ibEffectiveConstrainableViewInDocument:(id)arg1;
-- (BOOL)ibChildView:(id)arg1 shouldUseConstraintsInsteadOfAutoresizingWhenAddedToDocument:(id)arg2;
-- (void)setIbInspectedTranslatesAutoresizingMaskIntoConstraints:(BOOL)arg1;
-- (BOOL)ibInspectedTranslatesAutoresizingMaskIntoConstraints;
-- (void)setIbExternalLastInspectedTranslatesAutoresizingMaskIntoConstraints:(id)arg1;
-- (id)ibExternalLastInspectedTranslatesAutoresizingMaskIntoConstraints;
-- (void)setIbExternalTranslatesAutoresizingMaskIntoConstraints:(BOOL)arg1;
-- (BOOL)ibExternalTranslatesAutoresizingMaskIntoConstraints;
-- (void)ibRemoveConstraints:(id)arg1;
-- (void)ibAddConstraints:(id)arg1 options:(id)arg2;
-- (void)ibPrimitiveRemoveConstraints:(id)arg1 fromDocument:(id)arg2 allowingCascadingDelete:(BOOL)arg3;
-- (void)ibPrimitiveAddConstraints:(id)arg1 inDocument:(id)arg2;
-- (void)ibPrimitiveRemoveConstraintsFromExternalConstraints:(id)arg1;
-- (void)ibPrimitiveAddConstraintsToExternalConstraints:(id)arg1;
-- (void)setIbExternalConstraints:(id)arg1;
-- (id)ibExternalConstraintsInDocument:(id)arg1;
-- (id)ibExternalConstraints;
-- (id)ibExternalReferencingConstraints;
-- (struct CGRect)ibSwizzledNSViewLayoutFrameworkBounds;
+- (id)ibSwizzledNSViewLastInspectedTranslatesAutoresizingMaskIntoConstraintsMetadataKeyInDocument:(id)arg1;
+- (id)ibSwizzledNSViewTranslatesAutoresizingMaskIntoConstraintsMetadataKeyInDocument:(id)arg1;
+- (id)ibSwizzledNSViewConstraintsMetadataKeyInDocument:(id)arg1;
 - (void)setIbInspectedCompositingFilter:(id)arg1;
 - (id)ibInspectedCompositingFilter;
 - (void)setIbInspectedBackgroundFilters:(id)arg1;
@@ -4994,6 +4257,7 @@ typedef struct {
 - (BOOL)ibCanBeBoundToFromObject:(id)arg1;
 - (BOOL)ibSwizzledNSViewAcceptsPasteboardImageResourcesAsViews;
 - (void)ibSwizzledNSViewWarnings:(id)arg1 forDocument:(id)arg2 withComputationContext:(id)arg3;
+- (BOOL)ibSwizzledNSViewShouldGenerateOverlappingViewsWarningsInDocument:(id)arg1;
 - (void)ibSwizzledNSViewIssueOverlappingViewWarning:(id)arg1 forSibling:(id)arg2 withParentView:(id)arg3 inDocument:(id)arg4 withComputationContext:(id)arg5;
 @end
 
@@ -5038,18 +4302,28 @@ typedef struct {
 - (long long)ibPreferredResizeDirection;
 - (BOOL)ibIsClippingContent;
 - (struct CGSize)ibPreferredSize;
+- (struct CGSize)ibPreferredControlSize;
 - (struct CGSize)ibPreferredSizeForSize:(struct CGSize)arg1 suggestedWidth:(char *)arg2 suggestedHeight:(char *)arg3 scaleAxesIndependently:(char *)arg4;
 - (BOOL)ibIsChildInitiallySelectable:(id)arg1;
 - (BOOL)ibIsChildTypicalConnectionTarget:(id)arg1;
 - (struct CGRect)ibRectForChild:(id)arg1 inFrameController:(id)arg2;
+- (void)ibWarnings:(id)arg1 forDocument:(id)arg2 withComputationContext:(id)arg3;
 - (void)ibInvalidateWarningsAfterDescendant:(id)arg1 changedProperty:(id)arg2 inDocument:(id)arg3 fromValue:(id)arg4;
-- (BOOL)ibIsBaselineAtIndex:(long long)arg1 inMotionWithKnob:(long long)arg2;
+- (BOOL)ibIsBaselineAtIndex:(long long)arg1 inMotionWithKnob:(unsigned long long)arg2;
 - (double)ibBaselineAtIndex:(long long)arg1;
 - (double)ibTransformCellBaseline:(double)arg1;
 - (long long)ibBaselineCount;
 - (id)ibWidgetType;
 - (BOOL)ibWantsBoundsIndicatorDuringTracking;
 - (Class)ibEditorClass;
+- (void)ibFinishArchivingDocument:(id)arg1 withContext:(id)arg2;
+- (void)ibBeginArchivingDocument:(id)arg1 withContext:(id)arg2;
+- (void)setIbMirrorLayoutDirectionWhenInternationalizing:(long long)arg1;
+- (long long)ibMirrorLayoutDirectionWhenInternationalizing;
+- (void)setIbShadowedSetsMaxLayoutWidthAtFirstLayout:(BOOL)arg1;
+- (BOOL)ibShadowedSetsMaxLayoutWidthAtFirstLayout;
+- (void)setIbShadowedAllowsExpansionToolTips:(BOOL)arg1;
+- (BOOL)ibShadowedAllowsExpansionToolTips;
 - (void)ibTakePastedAttributes:(id)arg1;
 - (void)ibTakeSnapshotValues:(id)arg1;
 - (id)ibAttributeSnapshot;
@@ -5098,12 +4372,12 @@ typedef struct {
 - (unsigned long long)ibPreferredMatrixMode;
 - (Class)ibPreferredControlClass;
 - (struct CGSize)ibPreferredSizeForSize:(struct CGSize)arg1;
-- (struct CGSize)ibPreferredSizeForSize:(struct CGSize)arg1 suggestedWidth:(char *)arg2 suggestedHeight:(char *)arg3 scaleAxesIndependently:(char *)arg4;
+- (id)ibPreferredSizeForSize:(struct CGSize)arg1 suggestedWidth:(char *)arg2 suggestedHeight:(char *)arg3 scaleAxesIndependently:(char *)arg4;
 - (void)ibWarnings:(id)arg1 forDocument:(id)arg2 withComputationContext:(id)arg3;
 - (BOOL)ibWantsBoundsIndicatorDuringTracking;
-- (BOOL)ibIsBaselineAtIndex:(long long)arg1 inMotionWithKnob:(long long)arg2;
-- (double)ibBaselineForFrame:(struct CGRect)arg1 atIndex:(long long)arg2;
-- (long long)ibBaselineCount;
+- (BOOL)ibIsBaselineAtIndex:(long long)arg1 inMotionWithKnob:(unsigned long long)arg2;
+- (id)ibBaselineForFrame:(struct CGRect)arg1 atIndex:(long long)arg2;
+- (id)ibBaselineCount;
 - (id)ibWidgetType;
 - (void)setIbInspectedAlternateImage:(id)arg1;
 - (id)ibInspectedAlternateImage;
@@ -5120,6 +4394,7 @@ typedef struct {
 @property long long ibShadowedButtonCellType;
 - (id)ibDocumentationKeyPathForKeyPath:(id)arg1;
 - (void)ibAwakeInDocument:(id)arg1;
+- (id)ibLocalConstraintInvalidatingAttributeKeyPaths;
 - (id)ibLocalLocalizableStringsAttributeKeyPaths;
 - (id)ibLocalAdditionalLocalizableAttributeKeyPaths;
 - (id)ibButtonLocalLocalizableStringsAttributeKeyPaths;
@@ -5158,7 +4433,7 @@ typedef struct {
 - (BOOL)ibCanAcceptContentsOfPasteboard:(id)arg1 inDocument:(id)arg2 targetChildRelation:(id *)arg3;
 - (unsigned long long)ibPreferredMatrixMode;
 - (Class)ibPreferredControlClass;
-- (struct CGSize)ibPreferredSizeForSize:(struct CGSize)arg1 suggestedWidth:(char *)arg2 suggestedHeight:(char *)arg3 scaleAxesIndependently:(char *)arg4;
+- (id)ibPreferredSizeForSize:(struct CGSize)arg1 suggestedWidth:(char *)arg2 suggestedHeight:(char *)arg3 scaleAxesIndependently:(char *)arg4;
 - (BOOL)ibWantsBoundsIndicatorDuringTracking;
 - (void)setIbInspectedControlSize:(unsigned long long)arg1;
 - (unsigned long long)ibInspectedControlSize;
@@ -5172,13 +4447,14 @@ typedef struct {
 - (void)ibTakeSnapshotValues:(id)arg1;
 - (id)ibDefaultFontForCurrentConfiguration;
 - (BOOL)ibTitleEditsSelf;
-- (BOOL)ibIsBaselineAtIndex:(long long)arg1 inMotionWithKnob:(long long)arg2;
-- (double)ibBaselineForFrame:(struct CGRect)arg1 atIndex:(long long)arg2;
-- (long long)ibBaselineCount;
+- (BOOL)ibIsBaselineAtIndex:(long long)arg1 inMotionWithKnob:(unsigned long long)arg2;
+- (id)ibBaselineForFrame:(struct CGRect)arg1 atIndex:(long long)arg2;
+- (id)ibBaselineCount;
 - (id)ibWidgetType;
 - (id)ibPasteboardTypes;
 - (BOOL)ibCanBeBoundToFromObject:(id)arg1;
 - (void)ibPopulateChildRelationOrder:(id)arg1;
+- (void)ibReallySetType:(unsigned long long)arg1;
 @end
 
 @interface NSTableView (IBNSTableViewIntegration)
@@ -5258,8 +4534,7 @@ typedef struct {
 - (unsigned long long)ibInspectedVerticalGridStyleMask;
 - (void)setIbInspectedHorizontalGridStyleMask:(unsigned long long)arg1;
 - (unsigned long long)ibInspectedHorizontalGridStyleMask;
-- (void)setIbInspectedNumberOfTableColumns:(long long)arg1;
-- (long long)ibInspectedNumberOfTableColumns;
+@property long long ibInspectedNumberOfTableColumns;
 - (void)setIbInspectedHasHeaderView:(BOOL)arg1;
 - (BOOL)ibInspectedHasHeaderView;
 @end
@@ -5357,11 +4632,15 @@ typedef struct {
 
 @interface NSTextField (IBNSTextFieldIntegration)
 + (id)keyPathsForValuesAffectingIbDefaultLabel;
+- (void)ibBeginArchivingDocument:(id)arg1 withContext:(id)arg2;
+- (void)ibPropagatePropertiesToCopyOfReceiver:(id)arg1 forLayoutEngine:(id)arg2;
 - (void)ibEnableAutolayoutInDocument:(id)arg1 context:(id)arg2;
+- (BOOL)ibIsWrappingStaticTextLabel;
 - (void)ibSetContentCompressionResistancePriorityForTextWrapping;
 - (BOOL)ibPrefersToBeSizedToFitAfterEditingTitle;
 - (id)ibDefaultLabel;
 - (void)setIbInspectedControlSize:(unsigned long long)arg1;
+- (struct CGSize)ibPreferredSize;
 - (struct CGSize)ibMaximumSize;
 - (struct CGSize)ibMinimumSize;
 - (CDStruct_d2b197d1)ibLayoutInset;
@@ -5380,13 +4659,13 @@ typedef struct {
 - (Class)ibPreferredControlClass;
 - (BOOL)ibWantsBoundsIndicatorDuringTracking;
 - (struct CGSize)ibPreferredSizeForSize:(struct CGSize)arg1;
-- (struct CGSize)ibPreferredSizeForSize:(struct CGSize)arg1 suggestedWidth:(char *)arg2 suggestedHeight:(char *)arg3 scaleAxesIndependently:(char *)arg4;
+- (id)ibPreferredSizeForSize:(struct CGSize)arg1 suggestedWidth:(char *)arg2 suggestedHeight:(char *)arg3 scaleAxesIndependently:(char *)arg4;
 - (void)setIbInspectedAllowsOnlyRomanCharacters:(BOOL)arg1;
 - (BOOL)ibInspectedAllowsOnlyRomanCharacters;
 - (id)ibDefaultDataValueForTableView:(id)arg1;
 - (BOOL)ibTitleEditsSelf;
-- (long long)ibBaselineCount;
-- (double)ibBaselineForFrame:(struct CGRect)arg1 atIndex:(long long)arg2;
+- (id)ibBaselineCount;
+- (id)ibBaselineForFrame:(struct CGRect)arg1 atIndex:(long long)arg2;
 - (BOOL)ibIsSpecialCasingForMiniFont;
 - (id)ibWidgetType;
 - (BOOL)ibIsStaticText;
@@ -5475,7 +4754,7 @@ typedef struct {
 + (id)keyPathsForValuesAffectingIbInspectedHasMinDate;
 - (id)ibDocumentationKeyPathForKeyPath:(id)arg1;
 - (Class)ibPreferredControlClass;
-- (struct CGSize)ibPreferredSizeForSize:(struct CGSize)arg1 suggestedWidth:(char *)arg2 suggestedHeight:(char *)arg3 scaleAxesIndependently:(char *)arg4;
+- (id)ibPreferredSizeForSize:(struct CGSize)arg1 suggestedWidth:(char *)arg2 suggestedHeight:(char *)arg3 scaleAxesIndependently:(char *)arg4;
 - (BOOL)ibTitleEditsSelf;
 - (id)ibWidgetType;
 - (BOOL)ibHasClockAndCalendar;
@@ -5563,8 +4842,8 @@ typedef struct {
 - (Class)ibPreferredControlClass;
 - (unsigned long long)ibPreferredMatrixMode;
 - (id)ibDefaultFontForCurrentConfiguration;
-- (double)ibBaselineForFrame:(struct CGRect)arg1 atIndex:(long long)arg2;
-- (long long)ibBaselineCount;
+- (id)ibBaselineForFrame:(struct CGRect)arg1 atIndex:(long long)arg2;
+- (id)ibBaselineCount;
 - (id)ibWidgetType;
 - (Class)ibEditorClass;
 - (id)ibOrderedSnapshotAttributesKeyPaths;
@@ -5594,9 +4873,9 @@ typedef struct {
 - (void)setIbInspectedControlSize:(unsigned long long)arg1;
 - (id)ibWidgetType;
 - (struct CGRect)ibTitleRectForBounds:(struct CGRect)arg1;
-- (double)ibBaselineForFrame:(struct CGRect)arg1 atIndex:(long long)arg2;
-- (long long)ibBaselineCount;
-- (struct CGSize)ibPreferredSizeForSize:(struct CGSize)arg1 suggestedWidth:(char *)arg2 suggestedHeight:(char *)arg3 scaleAxesIndependently:(char *)arg4;
+- (id)ibBaselineForFrame:(struct CGRect)arg1 atIndex:(long long)arg2;
+- (id)ibBaselineCount;
+- (id)ibPreferredSizeForSize:(struct CGSize)arg1 suggestedWidth:(char *)arg2 suggestedHeight:(char *)arg3 scaleAxesIndependently:(char *)arg4;
 - (Class)ibEditorClass;
 - (id)ibDocumentationKeyPathForKeyPath:(id)arg1;
 @end
@@ -5606,12 +4885,13 @@ typedef struct {
 - (BOOL)ibCanAcceptContentsOfPasteboard:(id)arg1 inDocument:(id)arg2 targetChildRelation:(id *)arg3;
 - (Class)ibPreferredControlClass;
 - (id)ibDefaultDataValueForTableView:(id)arg1;
-- (struct CGSize)ibPreferredSizeForSize:(struct CGSize)arg1 suggestedWidth:(char *)arg2 suggestedHeight:(char *)arg3 scaleAxesIndependently:(char *)arg4;
+- (id)ibPreferredSizeForSize:(struct CGSize)arg1 suggestedWidth:(char *)arg2 suggestedHeight:(char *)arg3 scaleAxesIndependently:(char *)arg4;
 - (struct CGSize)ibPreferredSizeForSize:(struct CGSize)arg1;
 @end
 
 @interface NSImageView (IBImageViewIntegration)
 + (id)keyPathsForValuesAffectingIbWidgetType;
+- (struct CGSize)ibPreferredSize;
 - (id)ibWidgetType;
 - (void)ibWarnings:(id)arg1 forDocument:(id)arg2 withComputationContext:(id)arg3;
 @end
@@ -5624,7 +4904,6 @@ typedef struct {
 
 @interface NSLevelIndicatorCell (IBNSLevelIndicatorCellIntegration)
 + (id)keyPathsForValuesAffectingIbWidgetType;
-- (void)setIbInspectedControlSize:(unsigned long long)arg1;
 - (long long)ibPreferredResizeDirection;
 - (Class)ibPreferredControlClass;
 - (unsigned long long)ibPreferredMatrixMode;
@@ -5677,7 +4956,7 @@ typedef struct {
 - (struct CGSize)ibPreferredCellSize;
 - (unsigned long long)ibInspectedControlSize;
 - (void)setIbInspectedControlSize:(unsigned long long)arg1;
-- (BOOL)ibIsBaselineAtIndex:(long long)arg1 inMotionWithKnob:(long long)arg2;
+- (BOOL)ibIsBaselineAtIndex:(long long)arg1 inMotionWithKnob:(unsigned long long)arg2;
 - (double)ibBaselineAtIndex:(long long)arg1;
 - (id)ibCellForBaselineAtIndex:(long long)arg1 cellRelativeIndex:(long long *)arg2;
 - (long long)ibBaselineCount;
@@ -5705,6 +4984,7 @@ typedef struct {
 - (BOOL)ibIsChildTypicalConnectionTarget:(id)arg1;
 - (Class)ibTrackerClass;
 - (Class)ibEditorClass;
+- (void)ibWarnings:(id)arg1 forDocument:(id)arg2 withComputationContext:(id)arg3;
 - (id)ibOrderedSnapshotAttributesKeyPaths;
 - (BOOL)ibCanRemoveChildren:(id)arg1;
 - (BOOL)ibToManyRelationSupportsReplacement:(id)arg1;
@@ -5718,8 +4998,8 @@ typedef struct {
 + (id)keyPathsForValuesAffectingIbInspectedTitle;
 + (id)keyPathsForValuesAffectingIbDefaultLabel;
 - (struct CGSize)ibPreferredSizeForSize:(struct CGSize)arg1;
-- (long long)ibBaselineCount;
-- (double)ibBaselineForFrame:(struct CGRect)arg1 atIndex:(long long)arg2;
+- (id)ibBaselineCount;
+- (id)ibBaselineForFrame:(struct CGRect)arg1 atIndex:(long long)arg2;
 - (Class)ibEditorClass;
 - (void)setIbInspectedTitle:(id)arg1;
 - (id)ibInspectedTitle;
@@ -5751,13 +5031,16 @@ typedef struct {
 - (id)ibAcceptContentsOfPasteboard:(id)arg1 inDocument:(id)arg2 insertionContext:(id)arg3;
 - (BOOL)ibCanAcceptContentsOfPasteboard:(id)arg1 inDocument:(id)arg2 targetChildRelation:(id *)arg3;
 - (void)ibResumeAutoResizingSubviews:(id)arg1;
-- (id)ibStopAutoResizingSubviewsWhileGrowingFromKnob:(long long)arg1 inDocument:(id)arg2;
+- (id)ibStopAutoResizingSubviewsWhileGrowingFromKnob:(unsigned long long)arg1 inDocument:(id)arg2;
 - (void)ibTakeTrackedFrame:(struct CGRect)arg1;
 - (BOOL)ibCanUnembedChildrenInDocument:(id)arg1;
 - (id)ibDefaultLabel;
 - (struct CGSize)ibPreferredSize;
 - (struct CGPoint)ibPreferredOriginForSize:(struct CGSize)arg1;
 - (BOOL)ibUseFrameDecisionForSuggestingLayout;
+- (void)ibEnableAutolayoutInDocument:(id)arg1 context:(id)arg2;
+- (id)ibBeginDesigningInDocument:(id)arg1;
+- (void)ibEnsureViewIsAutolayoutFriendlyForDocument:(id)arg1;
 - (void)ibDidSuggestLayout:(struct CGRect)arg1 inView:(id)arg2 context:(id)arg3;
 - (void)ibWillSuggestLayout:(struct CGRect)arg1 inView:(id)arg2 context:(id)arg3;
 - (struct CGRect)ibContentRectForBoundsRect:(struct CGRect)arg1;
@@ -5789,7 +5072,7 @@ typedef struct {
 - (void)ibSwizzledSetToolbar:(id)arg1;
 @end
 
-@interface NSToolbar (IBNSToolbarIntegration)
+@interface NSToolbar (IBNSToolbarIntegration) <IBDocumentArchiving>
 + (BOOL)_ibSwizzledShouldIgnoreItemIdentifier:(id)arg1;
 + (id)instantiateWithDocumentUnarchiver:(id)arg1;
 - (BOOL)ibIsChildArbitrationUnitRoot:(id)arg1;
@@ -5801,15 +5084,13 @@ typedef struct {
 - (void)ibFinishArchivingDocument:(id)arg1 withContext:(id)arg2;
 - (void)ibBeginArchivingDocument:(id)arg1 withContext:(id)arg2;
 - (void)ibWarnings:(id)arg1 forDocument:(id)arg2 withComputationContext:(id)arg3;
+- (void)ibInvalidateWarningsAfterDescendant:(id)arg1 changedProperty:(id)arg2 inDocument:(id)arg3 fromValue:(id)arg4;
 - (struct CGRect)ibRectForChild:(id)arg1 inFrameController:(id)arg2;
 - (BOOL)frameControllerIsToolbarSheet:(id)arg1;
 - (void)ibResynchronizeToolbarItemsAfterIdentifierChanges;
-- (void)setIbShadowedDefaultToolbarItems:(id)arg1;
-- (void)setIbShadowedAllowedToolbarItems:(id)arg1;
-- (id)ibShadowedDefaultToolbarItems;
-- (id)ibShadowedAllowedToolbarItems;
-- (void)setIbShadowedToolbarIdentifier:(id)arg1;
-- (id)ibShadowedToolbarIdentifier;
+@property(copy) NSArray *ibShadowedDefaultToolbarItems;
+@property(copy) NSArray *ibShadowedAllowedToolbarItems;
+@property(copy) NSString *ibShadowedToolbarIdentifier;
 - (BOOL)ibCanBeBoundToFromObject:(id)arg1;
 - (BOOL)ibMustEditInPersonalWindow;
 - (BOOL)ibAllowsClickPassthroughToParentEditorFrames;
@@ -5909,14 +5190,6 @@ typedef struct {
 @end
 
 @interface NSObject (IBAppKitObjectIntegration)
-- (void)ibPropagatePropertiesToCopyOfReceiver:(id)arg1 forLayoutEngine:(id)arg2;
-- (void)ibMapCopyOfReceiver:(id)arg1 intoLayoutEngine:(id)arg2;
-- (BOOL)ibShouldChildBeIncludedInArbitrationUnitWithParent:(id)arg1;
-- (BOOL)ibIsArbitrationUnitLeaf;
-- (BOOL)ibIsChildArbitrationUnitLeaf:(id)arg1;
-- (BOOL)ibIsChildArbitrationUnitRoot:(id)arg1;
-- (void)ibArbitrationUnitWasCreatedWithReceiverAsRootUnderParent:(id)arg1;
-- (BOOL)ibIsLegalArbitrationUnitRoot;
 @property(copy) NSString *ibExternalAccessibilityDescription;
 - (id)ibAccessibilityDescriptionAttribute;
 @property(copy) NSString *ibExternalAccessibilityHelp;
@@ -5938,6 +5211,7 @@ typedef struct {
 - (BOOL)ibIsCocoaCustomObject;
 - (id)ibSwizzledNSObjectApplicableInspectorsForCategory:(id)arg1 suggestion:(id)arg2;
 - (void)ibSwizzledNSObjectWarnings:(id)arg1 forDocument:(id)arg2 withComputationContext:(id)arg3;
+- (void)ibSwizzledNSObjectInvalidateWarningsAfterDescendant:(id)arg1 changedProperty:(id)arg2 inDocument:(id)arg3 fromValue:(id)arg4;
 - (id)ibSwizzledNSObjectLocalLocalizableStringsAttributeKeyPaths;
 - (id)ibSwizzledNSObjectLocalAttributeKeyPaths;
 @end
@@ -5952,13 +5226,11 @@ typedef struct {
 @end
 
 @interface NSScrollView (IBScrollViewIntegration)
-+ (id)keyPathsForValuesAffectingIbShadowedUsesPredominantAxisScrolling;
-+ (id)keyPathsForValuesAffectingIbShadowedVerticalScrollElasticity;
-+ (id)keyPathsForValuesAffectingIbShadowedHorizontalScrollElasticity;
-+ (id)keyPathsForValuesAffectingIbShadowedFindBarPosition;
-+ (id)keyPathsForValuesAffectingIbShadowedScrollerKnobStyle;
++ (id)keyPathsForValuesAffectingIbInspectedMaxMagnification;
++ (id)keyPathsForValuesAffectingIbInspectedMinMagnification;
 + (id)keyPathsForValuesAffectingIbWidgetType;
 + (id)keyPathsForValuesAffectingIbDefaultLabel;
+- (BOOL)ibCanEmbedDirectlyInSplitView;
 - (void)ibMapCopyOfReceiver:(id)arg1 intoLayoutEngine:(id)arg2;
 - (unsigned long long)ibCustomSubviewLayoutStrategy;
 - (BOOL)ibChildView:(id)arg1 shouldUseConstraintsInsteadOfAutoresizingWhenAddedToDocument:(id)arg2;
@@ -5966,11 +5238,6 @@ typedef struct {
 - (id)ibShadowedSubviews;
 @property(retain) NSView *ibArchivedHeaderView;
 @property(retain) NSView *ibShadowedHeaderView;
-@property BOOL ibShadowedUsesPredominantAxisScrolling;
-@property long long ibShadowedVerticalScrollElasticity;
-@property long long ibShadowedHorizontalScrollElasticity;
-@property long long ibShadowedFindBarPosition;
-@property long long ibShadowedScrollerKnobStyle;
 @property BOOL ibShadowedAutohidesScrollers;
 - (id)ibLabelQualifierForChild:(id)arg1;
 - (id)ibUnembedChildrenInDocument:(id)arg1;
@@ -5995,6 +5262,10 @@ typedef struct {
 - (void)ibBeginArchivingDocument:(id)arg1 withContext:(id)arg2;
 - (void)ibAwakeInDocument:(id)arg1;
 - (Class)ibEditorClass;
+- (void)setIbInspectedMaxMagnification:(double)arg1;
+- (double)ibInspectedMaxMagnification;
+- (void)setIbInspectedMinMagnification:(double)arg1;
+- (double)ibInspectedMinMagnification;
 - (id)ibWidgetType;
 - (id)ibDefaultLabel;
 - (BOOL)ibCanRemoveChildren:(id)arg1;
@@ -6004,12 +5275,17 @@ typedef struct {
 - (void)ibPopulateChildRelationOrder:(id)arg1;
 @end
 
+@interface NSClipView (IBWorkaround12332156)
+- (void)ibSwizzledNSClipViewWorkaround12332156UpdateConstraints;
+@end
+
 @interface NSNibAXAttributeConnector (IBAttributeSupport)
 - (id)ibDesignTimeAttributePlaceholder;
 @end
 
 @interface NSCustomView (IBNSCustomViewIntegration)
 + (id)keyPathsForValuesAffectingIbWidgetType;
+- (BOOL)ibCanEmbedDirectlyInSplitView;
 - (BOOL)ibWantsEditorCanvasFrameContentBorder;
 - (id)ibRuntimeClassName;
 - (id)ibWidgetType;
@@ -6104,10 +5380,8 @@ typedef struct {
 - (struct CGRect)ibCurrentScreenLayoutFrame;
 - (struct CGSize)ibInspectedDefaultContentMaxSize;
 - (struct CGSize)ibInspectedDefaultContentMinSize;
-- (void)setIbInspectedContentRectHeight:(double)arg1;
-- (double)ibInspectedContentRectHeight;
-- (void)setIbInspectedContentRectWidth:(double)arg1;
-- (double)ibInspectedContentRectWidth;
+@property(nonatomic) double ibInspectedContentRectHeight;
+@property(nonatomic) double ibInspectedContentRectWidth;
 - (void)setIbInspectedContentRectMinY:(id)arg1;
 - (id)ibInspectedContentRectMinYnonNilValue;
 - (id)ibInspectedContentRectMinY;
@@ -6180,6 +5454,7 @@ typedef struct {
 - (unsigned long long)ibStyleMaskForEditorWindow;
 - (BOOL)ibIsControlledByWindowController;
 - (BOOL)ibIsConfiguredAsPanel;
+- (id)ibTopLevelViewForLayoutEngine:(id)arg1;
 - (BOOL)ibIsLegalArbitrationUnitRoot;
 - (id)ibWindow:(SEL)arg1 forUpdatingConstraintsInDocument:(id *)arg2;
 - (BOOL)ibChildView:(id)arg1 shouldUseConstraintsInsteadOfAutoresizingWhenAddedToDocument:(id)arg2;
@@ -6243,8 +5518,22 @@ typedef struct {
 
 @interface NSSplitView (IBSplitViewIntegration)
 + (id)keyPathsForValuesAffectingIbInspectedVertical;
++ (id)keyPathsForValuesAffectingIbShadowedHoldingPriorities;
+- (BOOL)ibVerifyFrameAndBoundsIntegrality;
+- (void)ibEnableAutolayoutInDocument:(id)arg1 context:(id)arg2;
+- (void)setIbShadowedSplitViewIntegralizesInUserSpace:(BOOL)arg1;
+- (BOOL)ibShadowedSplitViewIntegralizesInUserSpace;
+- (void)setIbShadowedSplitViewAlwaysLaysOutAccordingToAlignmentRects:(BOOL)arg1;
+- (BOOL)ibShadowedSplitViewAlwaysLaysOutAccordingToAlignmentRects;
+- (BOOL)ibChildViewHasCustomLayoutButAllowsAlignmentConstraints:(id)arg1;
+- (BOOL)ibChildViewHasCustomLayoutButAllowsSpacingConstraints:(id)arg1;
+- (BOOL)ibChildViewHasCustomLayoutButAllowsEqualSizeConstraints:(id)arg1;
+- (BOOL)ibChildViewHasCustomLayoutButAllowsExplicitSizeConstraints:(id)arg1;
+- (BOOL)ibChildViewDerivesInternalConstraintsBasedUponInitialFrameSize:(id)arg1;
+- (BOOL)ibCanEmbedDirectlyInSplitView;
 - (BOOL)ibPrefersToVerticallyResizeWithContainer;
 - (BOOL)ibPrefersToHorizontallyResizeWithContainer;
+- (double)ibPriorityStrongerThanInternalWeakSizeConstraintsForCompressingViewInLayoutEngineForOrientation:(unsigned long long)arg1;
 - (unsigned long long)ibOrientationsWithInternalConstraintsThatWeaklyDefineViewSize;
 - (unsigned long long)ibCustomSubviewLayoutStrategy;
 - (void)setIbArchivedSubviews:(id)arg1;
@@ -6256,6 +5545,7 @@ typedef struct {
 - (BOOL)ibShadowedVertical;
 - (id)ibAcceptContentsOfPasteboard:(id)arg1 inDocument:(id)arg2 insertionContext:(id)arg3;
 - (id)ibDividerHitTestRects;
+- (void)ibDidAddToDocument:(id)arg1 phase:(unsigned long long)arg2;
 - (void)ibCustomizeForInsertionIntoNSView:(id)arg1 withObjects:(id)arg2 andInsertionContext:(id)arg3;
 - (BOOL)ibCanAcceptContentsOfPasteboard:(id)arg1 inDocument:(id)arg2 targetChildRelation:(id *)arg3;
 - (void)ibSwizzledAutosaveSubviewLayoutIfNecessary;
@@ -6271,6 +5561,8 @@ typedef struct {
 - (BOOL)ibIsChildViewSizable:(id)arg1;
 - (BOOL)ibIsChildViewUserMovable:(id)arg1;
 - (BOOL)ibIsChildViewUserSizable:(id)arg1;
+- (void)setIbShadowedHoldingPriorities:(id)arg1;
+- (id)ibShadowedHoldingPriorities;
 - (void)setIbShadowedSubviews:(id)arg1;
 - (Class)ibEditorClass;
 - (void)ibRemoveChildren:(id)arg1;
@@ -6380,7 +5672,6 @@ typedef struct {
 @end
 
 @interface NSTokenField (IBNSTokenFieldIntegration)
-- (BOOL)ibCanMakeNonAutolayoutSafeCallsTo_addSubview:(id)arg1;
 - (void)ibWarnings:(id)arg1 forDocument:(id)arg2 withComputationContext:(id)arg3;
 @end
 
@@ -6483,8 +5774,8 @@ typedef struct {
 - (id)ibShadowedLabels;
 - (long long)ibPreferredResizeDirection;
 - (Class)ibPreferredControlClass;
-- (double)ibBaselineForFrame:(struct CGRect)arg1 atIndex:(long long)arg2;
-- (long long)ibBaselineCount;
+- (id)ibBaselineForFrame:(struct CGRect)arg1 atIndex:(long long)arg2;
+- (id)ibBaselineCount;
 - (id)ibDefaultFontForCurrentConfiguration;
 - (long long)ibNumberOfSizeableSegments;
 - (id)ibSpringLoadedObjectAtPoint:(struct CGPoint)arg1 inFrameController:(id)arg2;
@@ -6533,7 +5824,6 @@ typedef struct {
 - (id)ibControlledObjectClassKey;
 - (id)ibControlledObjectClassName;
 - (BOOL)ibAcceptsBindingsValidation;
-- (id)ibShadowedObjectEntityName;
 @property long long ibArchivedControllerMode;
 - (void)setIbShadowedUsingManagedProxy:(BOOL)arg1;
 - (BOOL)ibShadowedUsingManagedProxy;
@@ -6786,32 +6076,28 @@ typedef struct {
 - (id)ibDesignableContentView;
 @end
 
-@interface NSObject (IBNSLayoutConstraintEngineAdditions)
+@interface NSObject (IBCocoaAutolayoutEngineAdditions)
 - (id)ibTopLevelWindowTemplateForLayoutEngine:(id)arg1;
-- (id)ibTopLevelViewForLayoutEngine:(id)arg1;
 - (id)ibWindowWithCopiedViewHierarchySnapshotForLayoutEngine:(id)arg1 returningAddedRepresentedConstraintsForRepresentedViews:(id *)arg2;
 - (void)ibCopyObjectHierarchyForLayoutEngine:(id)arg1 synchronousDidCopyCallback:(id)arg2;
 @end
 
-@interface NSView (IBNSLayoutConstraintEngineAdditions)
+@interface NSView (IBCocoaAutolayoutEngineAdditions)
 - (id)ibTopLevelWindowTemplateForLayoutEngine:(id)arg1;
-- (id)ibTopLevelViewForLayoutEngine:(id)arg1;
 - (id)ibWindowWithCopiedViewHierarchySnapshotForLayoutEngine:(id)arg1 returningAddedRepresentedConstraintsForRepresentedViews:(id *)arg2;
 @end
 
-@interface NSWindowTemplate (IBNSLayoutConstraintEngineAdditions)
+@interface NSWindowTemplate (IBCocoaAutolayoutEngineAdditions)
 - (id)ibTopLevelWindowTemplateForLayoutEngine:(id)arg1;
-- (id)ibTopLevelViewForLayoutEngine:(id)arg1;
 - (id)ibWindowWithCopiedViewHierarchySnapshotForLayoutEngine:(id)arg1 returningAddedRepresentedConstraintsForRepresentedViews:(id *)arg2;
 @end
 
-@interface NSWindow (IBNSLayoutConstraintEngineAdditions)
+@interface NSWindow (IBCocoaAutolayoutEngineAdditions)
 - (id)ib_layoutEngine;
 @end
 
-@interface NSValue (IBNSViewEditorAdditions)
-+ (id)valueWithLine:(CDStruct_f6143a38)arg1;
-- (CDStruct_f6143a38)lineValue;
+@interface IBNSLayoutConstraint (IBCocoaNSLayoutConstraintIntegration)
+- (BOOL)ibSwizzledCocoaLayoutConstraintNeedsToCompileWithCopyOfDocument:(id)arg1;
 @end
 
 @interface NSPopover (IBNSPopoverIntegration)
@@ -6820,5 +6106,19 @@ typedef struct {
 
 @interface NSTextFinder (IBNSTextFinderIntegration)
 - (void)ibWarnings:(id)arg1 forDocument:(id)arg2 withComputationContext:(id)arg3;
+@end
+
+@interface NSPageController (IBNSPageController)
+- (void)ibWarnings:(id)arg1 forDocument:(id)arg2 withComputationContext:(id)arg3;
+@end
+
+@interface NSByteCountFormatter (IBNSByteCountFormatterWidgetIntegration)
++ (id)keyPathsForValuesAffectingIbInspectedShouldShowActualByteCount;
+- (void)ibWarnings:(id)arg1 forDocument:(id)arg2 withComputationContext:(id)arg3;
+- (BOOL)ibInspectedShouldShowActualByteCount;
+@end
+
+@interface NSRuleEditor (IBNSRuleEditorIntegration)
+- (struct CGSize)ibPreferredSize;
 @end
 

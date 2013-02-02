@@ -30,9 +30,9 @@ struct _NSRange {
 
 /*
  * File: /Applications/Xcode.app/Contents/PlugIns/IDERTFEditor.ideplugin/Contents/MacOS/IDERTFEditor
- * UUID: E0F8FB0B-D528-3005-821A-A183C9F93472
+ * UUID: 6D78D32D-0C78-3C49-8E06-A0224D060C48
  * Arch: Intel x86-64 (x86_64)
- *       Current version: 1168.0.0, Compatibility version: 1.0.0
+ *       Current version: 2052.0.0, Compatibility version: 1.0.0
  *       Minimum Mac OS X version: 10.7.0
  *
  *       Objective-C Garbage Collection: Required
@@ -51,6 +51,7 @@ struct _NSRange {
 @protocol DVTFindBarFindable
 
 @optional
+- (struct _NSRange)selectedRangeForFindBar:(id)arg1;
 - (id)startingLocationForFindBar:(id)arg1 findingBackwards:(BOOL)arg2;
 - (void)dvtFindBar:(id)arg1 didUpdateCurrentResult:(id)arg2;
 - (void)dvtFindBar:(id)arg1 didUpdateResults:(id)arg2;
@@ -67,6 +68,7 @@ struct _NSRange {
 - (BOOL)replaceFindResults:(id)arg1 withString:(id)arg2 withError:(id *)arg3;
 
 @optional
+- (BOOL)replaceFindResults:(id)arg1 inSelection:(struct _NSRange)arg2 withString:(id)arg3 withError:(id *)arg4;
 - (BOOL)replaceTextWithContentsOfURL:(id)arg1 error:(id *)arg2;
 @end
 
@@ -98,6 +100,9 @@ struct _NSRange {
 - (Class)superclass;
 - (unsigned long long)hash;
 - (BOOL)isEqual:(id)arg1;
+
+@optional
+- (id)debugDescription;
 @end
 
 @protocol NSTextDelegate <NSObject>
@@ -125,6 +130,7 @@ struct _NSRange {
 - (void)textView:(id)arg1 doubleClickedOnCell:(id)arg2 inRect:(struct CGRect)arg3;
 - (void)textView:(id)arg1 clickedOnCell:(id)arg2 inRect:(struct CGRect)arg3;
 - (BOOL)textView:(id)arg1 clickedOnLink:(id)arg2;
+- (id)textView:(id)arg1 willShowSharingServicePicker:(id)arg2 forItems:(id)arg3;
 - (id)textView:(id)arg1 URLForContentsOfTextAttachment:(id)arg2 atIndex:(unsigned long long)arg3;
 - (id)textView:(id)arg1 didCheckTextInRange:(struct _NSRange)arg2 types:(unsigned long long)arg3 options:(id)arg4 results:(id)arg5 orthography:(id)arg6 wordCount:(long long)arg7;
 - (id)textView:(id)arg1 willCheckTextInRange:(struct _NSRange)arg2 options:(id)arg3 types:(unsigned long long *)arg4;
@@ -146,6 +152,16 @@ struct _NSRange {
 - (void)textView:(id)arg1 doubleClickedOnCell:(id)arg2 inRect:(struct CGRect)arg3 atIndex:(unsigned long long)arg4;
 - (void)textView:(id)arg1 clickedOnCell:(id)arg2 inRect:(struct CGRect)arg3 atIndex:(unsigned long long)arg4;
 - (BOOL)textView:(id)arg1 clickedOnLink:(id)arg2 atIndex:(unsigned long long)arg3;
+@end
+
+@protocol __ARCLiteIndexedSubscripting__
+- (void)setObject:(id)arg1 atIndexedSubscript:(unsigned long long)arg2;
+- (id)objectAtIndexedSubscript:(unsigned long long)arg1;
+@end
+
+@protocol __ARCLiteKeyedSubscripting__
+- (void)setObject:(id)arg1 forKeyedSubscript:(id)arg2;
+- (id)objectForKeyedSubscript:(id)arg1;
 @end
 
 @interface IDERichTextDocument : IDEEditorDocument <DVTTextFindable, DVTTextReplacable, NSTextStorageDelegate>
@@ -170,10 +186,14 @@ struct _NSRange {
     BOOL convertedDocument;
     BOOL lossyDocument;
     BOOL transient;
-    NSURL *defaultDestination;
+    NSArray *originalOrientationSections;
     unsigned long long documentEncodingForSaving;
+    NSString *fileTypeToSet;
 }
 
++ (id)readableTypeForType:(id)arg1;
++ (BOOL)isRichTextType:(id)arg1;
+@property(copy) NSArray *originalOrientationSections; // @synthesize originalOrientationSections;
 @property(getter=isTransient) BOOL transient; // @synthesize transient;
 @property BOOL hasMultiplePages; // @synthesize hasMultiplePages;
 @property(copy, nonatomic) NSTextStorage *textStorage; // @synthesize textStorage;
@@ -193,7 +213,6 @@ struct _NSRange {
 - (void)textStorageDidProcessEditing:(id)arg1;
 - (void)panelForPDFSaveDidEnd:(id)arg1 returnCode:(long long)arg2 contextInfo:(void *)arg3;
 - (BOOL)revertToContentsOfURL:(id)arg1 ofType:(id)arg2 error:(id *)arg3;
-- (void)revertDocumentToSaved:(id)arg1;
 - (void)encodingPopupChanged:(id)arg1;
 - (void)appendPlainTextExtensionChanged:(id)arg1;
 - (void)toggleHyphenation:(id)arg1;
@@ -216,28 +235,25 @@ struct _NSRange {
 - (id)fileWrapperOfType:(id)arg1 error:(id *)arg2;
 - (BOOL)writeToURL:(id)arg1 ofType:(id)arg2 error:(id *)arg3;
 - (unsigned long long)suggestedDocumentEncoding;
+- (void)applyDefaultTextAttributes:(BOOL)arg1;
 - (id)defaultTextAttributes:(BOOL)arg1;
 - (BOOL)readFromURL:(id)arg1 ofType:(id)arg2 encoding:(unsigned long long)arg3 ignoreRTF:(BOOL)arg4 ignoreHTML:(BOOL)arg5 error:(id *)arg6;
 - (BOOL)readFromURL:(id)arg1 ofType:(id)arg2 error:(id *)arg3;
 - (id)textDocumentTypeToTextEditDocumentTypeMappingTable;
 - (BOOL)canSave;
 - (id)init;
-- (id)displayName;
+- (BOOL)prepareSavePanel:(id)arg1;
 - (BOOL)shouldRunSavePanelWithAccessoryView;
 - (void)saveDocumentWithDelegate:(id)arg1 didSaveSelector:(SEL)arg2 contextInfo:(void *)arg3;
-- (id)fileNameExtensionForType:(id)arg1 saveOperation:(unsigned long long)arg2;
 - (void)attemptRecoveryFromError:(id)arg1 optionIndex:(unsigned long long)arg2 delegate:(id)arg3 didRecoverSelector:(SEL)arg4 contextInfo:(void *)arg5;
 - (void)didPresentErrorWithRecovery:(BOOL)arg1 contextInfo:(void *)arg2;
-- (void)setFileURL:(id)arg1;
+- (void)didPresentErrorWithRecovery:(BOOL)arg1 didRecoverSelector:(SEL)arg2;
 - (id)autosavingFileType;
 - (void)saveToURL:(id)arg1 ofType:(id)arg2 forSaveOperation:(unsigned long long)arg3 completionHandler:(id)arg4;
 - (void)updateChangeCount:(unsigned long long)arg1;
 - (BOOL)keepBackupFile;
 - (id)writableTypesForSaveOperation:(unsigned long long)arg1;
 - (id)initForURL:(id)arg1 withContentsOfURL:(id)arg2 ofType:(id)arg3 error:(id *)arg4;
-
-// Remaining properties
-@property unsigned long long supportedMatchingOptions;
 
 @end
 
@@ -325,7 +341,7 @@ struct _NSRange {
 - (void)takeFocus;
 - (void)loadView;
 - (struct _NSRange)visibleCharacterRange;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (id)initWithNibName:(id)arg1 bundle:(id)arg2 document:(id)arg3;
 - (void)printDocument:(id)arg1;
 - (id)startingLocationForFindBar:(id)arg1 findingBackwards:(BOOL)arg2;

@@ -30,9 +30,9 @@ struct _NSRange {
 
 /*
  * File: /Applications/Xcode.app/Contents/PlugIns/IDELogNavigator.ideplugin/Contents/MacOS/IDELogNavigator
- * UUID: B40183D1-CBF1-3A65-BA32-DD8C18FCCE7D
+ * UUID: 8BE7B61A-D18B-30A8-B95D-6FCB7F326D6A
  * Arch: Intel x86-64 (x86_64)
- *       Current version: 1166.0.0, Compatibility version: 1.0.0
+ *       Current version: 2053.0.0, Compatibility version: 1.0.0
  *       Minimum Mac OS X version: 10.7.0
  *
  *       Objective-C Garbage Collection: Required
@@ -43,6 +43,7 @@ struct _NSRange {
 @protocol DVTFindBarFindable
 
 @optional
+- (struct _NSRange)selectedRangeForFindBar:(id)arg1;
 - (id)startingLocationForFindBar:(id)arg1 findingBackwards:(BOOL)arg2;
 - (void)dvtFindBar:(id)arg1 didUpdateCurrentResult:(id)arg2;
 - (void)dvtFindBar:(id)arg1 didUpdateResults:(id)arg2;
@@ -82,6 +83,9 @@ struct _NSRange {
 - (Class)superclass;
 - (unsigned long long)hash;
 - (BOOL)isEqual:(id)arg1;
+
+@optional
+- (id)debugDescription;
 @end
 
 @protocol XCEDataNodeAdapterP <NSObject>
@@ -134,6 +138,16 @@ struct _NSRange {
 - (void)dataNodeConfigure:(id)arg1;
 @end
 
+@protocol __ARCLiteIndexedSubscripting__
+- (void)setObject:(id)arg1 atIndexedSubscript:(unsigned long long)arg2;
+- (id)objectAtIndexedSubscript:(unsigned long long)arg1;
+@end
+
+@protocol __ARCLiteKeyedSubscripting__
+- (void)setObject:(id)arg1 forKeyedSubscript:(id)arg2;
+- (id)objectForKeyedSubscript:(id)arg1;
+@end
+
 @interface IDELogInProgressTransformer : NSValueTransformer
 {
 }
@@ -150,6 +164,8 @@ struct _NSRange {
     DVTScopeBarView *_scopeBarView;
     NSPredicate *_groupingPredicate;
     NSArray *_selectedObjects;
+    NSDictionary *_sStatusCells;
+    NSArray *_sSpaceCellArray;
     IDENavigatorDataCell *_logHeaderCell;
     IDENavigatorDataCell *_activityLogCell;
     IDENavigatorDataCell *_substructureCell;
@@ -164,7 +180,6 @@ struct _NSRange {
 + (id)imageForTypeIdentifier:(id)arg1;
 + (void)configureStateSavingObjectPersistenceByName:(id)arg1;
 + (id)appHeaderImage;
-+ (id)clockImage;
 + (id)imageNamed:(id)arg1;
 + (void)initialize;
 @property(copy) NSPredicate *groupingPredicate; // @synthesize groupingPredicate=_groupingPredicate;
@@ -177,6 +192,10 @@ struct _NSRange {
 - (BOOL)outlineView:(id)arg1 shouldSelectItem:(id)arg2;
 - (BOOL)outlineView:(id)arg1 isGroupHeaderItem:(id)arg2;
 - (id)cellForItem:(id)arg1;
+- (id)_spaceImageCellArray;
+- (id)_highLevelStatusCells;
+- (id)_newHighLevelStatusItemCellWithImage:(id)arg1;
+- (void)testAction:(id)arg1;
 - (id)substructureCell;
 - (id)activityLogCell;
 - (id)logHeaderCell;
@@ -197,7 +216,7 @@ struct _NSRange {
 - (void)setFilterPredicate:(id)arg1;
 - (void)_synchronizeFilteringWithOutlineView;
 - (BOOL)delegateFirstResponder;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)loadView;
 - (id)dvtExtraBindings;
 - (void)openDoubleClickedNavigableItemsAction:(id)arg1;
@@ -233,6 +252,8 @@ struct _NSRange {
     BOOL _showBySteps;
     BOOL _showAllResults;
     BOOL _lastFindResult;
+    NSView *_buildResultsEnclosingView;
+    NSView *_buildIssuesEnclosingView;
 }
 
 + (long long)version;
@@ -244,7 +265,7 @@ struct _NSRange {
 @property(copy) NSArray *currentSelectedDocumentLocations; // @synthesize currentSelectedDocumentLocations=_currentSelectedDocumentLocations;
 - (void)commitStateToDictionary:(id)arg1;
 - (void)revertStateWithDictionary:(id)arg1;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)menuCmd_showErrorsOnly:(id)arg1;
 - (void)menuCmd_showAllIssues:(id)arg1;
 - (void)menuCmd_showAllMessages:(id)arg1;
@@ -289,7 +310,7 @@ struct _NSRange {
 - (void)_updateScopeBar;
 - (id)activeView;
 - (id)localizedString:(id)arg1 explanation:(id)arg2;
-- (void)configureOutlineView:(id)arg1;
+- (id)configureOutlineView:(id)arg1;
 
 @end
 
@@ -414,6 +435,7 @@ struct _NSRange {
     XCBuildResultsCell *_forwardingCell;
 }
 
+- (void)_drawImage:(id)arg1 atPoint:(struct CGPoint)arg2;
 - (id)accessibilityDescriptionForDataNode:(id)arg1;
 - (id)dataNode:(id)arg1 outlineView:(id)arg2 dataCellForTableColumn:(id)arg3;
 - (BOOL)isKeyAndFirstResponderForOutlineView:(id)arg1;
@@ -539,26 +561,27 @@ struct _NSRange {
 @interface XCETextLayout : NSObject
 {
     NSLayoutManager *_layoutManager;
+    NSTextStorage *_textStorage;
     struct _NSRange _glyphRange;
     double _usedHeight;
     BOOL _layoutDone;
     NSArray *_coloredRects;
 }
 
+@property(readonly, nonatomic) NSTextStorage *textStorage; // @synthesize textStorage=_textStorage;
 @property(retain, nonatomic) NSArray *coloredRects; // @synthesize coloredRects=_coloredRects;
 @property(nonatomic) struct _NSRange glyphRange; // @synthesize glyphRange=_glyphRange;
 @property(readonly, nonatomic) NSLayoutManager *layoutManager; // @synthesize layoutManager=_layoutManager;
 - (void)addColoredRectsForRange:(struct _NSRange)arg1 color:(id)arg2 reference:(id)arg3 toArray:(id)arg4;
 - (void)drawColoredRects:(id)arg1 forTextOrigin:(struct CGPoint)arg2;
 - (double)heightAtCharacterPosition:(unsigned long long)arg1;
-- (void)drawAt:(struct CGPoint)arg1;
+- (void)drawAt:(struct CGPoint)arg1 inView:(id)arg2;
 @property(readonly, nonatomic) double usedHeight;
 @property(nonatomic) double width; // @dynamic width;
 - (void)_doLayout;
 - (void)setAttributedString:(id)arg1;
 - (void)invalidateLayout;
 @property(readonly, nonatomic) NSTextContainer *textContainer;
-@property(readonly, nonatomic) NSTextStorage *textStorage;
 - (void)dealloc;
 - (id)init;
 
@@ -569,14 +592,20 @@ struct _NSRange {
     unsigned long long _commandDetailLength;
     double _commandDetailHeight;
     unsigned long long _totalLengthUsed;
+    BOOL _logWasRecording;
+    long long _storedLevel;
+    unsigned long long _storedCommandDetailLength;
+    unsigned long long _storedTextLength;
+    BOOL _alreadyStoredOnce;
 }
 
+@property(nonatomic) BOOL logWasRecording; // @synthesize logWasRecording=_logWasRecording;
 - (id)coloredRectsForSection:(id)arg1;
 @property(readonly, nonatomic) double commandDetailHeight;
 - (void)_doLayout;
 - (void)resetForLogMessage:(id)arg1 forDataNode:(id)arg2;
 - (id)newMessageAttributesForFont:(id)arg1 color:(id)arg2;
-- (void)resetForLogSection:(id)arg1 forDataNode:(id)arg2;
+- (void)resetForLogSection:(id)arg1 forDataNode:(id)arg2 alwaysNeedsSetting:(BOOL)arg3;
 
 @end
 
@@ -632,6 +661,7 @@ struct _NSRange {
 - (id)titleFontForDataNode:(id)arg1;
 - (id)titleForDataNode:(id)arg1;
 - (id)imageForDataNode:(id)arg1;
+- (id)_fallbackTargetDomainType;
 - (double)_baseHeightOfRowForDataNode:(id)arg1;
 - (BOOL)supportsTextExpansionAtSectionLevelForDataNode:(id)arg1;
 - (BOOL)supportsTextExpansionForDataNode:(id)arg1;
@@ -873,8 +903,8 @@ struct _NSRange {
     XCBuildResultAdapter *_issueCategoryAdapter;
     XCBuildResultAdapter *_issueOccurrenceAdapter;
     XCBuildResultAdapter *_issueOccurrenceSubStepAdapter;
-    NSMapTable *_textLayoutsGenerationA;
-    NSMapTable *_textLayoutsGenerationB;
+    DVTMapTable *_textLayoutsGenerationA;
+    DVTMapTable *_textLayoutsGenerationB;
     NSMutableDictionary *_issueCategoryNodes;
     NSString *_searchFieldValue;
 }
@@ -899,7 +929,8 @@ struct _NSRange {
 + (id)boldAttributesForTranscript;
 + (id)attributesForTranscript;
 + (id)standardMonoSpaceFont;
-+ (id)combinedCommandInvocationStringForLogSection:(id)arg1;
++ (id)attributedTranscriptForLogSection:(id)arg1 commandDetailLengthPtr:(unsigned long long *)arg2;
++ (id)_commandInvocationStringForLogSection:(id)arg1;
 + (id)tooltipForLogMessage:(id)arg1;
 + (id)lessUnderlinedWhiteImage;
 + (id)lessWhiteImage;
@@ -932,12 +963,6 @@ struct _NSRange {
 + (id)analyzerResultIconImage;
 + (id)analyzerWarningIconImage;
 + (id)noticeIconImage;
-+ (id)targetToolIconImage;
-+ (id)targetLibraryIconImage;
-+ (id)targetFrameworkIconImage;
-+ (id)targetBundleIconImage;
-+ (id)targetAppIconImage;
-+ (id)targetIconImage;
 + (id)imageNamed:(id)arg1;
 + (id)sharedTextLayout;
 @property(readonly, nonatomic) IDELogEditor *editor; // @synthesize editor=_editor;
@@ -958,7 +983,6 @@ struct _NSRange {
 - (void)selectMessageOrSection:(id)arg1;
 - (BOOL)startingWithTextView:(id)arg1 findText:(id)arg2 ignoreCase:(BOOL)arg3 matchStyle:(long long)arg4 backwards:(BOOL)arg5 wrap:(BOOL)arg6;
 - (id)transcriptAttributedStringForDataNode:(id)arg1;
-- (id)transcriptStringForDataNode:(id)arg1;
 - (void)updateSearchFieldValue:(id)arg1;
 - (void)copyShownTranscripts:(id)arg1;
 - (void)copyTranscriptToNewTextFile:(id)arg1;
@@ -1120,6 +1144,7 @@ struct _NSRange {
 - (void)showAllResults:(id)arg1;
 - (void)setScopeBarState:(int)arg1 showAllResults:(BOOL)arg2;
 @property(readonly) double preferredViewHeight;
+- (void)loadView;
 
 @end
 

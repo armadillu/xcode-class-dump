@@ -8,9 +8,9 @@
 
 /*
  * File: /Applications/Xcode.app/Contents/PlugIns/DebuggerLLDBService.ideplugin/Contents/MacOS/DebuggerLLDBService
- * UUID: 4685EFE8-BD6C-38EC-A5F0-5D5D5A9C5985
+ * UUID: B777F3A9-F212-38E6-968C-E6B338D6B6BB
  * Arch: Intel x86-64 (x86_64)
- *       Current version: 1185.0.0, Compatibility version: 1.0.0
+ *       Current version: 2083.0.0, Compatibility version: 1.0.0
  *       Minimum Mac OS X version: 10.7.0
  *
  *       Objective-C Garbage Collection: Required
@@ -19,6 +19,16 @@
  *       Run path: @loader_path/../../Library/PrivateFrameworks/
  *               = /Applications/Xcode.app/Contents/PlugIns/DebuggerLLDBService.ideplugin/Library/PrivateFrameworks
  */
+
+@protocol __ARCLiteIndexedSubscripting__
+- (void)setObject:(id)arg1 atIndexedSubscript:(unsigned long long)arg2;
+- (id)objectAtIndexedSubscript:(unsigned long long)arg1;
+@end
+
+@protocol __ARCLiteKeyedSubscripting__
+- (void)setObject:(id)arg1 forKeyedSubscript:(id)arg2;
+- (id)objectForKeyedSubscript:(id)arg1;
+@end
 
 // Not exported
 @interface DBGLLDBDebugLocalService : IDERunDeviceService

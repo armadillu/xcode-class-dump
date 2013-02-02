@@ -6,217 +6,209 @@
 
 #pragma mark Named Structures
 
-struct DYSMBindingPoint {
+struct Argument {
+    void *value;
+    unsigned int core_type;
+    unsigned int sem_type;
+    unsigned int size;
+    unsigned short length;
+    unsigned short flags;
+};
+
+struct BindingPoint {
     int _field1;
     int _field2;
 };
 
-struct DYSMContextStateMirror<GPUSMObjectTypes> {
+struct BufferObject<GPUSMObjectTypes> {
+    int _field1;
+    int _field2;
+    int _field3;
+    int _field4;
+    struct DYStateElement<long long, GPUTools::CStateBaseAnalysis> _field5;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field6;
+    struct DYStateElement<std::__1::basic_string<char>, GPUTools::CStateBaseAnalysis> _field7;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field8;
+    struct DYStateElement<unsigned int, GPUTools::CStateBaseAnalysis> _field9;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field10;
+    struct DYStateElement<long long, GPUTools::CStateBaseAnalysis> _field11;
+    struct DYStateElement<long long, GPUTools::CStateBaseAnalysis> _field12;
+    struct DYStateElement<unsigned long long, GPUTools::CStateBaseAnalysis> _field13;
+    struct DYStateElement<std::__1::basic_string<char>, GPUTools::CStateBaseAnalysis> _field14;
+};
+
+struct ContextStateMirror<GPUSMObjectTypes> {
     struct DYStateElement<int, GPUTools::CStateBaseAnalysis> _field1;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field2;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field3;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field2;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field3;
     struct DYStateElement<float, GPUTools::CStateBaseAnalysis> _field4;
-    struct DYStateElement<GPUTools::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field5;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field6;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field7;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field8;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field9;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field10;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field11;
-    struct DYStateElement<GPUTools::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field12;
+    struct DYStateElement<GPUTools::SM::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field5;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field6;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field7;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field8;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field9;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field10;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field11;
+    struct DYStateElement<GPUTools::SM::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field12;
     struct DYStateElement<float, GPUTools::CStateBaseAnalysis> _field13;
     struct DYStateElement<int, GPUTools::CStateBaseAnalysis> _field14;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field15;
-    struct DYStateElement<GPUTools::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field16;
-    struct DYStateElement<GPUTools::VecN<int, 4>, GPUTools::CStateBaseAnalysis> _field17;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field18;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field15;
+    struct DYStateElement<GPUTools::SM::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field16;
+    struct DYStateElement<GPUTools::SM::VecN<int, 4>, GPUTools::CStateBaseAnalysis> _field17;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field18;
     struct DYStateElement<int, GPUTools::CStateBaseAnalysis> _field19;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field20;
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field21;
-    struct DYStateElement<GPUTools::VecN<float, 2>, GPUTools::CStateBaseAnalysis> _field22;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field23;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field20;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field21;
+    struct DYStateElement<GPUTools::SM::VecN<float, 2>, GPUTools::CStateBaseAnalysis> _field22;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field23;
     struct DYStateElement<float, GPUTools::CStateBaseAnalysis> _field24;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field25;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field26;
-    struct DYStateElement<GPUTools::VecN<float, 3>, GPUTools::CStateBaseAnalysis> _field27;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field25;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field26;
+    struct DYStateElement<GPUTools::SM::VecN<float, 3>, GPUTools::CStateBaseAnalysis> _field27;
     struct DYStateElement<float, GPUTools::CStateBaseAnalysis> _field28;
     struct DYStateElement<float, GPUTools::CStateBaseAnalysis> _field29;
     struct DYStateElement<float, GPUTools::CStateBaseAnalysis> _field30;
     struct DYStateElement<float, GPUTools::CStateBaseAnalysis> _field31;
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field32;
-    struct DYStateElement<GPUTools::VecN<int, 4>, GPUTools::CStateBaseAnalysis> _field33;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field34;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field35;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field32;
+    struct DYStateElement<GPUTools::SM::VecN<int, 4>, GPUTools::CStateBaseAnalysis> _field33;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field34;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field35;
     struct DYStateElement<int, GPUTools::CStateBaseAnalysis> _field36;
     struct DYStateElement<unsigned int, GPUTools::CStateBaseAnalysis> _field37;
     struct DYStateElement<unsigned int, GPUTools::CStateBaseAnalysis> _field38;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field39;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field40;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field41;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field42;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field39;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field40;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field41;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field42;
     struct DYStateElement<int, GPUTools::CStateBaseAnalysis> _field43;
     struct DYStateElement<unsigned int, GPUTools::CStateBaseAnalysis> _field44;
     struct DYStateElement<unsigned int, GPUTools::CStateBaseAnalysis> _field45;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field46;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field47;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field48;
-    struct DYStateElement<GPUTools::VecN<int, 4>, GPUTools::CStateBaseAnalysis> _field49;
-    struct DYStateElement<GPUTools::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field50[32];
-    struct DYStateElement<GPUTools::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field51[16];
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field52;
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field53;
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field54;
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field55;
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field56;
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field57;
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field58;
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field59;
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field60;
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field61;
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field62;
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field63;
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field64;
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field65;
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field66;
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field67;
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field68;
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field69;
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field70;
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field71;
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field72;
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field73;
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field74[6];
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field75[8];
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field76[32];
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field77;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field46;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field47;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field48;
+    struct DYStateElement<GPUTools::SM::VecN<int, 4>, GPUTools::CStateBaseAnalysis> _field49;
+    struct DYStateElement<GPUTools::SM::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field50[32];
+    struct DYStateElement<GPUTools::SM::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field51[16];
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field52;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field53;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field54;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field55;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field56;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field57;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field58;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field59;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field60;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field61;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field62;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field63;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field64;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field65;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field66;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field67;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field68;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field69;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field70;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field71;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field72;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field73;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field74[6];
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field75[8];
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field76[32];
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field77;
     struct DYStateElement<float, GPUTools::CStateBaseAnalysis> _field78;
     struct DYStateElement<float, GPUTools::CStateBaseAnalysis> _field79;
     struct DYStateElement<float, GPUTools::CStateBaseAnalysis> _field80;
-    struct DYStateElement<GPUTools::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field81;
+    struct DYStateElement<GPUTools::SM::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field81;
     struct DYStateElement<int, GPUTools::CStateBaseAnalysis> _field82;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field83;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field84;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field85;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field86;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field83;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field84;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field85;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field86;
     struct DYStateElement<int, GPUTools::CStateBaseAnalysis> _field87;
-    struct DYStateElement<GPUTools::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field88;
+    struct DYStateElement<GPUTools::SM::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field88;
     struct DYStateElement<int, GPUTools::CStateBaseAnalysis> _field89;
     struct DYStateElement<int, GPUTools::CStateBaseAnalysis> _field90;
     struct DYStateElement<float, GPUTools::CStateBaseAnalysis> _field91;
     struct DYStateElement<float, GPUTools::CStateBaseAnalysis> _field92;
     struct DYStateElement<float, GPUTools::CStateBaseAnalysis> _field93;
-    struct DYStateElement<GPUTools::VecN<float, 3>, GPUTools::CStateBaseAnalysis> _field94;
-    struct DYStateElement<GPUTools::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field95[8];
-    struct DYStateElement<GPUTools::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field96[8];
-    struct DYStateElement<GPUTools::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field97[8];
-    struct DYStateElement<GPUTools::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field98[8];
-    struct DYStateElement<GPUTools::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field99[8];
-    struct DYStateElement<GPUTools::VecN<float, 3>, GPUTools::CStateBaseAnalysis> _field100[8];
+    struct DYStateElement<GPUTools::SM::VecN<float, 3>, GPUTools::CStateBaseAnalysis> _field94;
+    struct DYStateElement<GPUTools::SM::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field95[8];
+    struct DYStateElement<GPUTools::SM::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field96[8];
+    struct DYStateElement<GPUTools::SM::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field97[8];
+    struct DYStateElement<GPUTools::SM::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field98[8];
+    struct DYStateElement<GPUTools::SM::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field99[8];
+    struct DYStateElement<GPUTools::SM::VecN<float, 3>, GPUTools::CStateBaseAnalysis> _field100[8];
     struct DYStateElement<float, GPUTools::CStateBaseAnalysis> _field101[8];
     struct DYStateElement<float, GPUTools::CStateBaseAnalysis> _field102[8];
     struct DYStateElement<float, GPUTools::CStateBaseAnalysis> _field103[8];
     struct DYStateElement<float, GPUTools::CStateBaseAnalysis> _field104[8];
     struct DYStateElement<float, GPUTools::CStateBaseAnalysis> _field105[8];
-    struct DYStateElement<GPUTools::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field106[6];
-    struct DYStateElement<GPUTools::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field107;
-    struct DYStateElement<GPUTools::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field108;
-    struct DYStateElement<GPUTools::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field109;
-    struct DYStateElement<GPUTools::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field110;
+    struct DYStateElement<GPUTools::SM::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field106[6];
+    struct DYStateElement<GPUTools::SM::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field107;
+    struct DYStateElement<GPUTools::SM::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field108;
+    struct DYStateElement<GPUTools::SM::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field109;
+    struct DYStateElement<GPUTools::SM::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field110;
     struct DYStateElement<float, GPUTools::CStateBaseAnalysis> _field111;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field112[32];
-    struct DYStateElement<GPUTools::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field113[32];
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field114[32];
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field115[32];
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field116[32];
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field117[32];
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field118[32];
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field119[32];
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field120[32];
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field121[32];
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field122[32];
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field123[32];
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field124[32];
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field125[32];
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field126[32];
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field127[32];
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field112[32];
+    struct DYStateElement<GPUTools::SM::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field113[32];
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field114[32];
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field115[32];
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field116[32];
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field117[32];
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field118[32];
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field119[32];
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field120[32];
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field121[32];
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field122[32];
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field123[32];
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field124[32];
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field125[32];
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field126[32];
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field127[32];
     struct DYStateElement<float, GPUTools::CStateBaseAnalysis> _field128[32];
     struct DYStateElement<float, GPUTools::CStateBaseAnalysis> _field129[32];
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field130[32];
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field130[32];
     struct DYStateElement<float, GPUTools::CStateBaseAnalysis> _field131[32];
     struct DYStateElement<std::__1::vector<DYMtx, std::__1::allocator<DYMtx>>, GPUTools::CStateBaseAnalysis> _field132;
     struct DYStateElement<std::__1::vector<DYMtx, std::__1::allocator<DYMtx>>, GPUTools::CStateBaseAnalysis> _field133;
     struct DYStateElement<std::__1::vector<DYMtx, std::__1::allocator<DYMtx>>, GPUTools::CStateBaseAnalysis> _field134[32];
     struct DYStateElement<DYMtx, GPUTools::CStateBaseAnalysis> _field135[16];
-    struct DYStateElement<GPUTools::DYSMBindingPoint, GPUTools::CStateBaseAnalysis> _field136[32];
-    struct DYStateElement<GPUTools::DYSMBindingPoint, GPUTools::CStateBaseAnalysis> _field137[32];
-    struct DYStateElement<GPUTools::DYSMBindingPoint, GPUTools::CStateBaseAnalysis> _field138;
-    struct DYStateElement<GPUTools::DYSMBindingPoint, GPUTools::CStateBaseAnalysis> _field139;
-    struct DYStateElement<GPUTools::DYSMBindingPoint, GPUTools::CStateBaseAnalysis> _field140;
-    struct DYStateElement<GPUTools::DYSMBindingPoint, GPUTools::CStateBaseAnalysis> _field141;
-    struct DYStateElement<GPUTools::DYSMBindingPoint, GPUTools::CStateBaseAnalysis> _field142;
-    struct DYStateElement<GPUTools::DYSMBindingPoint, GPUTools::CStateBaseAnalysis> _field143;
-    struct DYStateElement<GPUTools::DYSMBindingPoint, GPUTools::CStateBaseAnalysis> _field144;
-    struct DYStateElement<GPUTools::DYSMBindingPoint, GPUTools::CStateBaseAnalysis> _field145;
-    struct DYStateElement<GPUTools::DYSMBindingPoint, GPUTools::CStateBaseAnalysis> _field146;
+    struct DYStateElement<GPUTools::SM::BindingPoint, GPUTools::CStateBaseAnalysis> _field136[32];
+    struct DYStateElement<GPUTools::SM::BindingPoint, GPUTools::CStateBaseAnalysis> _field137[32];
+    struct DYStateElement<GPUTools::SM::BindingPoint, GPUTools::CStateBaseAnalysis> _field138;
+    struct DYStateElement<GPUTools::SM::BindingPoint, GPUTools::CStateBaseAnalysis> _field139;
+    struct DYStateElement<GPUTools::SM::BindingPoint, GPUTools::CStateBaseAnalysis> _field140;
+    struct DYStateElement<GPUTools::SM::BindingPoint, GPUTools::CStateBaseAnalysis> _field141;
+    struct DYStateElement<GPUTools::SM::BindingPoint, GPUTools::CStateBaseAnalysis> _field142;
+    struct DYStateElement<GPUTools::SM::BindingPoint, GPUTools::CStateBaseAnalysis> _field143;
+    struct DYStateElement<GPUTools::SM::BindingPoint, GPUTools::CStateBaseAnalysis> _field144;
+    struct DYStateElement<GPUTools::SM::BindingPoint, GPUTools::CStateBaseAnalysis> _field145;
+    struct DYStateElement<GPUTools::SM::BindingPoint, GPUTools::CStateBaseAnalysis> _field146;
     struct DYStateElement<std::__1::basic_string<char>, GPUTools::CStateBaseAnalysis> _field147;
     struct DYStateElement<std::__1::vector<std::__1::basic_string<char>, std::__1::allocator<std::__1::basic_string<char>>>, GPUTools::CStateBaseAnalysis> _field148;
     struct DYStateElement<long long, GPUTools::CStateBaseAnalysis> _field149;
     struct DYStateElement<long long, GPUTools::CStateBaseAnalysis> _field150;
-    struct DYStateElement<GPUTools::DYSMStateErrorStatus, GPUTools::CStateBaseAnalysis> _field151;
-    struct DYSMObjectTrackingMap<GPUTools::DYSMVertexArrayObject<GPUSMObjectTypes>, int> _field152;
-    struct DYSMObjectTrackingMap<GPUTools::DYSMQueryObject<GPUSMObjectTypes>, int> _field153;
-    unsigned long long _field154;
-    struct DYSMSharegroupStateMirror<GPUSMObjectTypes> *_field155;
-    struct DYSMStateMirrorManager<GPUSMObjectTypes> *_field156;
-    unsigned long long _field157;
+    struct DYStateElement<GPUTools::SM::StateErrorStatus, GPUTools::CStateBaseAnalysis> _field151;
+    struct ObjectTrackingMap<GPUTools::SM::VertexArrayObject<GPUSMObjectTypes>, int> _field152;
+    struct ObjectTrackingMap<GPUTools::SM::QueryObject<GPUSMObjectTypes>, int> _field153;
+    struct ObjectTrackingMap<GPUTools::SM::SyncObject<GPUSMObjectTypes>, int> _field154;
+    unsigned long long _field155;
+    struct SharegroupStateMirror<GPUSMObjectTypes> *_field156;
+    StateMirrorManager_5d4854bf *_field157;
+    unsigned long long _field158;
 };
 
-struct DYSMObjectTrackingMap<GPUTools::DYSMDrawableInfo<GPUSMObjectTypes>, unsigned long long> {
-    struct unordered_map<unsigned long long, int, std::__1::hash<unsigned long long>, std::__1::equal_to<unsigned long long>, std::__1::allocator<std::__1::pair<const unsigned long long, int>>> _field1;
-    struct unordered_map<int, GPUTools::DYSMDrawableInfo<GPUSMObjectTypes>, std::__1::hash<int>, std::__1::equal_to<int>, std::__1::allocator<std::__1::pair<const int, GPUTools::DYSMDrawableInfo<GPUSMObjectTypes>>>> _field2;
-    int _field3;
-    id _field4;
-    void _field5;
-};
-
-struct DYSMObjectTrackingMap<GPUTools::DYSMQueryObject<GPUSMObjectTypes>, int> {
-    struct unordered_map<int, int, std::__1::hash<int>, std::__1::equal_to<int>, std::__1::allocator<std::__1::pair<const int, int>>> _field1;
-    struct unordered_map<int, GPUTools::DYSMQueryObject<GPUSMObjectTypes>, std::__1::hash<int>, std::__1::equal_to<int>, std::__1::allocator<std::__1::pair<const int, GPUTools::DYSMQueryObject<GPUSMObjectTypes>>>> _field2;
-    int _field3;
-    id _field4;
-    void _field5;
-};
-
-struct DYSMObjectTrackingMap<GPUTools::DYSMVertexArrayObject<GPUSMObjectTypes>, int> {
-    struct unordered_map<int, int, std::__1::hash<int>, std::__1::equal_to<int>, std::__1::allocator<std::__1::pair<const int, int>>> _field1;
-    struct unordered_map<int, GPUTools::DYSMVertexArrayObject<GPUSMObjectTypes>, std::__1::hash<int>, std::__1::equal_to<int>, std::__1::allocator<std::__1::pair<const int, GPUTools::DYSMVertexArrayObject<GPUSMObjectTypes>>>> _field2;
-    int _field3;
-    id _field4;
-    void _field5;
-};
-
-struct DYSMSharegroupStateMirror<GPUSMObjectTypes>;
-
-struct DYSMStateBool {
-    int _field1;
-};
-
-struct DYSMStateEnum {
-    int _field1;
-};
-
-struct DYSMStateErrorStatus {
-    int _field1;
-};
-
-struct DYSMStateMirrorManager<GPUSMObjectTypes> {
-    struct unordered_map<unsigned long long, GPUTools::DYSMContextStateMirror<GPUSMObjectTypes>*, std::__1::hash<unsigned long long>, std::__1::equal_to<unsigned long long>, std::__1::allocator<std::__1::pair<const unsigned long long, GPUTools::DYSMContextStateMirror<GPUSMObjectTypes>*>>> _field1;
-    struct unordered_map<unsigned long long, GPUTools::DYSMSharegroupStateMirror<GPUSMObjectTypes>*, std::__1::hash<unsigned long long>, std::__1::equal_to<unsigned long long>, std::__1::allocator<std::__1::pair<const unsigned long long, GPUTools::DYSMSharegroupStateMirror<GPUSMObjectTypes>*>>> _field2;
-    struct DYSMObjectTrackingMap<GPUTools::DYSMDrawableInfo<GPUSMObjectTypes>, unsigned long long> _field3;
-    unsigned long long _field4;
-    int _field5;
-    int _field6;
-    int _field7;
+struct CoreFunction {
+    unsigned int fenum;
+    unsigned short flags;
+    unsigned short argument_count;
+    unsigned long long context_id;
+    struct Argument return_value;
+    struct Argument arguments[16];
+    unsigned int fbuf_size;
+    unsigned int internal_buffer_size;
+    void *fbuf;
+    void *internal_buffer;
 };
 
 struct DYStateElement<DYMtx, GPUTools::CStateBaseAnalysis> {
@@ -225,35 +217,35 @@ struct DYStateElement<DYMtx, GPUTools::CStateBaseAnalysis> {
     } _field1;
 };
 
-struct DYStateElement<GPUTools::DYSMBindingPoint, GPUTools::CStateBaseAnalysis> {
-    struct DYSMBindingPoint _field1;
+struct DYStateElement<GPUTools::SM::BindingPoint, GPUTools::CStateBaseAnalysis> {
+    struct BindingPoint _field1;
 };
 
-struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> {
-    struct DYSMStateBool _field1;
+struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> {
+    struct StateBool _field1;
 };
 
-struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> {
-    struct DYSMStateEnum _field1;
+struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> {
+    struct StateEnum _field1;
 };
 
-struct DYStateElement<GPUTools::DYSMStateErrorStatus, GPUTools::CStateBaseAnalysis> {
-    struct DYSMStateErrorStatus _field1;
+struct DYStateElement<GPUTools::SM::StateErrorStatus, GPUTools::CStateBaseAnalysis> {
+    struct StateErrorStatus _field1;
 };
 
-struct DYStateElement<GPUTools::VecN<float, 2>, GPUTools::CStateBaseAnalysis> {
+struct DYStateElement<GPUTools::SM::VecN<float, 2>, GPUTools::CStateBaseAnalysis> {
     struct VecN<float, 2> _field1;
 };
 
-struct DYStateElement<GPUTools::VecN<float, 3>, GPUTools::CStateBaseAnalysis> {
+struct DYStateElement<GPUTools::SM::VecN<float, 3>, GPUTools::CStateBaseAnalysis> {
     struct VecN<float, 3> _field1;
 };
 
-struct DYStateElement<GPUTools::VecN<float, 4>, GPUTools::CStateBaseAnalysis> {
+struct DYStateElement<GPUTools::SM::VecN<float, 4>, GPUTools::CStateBaseAnalysis> {
     struct VecN<float, 4> _field1;
 };
 
-struct DYStateElement<GPUTools::VecN<int, 4>, GPUTools::CStateBaseAnalysis> {
+struct DYStateElement<GPUTools::SM::VecN<int, 4>, GPUTools::CStateBaseAnalysis> {
     struct VecN<int, 4> _field1;
 };
 
@@ -285,6 +277,55 @@ struct DYStateElement<unsigned int, GPUTools::CStateBaseAnalysis> {
     unsigned int _field1;
 };
 
+struct DYStateElement<unsigned long long, GPUTools::CStateBaseAnalysis> {
+    unsigned long long _field1;
+};
+
+struct DrawableInfo<GPUSMObjectTypes> {
+    int _field1;
+    struct DYStateElement<GPUTools::SM::VecN<int, 4>, GPUTools::CStateBaseAnalysis> _field2;
+    struct DYStateElement<unsigned long long, GPUTools::CStateBaseAnalysis> _field3;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field4;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field5;
+    struct DYStateElement<float, GPUTools::CStateBaseAnalysis> _field6;
+    struct DYStateElement<DYMtx, GPUTools::CStateBaseAnalysis> _field7;
+    struct DYStateElement<GPUTools::SM::VecN<float, 2>, GPUTools::CStateBaseAnalysis> _field8;
+    struct DYStateElement<GPUTools::SM::VecN<float, 2>, GPUTools::CStateBaseAnalysis> _field9;
+};
+
+struct FramebufferAttachment<GPUSMObjectTypes> {
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field1;
+    struct DYStateElement<GPUTools::SM::BindingPoint, GPUTools::CStateBaseAnalysis> _field2;
+    struct DYStateElement<int, GPUTools::CStateBaseAnalysis> _field3;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field4;
+};
+
+struct FramebufferObject<GPUSMObjectTypes> {
+    int _field1;
+    int _field2;
+    int _field3;
+    int _field4;
+    struct DYStateElement<std::__1::basic_string<char>, GPUTools::CStateBaseAnalysis> _field5;
+    struct FramebufferAttachment<GPUSMObjectTypes> _field6[3];
+};
+
+struct Function {
+    struct CoreFunction core;
+    unsigned long long timestamp;
+    unsigned long long duration;
+    unsigned long long *backtrace;
+    unsigned short backtrace_length;
+    unsigned short gl_error;
+    int events_type;
+    void *events;
+    unsigned int events_size;
+    unsigned int queue_width;
+    unsigned long long queue_id;
+    unsigned long long thread_id;
+    struct Function *next_associated;
+    void *sm_context;
+};
+
 struct GPUBindPoint {
     unsigned int _field1;
     unsigned int _field2;
@@ -294,19 +335,146 @@ struct GPUCResourceManagerContainer {
     struct ResourceManager<GPUSMObjectTypes> _field1;
 };
 
-struct GPUCStateMirrorContainer {
-    struct DYSMStateMirrorManager<GPUSMObjectTypes> _field1;
+struct IFunctionDecoder;
+
+struct ObjectTrackingMap<GPUTools::SM::DrawableInfo<GPUSMObjectTypes>, unsigned long long> {
+    struct unordered_map<unsigned long long, int, std::__1::hash<unsigned long long>, std::__1::equal_to<unsigned long long>, std::__1::allocator<std::__1::pair<const unsigned long long, int>>> mInternalIDMap;
+    struct unordered_map<int, std::__1::shared_ptr<GPUTools::SM::DrawableInfo<GPUSMObjectTypes>>, std::__1::hash<int>, std::__1::equal_to<int>, std::__1::allocator<std::__1::pair<const int, std::__1::shared_ptr<GPUTools::SM::DrawableInfo<GPUSMObjectTypes>>>>> mObjectMap;
+    int mNextFreeInternalID;
+};
+
+struct ObjectTrackingMap<GPUTools::SM::QueryObject<GPUSMObjectTypes>, int> {
+    struct unordered_map<int, int, std::__1::hash<int>, std::__1::equal_to<int>, std::__1::allocator<std::__1::pair<const int, int>>> _field1;
+    struct unordered_map<int, std::__1::shared_ptr<GPUTools::SM::QueryObject<GPUSMObjectTypes>>, std::__1::hash<int>, std::__1::equal_to<int>, std::__1::allocator<std::__1::pair<const int, std::__1::shared_ptr<GPUTools::SM::QueryObject<GPUSMObjectTypes>>>>> _field2;
+    int _field3;
+};
+
+struct ObjectTrackingMap<GPUTools::SM::SyncObject<GPUSMObjectTypes>, int> {
+    struct unordered_map<int, int, std::__1::hash<int>, std::__1::equal_to<int>, std::__1::allocator<std::__1::pair<const int, int>>> _field1;
+    struct unordered_map<int, std::__1::shared_ptr<GPUTools::SM::SyncObject<GPUSMObjectTypes>>, std::__1::hash<int>, std::__1::equal_to<int>, std::__1::allocator<std::__1::pair<const int, std::__1::shared_ptr<GPUTools::SM::SyncObject<GPUSMObjectTypes>>>>> _field2;
+    int _field3;
+};
+
+struct ObjectTrackingMap<GPUTools::SM::VertexArrayObject<GPUSMObjectTypes>, int> {
+    struct unordered_map<int, int, std::__1::hash<int>, std::__1::equal_to<int>, std::__1::allocator<std::__1::pair<const int, int>>> _field1;
+    struct unordered_map<int, std::__1::shared_ptr<GPUTools::SM::VertexArrayObject<GPUSMObjectTypes>>, std::__1::hash<int>, std::__1::equal_to<int>, std::__1::allocator<std::__1::pair<const int, std::__1::shared_ptr<GPUTools::SM::VertexArrayObject<GPUSMObjectTypes>>>>> _field2;
+    int _field3;
+};
+
+struct PassthroughBase {
+    struct function<void *(const char *, unsigned long *)> LoadURLData;
+};
+
+struct ProgramObject<GPUSMObjectTypes> {
+    int _field1;
+    int _field2;
+    int _field3;
+    int _field4;
+    struct unordered_map<int, GPUTools::SM::ProgramUniform<GPUSMObjectTypes>, std::__1::hash<int>, std::__1::equal_to<int>, std::__1::allocator<std::__1::pair<const int, GPUTools::SM::ProgramUniform<GPUSMObjectTypes>>>> _field5;
+    struct unordered_map<int, GPUTools::SM::ProgramAttrib<GPUSMObjectTypes>, std::__1::hash<int>, std::__1::equal_to<int>, std::__1::allocator<std::__1::pair<const int, GPUTools::SM::ProgramAttrib<GPUSMObjectTypes>>>> _field6;
+    struct unordered_map<std::__1::basic_string<char>, int, std::__1::hash<std::__1::basic_string<char>>, std::__1::equal_to<std::__1::basic_string<char>>, std::__1::allocator<std::__1::pair<const std::__1::basic_string<char>, int>>> _field7;
+    struct DYStateElement<GPUTools::SM::BindingPoint, GPUTools::CStateBaseAnalysis> _field8;
+    struct DYStateElement<GPUTools::SM::BindingPoint, GPUTools::CStateBaseAnalysis> _field9;
+    struct DYStateElement<int, GPUTools::CStateBaseAnalysis> _field10;
+    struct DYStateElement<int, GPUTools::CStateBaseAnalysis> _field11;
+    struct DYStateElement<std::__1::vector<std::__1::basic_string<char>, std::__1::allocator<std::__1::basic_string<char>>>, GPUTools::CStateBaseAnalysis> _field12;
+    struct DYStateElement<std::__1::vector<std::__1::basic_string<char>, std::__1::allocator<std::__1::basic_string<char>>>, GPUTools::CStateBaseAnalysis> _field13;
+    struct DYStateElement<int, GPUTools::CStateBaseAnalysis> _field14;
+    struct DYStateElement<int, GPUTools::CStateBaseAnalysis> _field15;
+    struct DYStateElement<std::__1::vector<std::__1::basic_string<char>, std::__1::allocator<std::__1::basic_string<char>>>, GPUTools::CStateBaseAnalysis> _field16;
+    struct DYStateElement<std::__1::vector<std::__1::basic_string<char>, std::__1::allocator<std::__1::basic_string<char>>>, GPUTools::CStateBaseAnalysis> _field17;
+    struct DYStateElement<int, GPUTools::CStateBaseAnalysis> _field18;
+    struct DYStateElement<int, GPUTools::CStateBaseAnalysis> _field19;
+    struct DYStateElement<std::__1::basic_string<char>, GPUTools::CStateBaseAnalysis> _field20;
+    struct DYStateElement<std::__1::basic_string<char>, GPUTools::CStateBaseAnalysis> _field21;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field22;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field23;
+    struct DYStateElement<std::__1::basic_string<char>, GPUTools::CStateBaseAnalysis> _field24;
+    struct DYStateElement<std::__1::basic_string<char>, GPUTools::CStateBaseAnalysis> _field25;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field26;
+    struct DYStateElement<int, GPUTools::CStateBaseAnalysis> _field27;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field28;
 };
 
 struct ResourceManager<GPUSMObjectTypes> {
-    struct objc_wrapper<DYCaptureArchive *__strong> _field1;
-    struct objc_wrapper<DYResourceFetcher *__strong> _field2;
+    struct objc_wrapper<__strong id<DYCaptureStore>> _field1;
+    struct objc_wrapper<DYResourceStreamer *__strong> _field2;
     struct objc_wrapper<DYCaptureSessionInfo *__strong> _field3;
     struct objc_wrapper<NSCache *__strong> _field4;
     struct objc_wrapper<NSCache *__strong> _field5;
     struct objc_wrapper<NSCache *__strong> _field6;
-    struct dispatch_queue_s *_field7;
-    int _field8;
+    struct objc_wrapper<NSMutableSet *__strong> _field7;
+    struct dispatch_queue_s *_field8;
+    struct dispatch_queue_s *_field9;
+    int _field10;
+};
+
+struct SharegroupStateMirror<GPUSMObjectTypes>;
+
+struct StateBool {
+    int _field1;
+};
+
+struct StateEnum {
+    int _field1;
+};
+
+struct StateErrorStatus {
+    int _field1;
+};
+
+struct StateMirrorManager<GPUSMObjectTypes> {
+    struct unordered_map<unsigned long long, GPUTools::SM::ContextStateMirror<GPUSMObjectTypes>*, std::__1::hash<unsigned long long>, std::__1::equal_to<unsigned long long>, std::__1::allocator<std::__1::pair<const unsigned long long, GPUTools::SM::ContextStateMirror<GPUSMObjectTypes>*>>> _contextStateMirrorMap;
+    struct unordered_map<unsigned long long, GPUTools::SM::SharegroupStateMirror<GPUSMObjectTypes>*, std::__1::hash<unsigned long long>, std::__1::equal_to<unsigned long long>, std::__1::allocator<std::__1::pair<const unsigned long long, GPUTools::SM::SharegroupStateMirror<GPUSMObjectTypes>*>>> _sharegroupStateMirrorMap;
+    struct ObjectTrackingMap<GPUTools::SM::DrawableInfo<GPUSMObjectTypes>, unsigned long long> _drawableInfoMap;
+    struct PassthroughBase _passthrough;
+    unsigned long long _surfaceBoundsDrawableID;
+    int _deviceOrientation;
+    int _deviceOrientationAroundScreenNormal;
+    int _lastFunctionIndex;
+};
+
+struct TFunctionStream<GPUTools::FD::Function, void>;
+
+struct TextureLevel<GPUSMObjectTypes> {
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field1;
+    struct DYStateElement<int, GPUTools::CStateBaseAnalysis> _field2;
+    struct DYStateElement<int, GPUTools::CStateBaseAnalysis> _field3;
+    struct DYStateElement<int, GPUTools::CStateBaseAnalysis> _field4;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field5;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field6;
+    struct DYStateElement<std::__1::basic_string<char>, GPUTools::CStateBaseAnalysis> _field7;
+    struct DYStateElement<int, GPUTools::CStateBaseAnalysis> _field8;
+};
+
+struct TextureMipChain<GPUSMObjectTypes>;
+
+struct TextureObject<GPUSMObjectTypes> {
+    int _field1;
+    int _field2;
+    int _field3;
+    struct objc_wrapper<__strong id> _field4;
+    int _field5;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field6;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field7;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field8;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field9;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field10;
+    struct DYStateElement<float, GPUTools::CStateBaseAnalysis> _field11;
+    struct DYStateElement<int, GPUTools::CStateBaseAnalysis> _field12;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field13;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field14;
+    struct DYStateElement<int, GPUTools::CStateBaseAnalysis> _field15;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field16;
+    struct DYStateElement<std::__1::basic_string<char>, GPUTools::CStateBaseAnalysis> _field17;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field18;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field19;
+    struct DYStateElement<GPUTools::SM::VecN<int, 4>, GPUTools::CStateBaseAnalysis> _field20;
+    struct DYStateElement<int, GPUTools::CStateBaseAnalysis> _field21;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field22;
+    struct TextureLevel<GPUSMObjectTypes> _field23;
+    struct TextureMipChain<GPUSMObjectTypes> *_field24;
+    struct TextureMipChain<GPUSMObjectTypes> *_field25[6];
 };
 
 struct VecN<float, 2> {
@@ -325,19 +493,38 @@ struct VecN<int, 4> {
     int _field1[4];
 };
 
-struct __hash_node<std::__1::pair<int, GPUTools::DYSMDrawableInfo<GPUSMObjectTypes>>, void *>;
+struct _Iterator<GPUTools::FD::Function> {
+    struct Function _function;
+    void *_encbuf;
+    void *_next;
+    void *_end;
+    struct IFunctionDecoder *_decoder;
+    _Bool _fast_size;
+};
 
-struct __hash_node<std::__1::pair<int, GPUTools::DYSMQueryObject<GPUSMObjectTypes>>, void *>;
+struct __hash_node<std::__1::pair<int, GPUTools::SM::ProgramAttrib<GPUSMObjectTypes>>, void *>;
 
-struct __hash_node<std::__1::pair<int, GPUTools::DYSMVertexArrayObject<GPUSMObjectTypes>>, void *>;
+struct __hash_node<std::__1::pair<int, GPUTools::SM::ProgramUniform<GPUSMObjectTypes>>, void *>;
 
 struct __hash_node<std::__1::pair<int, int>, void *>;
 
-struct __hash_node<std::__1::pair<unsigned long long, GPUTools::DYSMContextStateMirror<GPUSMObjectTypes>*>, void *>;
+struct __hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::DrawableInfo<GPUSMObjectTypes>>>, void *>;
 
-struct __hash_node<std::__1::pair<unsigned long long, GPUTools::DYSMSharegroupStateMirror<GPUSMObjectTypes>*>, void *>;
+struct __hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::QueryObject<GPUSMObjectTypes>>>, void *>;
+
+struct __hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::SyncObject<GPUSMObjectTypes>>>, void *>;
+
+struct __hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::VertexArrayObject<GPUSMObjectTypes>>>, void *>;
+
+struct __hash_node<std::__1::pair<std::__1::basic_string<char>, int>, void *>;
+
+struct __hash_node<std::__1::pair<unsigned long long, GPUTools::SM::ContextStateMirror<GPUSMObjectTypes>*>, void *>;
+
+struct __hash_node<std::__1::pair<unsigned long long, GPUTools::SM::SharegroupStateMirror<GPUSMObjectTypes>*>, void *>;
 
 struct __hash_node<std::__1::pair<unsigned long long, int>, void *>;
+
+struct __shared_weak_count;
 
 struct basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> {
     struct __compressed_pair<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>::__rep, std::__1::allocator<char>> {
@@ -365,41 +552,16 @@ struct basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>
 
 struct dispatch_queue_s;
 
-struct dy_decoded_function {
-    int fenum;
-    unsigned short flags;
-    unsigned short parameter_count;
-    unsigned long long context_id;
-    unsigned long long timestamp;
-    unsigned long long duration;
-    unsigned long long thread_id;
-    char *urls;
-    CDStruct_2638ced4 return_value;
-    CDStruct_2638ced4 parameters[16];
-    unsigned long long *backtrace;
-    unsigned short backtrace_length;
-    unsigned short gl_error;
-    int events_type;
-    void *events;
-    unsigned int events_size;
-    unsigned long long queue_id;
-    unsigned int queue_width;
-    void *pbuf;
-    unsigned int pbuf_size;
-    void *parameter_memory;
-    struct dy_decoded_function *next_associated;
-    void *sm_context;
-};
-
-struct objc_wrapper<DYCaptureArchive *__strong> {
-    id _field1;
+struct function<void *(const char *, unsigned long *)> {
+    struct type __buf_;
+    struct __base<void *(const char *, unsigned long *)> *__f_;
 };
 
 struct objc_wrapper<DYCaptureSessionInfo *__strong> {
     id _field1;
 };
 
-struct objc_wrapper<DYResourceFetcher *__strong> {
+struct objc_wrapper<DYResourceStreamer *__strong> {
     id _field1;
 };
 
@@ -407,33 +569,48 @@ struct objc_wrapper<NSCache *__strong> {
     id _field1;
 };
 
-struct unique_ptr<std::__1::__hash_node<std::__1::pair<int, GPUTools::DYSMDrawableInfo<GPUSMObjectTypes>>, void *>*[], std::__1::__bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<int, GPUTools::DYSMDrawableInfo<GPUSMObjectTypes>>, void *>*>>> {
-    struct __compressed_pair<std::__1::__hash_node<std::__1::pair<int, GPUTools::DYSMDrawableInfo<GPUSMObjectTypes>>, void *>**, std::__1::__bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<int, GPUTools::DYSMDrawableInfo<GPUSMObjectTypes>>, void *>*>>> {
-        struct __hash_node<std::__1::pair<int, GPUTools::DYSMDrawableInfo<GPUSMObjectTypes>>, void *> **_field1;
-        struct __bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<int, GPUTools::DYSMDrawableInfo<GPUSMObjectTypes>>, void *>*>> {
-            struct __compressed_pair<unsigned long, std::__1::allocator<std::__1::__hash_node<std::__1::pair<int, GPUTools::DYSMDrawableInfo<GPUSMObjectTypes>>, void *>*>> {
+struct objc_wrapper<NSMutableSet *__strong> {
+    id _field1;
+};
+
+struct objc_wrapper<__strong id<DYCaptureStore>> {
+    id _field1;
+};
+
+struct objc_wrapper<__strong id> {
+    id _field1;
+};
+
+struct shared_ptr<GPUTools::FD::Function> {
+    struct Function *__ptr_;
+    struct __shared_weak_count *__cntrl_;
+};
+
+struct shared_ptr<GPUTools::FD::TFunctionStream<GPUTools::FD::Function, void>> {
+    struct TFunctionStream<GPUTools::FD::Function, void> *__ptr_;
+    struct __shared_weak_count *__cntrl_;
+};
+
+struct type {
+    unsigned char __lx[24];
+};
+
+struct unique_ptr<std::__1::__hash_node<std::__1::pair<int, GPUTools::SM::ProgramAttrib<GPUSMObjectTypes>>, void *>*[], std::__1::__bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<int, GPUTools::SM::ProgramAttrib<GPUSMObjectTypes>>, void *>*>>> {
+    struct __compressed_pair<std::__1::__hash_node<std::__1::pair<int, GPUTools::SM::ProgramAttrib<GPUSMObjectTypes>>, void *>**, std::__1::__bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<int, GPUTools::SM::ProgramAttrib<GPUSMObjectTypes>>, void *>*>>> {
+        struct __hash_node<std::__1::pair<int, GPUTools::SM::ProgramAttrib<GPUSMObjectTypes>>, void *> **_field1;
+        struct __bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<int, GPUTools::SM::ProgramAttrib<GPUSMObjectTypes>>, void *>*>> {
+            struct __compressed_pair<unsigned long, std::__1::allocator<std::__1::__hash_node<std::__1::pair<int, GPUTools::SM::ProgramAttrib<GPUSMObjectTypes>>, void *>*>> {
                 unsigned long long _field1;
             } _field1;
         } _field2;
     } _field1;
 };
 
-struct unique_ptr<std::__1::__hash_node<std::__1::pair<int, GPUTools::DYSMQueryObject<GPUSMObjectTypes>>, void *>*[], std::__1::__bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<int, GPUTools::DYSMQueryObject<GPUSMObjectTypes>>, void *>*>>> {
-    struct __compressed_pair<std::__1::__hash_node<std::__1::pair<int, GPUTools::DYSMQueryObject<GPUSMObjectTypes>>, void *>**, std::__1::__bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<int, GPUTools::DYSMQueryObject<GPUSMObjectTypes>>, void *>*>>> {
-        struct __hash_node<std::__1::pair<int, GPUTools::DYSMQueryObject<GPUSMObjectTypes>>, void *> **_field1;
-        struct __bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<int, GPUTools::DYSMQueryObject<GPUSMObjectTypes>>, void *>*>> {
-            struct __compressed_pair<unsigned long, std::__1::allocator<std::__1::__hash_node<std::__1::pair<int, GPUTools::DYSMQueryObject<GPUSMObjectTypes>>, void *>*>> {
-                unsigned long long _field1;
-            } _field1;
-        } _field2;
-    } _field1;
-};
-
-struct unique_ptr<std::__1::__hash_node<std::__1::pair<int, GPUTools::DYSMVertexArrayObject<GPUSMObjectTypes>>, void *>*[], std::__1::__bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<int, GPUTools::DYSMVertexArrayObject<GPUSMObjectTypes>>, void *>*>>> {
-    struct __compressed_pair<std::__1::__hash_node<std::__1::pair<int, GPUTools::DYSMVertexArrayObject<GPUSMObjectTypes>>, void *>**, std::__1::__bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<int, GPUTools::DYSMVertexArrayObject<GPUSMObjectTypes>>, void *>*>>> {
-        struct __hash_node<std::__1::pair<int, GPUTools::DYSMVertexArrayObject<GPUSMObjectTypes>>, void *> **_field1;
-        struct __bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<int, GPUTools::DYSMVertexArrayObject<GPUSMObjectTypes>>, void *>*>> {
-            struct __compressed_pair<unsigned long, std::__1::allocator<std::__1::__hash_node<std::__1::pair<int, GPUTools::DYSMVertexArrayObject<GPUSMObjectTypes>>, void *>*>> {
+struct unique_ptr<std::__1::__hash_node<std::__1::pair<int, GPUTools::SM::ProgramUniform<GPUSMObjectTypes>>, void *>*[], std::__1::__bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<int, GPUTools::SM::ProgramUniform<GPUSMObjectTypes>>, void *>*>>> {
+    struct __compressed_pair<std::__1::__hash_node<std::__1::pair<int, GPUTools::SM::ProgramUniform<GPUSMObjectTypes>>, void *>**, std::__1::__bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<int, GPUTools::SM::ProgramUniform<GPUSMObjectTypes>>, void *>*>>> {
+        struct __hash_node<std::__1::pair<int, GPUTools::SM::ProgramUniform<GPUSMObjectTypes>>, void *> **_field1;
+        struct __bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<int, GPUTools::SM::ProgramUniform<GPUSMObjectTypes>>, void *>*>> {
+            struct __compressed_pair<unsigned long, std::__1::allocator<std::__1::__hash_node<std::__1::pair<int, GPUTools::SM::ProgramUniform<GPUSMObjectTypes>>, void *>*>> {
                 unsigned long long _field1;
             } _field1;
         } _field2;
@@ -451,85 +628,123 @@ struct unique_ptr<std::__1::__hash_node<std::__1::pair<int, int>, void *>*[], st
     } _field1;
 };
 
-struct unique_ptr<std::__1::__hash_node<std::__1::pair<unsigned long long, GPUTools::DYSMContextStateMirror<GPUSMObjectTypes>*>, void *>*[], std::__1::__bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<unsigned long long, GPUTools::DYSMContextStateMirror<GPUSMObjectTypes>*>, void *>*>>> {
-    struct __compressed_pair<std::__1::__hash_node<std::__1::pair<unsigned long long, GPUTools::DYSMContextStateMirror<GPUSMObjectTypes>*>, void *>**, std::__1::__bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<unsigned long long, GPUTools::DYSMContextStateMirror<GPUSMObjectTypes>*>, void *>*>>> {
-        struct __hash_node<std::__1::pair<unsigned long long, GPUTools::DYSMContextStateMirror<GPUSMObjectTypes>*>, void *> **_field1;
-        struct __bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<unsigned long long, GPUTools::DYSMContextStateMirror<GPUSMObjectTypes>*>, void *>*>> {
-            struct __compressed_pair<unsigned long, std::__1::allocator<std::__1::__hash_node<std::__1::pair<unsigned long long, GPUTools::DYSMContextStateMirror<GPUSMObjectTypes>*>, void *>*>> {
+struct unique_ptr<std::__1::__hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::DrawableInfo<GPUSMObjectTypes>>>, void *>*[], std::__1::__bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::DrawableInfo<GPUSMObjectTypes>>>, void *>*>>> {
+    struct __compressed_pair<std::__1::__hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::DrawableInfo<GPUSMObjectTypes>>>, void *>**, std::__1::__bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::DrawableInfo<GPUSMObjectTypes>>>, void *>*>>> {
+        struct __hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::DrawableInfo<GPUSMObjectTypes>>>, void *> **__first_;
+        struct __bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::DrawableInfo<GPUSMObjectTypes>>>, void *>*>> {
+            struct __compressed_pair<unsigned long, std::__1::allocator<std::__1::__hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::DrawableInfo<GPUSMObjectTypes>>>, void *>*>> {
+                unsigned long long __first_;
+            } __data_;
+        } __second_;
+    } __ptr_;
+};
+
+struct unique_ptr<std::__1::__hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::QueryObject<GPUSMObjectTypes>>>, void *>*[], std::__1::__bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::QueryObject<GPUSMObjectTypes>>>, void *>*>>> {
+    struct __compressed_pair<std::__1::__hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::QueryObject<GPUSMObjectTypes>>>, void *>**, std::__1::__bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::QueryObject<GPUSMObjectTypes>>>, void *>*>>> {
+        struct __hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::QueryObject<GPUSMObjectTypes>>>, void *> **_field1;
+        struct __bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::QueryObject<GPUSMObjectTypes>>>, void *>*>> {
+            struct __compressed_pair<unsigned long, std::__1::allocator<std::__1::__hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::QueryObject<GPUSMObjectTypes>>>, void *>*>> {
                 unsigned long long _field1;
             } _field1;
         } _field2;
     } _field1;
 };
 
-struct unique_ptr<std::__1::__hash_node<std::__1::pair<unsigned long long, GPUTools::DYSMSharegroupStateMirror<GPUSMObjectTypes>*>, void *>*[], std::__1::__bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<unsigned long long, GPUTools::DYSMSharegroupStateMirror<GPUSMObjectTypes>*>, void *>*>>> {
-    struct __compressed_pair<std::__1::__hash_node<std::__1::pair<unsigned long long, GPUTools::DYSMSharegroupStateMirror<GPUSMObjectTypes>*>, void *>**, std::__1::__bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<unsigned long long, GPUTools::DYSMSharegroupStateMirror<GPUSMObjectTypes>*>, void *>*>>> {
-        struct __hash_node<std::__1::pair<unsigned long long, GPUTools::DYSMSharegroupStateMirror<GPUSMObjectTypes>*>, void *> **_field1;
-        struct __bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<unsigned long long, GPUTools::DYSMSharegroupStateMirror<GPUSMObjectTypes>*>, void *>*>> {
-            struct __compressed_pair<unsigned long, std::__1::allocator<std::__1::__hash_node<std::__1::pair<unsigned long long, GPUTools::DYSMSharegroupStateMirror<GPUSMObjectTypes>*>, void *>*>> {
+struct unique_ptr<std::__1::__hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::SyncObject<GPUSMObjectTypes>>>, void *>*[], std::__1::__bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::SyncObject<GPUSMObjectTypes>>>, void *>*>>> {
+    struct __compressed_pair<std::__1::__hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::SyncObject<GPUSMObjectTypes>>>, void *>**, std::__1::__bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::SyncObject<GPUSMObjectTypes>>>, void *>*>>> {
+        struct __hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::SyncObject<GPUSMObjectTypes>>>, void *> **_field1;
+        struct __bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::SyncObject<GPUSMObjectTypes>>>, void *>*>> {
+            struct __compressed_pair<unsigned long, std::__1::allocator<std::__1::__hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::SyncObject<GPUSMObjectTypes>>>, void *>*>> {
                 unsigned long long _field1;
             } _field1;
         } _field2;
     } _field1;
+};
+
+struct unique_ptr<std::__1::__hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::VertexArrayObject<GPUSMObjectTypes>>>, void *>*[], std::__1::__bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::VertexArrayObject<GPUSMObjectTypes>>>, void *>*>>> {
+    struct __compressed_pair<std::__1::__hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::VertexArrayObject<GPUSMObjectTypes>>>, void *>**, std::__1::__bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::VertexArrayObject<GPUSMObjectTypes>>>, void *>*>>> {
+        struct __hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::VertexArrayObject<GPUSMObjectTypes>>>, void *> **_field1;
+        struct __bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::VertexArrayObject<GPUSMObjectTypes>>>, void *>*>> {
+            struct __compressed_pair<unsigned long, std::__1::allocator<std::__1::__hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::VertexArrayObject<GPUSMObjectTypes>>>, void *>*>> {
+                unsigned long long _field1;
+            } _field1;
+        } _field2;
+    } _field1;
+};
+
+struct unique_ptr<std::__1::__hash_node<std::__1::pair<std::__1::basic_string<char>, int>, void *>*[], std::__1::__bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<std::__1::basic_string<char>, int>, void *>*>>> {
+    struct __compressed_pair<std::__1::__hash_node<std::__1::pair<std::__1::basic_string<char>, int>, void *>**, std::__1::__bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<std::__1::basic_string<char>, int>, void *>*>>> {
+        struct __hash_node<std::__1::pair<std::__1::basic_string<char>, int>, void *> **_field1;
+        struct __bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<std::__1::basic_string<char>, int>, void *>*>> {
+            struct __compressed_pair<unsigned long, std::__1::allocator<std::__1::__hash_node<std::__1::pair<std::__1::basic_string<char>, int>, void *>*>> {
+                unsigned long long _field1;
+            } _field1;
+        } _field2;
+    } _field1;
+};
+
+struct unique_ptr<std::__1::__hash_node<std::__1::pair<unsigned long long, GPUTools::SM::ContextStateMirror<GPUSMObjectTypes>*>, void *>*[], std::__1::__bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<unsigned long long, GPUTools::SM::ContextStateMirror<GPUSMObjectTypes>*>, void *>*>>> {
+    struct __compressed_pair<std::__1::__hash_node<std::__1::pair<unsigned long long, GPUTools::SM::ContextStateMirror<GPUSMObjectTypes>*>, void *>**, std::__1::__bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<unsigned long long, GPUTools::SM::ContextStateMirror<GPUSMObjectTypes>*>, void *>*>>> {
+        struct __hash_node<std::__1::pair<unsigned long long, GPUTools::SM::ContextStateMirror<GPUSMObjectTypes>*>, void *> **__first_;
+        struct __bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<unsigned long long, GPUTools::SM::ContextStateMirror<GPUSMObjectTypes>*>, void *>*>> {
+            struct __compressed_pair<unsigned long, std::__1::allocator<std::__1::__hash_node<std::__1::pair<unsigned long long, GPUTools::SM::ContextStateMirror<GPUSMObjectTypes>*>, void *>*>> {
+                unsigned long long __first_;
+            } __data_;
+        } __second_;
+    } __ptr_;
+};
+
+struct unique_ptr<std::__1::__hash_node<std::__1::pair<unsigned long long, GPUTools::SM::SharegroupStateMirror<GPUSMObjectTypes>*>, void *>*[], std::__1::__bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<unsigned long long, GPUTools::SM::SharegroupStateMirror<GPUSMObjectTypes>*>, void *>*>>> {
+    struct __compressed_pair<std::__1::__hash_node<std::__1::pair<unsigned long long, GPUTools::SM::SharegroupStateMirror<GPUSMObjectTypes>*>, void *>**, std::__1::__bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<unsigned long long, GPUTools::SM::SharegroupStateMirror<GPUSMObjectTypes>*>, void *>*>>> {
+        struct __hash_node<std::__1::pair<unsigned long long, GPUTools::SM::SharegroupStateMirror<GPUSMObjectTypes>*>, void *> **__first_;
+        struct __bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<unsigned long long, GPUTools::SM::SharegroupStateMirror<GPUSMObjectTypes>*>, void *>*>> {
+            struct __compressed_pair<unsigned long, std::__1::allocator<std::__1::__hash_node<std::__1::pair<unsigned long long, GPUTools::SM::SharegroupStateMirror<GPUSMObjectTypes>*>, void *>*>> {
+                unsigned long long __first_;
+            } __data_;
+        } __second_;
+    } __ptr_;
 };
 
 struct unique_ptr<std::__1::__hash_node<std::__1::pair<unsigned long long, int>, void *>*[], std::__1::__bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<unsigned long long, int>, void *>*>>> {
     struct __compressed_pair<std::__1::__hash_node<std::__1::pair<unsigned long long, int>, void *>**, std::__1::__bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<unsigned long long, int>, void *>*>>> {
-        struct __hash_node<std::__1::pair<unsigned long long, int>, void *> **_field1;
+        struct __hash_node<std::__1::pair<unsigned long long, int>, void *> **__first_;
         struct __bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<unsigned long long, int>, void *>*>> {
             struct __compressed_pair<unsigned long, std::__1::allocator<std::__1::__hash_node<std::__1::pair<unsigned long long, int>, void *>*>> {
-                unsigned long long _field1;
-            } _field1;
-        } _field2;
-    } _field1;
+                unsigned long long __first_;
+            } __data_;
+        } __second_;
+    } __ptr_;
 };
 
-struct unordered_map<int, GPUTools::DYSMDrawableInfo<GPUSMObjectTypes>, std::__1::hash<int>, std::__1::equal_to<int>, std::__1::allocator<std::__1::pair<const int, GPUTools::DYSMDrawableInfo<GPUSMObjectTypes>>>> {
-    struct __hash_table<std::__1::pair<int, GPUTools::DYSMDrawableInfo<GPUSMObjectTypes>>, std::__1::__unordered_map_hasher<int, GPUTools::DYSMDrawableInfo<GPUSMObjectTypes>, std::__1::hash<int>, true>, std::__1::__unordered_map_equal<int, GPUTools::DYSMDrawableInfo<GPUSMObjectTypes>, std::__1::equal_to<int>, true>, std::__1::allocator<std::__1::pair<int, GPUTools::DYSMDrawableInfo<GPUSMObjectTypes>>>> {
-        struct unique_ptr<std::__1::__hash_node<std::__1::pair<int, GPUTools::DYSMDrawableInfo<GPUSMObjectTypes>>, void *>*[], std::__1::__bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<int, GPUTools::DYSMDrawableInfo<GPUSMObjectTypes>>, void *>*>>> _field1;
-        struct __compressed_pair<std::__1::__hash_node_base<std::__1::__hash_node<std::__1::pair<int, GPUTools::DYSMDrawableInfo<GPUSMObjectTypes>>, void *>*>, std::__1::allocator<std::__1::__hash_node<std::__1::pair<int, GPUTools::DYSMDrawableInfo<GPUSMObjectTypes>>, void *>>> {
-            struct __hash_node_base<std::__1::__hash_node<std::__1::pair<int, GPUTools::DYSMDrawableInfo<GPUSMObjectTypes>>, void *>*> {
-                struct __hash_node<std::__1::pair<int, GPUTools::DYSMDrawableInfo<GPUSMObjectTypes>>, void *> *_field1;
+struct unordered_map<int, GPUTools::SM::ProgramAttrib<GPUSMObjectTypes>, std::__1::hash<int>, std::__1::equal_to<int>, std::__1::allocator<std::__1::pair<const int, GPUTools::SM::ProgramAttrib<GPUSMObjectTypes>>>> {
+    struct __hash_table<std::__1::pair<int, GPUTools::SM::ProgramAttrib<GPUSMObjectTypes>>, std::__1::__unordered_map_hasher<int, GPUTools::SM::ProgramAttrib<GPUSMObjectTypes>, std::__1::hash<int>, true>, std::__1::__unordered_map_equal<int, GPUTools::SM::ProgramAttrib<GPUSMObjectTypes>, std::__1::equal_to<int>, true>, std::__1::allocator<std::__1::pair<int, GPUTools::SM::ProgramAttrib<GPUSMObjectTypes>>>> {
+        struct unique_ptr<std::__1::__hash_node<std::__1::pair<int, GPUTools::SM::ProgramAttrib<GPUSMObjectTypes>>, void *>*[], std::__1::__bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<int, GPUTools::SM::ProgramAttrib<GPUSMObjectTypes>>, void *>*>>> _field1;
+        struct __compressed_pair<std::__1::__hash_node_base<std::__1::__hash_node<std::__1::pair<int, GPUTools::SM::ProgramAttrib<GPUSMObjectTypes>>, void *>*>, std::__1::allocator<std::__1::__hash_node<std::__1::pair<int, GPUTools::SM::ProgramAttrib<GPUSMObjectTypes>>, void *>>> {
+            struct __hash_node_base<std::__1::__hash_node<std::__1::pair<int, GPUTools::SM::ProgramAttrib<GPUSMObjectTypes>>, void *>*> {
+                struct __hash_node<std::__1::pair<int, GPUTools::SM::ProgramAttrib<GPUSMObjectTypes>>, void *> *_field1;
             } _field1;
         } _field2;
-        struct __compressed_pair<unsigned long, std::__1::__unordered_map_hasher<int, GPUTools::DYSMDrawableInfo<GPUSMObjectTypes>, std::__1::hash<int>, true>> {
+        struct __compressed_pair<unsigned long, std::__1::__unordered_map_hasher<int, GPUTools::SM::ProgramAttrib<GPUSMObjectTypes>, std::__1::hash<int>, true>> {
             unsigned long long _field1;
         } _field3;
-        struct __compressed_pair<float, std::__1::__unordered_map_equal<int, GPUTools::DYSMDrawableInfo<GPUSMObjectTypes>, std::__1::equal_to<int>, true>> {
+        struct __compressed_pair<float, std::__1::__unordered_map_equal<int, GPUTools::SM::ProgramAttrib<GPUSMObjectTypes>, std::__1::equal_to<int>, true>> {
             float _field1;
         } _field4;
     } _field1;
 };
 
-struct unordered_map<int, GPUTools::DYSMQueryObject<GPUSMObjectTypes>, std::__1::hash<int>, std::__1::equal_to<int>, std::__1::allocator<std::__1::pair<const int, GPUTools::DYSMQueryObject<GPUSMObjectTypes>>>> {
-    struct __hash_table<std::__1::pair<int, GPUTools::DYSMQueryObject<GPUSMObjectTypes>>, std::__1::__unordered_map_hasher<int, GPUTools::DYSMQueryObject<GPUSMObjectTypes>, std::__1::hash<int>, true>, std::__1::__unordered_map_equal<int, GPUTools::DYSMQueryObject<GPUSMObjectTypes>, std::__1::equal_to<int>, true>, std::__1::allocator<std::__1::pair<int, GPUTools::DYSMQueryObject<GPUSMObjectTypes>>>> {
-        struct unique_ptr<std::__1::__hash_node<std::__1::pair<int, GPUTools::DYSMQueryObject<GPUSMObjectTypes>>, void *>*[], std::__1::__bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<int, GPUTools::DYSMQueryObject<GPUSMObjectTypes>>, void *>*>>> _field1;
-        struct __compressed_pair<std::__1::__hash_node_base<std::__1::__hash_node<std::__1::pair<int, GPUTools::DYSMQueryObject<GPUSMObjectTypes>>, void *>*>, std::__1::allocator<std::__1::__hash_node<std::__1::pair<int, GPUTools::DYSMQueryObject<GPUSMObjectTypes>>, void *>>> {
-            struct __hash_node_base<std::__1::__hash_node<std::__1::pair<int, GPUTools::DYSMQueryObject<GPUSMObjectTypes>>, void *>*> {
-                struct __hash_node<std::__1::pair<int, GPUTools::DYSMQueryObject<GPUSMObjectTypes>>, void *> *_field1;
+struct unordered_map<int, GPUTools::SM::ProgramUniform<GPUSMObjectTypes>, std::__1::hash<int>, std::__1::equal_to<int>, std::__1::allocator<std::__1::pair<const int, GPUTools::SM::ProgramUniform<GPUSMObjectTypes>>>> {
+    struct __hash_table<std::__1::pair<int, GPUTools::SM::ProgramUniform<GPUSMObjectTypes>>, std::__1::__unordered_map_hasher<int, GPUTools::SM::ProgramUniform<GPUSMObjectTypes>, std::__1::hash<int>, true>, std::__1::__unordered_map_equal<int, GPUTools::SM::ProgramUniform<GPUSMObjectTypes>, std::__1::equal_to<int>, true>, std::__1::allocator<std::__1::pair<int, GPUTools::SM::ProgramUniform<GPUSMObjectTypes>>>> {
+        struct unique_ptr<std::__1::__hash_node<std::__1::pair<int, GPUTools::SM::ProgramUniform<GPUSMObjectTypes>>, void *>*[], std::__1::__bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<int, GPUTools::SM::ProgramUniform<GPUSMObjectTypes>>, void *>*>>> _field1;
+        struct __compressed_pair<std::__1::__hash_node_base<std::__1::__hash_node<std::__1::pair<int, GPUTools::SM::ProgramUniform<GPUSMObjectTypes>>, void *>*>, std::__1::allocator<std::__1::__hash_node<std::__1::pair<int, GPUTools::SM::ProgramUniform<GPUSMObjectTypes>>, void *>>> {
+            struct __hash_node_base<std::__1::__hash_node<std::__1::pair<int, GPUTools::SM::ProgramUniform<GPUSMObjectTypes>>, void *>*> {
+                struct __hash_node<std::__1::pair<int, GPUTools::SM::ProgramUniform<GPUSMObjectTypes>>, void *> *_field1;
             } _field1;
         } _field2;
-        struct __compressed_pair<unsigned long, std::__1::__unordered_map_hasher<int, GPUTools::DYSMQueryObject<GPUSMObjectTypes>, std::__1::hash<int>, true>> {
+        struct __compressed_pair<unsigned long, std::__1::__unordered_map_hasher<int, GPUTools::SM::ProgramUniform<GPUSMObjectTypes>, std::__1::hash<int>, true>> {
             unsigned long long _field1;
         } _field3;
-        struct __compressed_pair<float, std::__1::__unordered_map_equal<int, GPUTools::DYSMQueryObject<GPUSMObjectTypes>, std::__1::equal_to<int>, true>> {
-            float _field1;
-        } _field4;
-    } _field1;
-};
-
-struct unordered_map<int, GPUTools::DYSMVertexArrayObject<GPUSMObjectTypes>, std::__1::hash<int>, std::__1::equal_to<int>, std::__1::allocator<std::__1::pair<const int, GPUTools::DYSMVertexArrayObject<GPUSMObjectTypes>>>> {
-    struct __hash_table<std::__1::pair<int, GPUTools::DYSMVertexArrayObject<GPUSMObjectTypes>>, std::__1::__unordered_map_hasher<int, GPUTools::DYSMVertexArrayObject<GPUSMObjectTypes>, std::__1::hash<int>, true>, std::__1::__unordered_map_equal<int, GPUTools::DYSMVertexArrayObject<GPUSMObjectTypes>, std::__1::equal_to<int>, true>, std::__1::allocator<std::__1::pair<int, GPUTools::DYSMVertexArrayObject<GPUSMObjectTypes>>>> {
-        struct unique_ptr<std::__1::__hash_node<std::__1::pair<int, GPUTools::DYSMVertexArrayObject<GPUSMObjectTypes>>, void *>*[], std::__1::__bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<int, GPUTools::DYSMVertexArrayObject<GPUSMObjectTypes>>, void *>*>>> _field1;
-        struct __compressed_pair<std::__1::__hash_node_base<std::__1::__hash_node<std::__1::pair<int, GPUTools::DYSMVertexArrayObject<GPUSMObjectTypes>>, void *>*>, std::__1::allocator<std::__1::__hash_node<std::__1::pair<int, GPUTools::DYSMVertexArrayObject<GPUSMObjectTypes>>, void *>>> {
-            struct __hash_node_base<std::__1::__hash_node<std::__1::pair<int, GPUTools::DYSMVertexArrayObject<GPUSMObjectTypes>>, void *>*> {
-                struct __hash_node<std::__1::pair<int, GPUTools::DYSMVertexArrayObject<GPUSMObjectTypes>>, void *> *_field1;
-            } _field1;
-        } _field2;
-        struct __compressed_pair<unsigned long, std::__1::__unordered_map_hasher<int, GPUTools::DYSMVertexArrayObject<GPUSMObjectTypes>, std::__1::hash<int>, true>> {
-            unsigned long long _field1;
-        } _field3;
-        struct __compressed_pair<float, std::__1::__unordered_map_equal<int, GPUTools::DYSMVertexArrayObject<GPUSMObjectTypes>, std::__1::equal_to<int>, true>> {
+        struct __compressed_pair<float, std::__1::__unordered_map_equal<int, GPUTools::SM::ProgramUniform<GPUSMObjectTypes>, std::__1::equal_to<int>, true>> {
             float _field1;
         } _field4;
     } _field1;
@@ -552,55 +767,140 @@ struct unordered_map<int, int, std::__1::hash<int>, std::__1::equal_to<int>, std
     } _field1;
 };
 
-struct unordered_map<unsigned long long, GPUTools::DYSMContextStateMirror<GPUSMObjectTypes>*, std::__1::hash<unsigned long long>, std::__1::equal_to<unsigned long long>, std::__1::allocator<std::__1::pair<const unsigned long long, GPUTools::DYSMContextStateMirror<GPUSMObjectTypes>*>>> {
-    struct __hash_table<std::__1::pair<unsigned long long, GPUTools::DYSMContextStateMirror<GPUSMObjectTypes>*>, std::__1::__unordered_map_hasher<unsigned long long, GPUTools::DYSMContextStateMirror<GPUSMObjectTypes>*, std::__1::hash<unsigned long long>, true>, std::__1::__unordered_map_equal<unsigned long long, GPUTools::DYSMContextStateMirror<GPUSMObjectTypes>*, std::__1::equal_to<unsigned long long>, true>, std::__1::allocator<std::__1::pair<unsigned long long, GPUTools::DYSMContextStateMirror<GPUSMObjectTypes>*>>> {
-        struct unique_ptr<std::__1::__hash_node<std::__1::pair<unsigned long long, GPUTools::DYSMContextStateMirror<GPUSMObjectTypes>*>, void *>*[], std::__1::__bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<unsigned long long, GPUTools::DYSMContextStateMirror<GPUSMObjectTypes>*>, void *>*>>> _field1;
-        struct __compressed_pair<std::__1::__hash_node_base<std::__1::__hash_node<std::__1::pair<unsigned long long, GPUTools::DYSMContextStateMirror<GPUSMObjectTypes>*>, void *>*>, std::__1::allocator<std::__1::__hash_node<std::__1::pair<unsigned long long, GPUTools::DYSMContextStateMirror<GPUSMObjectTypes>*>, void *>>> {
-            struct __hash_node_base<std::__1::__hash_node<std::__1::pair<unsigned long long, GPUTools::DYSMContextStateMirror<GPUSMObjectTypes>*>, void *>*> {
-                struct __hash_node<std::__1::pair<unsigned long long, GPUTools::DYSMContextStateMirror<GPUSMObjectTypes>*>, void *> *_field1;
+struct unordered_map<int, std::__1::shared_ptr<GPUTools::SM::DrawableInfo<GPUSMObjectTypes>>, std::__1::hash<int>, std::__1::equal_to<int>, std::__1::allocator<std::__1::pair<const int, std::__1::shared_ptr<GPUTools::SM::DrawableInfo<GPUSMObjectTypes>>>>> {
+    struct __hash_table<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::DrawableInfo<GPUSMObjectTypes>>>, std::__1::__unordered_map_hasher<int, std::__1::shared_ptr<GPUTools::SM::DrawableInfo<GPUSMObjectTypes>>, std::__1::hash<int>, true>, std::__1::__unordered_map_equal<int, std::__1::shared_ptr<GPUTools::SM::DrawableInfo<GPUSMObjectTypes>>, std::__1::equal_to<int>, true>, std::__1::allocator<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::DrawableInfo<GPUSMObjectTypes>>>>> {
+        struct unique_ptr<std::__1::__hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::DrawableInfo<GPUSMObjectTypes>>>, void *>*[], std::__1::__bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::DrawableInfo<GPUSMObjectTypes>>>, void *>*>>> __bucket_list_;
+        struct __compressed_pair<std::__1::__hash_node_base<std::__1::__hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::DrawableInfo<GPUSMObjectTypes>>>, void *>*>, std::__1::allocator<std::__1::__hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::DrawableInfo<GPUSMObjectTypes>>>, void *>>> {
+            struct __hash_node_base<std::__1::__hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::DrawableInfo<GPUSMObjectTypes>>>, void *>*> {
+                struct __hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::DrawableInfo<GPUSMObjectTypes>>>, void *> *__next_;
+            } __first_;
+        } __p1_;
+        struct __compressed_pair<unsigned long, std::__1::__unordered_map_hasher<int, std::__1::shared_ptr<GPUTools::SM::DrawableInfo<GPUSMObjectTypes>>, std::__1::hash<int>, true>> {
+            unsigned long long __first_;
+        } __p2_;
+        struct __compressed_pair<float, std::__1::__unordered_map_equal<int, std::__1::shared_ptr<GPUTools::SM::DrawableInfo<GPUSMObjectTypes>>, std::__1::equal_to<int>, true>> {
+            float __first_;
+        } __p3_;
+    } __table_;
+};
+
+struct unordered_map<int, std::__1::shared_ptr<GPUTools::SM::QueryObject<GPUSMObjectTypes>>, std::__1::hash<int>, std::__1::equal_to<int>, std::__1::allocator<std::__1::pair<const int, std::__1::shared_ptr<GPUTools::SM::QueryObject<GPUSMObjectTypes>>>>> {
+    struct __hash_table<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::QueryObject<GPUSMObjectTypes>>>, std::__1::__unordered_map_hasher<int, std::__1::shared_ptr<GPUTools::SM::QueryObject<GPUSMObjectTypes>>, std::__1::hash<int>, true>, std::__1::__unordered_map_equal<int, std::__1::shared_ptr<GPUTools::SM::QueryObject<GPUSMObjectTypes>>, std::__1::equal_to<int>, true>, std::__1::allocator<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::QueryObject<GPUSMObjectTypes>>>>> {
+        struct unique_ptr<std::__1::__hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::QueryObject<GPUSMObjectTypes>>>, void *>*[], std::__1::__bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::QueryObject<GPUSMObjectTypes>>>, void *>*>>> _field1;
+        struct __compressed_pair<std::__1::__hash_node_base<std::__1::__hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::QueryObject<GPUSMObjectTypes>>>, void *>*>, std::__1::allocator<std::__1::__hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::QueryObject<GPUSMObjectTypes>>>, void *>>> {
+            struct __hash_node_base<std::__1::__hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::QueryObject<GPUSMObjectTypes>>>, void *>*> {
+                struct __hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::QueryObject<GPUSMObjectTypes>>>, void *> *_field1;
             } _field1;
         } _field2;
-        struct __compressed_pair<unsigned long, std::__1::__unordered_map_hasher<unsigned long long, GPUTools::DYSMContextStateMirror<GPUSMObjectTypes>*, std::__1::hash<unsigned long long>, true>> {
+        struct __compressed_pair<unsigned long, std::__1::__unordered_map_hasher<int, std::__1::shared_ptr<GPUTools::SM::QueryObject<GPUSMObjectTypes>>, std::__1::hash<int>, true>> {
             unsigned long long _field1;
         } _field3;
-        struct __compressed_pair<float, std::__1::__unordered_map_equal<unsigned long long, GPUTools::DYSMContextStateMirror<GPUSMObjectTypes>*, std::__1::equal_to<unsigned long long>, true>> {
+        struct __compressed_pair<float, std::__1::__unordered_map_equal<int, std::__1::shared_ptr<GPUTools::SM::QueryObject<GPUSMObjectTypes>>, std::__1::equal_to<int>, true>> {
             float _field1;
         } _field4;
     } _field1;
 };
 
-struct unordered_map<unsigned long long, GPUTools::DYSMSharegroupStateMirror<GPUSMObjectTypes>*, std::__1::hash<unsigned long long>, std::__1::equal_to<unsigned long long>, std::__1::allocator<std::__1::pair<const unsigned long long, GPUTools::DYSMSharegroupStateMirror<GPUSMObjectTypes>*>>> {
-    struct __hash_table<std::__1::pair<unsigned long long, GPUTools::DYSMSharegroupStateMirror<GPUSMObjectTypes>*>, std::__1::__unordered_map_hasher<unsigned long long, GPUTools::DYSMSharegroupStateMirror<GPUSMObjectTypes>*, std::__1::hash<unsigned long long>, true>, std::__1::__unordered_map_equal<unsigned long long, GPUTools::DYSMSharegroupStateMirror<GPUSMObjectTypes>*, std::__1::equal_to<unsigned long long>, true>, std::__1::allocator<std::__1::pair<unsigned long long, GPUTools::DYSMSharegroupStateMirror<GPUSMObjectTypes>*>>> {
-        struct unique_ptr<std::__1::__hash_node<std::__1::pair<unsigned long long, GPUTools::DYSMSharegroupStateMirror<GPUSMObjectTypes>*>, void *>*[], std::__1::__bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<unsigned long long, GPUTools::DYSMSharegroupStateMirror<GPUSMObjectTypes>*>, void *>*>>> _field1;
-        struct __compressed_pair<std::__1::__hash_node_base<std::__1::__hash_node<std::__1::pair<unsigned long long, GPUTools::DYSMSharegroupStateMirror<GPUSMObjectTypes>*>, void *>*>, std::__1::allocator<std::__1::__hash_node<std::__1::pair<unsigned long long, GPUTools::DYSMSharegroupStateMirror<GPUSMObjectTypes>*>, void *>>> {
-            struct __hash_node_base<std::__1::__hash_node<std::__1::pair<unsigned long long, GPUTools::DYSMSharegroupStateMirror<GPUSMObjectTypes>*>, void *>*> {
-                struct __hash_node<std::__1::pair<unsigned long long, GPUTools::DYSMSharegroupStateMirror<GPUSMObjectTypes>*>, void *> *_field1;
+struct unordered_map<int, std::__1::shared_ptr<GPUTools::SM::SyncObject<GPUSMObjectTypes>>, std::__1::hash<int>, std::__1::equal_to<int>, std::__1::allocator<std::__1::pair<const int, std::__1::shared_ptr<GPUTools::SM::SyncObject<GPUSMObjectTypes>>>>> {
+    struct __hash_table<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::SyncObject<GPUSMObjectTypes>>>, std::__1::__unordered_map_hasher<int, std::__1::shared_ptr<GPUTools::SM::SyncObject<GPUSMObjectTypes>>, std::__1::hash<int>, true>, std::__1::__unordered_map_equal<int, std::__1::shared_ptr<GPUTools::SM::SyncObject<GPUSMObjectTypes>>, std::__1::equal_to<int>, true>, std::__1::allocator<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::SyncObject<GPUSMObjectTypes>>>>> {
+        struct unique_ptr<std::__1::__hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::SyncObject<GPUSMObjectTypes>>>, void *>*[], std::__1::__bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::SyncObject<GPUSMObjectTypes>>>, void *>*>>> _field1;
+        struct __compressed_pair<std::__1::__hash_node_base<std::__1::__hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::SyncObject<GPUSMObjectTypes>>>, void *>*>, std::__1::allocator<std::__1::__hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::SyncObject<GPUSMObjectTypes>>>, void *>>> {
+            struct __hash_node_base<std::__1::__hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::SyncObject<GPUSMObjectTypes>>>, void *>*> {
+                struct __hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::SyncObject<GPUSMObjectTypes>>>, void *> *_field1;
             } _field1;
         } _field2;
-        struct __compressed_pair<unsigned long, std::__1::__unordered_map_hasher<unsigned long long, GPUTools::DYSMSharegroupStateMirror<GPUSMObjectTypes>*, std::__1::hash<unsigned long long>, true>> {
+        struct __compressed_pair<unsigned long, std::__1::__unordered_map_hasher<int, std::__1::shared_ptr<GPUTools::SM::SyncObject<GPUSMObjectTypes>>, std::__1::hash<int>, true>> {
             unsigned long long _field1;
         } _field3;
-        struct __compressed_pair<float, std::__1::__unordered_map_equal<unsigned long long, GPUTools::DYSMSharegroupStateMirror<GPUSMObjectTypes>*, std::__1::equal_to<unsigned long long>, true>> {
+        struct __compressed_pair<float, std::__1::__unordered_map_equal<int, std::__1::shared_ptr<GPUTools::SM::SyncObject<GPUSMObjectTypes>>, std::__1::equal_to<int>, true>> {
             float _field1;
         } _field4;
     } _field1;
+};
+
+struct unordered_map<int, std::__1::shared_ptr<GPUTools::SM::VertexArrayObject<GPUSMObjectTypes>>, std::__1::hash<int>, std::__1::equal_to<int>, std::__1::allocator<std::__1::pair<const int, std::__1::shared_ptr<GPUTools::SM::VertexArrayObject<GPUSMObjectTypes>>>>> {
+    struct __hash_table<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::VertexArrayObject<GPUSMObjectTypes>>>, std::__1::__unordered_map_hasher<int, std::__1::shared_ptr<GPUTools::SM::VertexArrayObject<GPUSMObjectTypes>>, std::__1::hash<int>, true>, std::__1::__unordered_map_equal<int, std::__1::shared_ptr<GPUTools::SM::VertexArrayObject<GPUSMObjectTypes>>, std::__1::equal_to<int>, true>, std::__1::allocator<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::VertexArrayObject<GPUSMObjectTypes>>>>> {
+        struct unique_ptr<std::__1::__hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::VertexArrayObject<GPUSMObjectTypes>>>, void *>*[], std::__1::__bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::VertexArrayObject<GPUSMObjectTypes>>>, void *>*>>> _field1;
+        struct __compressed_pair<std::__1::__hash_node_base<std::__1::__hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::VertexArrayObject<GPUSMObjectTypes>>>, void *>*>, std::__1::allocator<std::__1::__hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::VertexArrayObject<GPUSMObjectTypes>>>, void *>>> {
+            struct __hash_node_base<std::__1::__hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::VertexArrayObject<GPUSMObjectTypes>>>, void *>*> {
+                struct __hash_node<std::__1::pair<int, std::__1::shared_ptr<GPUTools::SM::VertexArrayObject<GPUSMObjectTypes>>>, void *> *_field1;
+            } _field1;
+        } _field2;
+        struct __compressed_pair<unsigned long, std::__1::__unordered_map_hasher<int, std::__1::shared_ptr<GPUTools::SM::VertexArrayObject<GPUSMObjectTypes>>, std::__1::hash<int>, true>> {
+            unsigned long long _field1;
+        } _field3;
+        struct __compressed_pair<float, std::__1::__unordered_map_equal<int, std::__1::shared_ptr<GPUTools::SM::VertexArrayObject<GPUSMObjectTypes>>, std::__1::equal_to<int>, true>> {
+            float _field1;
+        } _field4;
+    } _field1;
+};
+
+struct unordered_map<std::__1::basic_string<char>, int, std::__1::hash<std::__1::basic_string<char>>, std::__1::equal_to<std::__1::basic_string<char>>, std::__1::allocator<std::__1::pair<const std::__1::basic_string<char>, int>>> {
+    struct __hash_table<std::__1::pair<std::__1::basic_string<char>, int>, std::__1::__unordered_map_hasher<std::__1::basic_string<char>, int, std::__1::hash<std::__1::basic_string<char>>, true>, std::__1::__unordered_map_equal<std::__1::basic_string<char>, int, std::__1::equal_to<std::__1::basic_string<char>>, true>, std::__1::allocator<std::__1::pair<std::__1::basic_string<char>, int>>> {
+        struct unique_ptr<std::__1::__hash_node<std::__1::pair<std::__1::basic_string<char>, int>, void *>*[], std::__1::__bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<std::__1::basic_string<char>, int>, void *>*>>> _field1;
+        struct __compressed_pair<std::__1::__hash_node_base<std::__1::__hash_node<std::__1::pair<std::__1::basic_string<char>, int>, void *>*>, std::__1::allocator<std::__1::__hash_node<std::__1::pair<std::__1::basic_string<char>, int>, void *>>> {
+            struct __hash_node_base<std::__1::__hash_node<std::__1::pair<std::__1::basic_string<char>, int>, void *>*> {
+                struct __hash_node<std::__1::pair<std::__1::basic_string<char>, int>, void *> *_field1;
+            } _field1;
+        } _field2;
+        struct __compressed_pair<unsigned long, std::__1::__unordered_map_hasher<std::__1::basic_string<char>, int, std::__1::hash<std::__1::basic_string<char>>, true>> {
+            unsigned long long _field1;
+        } _field3;
+        struct __compressed_pair<float, std::__1::__unordered_map_equal<std::__1::basic_string<char>, int, std::__1::equal_to<std::__1::basic_string<char>>, true>> {
+            float _field1;
+        } _field4;
+    } _field1;
+};
+
+struct unordered_map<unsigned long long, GPUTools::SM::ContextStateMirror<GPUSMObjectTypes>*, std::__1::hash<unsigned long long>, std::__1::equal_to<unsigned long long>, std::__1::allocator<std::__1::pair<const unsigned long long, GPUTools::SM::ContextStateMirror<GPUSMObjectTypes>*>>> {
+    struct __hash_table<std::__1::pair<unsigned long long, GPUTools::SM::ContextStateMirror<GPUSMObjectTypes>*>, std::__1::__unordered_map_hasher<unsigned long long, GPUTools::SM::ContextStateMirror<GPUSMObjectTypes>*, std::__1::hash<unsigned long long>, true>, std::__1::__unordered_map_equal<unsigned long long, GPUTools::SM::ContextStateMirror<GPUSMObjectTypes>*, std::__1::equal_to<unsigned long long>, true>, std::__1::allocator<std::__1::pair<unsigned long long, GPUTools::SM::ContextStateMirror<GPUSMObjectTypes>*>>> {
+        struct unique_ptr<std::__1::__hash_node<std::__1::pair<unsigned long long, GPUTools::SM::ContextStateMirror<GPUSMObjectTypes>*>, void *>*[], std::__1::__bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<unsigned long long, GPUTools::SM::ContextStateMirror<GPUSMObjectTypes>*>, void *>*>>> __bucket_list_;
+        struct __compressed_pair<std::__1::__hash_node_base<std::__1::__hash_node<std::__1::pair<unsigned long long, GPUTools::SM::ContextStateMirror<GPUSMObjectTypes>*>, void *>*>, std::__1::allocator<std::__1::__hash_node<std::__1::pair<unsigned long long, GPUTools::SM::ContextStateMirror<GPUSMObjectTypes>*>, void *>>> {
+            struct __hash_node_base<std::__1::__hash_node<std::__1::pair<unsigned long long, GPUTools::SM::ContextStateMirror<GPUSMObjectTypes>*>, void *>*> {
+                struct __hash_node<std::__1::pair<unsigned long long, GPUTools::SM::ContextStateMirror<GPUSMObjectTypes>*>, void *> *__next_;
+            } __first_;
+        } __p1_;
+        struct __compressed_pair<unsigned long, std::__1::__unordered_map_hasher<unsigned long long, GPUTools::SM::ContextStateMirror<GPUSMObjectTypes>*, std::__1::hash<unsigned long long>, true>> {
+            unsigned long long __first_;
+        } __p2_;
+        struct __compressed_pair<float, std::__1::__unordered_map_equal<unsigned long long, GPUTools::SM::ContextStateMirror<GPUSMObjectTypes>*, std::__1::equal_to<unsigned long long>, true>> {
+            float __first_;
+        } __p3_;
+    } __table_;
+};
+
+struct unordered_map<unsigned long long, GPUTools::SM::SharegroupStateMirror<GPUSMObjectTypes>*, std::__1::hash<unsigned long long>, std::__1::equal_to<unsigned long long>, std::__1::allocator<std::__1::pair<const unsigned long long, GPUTools::SM::SharegroupStateMirror<GPUSMObjectTypes>*>>> {
+    struct __hash_table<std::__1::pair<unsigned long long, GPUTools::SM::SharegroupStateMirror<GPUSMObjectTypes>*>, std::__1::__unordered_map_hasher<unsigned long long, GPUTools::SM::SharegroupStateMirror<GPUSMObjectTypes>*, std::__1::hash<unsigned long long>, true>, std::__1::__unordered_map_equal<unsigned long long, GPUTools::SM::SharegroupStateMirror<GPUSMObjectTypes>*, std::__1::equal_to<unsigned long long>, true>, std::__1::allocator<std::__1::pair<unsigned long long, GPUTools::SM::SharegroupStateMirror<GPUSMObjectTypes>*>>> {
+        struct unique_ptr<std::__1::__hash_node<std::__1::pair<unsigned long long, GPUTools::SM::SharegroupStateMirror<GPUSMObjectTypes>*>, void *>*[], std::__1::__bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<unsigned long long, GPUTools::SM::SharegroupStateMirror<GPUSMObjectTypes>*>, void *>*>>> __bucket_list_;
+        struct __compressed_pair<std::__1::__hash_node_base<std::__1::__hash_node<std::__1::pair<unsigned long long, GPUTools::SM::SharegroupStateMirror<GPUSMObjectTypes>*>, void *>*>, std::__1::allocator<std::__1::__hash_node<std::__1::pair<unsigned long long, GPUTools::SM::SharegroupStateMirror<GPUSMObjectTypes>*>, void *>>> {
+            struct __hash_node_base<std::__1::__hash_node<std::__1::pair<unsigned long long, GPUTools::SM::SharegroupStateMirror<GPUSMObjectTypes>*>, void *>*> {
+                struct __hash_node<std::__1::pair<unsigned long long, GPUTools::SM::SharegroupStateMirror<GPUSMObjectTypes>*>, void *> *__next_;
+            } __first_;
+        } __p1_;
+        struct __compressed_pair<unsigned long, std::__1::__unordered_map_hasher<unsigned long long, GPUTools::SM::SharegroupStateMirror<GPUSMObjectTypes>*, std::__1::hash<unsigned long long>, true>> {
+            unsigned long long __first_;
+        } __p2_;
+        struct __compressed_pair<float, std::__1::__unordered_map_equal<unsigned long long, GPUTools::SM::SharegroupStateMirror<GPUSMObjectTypes>*, std::__1::equal_to<unsigned long long>, true>> {
+            float __first_;
+        } __p3_;
+    } __table_;
 };
 
 struct unordered_map<unsigned long long, int, std::__1::hash<unsigned long long>, std::__1::equal_to<unsigned long long>, std::__1::allocator<std::__1::pair<const unsigned long long, int>>> {
     struct __hash_table<std::__1::pair<unsigned long long, int>, std::__1::__unordered_map_hasher<unsigned long long, int, std::__1::hash<unsigned long long>, true>, std::__1::__unordered_map_equal<unsigned long long, int, std::__1::equal_to<unsigned long long>, true>, std::__1::allocator<std::__1::pair<unsigned long long, int>>> {
-        struct unique_ptr<std::__1::__hash_node<std::__1::pair<unsigned long long, int>, void *>*[], std::__1::__bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<unsigned long long, int>, void *>*>>> _field1;
+        struct unique_ptr<std::__1::__hash_node<std::__1::pair<unsigned long long, int>, void *>*[], std::__1::__bucket_list_deallocator<std::__1::allocator<std::__1::__hash_node<std::__1::pair<unsigned long long, int>, void *>*>>> __bucket_list_;
         struct __compressed_pair<std::__1::__hash_node_base<std::__1::__hash_node<std::__1::pair<unsigned long long, int>, void *>*>, std::__1::allocator<std::__1::__hash_node<std::__1::pair<unsigned long long, int>, void *>>> {
             struct __hash_node_base<std::__1::__hash_node<std::__1::pair<unsigned long long, int>, void *>*> {
-                struct __hash_node<std::__1::pair<unsigned long long, int>, void *> *_field1;
-            } _field1;
-        } _field2;
+                struct __hash_node<std::__1::pair<unsigned long long, int>, void *> *__next_;
+            } __first_;
+        } __p1_;
         struct __compressed_pair<unsigned long, std::__1::__unordered_map_hasher<unsigned long long, int, std::__1::hash<unsigned long long>, true>> {
-            unsigned long long _field1;
-        } _field3;
+            unsigned long long __first_;
+        } __p2_;
         struct __compressed_pair<float, std::__1::__unordered_map_equal<unsigned long long, int, std::__1::equal_to<unsigned long long>, true>> {
-            float _field1;
-        } _field4;
-    } _field1;
+            float __first_;
+        } __p3_;
+    } __table_;
 };
 
 struct vector<DYMtx, std::__1::allocator<DYMtx>> {
@@ -619,189 +919,302 @@ struct vector<std::__1::basic_string<char>, std::__1::allocator<std::__1::basic_
     } _field3;
 };
 
+struct vector<unsigned int, std::__1::allocator<unsigned int>> {
+    unsigned int *__begin_;
+    unsigned int *__end_;
+    struct __compressed_pair<unsigned int *, std::__1::allocator<unsigned int>> {
+        unsigned int *__first_;
+    } __end_cap_;
+};
+
 #pragma mark Typedef'd Structures
 
 typedef struct {
     unsigned int _field1[4];
 } CDStruct_58878026;
 
-typedef struct {
-    void *value;
-    int core_type;
-    int type;
-    unsigned int flags;
-    unsigned int length;
-    unsigned int size;
-} CDStruct_2638ced4;
-
 typedef struct CDStruct_183601bc;
 
 // Template types
-typedef struct DYSMContextStateMirror<GPUSMObjectTypes> {
+typedef struct BufferObject<GPUSMObjectTypes> {
+    int _field1;
+    int _field2;
+    int _field3;
+    int _field4;
+    struct DYStateElement<long long, GPUTools::CStateBaseAnalysis> _field5;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field6;
+    struct DYStateElement<std::__1::basic_string<char>, GPUTools::CStateBaseAnalysis> _field7;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field8;
+    struct DYStateElement<unsigned int, GPUTools::CStateBaseAnalysis> _field9;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field10;
+    struct DYStateElement<long long, GPUTools::CStateBaseAnalysis> _field11;
+    struct DYStateElement<long long, GPUTools::CStateBaseAnalysis> _field12;
+    struct DYStateElement<unsigned long long, GPUTools::CStateBaseAnalysis> _field13;
+    struct DYStateElement<std::__1::basic_string<char>, GPUTools::CStateBaseAnalysis> _field14;
+} BufferObject_6cf7d83d;
+
+typedef struct ContextStateMirror<GPUSMObjectTypes> {
     struct DYStateElement<int, GPUTools::CStateBaseAnalysis> _field1;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field2;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field3;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field2;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field3;
     struct DYStateElement<float, GPUTools::CStateBaseAnalysis> _field4;
-    struct DYStateElement<GPUTools::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field5;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field6;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field7;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field8;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field9;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field10;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field11;
-    struct DYStateElement<GPUTools::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field12;
+    struct DYStateElement<GPUTools::SM::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field5;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field6;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field7;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field8;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field9;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field10;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field11;
+    struct DYStateElement<GPUTools::SM::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field12;
     struct DYStateElement<float, GPUTools::CStateBaseAnalysis> _field13;
     struct DYStateElement<int, GPUTools::CStateBaseAnalysis> _field14;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field15;
-    struct DYStateElement<GPUTools::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field16;
-    struct DYStateElement<GPUTools::VecN<int, 4>, GPUTools::CStateBaseAnalysis> _field17;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field18;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field15;
+    struct DYStateElement<GPUTools::SM::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field16;
+    struct DYStateElement<GPUTools::SM::VecN<int, 4>, GPUTools::CStateBaseAnalysis> _field17;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field18;
     struct DYStateElement<int, GPUTools::CStateBaseAnalysis> _field19;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field20;
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field21;
-    struct DYStateElement<GPUTools::VecN<float, 2>, GPUTools::CStateBaseAnalysis> _field22;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field23;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field20;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field21;
+    struct DYStateElement<GPUTools::SM::VecN<float, 2>, GPUTools::CStateBaseAnalysis> _field22;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field23;
     struct DYStateElement<float, GPUTools::CStateBaseAnalysis> _field24;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field25;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field26;
-    struct DYStateElement<GPUTools::VecN<float, 3>, GPUTools::CStateBaseAnalysis> _field27;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field25;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field26;
+    struct DYStateElement<GPUTools::SM::VecN<float, 3>, GPUTools::CStateBaseAnalysis> _field27;
     struct DYStateElement<float, GPUTools::CStateBaseAnalysis> _field28;
     struct DYStateElement<float, GPUTools::CStateBaseAnalysis> _field29;
     struct DYStateElement<float, GPUTools::CStateBaseAnalysis> _field30;
     struct DYStateElement<float, GPUTools::CStateBaseAnalysis> _field31;
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field32;
-    struct DYStateElement<GPUTools::VecN<int, 4>, GPUTools::CStateBaseAnalysis> _field33;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field34;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field35;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field32;
+    struct DYStateElement<GPUTools::SM::VecN<int, 4>, GPUTools::CStateBaseAnalysis> _field33;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field34;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field35;
     struct DYStateElement<int, GPUTools::CStateBaseAnalysis> _field36;
     struct DYStateElement<unsigned int, GPUTools::CStateBaseAnalysis> _field37;
     struct DYStateElement<unsigned int, GPUTools::CStateBaseAnalysis> _field38;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field39;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field40;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field41;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field42;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field39;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field40;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field41;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field42;
     struct DYStateElement<int, GPUTools::CStateBaseAnalysis> _field43;
     struct DYStateElement<unsigned int, GPUTools::CStateBaseAnalysis> _field44;
     struct DYStateElement<unsigned int, GPUTools::CStateBaseAnalysis> _field45;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field46;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field47;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field48;
-    struct DYStateElement<GPUTools::VecN<int, 4>, GPUTools::CStateBaseAnalysis> _field49;
-    struct DYStateElement<GPUTools::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field50[32];
-    struct DYStateElement<GPUTools::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field51[16];
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field52;
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field53;
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field54;
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field55;
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field56;
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field57;
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field58;
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field59;
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field60;
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field61;
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field62;
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field63;
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field64;
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field65;
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field66;
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field67;
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field68;
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field69;
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field70;
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field71;
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field72;
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field73;
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field74[6];
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field75[8];
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field76[32];
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field77;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field46;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field47;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field48;
+    struct DYStateElement<GPUTools::SM::VecN<int, 4>, GPUTools::CStateBaseAnalysis> _field49;
+    struct DYStateElement<GPUTools::SM::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field50[32];
+    struct DYStateElement<GPUTools::SM::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field51[16];
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field52;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field53;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field54;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field55;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field56;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field57;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field58;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field59;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field60;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field61;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field62;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field63;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field64;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field65;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field66;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field67;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field68;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field69;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field70;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field71;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field72;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field73;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field74[6];
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field75[8];
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field76[32];
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field77;
     struct DYStateElement<float, GPUTools::CStateBaseAnalysis> _field78;
     struct DYStateElement<float, GPUTools::CStateBaseAnalysis> _field79;
     struct DYStateElement<float, GPUTools::CStateBaseAnalysis> _field80;
-    struct DYStateElement<GPUTools::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field81;
+    struct DYStateElement<GPUTools::SM::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field81;
     struct DYStateElement<int, GPUTools::CStateBaseAnalysis> _field82;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field83;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field84;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field85;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field86;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field83;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field84;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field85;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field86;
     struct DYStateElement<int, GPUTools::CStateBaseAnalysis> _field87;
-    struct DYStateElement<GPUTools::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field88;
+    struct DYStateElement<GPUTools::SM::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field88;
     struct DYStateElement<int, GPUTools::CStateBaseAnalysis> _field89;
     struct DYStateElement<int, GPUTools::CStateBaseAnalysis> _field90;
     struct DYStateElement<float, GPUTools::CStateBaseAnalysis> _field91;
     struct DYStateElement<float, GPUTools::CStateBaseAnalysis> _field92;
     struct DYStateElement<float, GPUTools::CStateBaseAnalysis> _field93;
-    struct DYStateElement<GPUTools::VecN<float, 3>, GPUTools::CStateBaseAnalysis> _field94;
-    struct DYStateElement<GPUTools::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field95[8];
-    struct DYStateElement<GPUTools::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field96[8];
-    struct DYStateElement<GPUTools::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field97[8];
-    struct DYStateElement<GPUTools::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field98[8];
-    struct DYStateElement<GPUTools::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field99[8];
-    struct DYStateElement<GPUTools::VecN<float, 3>, GPUTools::CStateBaseAnalysis> _field100[8];
+    struct DYStateElement<GPUTools::SM::VecN<float, 3>, GPUTools::CStateBaseAnalysis> _field94;
+    struct DYStateElement<GPUTools::SM::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field95[8];
+    struct DYStateElement<GPUTools::SM::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field96[8];
+    struct DYStateElement<GPUTools::SM::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field97[8];
+    struct DYStateElement<GPUTools::SM::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field98[8];
+    struct DYStateElement<GPUTools::SM::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field99[8];
+    struct DYStateElement<GPUTools::SM::VecN<float, 3>, GPUTools::CStateBaseAnalysis> _field100[8];
     struct DYStateElement<float, GPUTools::CStateBaseAnalysis> _field101[8];
     struct DYStateElement<float, GPUTools::CStateBaseAnalysis> _field102[8];
     struct DYStateElement<float, GPUTools::CStateBaseAnalysis> _field103[8];
     struct DYStateElement<float, GPUTools::CStateBaseAnalysis> _field104[8];
     struct DYStateElement<float, GPUTools::CStateBaseAnalysis> _field105[8];
-    struct DYStateElement<GPUTools::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field106[6];
-    struct DYStateElement<GPUTools::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field107;
-    struct DYStateElement<GPUTools::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field108;
-    struct DYStateElement<GPUTools::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field109;
-    struct DYStateElement<GPUTools::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field110;
+    struct DYStateElement<GPUTools::SM::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field106[6];
+    struct DYStateElement<GPUTools::SM::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field107;
+    struct DYStateElement<GPUTools::SM::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field108;
+    struct DYStateElement<GPUTools::SM::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field109;
+    struct DYStateElement<GPUTools::SM::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field110;
     struct DYStateElement<float, GPUTools::CStateBaseAnalysis> _field111;
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field112[32];
-    struct DYStateElement<GPUTools::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field113[32];
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field114[32];
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field115[32];
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field116[32];
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field117[32];
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field118[32];
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field119[32];
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field120[32];
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field121[32];
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field122[32];
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field123[32];
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field124[32];
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field125[32];
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field126[32];
-    struct DYStateElement<GPUTools::DYSMStateEnum, GPUTools::CStateBaseAnalysis> _field127[32];
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field112[32];
+    struct DYStateElement<GPUTools::SM::VecN<float, 4>, GPUTools::CStateBaseAnalysis> _field113[32];
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field114[32];
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field115[32];
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field116[32];
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field117[32];
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field118[32];
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field119[32];
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field120[32];
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field121[32];
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field122[32];
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field123[32];
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field124[32];
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field125[32];
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field126[32];
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field127[32];
     struct DYStateElement<float, GPUTools::CStateBaseAnalysis> _field128[32];
     struct DYStateElement<float, GPUTools::CStateBaseAnalysis> _field129[32];
-    struct DYStateElement<GPUTools::DYSMStateBool, GPUTools::CStateBaseAnalysis> _field130[32];
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field130[32];
     struct DYStateElement<float, GPUTools::CStateBaseAnalysis> _field131[32];
     struct DYStateElement<std::__1::vector<DYMtx, std::__1::allocator<DYMtx>>, GPUTools::CStateBaseAnalysis> _field132;
     struct DYStateElement<std::__1::vector<DYMtx, std::__1::allocator<DYMtx>>, GPUTools::CStateBaseAnalysis> _field133;
     struct DYStateElement<std::__1::vector<DYMtx, std::__1::allocator<DYMtx>>, GPUTools::CStateBaseAnalysis> _field134[32];
     struct DYStateElement<DYMtx, GPUTools::CStateBaseAnalysis> _field135[16];
-    struct DYStateElement<GPUTools::DYSMBindingPoint, GPUTools::CStateBaseAnalysis> _field136[32];
-    struct DYStateElement<GPUTools::DYSMBindingPoint, GPUTools::CStateBaseAnalysis> _field137[32];
-    struct DYStateElement<GPUTools::DYSMBindingPoint, GPUTools::CStateBaseAnalysis> _field138;
-    struct DYStateElement<GPUTools::DYSMBindingPoint, GPUTools::CStateBaseAnalysis> _field139;
-    struct DYStateElement<GPUTools::DYSMBindingPoint, GPUTools::CStateBaseAnalysis> _field140;
-    struct DYStateElement<GPUTools::DYSMBindingPoint, GPUTools::CStateBaseAnalysis> _field141;
-    struct DYStateElement<GPUTools::DYSMBindingPoint, GPUTools::CStateBaseAnalysis> _field142;
-    struct DYStateElement<GPUTools::DYSMBindingPoint, GPUTools::CStateBaseAnalysis> _field143;
-    struct DYStateElement<GPUTools::DYSMBindingPoint, GPUTools::CStateBaseAnalysis> _field144;
-    struct DYStateElement<GPUTools::DYSMBindingPoint, GPUTools::CStateBaseAnalysis> _field145;
-    struct DYStateElement<GPUTools::DYSMBindingPoint, GPUTools::CStateBaseAnalysis> _field146;
+    struct DYStateElement<GPUTools::SM::BindingPoint, GPUTools::CStateBaseAnalysis> _field136[32];
+    struct DYStateElement<GPUTools::SM::BindingPoint, GPUTools::CStateBaseAnalysis> _field137[32];
+    struct DYStateElement<GPUTools::SM::BindingPoint, GPUTools::CStateBaseAnalysis> _field138;
+    struct DYStateElement<GPUTools::SM::BindingPoint, GPUTools::CStateBaseAnalysis> _field139;
+    struct DYStateElement<GPUTools::SM::BindingPoint, GPUTools::CStateBaseAnalysis> _field140;
+    struct DYStateElement<GPUTools::SM::BindingPoint, GPUTools::CStateBaseAnalysis> _field141;
+    struct DYStateElement<GPUTools::SM::BindingPoint, GPUTools::CStateBaseAnalysis> _field142;
+    struct DYStateElement<GPUTools::SM::BindingPoint, GPUTools::CStateBaseAnalysis> _field143;
+    struct DYStateElement<GPUTools::SM::BindingPoint, GPUTools::CStateBaseAnalysis> _field144;
+    struct DYStateElement<GPUTools::SM::BindingPoint, GPUTools::CStateBaseAnalysis> _field145;
+    struct DYStateElement<GPUTools::SM::BindingPoint, GPUTools::CStateBaseAnalysis> _field146;
     struct DYStateElement<std::__1::basic_string<char>, GPUTools::CStateBaseAnalysis> _field147;
     struct DYStateElement<std::__1::vector<std::__1::basic_string<char>, std::__1::allocator<std::__1::basic_string<char>>>, GPUTools::CStateBaseAnalysis> _field148;
     struct DYStateElement<long long, GPUTools::CStateBaseAnalysis> _field149;
     struct DYStateElement<long long, GPUTools::CStateBaseAnalysis> _field150;
-    struct DYStateElement<GPUTools::DYSMStateErrorStatus, GPUTools::CStateBaseAnalysis> _field151;
-    struct DYSMObjectTrackingMap<GPUTools::DYSMVertexArrayObject<GPUSMObjectTypes>, int> _field152;
-    struct DYSMObjectTrackingMap<GPUTools::DYSMQueryObject<GPUSMObjectTypes>, int> _field153;
-    unsigned long long _field154;
-    struct DYSMSharegroupStateMirror<GPUSMObjectTypes> *_field155;
-    struct DYSMStateMirrorManager<GPUSMObjectTypes> *_field156;
-    unsigned long long _field157;
-} DYSMContextStateMirror_f37bd775;
+    struct DYStateElement<GPUTools::SM::StateErrorStatus, GPUTools::CStateBaseAnalysis> _field151;
+    struct ObjectTrackingMap<GPUTools::SM::VertexArrayObject<GPUSMObjectTypes>, int> _field152;
+    struct ObjectTrackingMap<GPUTools::SM::QueryObject<GPUSMObjectTypes>, int> _field153;
+    struct ObjectTrackingMap<GPUTools::SM::SyncObject<GPUSMObjectTypes>, int> _field154;
+    unsigned long long _field155;
+    struct SharegroupStateMirror<GPUSMObjectTypes> *_field156;
+    StateMirrorManager_5d4854bf *_field157;
+    unsigned long long _field158;
+} ContextStateMirror_a81d87c2;
+
+typedef struct DrawableInfo<GPUSMObjectTypes> {
+    int _field1;
+    struct DYStateElement<GPUTools::SM::VecN<int, 4>, GPUTools::CStateBaseAnalysis> _field2;
+    struct DYStateElement<unsigned long long, GPUTools::CStateBaseAnalysis> _field3;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field4;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field5;
+    struct DYStateElement<float, GPUTools::CStateBaseAnalysis> _field6;
+    struct DYStateElement<DYMtx, GPUTools::CStateBaseAnalysis> _field7;
+    struct DYStateElement<GPUTools::SM::VecN<float, 2>, GPUTools::CStateBaseAnalysis> _field8;
+    struct DYStateElement<GPUTools::SM::VecN<float, 2>, GPUTools::CStateBaseAnalysis> _field9;
+} DrawableInfo_c6e5aeb8;
+
+typedef struct FramebufferObject<GPUSMObjectTypes> {
+    int _field1;
+    int _field2;
+    int _field3;
+    int _field4;
+    struct DYStateElement<std::__1::basic_string<char>, GPUTools::CStateBaseAnalysis> _field5;
+    struct FramebufferAttachment<GPUSMObjectTypes> _field6[3];
+} FramebufferObject_2fa28505;
+
+typedef struct ProgramObject<GPUSMObjectTypes> {
+    int _field1;
+    int _field2;
+    int _field3;
+    int _field4;
+    struct unordered_map<int, GPUTools::SM::ProgramUniform<GPUSMObjectTypes>, std::__1::hash<int>, std::__1::equal_to<int>, std::__1::allocator<std::__1::pair<const int, GPUTools::SM::ProgramUniform<GPUSMObjectTypes>>>> _field5;
+    struct unordered_map<int, GPUTools::SM::ProgramAttrib<GPUSMObjectTypes>, std::__1::hash<int>, std::__1::equal_to<int>, std::__1::allocator<std::__1::pair<const int, GPUTools::SM::ProgramAttrib<GPUSMObjectTypes>>>> _field6;
+    struct unordered_map<std::__1::basic_string<char>, int, std::__1::hash<std::__1::basic_string<char>>, std::__1::equal_to<std::__1::basic_string<char>>, std::__1::allocator<std::__1::pair<const std::__1::basic_string<char>, int>>> _field7;
+    struct DYStateElement<GPUTools::SM::BindingPoint, GPUTools::CStateBaseAnalysis> _field8;
+    struct DYStateElement<GPUTools::SM::BindingPoint, GPUTools::CStateBaseAnalysis> _field9;
+    struct DYStateElement<int, GPUTools::CStateBaseAnalysis> _field10;
+    struct DYStateElement<int, GPUTools::CStateBaseAnalysis> _field11;
+    struct DYStateElement<std::__1::vector<std::__1::basic_string<char>, std::__1::allocator<std::__1::basic_string<char>>>, GPUTools::CStateBaseAnalysis> _field12;
+    struct DYStateElement<std::__1::vector<std::__1::basic_string<char>, std::__1::allocator<std::__1::basic_string<char>>>, GPUTools::CStateBaseAnalysis> _field13;
+    struct DYStateElement<int, GPUTools::CStateBaseAnalysis> _field14;
+    struct DYStateElement<int, GPUTools::CStateBaseAnalysis> _field15;
+    struct DYStateElement<std::__1::vector<std::__1::basic_string<char>, std::__1::allocator<std::__1::basic_string<char>>>, GPUTools::CStateBaseAnalysis> _field16;
+    struct DYStateElement<std::__1::vector<std::__1::basic_string<char>, std::__1::allocator<std::__1::basic_string<char>>>, GPUTools::CStateBaseAnalysis> _field17;
+    struct DYStateElement<int, GPUTools::CStateBaseAnalysis> _field18;
+    struct DYStateElement<int, GPUTools::CStateBaseAnalysis> _field19;
+    struct DYStateElement<std::__1::basic_string<char>, GPUTools::CStateBaseAnalysis> _field20;
+    struct DYStateElement<std::__1::basic_string<char>, GPUTools::CStateBaseAnalysis> _field21;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field22;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field23;
+    struct DYStateElement<std::__1::basic_string<char>, GPUTools::CStateBaseAnalysis> _field24;
+    struct DYStateElement<std::__1::basic_string<char>, GPUTools::CStateBaseAnalysis> _field25;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field26;
+    struct DYStateElement<int, GPUTools::CStateBaseAnalysis> _field27;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field28;
+} ProgramObject_837f0bc0;
+
+typedef struct StateMirrorManager<GPUSMObjectTypes> {
+    struct unordered_map<unsigned long long, GPUTools::SM::ContextStateMirror<GPUSMObjectTypes>*, std::__1::hash<unsigned long long>, std::__1::equal_to<unsigned long long>, std::__1::allocator<std::__1::pair<const unsigned long long, GPUTools::SM::ContextStateMirror<GPUSMObjectTypes>*>>> _contextStateMirrorMap;
+    struct unordered_map<unsigned long long, GPUTools::SM::SharegroupStateMirror<GPUSMObjectTypes>*, std::__1::hash<unsigned long long>, std::__1::equal_to<unsigned long long>, std::__1::allocator<std::__1::pair<const unsigned long long, GPUTools::SM::SharegroupStateMirror<GPUSMObjectTypes>*>>> _sharegroupStateMirrorMap;
+    struct ObjectTrackingMap<GPUTools::SM::DrawableInfo<GPUSMObjectTypes>, unsigned long long> _drawableInfoMap;
+    struct PassthroughBase _passthrough;
+    unsigned long long _surfaceBoundsDrawableID;
+    int _deviceOrientation;
+    int _deviceOrientationAroundScreenNormal;
+    int _lastFunctionIndex;
+} StateMirrorManager_5d4854bf;
+
+typedef struct TextureObject<GPUSMObjectTypes> {
+    int _field1;
+    int _field2;
+    int _field3;
+    struct objc_wrapper<__strong id> _field4;
+    int _field5;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field6;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field7;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field8;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field9;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field10;
+    struct DYStateElement<float, GPUTools::CStateBaseAnalysis> _field11;
+    struct DYStateElement<int, GPUTools::CStateBaseAnalysis> _field12;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field13;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field14;
+    struct DYStateElement<int, GPUTools::CStateBaseAnalysis> _field15;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field16;
+    struct DYStateElement<std::__1::basic_string<char>, GPUTools::CStateBaseAnalysis> _field17;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field18;
+    struct DYStateElement<GPUTools::SM::StateEnum, GPUTools::CStateBaseAnalysis> _field19;
+    struct DYStateElement<GPUTools::SM::VecN<int, 4>, GPUTools::CStateBaseAnalysis> _field20;
+    struct DYStateElement<int, GPUTools::CStateBaseAnalysis> _field21;
+    struct DYStateElement<GPUTools::SM::StateBool, GPUTools::CStateBaseAnalysis> _field22;
+    struct TextureLevel<GPUSMObjectTypes> _field23;
+    struct TextureMipChain<GPUSMObjectTypes> *_field24;
+    struct TextureMipChain<GPUSMObjectTypes> *_field25[6];
+} TextureObject_8e95dd33;
+
+typedef struct shared_ptr<GPUTools::FD::Function> {
+    struct Function *__ptr_;
+    struct __shared_weak_count *__cntrl_;
+} shared_ptr_2d3f6817;
 
 #pragma mark -
 
 /*
  * File: /Applications/Xcode.app/Contents/PlugIns/GPUDebuggerFoundation.ideplugin/Contents/MacOS/GPUDebuggerFoundation
- * UUID: 7589B1CA-81DC-3CE2-B858-AAC63ECD830E
+ * UUID: B56A990C-F3C4-3667-9244-EA38968CA393
  * Arch: Intel x86-64 (x86_64)
  *       Current version: 1.0.0, Compatibility version: 1.0.0
  *       Minimum Mac OS X version: 10.7.0
@@ -812,9 +1225,10 @@ typedef struct DYSMContextStateMirror<GPUSMObjectTypes> {
 @protocol DYFunctionTracerDelegate <NSObject>
 
 @optional
+- (id)rewriteContext:(unsigned long long)arg1;
 - (id)rewriteURL:(const char *)arg1;
-- (id)rewriteVariable:(const char *)arg1 paramType:(int)arg2;
-- (void)processFunction:(struct dy_decoded_function *)arg1;
+- (id)rewriteVariable:(const char *)arg1 semanticType:(unsigned int)arg2;
+- (void)processFunction:(const struct Function *)arg1;
 @end
 
 @protocol IDEDebugNavigableModel <NSObject>
@@ -837,6 +1251,27 @@ typedef struct DYSMContextStateMirror<GPUSMObjectTypes> {
 - (id)copyWithZone:(struct _NSZone *)arg1;
 @end
 
+@protocol NSFileManagerDelegate <NSObject>
+
+@optional
+- (BOOL)fileManager:(id)arg1 shouldProceedAfterError:(id)arg2 removingItemAtURL:(id)arg3;
+- (BOOL)fileManager:(id)arg1 shouldProceedAfterError:(id)arg2 removingItemAtPath:(id)arg3;
+- (BOOL)fileManager:(id)arg1 shouldRemoveItemAtURL:(id)arg2;
+- (BOOL)fileManager:(id)arg1 shouldRemoveItemAtPath:(id)arg2;
+- (BOOL)fileManager:(id)arg1 shouldProceedAfterError:(id)arg2 linkingItemAtURL:(id)arg3 toURL:(id)arg4;
+- (BOOL)fileManager:(id)arg1 shouldProceedAfterError:(id)arg2 linkingItemAtPath:(id)arg3 toPath:(id)arg4;
+- (BOOL)fileManager:(id)arg1 shouldLinkItemAtURL:(id)arg2 toURL:(id)arg3;
+- (BOOL)fileManager:(id)arg1 shouldLinkItemAtPath:(id)arg2 toPath:(id)arg3;
+- (BOOL)fileManager:(id)arg1 shouldProceedAfterError:(id)arg2 movingItemAtURL:(id)arg3 toURL:(id)arg4;
+- (BOOL)fileManager:(id)arg1 shouldProceedAfterError:(id)arg2 movingItemAtPath:(id)arg3 toPath:(id)arg4;
+- (BOOL)fileManager:(id)arg1 shouldMoveItemAtURL:(id)arg2 toURL:(id)arg3;
+- (BOOL)fileManager:(id)arg1 shouldMoveItemAtPath:(id)arg2 toPath:(id)arg3;
+- (BOOL)fileManager:(id)arg1 shouldProceedAfterError:(id)arg2 copyingItemAtURL:(id)arg3 toURL:(id)arg4;
+- (BOOL)fileManager:(id)arg1 shouldProceedAfterError:(id)arg2 copyingItemAtPath:(id)arg3 toPath:(id)arg4;
+- (BOOL)fileManager:(id)arg1 shouldCopyItemAtURL:(id)arg2 toURL:(id)arg3;
+- (BOOL)fileManager:(id)arg1 shouldCopyItemAtPath:(id)arg2 toPath:(id)arg3;
+@end
+
 @protocol NSObject
 - (id)description;
 - (unsigned long long)retainCount;
@@ -857,6 +1292,19 @@ typedef struct DYSMContextStateMirror<GPUSMObjectTypes> {
 - (Class)superclass;
 - (unsigned long long)hash;
 - (BOOL)isEqual:(id)arg1;
+
+@optional
+- (id)debugDescription;
+@end
+
+@protocol __ARCLiteIndexedSubscripting__
+- (void)setObject:(id)arg1 atIndexedSubscript:(unsigned long long)arg2;
+- (id)objectAtIndexedSubscript:(unsigned long long)arg1;
+@end
+
+@protocol __ARCLiteKeyedSubscripting__
+- (void)setObject:(id)arg1 forKeyedSubscript:(id)arg2;
+- (id)objectForKeyedSubscript:(id)arg1;
 @end
 
 // Not exported
@@ -865,26 +1313,29 @@ typedef struct DYSMContextStateMirror<GPUSMObjectTypes> {
     struct GPUCResourceManagerContainer *_resourceManagerContainer;
 }
 
+- (void)invalidateDeviceCache;
 - (struct GPUCResourceManagerContainer *)resourceManager;
 - (void)finalize;
-- (id)initWithCaptureArchive:(id)arg1 resourceFetcher:(id)arg2;
+- (id)initWithCaptureArchive:(id)arg1 resourceStreamer:(id)arg2;
 
 @end
 
 // Not exported
 @interface GPUStateMirror : NSObject <NSCopying>
 {
-    struct GPUCStateMirrorContainer *stateMirrorContainer;
+    StateMirrorManager_5d4854bf _manager;
     unsigned long long retrievalContextID;
     int _functionIndex;
 }
 
 @property int functionIndex; // @synthesize functionIndex=_functionIndex;
-@property(nonatomic) struct GPUCStateMirrorContainer *stateMirror; // @synthesize stateMirror=stateMirrorContainer;
 @property(nonatomic) unsigned long long retrievalContextID; // @synthesize retrievalContextID;
+- (id).cxx_construct;
+- (void).cxx_destruct;
 - (id)getUniformName:(int)arg1 program:(unsigned int)arg2;
 - (unsigned int)getUniformFunctionTarget;
 - (unsigned long long)getSharegroupID;
+- (BOOL)isFramebufferAttachment:(id)arg1;
 - (BOOL)isResourceItemBoundAt:(struct GPUBindPoint)arg1 resourceItem:(id)arg2;
 - (struct GPUBindPoint)getBindPointForResourceItem:(id)arg1;
 - (CDStruct_58878026)getParameterAsGLuint4:(unsigned int)arg1 ofTexture:(int)arg2;
@@ -892,7 +1343,7 @@ typedef struct DYSMContextStateMirror<GPUSMObjectTypes> {
 - (id)labelForImageResource:(id)arg1;
 - (BOOL)isAttachmentWritable:(unsigned int)arg1;
 - (void)getLayerXForm:(float *)arg1;
-- (void *)drawableObjectForDrawableID:(unsigned long long)arg1;
+- (const DrawableInfo_c6e5aeb8 *)drawableObjectForDrawableID:(unsigned long long)arg1;
 - (unsigned long long)mainDrawableID;
 - (int)getDeviceOrientationAroundScreenNormal;
 - (int)getDeviceOrientation;
@@ -906,8 +1357,6 @@ typedef struct DYSMContextStateMirror<GPUSMObjectTypes> {
 - (void)_addVertexArraysToResourceGroup:(id)arg1;
 - (void)_addBoundVertexArraysToResourceGroup:(id)arg1;
 - (void)_addQueriesToResourceGroup:(id)arg1;
-- (void)_addPipelinesToResourceGroup:(id)arg1;
-- (void)_addBoundPipelineToResourceGroup:(id)arg1;
 - (void)_addShadersToResourceGroup:(id)arg1;
 - (void)_addProgramsToResourceGroup:(id)arg1;
 - (void)_addBoundProgramToResourceGroup:(id)arg1;
@@ -915,28 +1364,27 @@ typedef struct DYSMContextStateMirror<GPUSMObjectTypes> {
 - (void)_addBoundFramebuffersToResourceGroup:(id)arg1;
 - (void)_addRenderbuffersToResourceGroup:(id)arg1;
 - (void)_addBoundRenderbuffersToResourceGroup:(id)arg1;
+- (void)_addBoundRenderbuffersToResourceGroup:(id)arg1 fromFramebuffer:(unsigned int)arg2 withPrefix:(const char *)arg3;
 - (void)_addBuffersToResourceGroup:(id)arg1;
 - (void)_addBoundBuffersToResourceGroup:(id)arg1;
 - (void)_addAllObjectsToParent:(id)arg1 objectType:(int)arg2 block:(id)arg3;
-- (void)_addObjectToParent:(id)arg1 objectID:(unsigned int)arg2 target:(unsigned int)arg3 context:(DYSMContextStateMirror_f37bd775 *)arg4 prefix:(const char *)arg5;
-- (id)_createGPUTraceResourceItemWithParent:(id)arg1 object:(void *)arg2 objectID:(unsigned int)arg3 labelTarget:(unsigned int)arg4 context:(DYSMContextStateMirror_f37bd775 *)arg5 prefix:(const char *)arg6 suffix:(const char *)arg7 type:(unsigned int)arg8;
-- (id)_labelForObject:(unsigned int)arg1 context:(DYSMContextStateMirror_f37bd775 *)arg2 target:(unsigned int)arg3 prefix:(const char *)arg4 suffix:(const char *)arg5 thumbnail:(BOOL)arg6;
-- (void *)contextStateMirror;
-- (id)programObjectsForPipelineNavigable:(id)arg1;
-- (id)shaderObjectsForProgramNavigable:(id)arg1;
-- (void *)currentDrawFBO;
-- (void *)programObjectForProgramID:(int)arg1;
-- (void *)textureObjectForTextureID:(int)arg1;
-- (void *)renderBufferObjectForRenderBufferID:(int)arg1;
-- (void *)vertexBufferObjectForVertexBufferID:(int)arg1;
-- (void *)elementBufferObjectForElementBufferID:(int)arg1;
-- (void *)xBufferObjectForXBufferID:(int)arg1;
+- (void)_addObjectToParent:(id)arg1 objectID:(unsigned int)arg2 target:(unsigned int)arg3 attachment:(int)arg4 context:(const ContextStateMirror_a81d87c2 *)arg5 prefix:(const char *)arg6;
+- (id)_createGPUTraceResourceItemWithParent:(id)arg1 object:(const void *)arg2 objectID:(unsigned int)arg3 labelTarget:(unsigned int)arg4 context:(const ContextStateMirror_a81d87c2 *)arg5 prefix:(const char *)arg6 suffix:(const char *)arg7 type:(unsigned int)arg8;
+- (void)_createSubItemsForResourceItem:(id)arg1;
+- (id)_labelForObject:(unsigned int)arg1 context:(const ContextStateMirror_a81d87c2 *)arg2 target:(unsigned int)arg3 prefix:(const char *)arg4 suffix:(const char *)arg5 thumbnail:(BOOL)arg6;
+- (const ContextStateMirror_a81d87c2 *)contextStateMirror;
+- (const FramebufferObject_2fa28505 *)currentDrawFBO;
+- (const ProgramObject_837f0bc0 *)programObjectForProgramID:(int)arg1;
+- (const TextureObject_8e95dd33 *)textureObjectForTextureID:(int)arg1;
+- (const struct RenderbufferObject<GPUSMObjectTypes> *)renderBufferObjectForRenderBufferID:(int)arg1;
+- (const BufferObject_6cf7d83d *)vertexBufferObjectForVertexBufferID:(int)arg1;
+- (const BufferObject_6cf7d83d *)elementBufferObjectForElementBufferID:(int)arg1;
+- (const BufferObject_6cf7d83d *)xBufferObjectForXBufferID:(int)arg1;
 - (void)setRetrievalContext:(unsigned long long)arg1;
-- (int)processFunction:(struct dy_decoded_function *)arg1 functionIndex:(int)arg2;
-- (void)finalize;
+- (unsigned int)processFunction:(const struct Function *)arg1 functionIndex:(int)arg2;
+@property(readonly, nonatomic) StateMirrorManager_5d4854bf *manager; // @dynamic manager;
 - (id)mutableCopyWithZone:(struct _NSZone *)arg1;
 - (id)copyWithZone:(struct _NSZone *)arg1;
-- (id)initEmpty;
 - (id)init;
 
 @end
@@ -969,8 +1417,10 @@ typedef struct DYSMContextStateMirror<GPUSMObjectTypes> {
 @interface GPUTraceDocumentLocation : DVTDocumentLocation
 {
     NSString *_outlineItemUUID;
+    id _report;
 }
 
+@property(readonly) id report; // @synthesize report=_report;
 @property(readonly) NSString *outlineItemUUID; // @synthesize outlineItemUUID=_outlineItemUUID;
 - (void)logCreationBacktrace;
 - (long long)compare:(id)arg1;
@@ -1013,12 +1463,14 @@ typedef struct DYSMContextStateMirror<GPUSMObjectTypes> {
 @property(readonly) int functionIndex; // @synthesize functionIndex=_functionIndex;
 @property(readonly) NSArray *allResources; // @synthesize allResources=_allResources;
 @property(readonly) NSArray *boundResources; // @synthesize boundResources=_boundResources;
+- (void)releaseRealizedResources;
 - (void)_generateResources:(BOOL)arg1;
 - (void)_generateResourcesForGroup:(id)arg1 boundOnly:(BOOL)arg2;
 - (void)_createParentResourceGroups;
 - (id)_createResourceGroup:(id)arg1 boundOnly:(BOOL)arg2;
 - (BOOL)generateResources;
 - (BOOL)generateResourceTopLevelGroups;
+- (id)stackFramesWithVisibleSource;
 - (void)generateStackFrameItems;
 @property(copy) GPUStateMirror *stateMirror; // @synthesize stateMirror=_stateMirror;
 - (id)description;
@@ -1026,7 +1478,7 @@ typedef struct DYSMContextStateMirror<GPUSMObjectTypes> {
 - (void)dealloc;
 - (id)UUIDSection;
 - (id)copyWithZone:(struct _NSZone *)arg1;
-- (id)initWithOutline:(id)arg1 parent:(id)arg2 label:(id)arg3 functionIndex:(int)arg4 displayIndex:(int)arg5;
+- (id)initWithController:(id)arg1 parent:(id)arg2 functionIndex:(int)arg3 displayIndex:(int)arg4;
 
 @end
 
@@ -1045,9 +1497,10 @@ typedef struct DYSMContextStateMirror<GPUSMObjectTypes> {
 @end
 
 // Not exported
-@interface GPUTraceOutline : DYCaptureVisitor <DYFunctionTracerDelegate>
+@interface GPUTraceOutline : DYInOrderInstructionFilesVisitor <DYFunctionTracerDelegate>
 {
     struct dispatch_queue_s *_queue;
+    GPUTraceSession *_traceSession;
     unsigned int _currentFunctionIndex;
     unsigned int _currentDisplayFunctionIndex;
     unsigned int _currentFrameIndex;
@@ -1056,59 +1509,81 @@ typedef struct DYSMContextStateMirror<GPUSMObjectTypes> {
     unsigned int _currentMarkerDepth;
     BOOL _processingTraceFiles;
     GPUStateMirror *_statemirror;
-    DYFunctionStream *_captureFileFunctionStream;
+    unsigned long long _currentContext;
+    unsigned long long _currentThread;
+    unsigned long long _currentQueue;
+    struct shared_ptr<GPUTools::FD::TFunctionStream<GPUTools::FD::Function, void>> _captureStream;
+    struct _Iterator<GPUTools::FD::Function> _captureStreamIter;
     IDELaunchSession *_launchSession;
-    DYCaptureArchive *_captureArchive;
-    NSURL *_captureArchiveURL;
     DYCaptureSessionInfo *_captureSessionInfo;
     NSMutableArray *_frames;
-    GPUTraceGroupItem *_domainProviderRootGroup;
+    GPUTraceGroupItem *_domainProviderRootResourceGroup;
+    GPUExpertGroupItem *_domainProviderRootReportGroup;
     NSMutableArray *_allDrawItems;
     NSMutableArray *_allAPIItems;
     NSMutableArray *_allMarkerItems;
+    GPUExpertGroupItem *_expertReports;
     GPUResourceManager *_resourceManager;
     NSString *_contentDelegateUUID;
     NSMutableDictionary *_modelObjectDictionary;
     DYSymbolicator *_symbolicator;
     DYFunctionTracer *_tracer;
     NSMutableDictionary *_editorsDict;
-    struct dy_decoded_function *_currentFunction;
-    BOOL _disableFullTrace;
+    const struct Function *_currentFunction;
+    struct vector<unsigned int, std::__1::allocator<unsigned int>> functionIndexToDisplayIndexMap;
+    NSMutableDictionary *_contextGroupListDict;
+    NSMutableArray *_contextGroupList;
+    NSMutableDictionary *_contextNameDict;
+    NSMutableDictionary *_threadNameDict;
+    BOOL _bIsMultiContextOrThread;
+    BOOL _bIsMultiAPI;
 }
 
+@property(readonly) GPUTraceSession *traceSession; // @synthesize traceSession=_traceSession;
 @property(readonly) NSMutableDictionary *editorsDict; // @synthesize editorsDict=_editorsDict;
-@property(readonly) NSURL *captureArchiveURL; // @synthesize captureArchiveURL=_captureArchiveURL;
 @property(readonly) NSString *contentDelegateUUID; // @synthesize contentDelegateUUID=_contentDelegateUUID;
 @property(readonly) DYFunctionTracer *tracer; // @synthesize tracer=_tracer;
-@property(readonly) GPUTraceGroupItem *domainProviderRootGroup; // @synthesize domainProviderRootGroup=_domainProviderRootGroup;
+@property(readonly) GPUTraceGroupItem *domainProviderRootResourceGroup; // @synthesize domainProviderRootResourceGroup=_domainProviderRootResourceGroup;
 @property(readonly) NSArray *allMarkerItems; // @synthesize allMarkerItems=_allMarkerItems;
 @property(readonly) NSArray *allAPIItems; // @synthesize allAPIItems=_allAPIItems;
 @property(readonly) NSArray *allDrawItems; // @synthesize allDrawItems=_allDrawItems;
 @property(readonly) DYSymbolicator *symbolicator; // @synthesize symbolicator=_symbolicator;
 @property(readonly) DYCaptureSessionInfo *captureSessionInfo; // @synthesize captureSessionInfo=_captureSessionInfo;
 @property(retain) GPUResourceManager *resourceManager; // @synthesize resourceManager=_resourceManager;
-@property(readonly) DYCaptureArchive *captureArchive; // @synthesize captureArchive=_captureArchive;
 @property(retain) NSMutableArray *frames; // @synthesize frames=_frames;
-@property(readonly) IDELaunchSession *launchSession; // @synthesize launchSession=_launchSession;
+- (id).cxx_construct;
+- (void).cxx_destruct;
+- (id)rewriteContext:(unsigned long long)arg1;
 - (id)rewriteURL:(const char *)arg1;
-- (id)rewriteVariable:(const char *)arg1 paramType:(int)arg2;
-- (void)processFunction:(struct dy_decoded_function *)arg1;
+- (id)rewriteVariable:(const char *)arg1 semanticType:(unsigned int)arg2;
+- (void)processFunction:(const struct Function *)arg1;
+- (id)resourceItemOfType:(unsigned int)arg1 resourceID:(unsigned int)arg2 forFunctionIndex:(unsigned int)arg3;
+- (id)apiItemForTrueFunctionIndex:(unsigned int)arg1;
+- (id)apiItemFromFunctionIndex:(unsigned int)arg1;
+@property(readonly) unsigned int totalfunctionIndexCount; // @dynamic totalfunctionIndexCount;
+- (id)locateItemToDraw:(id)arg1 isAssociatedWithStateItem:(char *)arg2;
 - (id)stateMirrorForTraceItem:(id)arg1;
 - (id)_derivedStateMirrorFromStateMirror:(id)arg1 forFunctionIndex:(unsigned int)arg2 fromFunctionIndex:(unsigned int)arg3;
+- (void)_addFunction:(struct Function *)arg1;
+- (void)_addContext:(struct Function *)arg1;
 - (void)visitFunctionStreamFile:(id)arg1;
-- (void)_addFunction:(struct dy_decoded_function *)arg1;
-- (void)visitCaptureArchive:(id)arg1;
+- (void)performPostCaptureVisitActions;
+- (void)performPreCaptureVisitActions;
+- (void)performPreVisitActions;
 - (BOOL)_openFilenames:(id)arg1 archive:(id)arg2 filesArray:(id)arg3;
 - (id)frameAtIndex:(unsigned long long)arg1;
 - (unsigned long long)numberOfFrames;
 - (void)_addDrawItem:(id)arg1;
 - (id)itemForUUID:(id)arg1;
 - (void)addModelItem:(id)arg1;
+@property(readonly) GPUTraceDrawItem *lastDrawItem; // @dynamic lastDrawItem;
 @property(readonly) unsigned long long totalDrawCount; // @dynamic totalDrawCount;
 @property(readonly) GPUTraceGroupItem *rootProcessItem; // @dynamic rootProcessItem;
 - (void)dealloc;
 - (void)finalize;
-- (id)initWithLaunchSession:(id)arg1 captureArchive:(id)arg2 symbolicator:(id)arg3;
+- (void)invalidate;
+@property(readonly) NSURL *captureArchiveURL; // @dynamic captureArchiveURL;
+- (id)initWithTraceSession:(id)arg1;
 
 @end
 
@@ -1116,47 +1591,60 @@ typedef struct DYSMContextStateMirror<GPUSMObjectTypes> {
 {
     NSString *_label;
     NSMutableArray *_children;
+    shared_ptr_2d3f6817 _decodedFunction;
     GPUTraceOutlineItem *_parent;
-    struct dy_decoded_function _decodedFunction;
-    GPUTraceOutline *_gputraceOutline;
+    GPUDebuggerController *_controller;
     NSString *_UUID;
 }
 
 + (void)initialize;
 + (id)sharedUUIDString;
-@property(readonly) NSString *UUID; // @synthesize UUID=_UUID;
-@property __weak GPUTraceOutlineItem *parent; // @synthesize parent=_parent;
-@property struct dy_decoded_function decodedFunction; // @synthesize decodedFunction=_decodedFunction;
-@property __weak GPUTraceOutline *gputraceOutline; // @synthesize gputraceOutline=_gputraceOutline;
-@property(retain) NSString *label; // @synthesize label=_label;
-@property(retain) NSMutableArray *children; // @synthesize children=_children;
+@property(readonly, nonatomic) NSString *UUID; // @synthesize UUID=_UUID;
+@property(nonatomic) __weak GPUTraceOutlineItem *parent; // @synthesize parent=_parent;
+@property(nonatomic) __weak GPUDebuggerController *controller; // @synthesize controller=_controller;
+@property(retain, nonatomic) NSString *label; // @synthesize label=_label;
+@property(retain, nonatomic) NSMutableArray *children; // @synthesize children=_children;
+- (id).cxx_construct;
+- (void).cxx_destruct;
+- (void)releaseRealizedResources;
 - (id)childAtIndex:(unsigned long long)arg1;
 - (unsigned long long)numberOfChildren;
-- (void)copyDecodedFunction:(struct dy_decoded_function *)arg1;
+@property(readonly, nonatomic) struct Function *decodedFunction; // @dynamic decodedFunction;
+- (void)setDecodedFunctionPointer:(shared_ptr_2d3f6817)arg1;
 @property(readonly) IDELaunchSession *launchSession;
 @property(readonly) NSString *associatedProcessUUID;
-- (void)finalize;
 - (unsigned long long)hash;
 - (BOOL)isEqual:(id)arg1;
 - (void)_createUUID;
 - (id)_createUUIDLabelForItem:(id)arg1;
 - (id)UUIDSection;
 - (id)description;
+@property(readonly, nonatomic) GPUTraceOutline *gputraceOutline; // @dynamic gputraceOutline;
+@property(readonly, nonatomic) NSURL *captureArchiveURL;
 - (id)copyWithZone:(struct _NSZone *)arg1;
-- (id)initWithOutline:(id)arg1 parent:(id)arg2 label:(id)arg3;
+- (id)initWithController:(id)arg1 parent:(id)arg2 label:(id)arg3;
 
 @end
 
 @interface GPUTraceGroupItem : GPUTraceOutlineItem
 {
+    NSString *_descText;
     BOOL _isMarkerGroup;
+    BOOL _isContextGroup;
     int _functionIndex;
+    int _drawCallCount;
+    int _apiCallCount;
 }
 
-@property(readonly) int functionIndex; // @synthesize functionIndex=_functionIndex;
-@property(readonly) BOOL isMarkerGroup; // @synthesize isMarkerGroup=_isMarkerGroup;
+@property(readonly, nonatomic) NSString *descText; // @synthesize descText=_descText;
+@property(nonatomic) int apiCallCount; // @synthesize apiCallCount=_apiCallCount;
+@property(nonatomic) int drawCallCount; // @synthesize drawCallCount=_drawCallCount;
+@property(readonly, nonatomic) int functionIndex; // @synthesize functionIndex=_functionIndex;
+@property(readonly, nonatomic) BOOL isContextGroup; // @synthesize isContextGroup=_isContextGroup;
+@property(readonly, nonatomic) BOOL isMarkerGroup; // @synthesize isMarkerGroup=_isMarkerGroup;
 - (id)UUIDSection;
-- (id)initWithOutline:(id)arg1 parent:(id)arg2 label:(id)arg3 isMarkerType:(BOOL)arg4 functionIndex:(int)arg5;
+- (id)initWithController:(id)arg1 parent:(id)arg2 label:(id)arg3 contextDesc:(id)arg4 functionIndex:(int)arg5;
+- (id)initWithController:(id)arg1 parent:(id)arg2 label:(id)arg3 isMarkerType:(BOOL)arg4 functionIndex:(int)arg5;
 
 @end
 
@@ -1167,7 +1655,7 @@ typedef struct DYSMContextStateMirror<GPUSMObjectTypes> {
 - (id)contentDelegateUIExtensionIdentifier;
 @property(copy, nonatomic) NSString *name;
 - (id)UUIDSection;
-- (id)initWithTraceOutline:(id)arg1 label:(id)arg2;
+- (id)initWithController:(id)arg1 label:(id)arg2;
 
 // Remaining properties
 @property(readonly) NSString *associatedProcessUUID;
@@ -1180,74 +1668,120 @@ typedef struct DYSMContextStateMirror<GPUSMObjectTypes> {
     NSString *_resourceCategory;
 }
 
-@property(readonly) NSString *resourceCategory; // @synthesize resourceCategory=_resourceCategory;
-- (id)associatedTraceItem;
++ (id)resourceCategoryForType:(unsigned int)arg1;
++ (unsigned int)resourceTypeForCategory:(id)arg1;
+@property(readonly, nonatomic) NSString *resourceCategory; // @synthesize resourceCategory=_resourceCategory;
+- (void)releaseRealizedResources;
 - (id)copyWithZone:(struct _NSZone *)arg1;
 - (id)UUIDSection;
-- (id)initWithOutline:(id)arg1 parent:(id)arg2 label:(id)arg3 category:(id)arg4;
+- (id)initWithController:(id)arg1 parent:(id)arg2 label:(id)arg3 category:(id)arg4;
 
 @end
 
 @interface GPUTraceReplayController : NSObject
 {
-    DYCaptureArchive *_archive;
     NSString *_deviceIdentifier;
     DYDevice *_device;
     BOOL _replayerReady;
     DYGuestAppSession *_replaySession;
     struct dispatch_queue_s *_queue;
+    GPUDebuggerController *_controller;
+    DYContinuation *_invalidTerminationHandler;
     unsigned int _currentFunctionIndex;
     unsigned int _lastFunctionIndex;
 }
 
+@property(readonly) unsigned int currentFunctionIndex; // @synthesize currentFunctionIndex=_currentFunctionIndex;
 @property(readonly) DYGuestAppSession *replaySession; // @synthesize replaySession=_replaySession;
-@property(retain) DYCaptureArchive *archive; // @synthesize archive=_archive;
 @property BOOL replayerReady; // @synthesize replayerReady=_replayerReady;
-- (id)initiateReplaySession;
-- (void)endReplaySession;
+@property(readonly) GPUDebuggerController *controller; // @synthesize controller=_controller;
+- (void)removeCaptureArchivesFromReplayDevice:(id)arg1;
+- (void)replayWithExperiment:(id)arg1 baseCaptureArchivePath:(id)arg2 playbackMessageHandler:(id)arg3;
+- (void)setReplayDeviceBackgroundImage:(id)arg1;
+- (id)initiateDebuggerReplaySession:(BOOL)arg1;
+- (id)_deleteArchivesFromDeviceIfNeeded:(BOOL)arg1;
+- (id)initiateReplaySession:(id)arg1;
+- (id)prepareCaptureArchive:(id)arg1 withDestinationName:(id)arg2;
+- (id)launchReplayerWithMessageHandler:(id)arg1;
+- (id)endDebuggerReplaySession;
+- (id)endReplaySession;
+- (void)sendDebugBeginMessage:(id)arg1;
 - (void)toggleDeviceSideDrawPresenting:(BOOL)arg1 withFuture:(id)arg2;
 - (void)setWireframeLineWidth:(float)arg1 withFuture:(id)arg2;
 - (void)toggleDeviceSideWireframePresenting:(BOOL)arg1 withFuture:(id)arg2;
 - (void)replayToFunctionIndex:(unsigned int)arg1 withFutureResult:(id)arg2;
 - (void)invalidate;
 - (id)setupDevice;
+@property(readonly) DYDeviceInfo *playbackDeviceInfo; // @dynamic playbackDeviceInfo;
 - (void)finalize;
 - (void)dealloc;
-- (id)initWithArchive:(id)arg1 deviceIdentifer:(id)arg2 lastFunctionIndex:(unsigned int)arg3;
+- (id)initWithController:(id)arg1 deviceIdentifer:(id)arg2 lastFunctionIndex:(unsigned int)arg3;
+
+@end
+
+@interface GPUTraceProgramItem : GPUTraceResourceItem
+{
+    GPUTraceShaderItem *lastSelectedShaderItem;
+}
+
+@property(nonatomic) GPUTraceShaderItem *lastSelectedShaderItem; // @synthesize lastSelectedShaderItem;
+- (id)initWithController:(id)arg1 parent:(id)arg2 programID:(unsigned int)arg3 unrealizedResourceObject:(const void *)arg4 context:(unsigned long long)arg5 label:(id)arg6;
+- (void)establishChildren;
+
+@end
+
+@interface GPUTraceShaderItem : GPUTraceResourceItem
+{
+    unsigned int _shaderType;
+    NSString *_infoLog;
+}
+
+@property(readonly, nonatomic) NSString *infoLog; // @synthesize infoLog=_infoLog;
+@property(readonly, nonatomic) unsigned int shaderType; // @synthesize shaderType=_shaderType;
+- (void)releaseRealizedResources;
+- (id)selectInProgram;
+- (id)associatedTraceItem;
+- (id)parentResourceGroup;
+- (id)copyWithZone:(struct _NSZone *)arg1;
+- (id)initWithParent:(id)arg1 shaderType:(unsigned int)arg2 infoLog:(const char *)arg3 label:(id)arg4;
 
 @end
 
 @interface GPUTraceResourceItem : GPUTraceOutlineItem
 {
-    unsigned long long _contextID;
-    void *_unrealizedResourceObject;
-    id _resourceObject;
     id _displayAttributes;
-    NSImage *_thumbnail;
     NSString *_thumbnailLabel;
+    unsigned long long _contextID;
+    DYResourceObject *_resourceObject;
+    const void *_unrealizedResourceObject;
+    unsigned long long _sharegroupID;
+    NSMutableDictionary *_properties;
     unsigned int _type;
     BOOL _generatesThumbnail;
-    BOOL _thumbnailDirty;
-    NSMutableDictionary *_properties;
+    unsigned int _objectID;
 }
 
-@property BOOL thumbnailDirty; // @synthesize thumbnailDirty=_thumbnailDirty;
-@property(retain) NSImage *thumbnail; // @synthesize thumbnail=_thumbnail;
-@property(readonly) NSMutableDictionary *properties; // @synthesize properties=_properties;
-@property(readonly) unsigned long long contextID; // @synthesize contextID=_contextID;
-@property(readonly) BOOL generatesThumbnail; // @synthesize generatesThumbnail=_generatesThumbnail;
-@property(retain) id displayAttributes; // @synthesize displayAttributes=_displayAttributes;
-@property(retain) NSString *thumbnailLabel; // @synthesize thumbnailLabel=_thumbnailLabel;
-@property(readonly) void *unrealizedResourceObject; // @synthesize unrealizedResourceObject=_unrealizedResourceObject;
-@property(retain) id resourceObject; // @synthesize resourceObject=_resourceObject;
-@property(readonly) unsigned int type; // @synthesize type=_type;
+@property(readonly, nonatomic) unsigned int objectID; // @synthesize objectID=_objectID;
+@property(readonly, nonatomic) BOOL generatesThumbnail; // @synthesize generatesThumbnail=_generatesThumbnail;
+@property(readonly, nonatomic) unsigned int type; // @synthesize type=_type;
+@property(readonly, nonatomic) NSMutableDictionary *properties; // @synthesize properties=_properties;
+@property(readonly, nonatomic) unsigned long long sharegroupID; // @synthesize sharegroupID=_sharegroupID;
+@property(readonly, nonatomic) const void *unrealizedResourceObject; // @synthesize unrealizedResourceObject=_unrealizedResourceObject;
+@property(retain, nonatomic) DYResourceObject *resourceObject; // @synthesize resourceObject=_resourceObject;
+@property(readonly, nonatomic) unsigned long long contextID; // @synthesize contextID=_contextID;
+@property(retain, nonatomic) NSString *thumbnailLabel; // @synthesize thumbnailLabel=_thumbnailLabel;
+@property(retain, nonatomic) id displayAttributes; // @synthesize displayAttributes=_displayAttributes;
+- (void)releaseRealizedResources;
 - (id)realizeResource;
-@property(readonly) unsigned int functionIndex;
-@property(readonly) GPUStateMirror *stateMirror;
+- (void)establishChildren;
+@property(readonly, nonatomic) unsigned int functionIndex;
+@property(readonly, nonatomic) GPUStateMirror *stateMirror;
 - (id)associatedDrawItem;
 - (id)associatedTraceItem;
+- (id)parentResourceGroup;
+- (void)finalize;
 - (id)copyWithZone:(struct _NSZone *)arg1;
-- (id)initWithOutline:(id)arg1 parent:(id)arg2 unrealizedResourceObject:(void *)arg3 context:(unsigned long long)arg4 label:(id)arg5 type:(unsigned int)arg6;
+- (id)initWithController:(id)arg1 parent:(id)arg2 objectID:(unsigned int)arg3 unrealizedResourceObject:(const void *)arg4 context:(unsigned long long)arg5 label:(id)arg6 type:(unsigned int)arg7;
 
 @end
 
@@ -1256,57 +1790,46 @@ typedef struct DYSMContextStateMirror<GPUSMObjectTypes> {
     struct dispatch_queue_s *_queue;
     IDELaunchSession *_launchSession;
     NSString *_deviceIdentifier;
-    DYCaptureArchive *_captureArchive;
     GPUTraceOutline *_outline;
     GPUTraceReplayController *_replayController;
-    BOOL _replayerReady;
+    GPUDebuggerController *_debuggerController;
+    BOOL _debugReplayActive;
     BOOL _presentDrawCallsOnDevice;
     BOOL _presentWireframeOnDevice;
     float _wireframeLineWidth;
     int _state;
     DYSymbolicator *_symbolicator;
-    NSURL *_captureArchiveURL;
-    id <DVTObservingToken> _replayerObserverToken;
+    NSDictionary *_updatedResourcesDict;
+    GPUTraceGroupItem *_workspaceRootResourceGroup;
 }
 
-@property int state; // @synthesize state=_state;
-@property(readonly) DYSymbolicator *symbolicator; // @synthesize symbolicator=_symbolicator;
-@property float wireframeLineWidth; // @synthesize wireframeLineWidth=_wireframeLineWidth;
-@property BOOL presentWireframeOnDevice; // @synthesize presentWireframeOnDevice=_presentWireframeOnDevice;
-@property BOOL presentDrawCallsOnDevice; // @synthesize presentDrawCallsOnDevice=_presentDrawCallsOnDevice;
-@property(readonly) NSString *deviceIdentifier; // @synthesize deviceIdentifier=_deviceIdentifier;
-@property BOOL replayerReady; // @synthesize replayerReady=_replayerReady;
-@property(readonly) GPUTraceReplayController *replayController; // @synthesize replayController=_replayController;
-@property(readonly) GPUTraceOutline *outline; // @synthesize outline=_outline;
-@property(readonly) NSURL *captureArchiveURL; // @synthesize captureArchiveURL=_captureArchiveURL;
-@property(readonly) DYCaptureArchive *captureArchive; // @synthesize captureArchive=_captureArchive;
+@property(retain, nonatomic) NSDictionary *updatedResourcesDict; // @synthesize updatedResourcesDict=_updatedResourcesDict;
+@property(readonly, nonatomic) GPUTraceGroupItem *workspaceRootResourceGroup; // @synthesize workspaceRootResourceGroup=_workspaceRootResourceGroup;
+@property(nonatomic) int state; // @synthesize state=_state;
+@property(readonly, nonatomic) IDELaunchSession *launchSession; // @synthesize launchSession=_launchSession;
+@property(readonly, nonatomic) DYSymbolicator *symbolicator; // @synthesize symbolicator=_symbolicator;
+@property(nonatomic) float wireframeLineWidth; // @synthesize wireframeLineWidth=_wireframeLineWidth;
+@property(nonatomic) BOOL presentWireframeOnDevice; // @synthesize presentWireframeOnDevice=_presentWireframeOnDevice;
+@property(nonatomic) BOOL presentDrawCallsOnDevice; // @synthesize presentDrawCallsOnDevice=_presentDrawCallsOnDevice;
+@property(readonly, nonatomic) NSString *deviceIdentifier; // @synthesize deviceIdentifier=_deviceIdentifier;
+@property(nonatomic) BOOL debugReplayActive; // @synthesize debugReplayActive=_debugReplayActive;
+@property(readonly, nonatomic) GPUDebuggerController *debuggerController; // @synthesize debuggerController=_debuggerController;
+@property(readonly, nonatomic) GPUTraceReplayController *replayController; // @synthesize replayController=_replayController;
+@property(readonly, nonatomic) GPUTraceOutline *outline; // @synthesize outline=_outline;
 - (void)invalidate;
+- (id)resetEmbeddedReplaySession;
 - (id)establishEmbeddedReplaySession;
-- (void)_loadReplayControllerWithLastFunctionIndex:(unsigned int)arg1;
+- (BOOL)_loadReplayControllerWithError:(id *)arg1;
+- (id)_setupReplaySession:(BOOL)arg1;
+- (id)updateResource:(id)arg1 sharegroupID:(unsigned long long)arg2;
+- (void)resetResourceManager;
+- (BOOL)_loadReplayControllerWithLastFunctionIndex:(unsigned int)arg1;
 - (BOOL)isInActiveState;
-@property BOOL renderWireframe; // @dynamic renderWireframe;
-- (id)initWithLaunchSession:(id)arg1 captureArchive:(id)arg2 deviceIdentifier:(id)arg3 symbolicator:(id)arg4;
-
-@end
-
-@interface GPUURLManager : NSObject
-{
-    NSMutableSet *_validURLSet;
-    NSMapTable *_hashToURLTable;
-    DVTMapTable *_documentNameCountTable;
-}
-
-+ (id)sharedURLManager;
-@property(readonly) NSMutableSet *validURLSet; // @synthesize validURLSet=_validURLSet;
-- (void)incrementDocumentCountForInferiorName:(id)arg1;
-- (unsigned long long)documentCountForInferiorName:(id)arg1;
-- (BOOL)containsURLUsingHashkeyString:(id)arg1;
-- (id)URLForHashkeyString:(id)arg1;
-- (unsigned long long)hashKeyForURL:(id)arg1;
-- (void)removeURL:(id)arg1;
-- (BOOL)containsURL:(id)arg1;
-- (void)addURL:(id)arg1;
-- (id)init;
+@property(readonly, nonatomic) BOOL showGroupDrawCallCount; // @dynamic showGroupDrawCallCount;
+@property(nonatomic) BOOL hideEmptyMarkerGroups; // @dynamic hideEmptyMarkerGroups;
+@property(nonatomic) BOOL compactTextMode; // @dynamic compactTextMode;
+@property(readonly, nonatomic) NSURL *captureArchiveURL; // @dynamic captureArchiveURL;
+- (id)initWithLaunchSession:(id)arg1 debuggerController:(id)arg2 deviceIdentifier:(id)arg3 symbolicator:(id)arg4 rootResourceGroup:(id)arg5;
 
 @end
 
@@ -1325,63 +1848,88 @@ typedef struct DYSMContextStateMirror<GPUSMObjectTypes> {
 @interface GPUInferiorSession : NSObject <IDETraceInferiorSession>
 {
     struct dispatch_queue_s *_queue;
-    NSURL *_mostRecentlyCapturedArchiveURL;
-    DYFuture *_symbolicatorFuture;
+    struct dispatch_queue_s *_resourceQueue;
     id <DVTObservingToken> _launchSessionStateObserverToken;
     id <DVTObservingToken> _traceSessionStateObserverToken;
     id <DVTObservingToken> _symbolicBreakpointsObserverToken;
     id <DVTObservingToken> _magicSymbolBreakpointSymbolNameObserverToken;
     id <DVTObservingToken> _magicSymbolBreakpointShouldBeEnabledObserverToken;
     DVTHashTable *_magicSymbolBreakpoints;
-    unsigned long long _pcCaptureGPUTraceStartTimestamp;
-    unsigned long long _pcCaptureGPUTraceEndTimestamp;
-    unsigned long long _pcArchiveCreationStartTimestamp;
-    unsigned long long _pcArchiveCreationEndTimestamp;
-    unsigned long long _pcActivationMessageTimestamp;
-    NSString *_inferiorAppName;
-    DYCaptureArchive *_currentCaptureArchive;
-    DYCaptureSessionInfo *_captureSessionInfo;
-    GPUTraceSession *_currentTraceSession;
-    NSString *_captureUnavailabilityReason;
-    int _state;
-    DYGuestAppSession *_guestAppSession;
-    DYCaptureSession *_captureSession;
-    BOOL readyToCapture;
-    BOOL capturing;
-    BOOL archiveFinalized;
-    BOOL _captureFromBreakpointRequested;
-    NSError *_error;
     IDELaunchSession *_launchSession;
     NSString *_deviceIdentifier;
+    NSString *_inferiorAppName;
+    int _state;
+    GPUDebuggerController *_debuggerController;
+    GPUTraceSession *_currentTraceSession;
+    GPUTraceGroupItem *_workspaceRootResourceGroup;
+    GPUExpertGroupItem *_workspaceRootReportGroup;
+    DYGuestAppSession *_guestAppSession;
+    DYFuture *_symbolicatorFuture;
+    DYCaptureArchive *_nextCaptureArchive;
+    DYCaptureSession *_activeCaptureSession;
+    NSMutableDictionary *_updatedResourcesDict;
+    NSMutableDictionary *_replayUpdatedResourcesDict;
+    NSMutableDictionary *_originalResourcesDict;
+    NSMutableDictionary *_programInfoDict;
+    NSError *_error;
+    BOOL readyToCapture;
+    BOOL archiveFinalized;
+    BOOL _finalizedOverview;
+    id _captureCompleteHander;
+    unsigned int _updatedResourcesChangeCount;
+    NSString *_captureUnavailabilityReason;
 }
 
-+ (id)keyPathsForValuesAffectingTraceSession;
++ (id)GPUToolsDeviceFromDVTDevice:(id)arg1 error:(id *)arg2;
 + (id)logAspect;
++ (id)keyPathsForValuesAffectingTraceSession;
+@property(readonly) NSString *captureUnavailabilityReason; // @synthesize captureUnavailabilityReason=_captureUnavailabilityReason;
+@property(readonly) unsigned int updatedResourcesChangeCount; // @synthesize updatedResourcesChangeCount=_updatedResourcesChangeCount;
+@property(readonly) DYGuestAppSession *guestAppSession; // @synthesize guestAppSession=_guestAppSession;
+@property(copy) id captureCompleteHander; // @synthesize captureCompleteHander=_captureCompleteHander;
+@property(readonly) NSMutableDictionary *programInfoDict; // @synthesize programInfoDict=_programInfoDict;
+@property(readonly) NSMutableDictionary *originalResourcesDict; // @synthesize originalResourcesDict=_originalResourcesDict;
+@property(readonly) NSMutableDictionary *updatedResourcesDict; // @synthesize updatedResourcesDict=_updatedResourcesDict;
+@property(retain) GPUTraceGroupItem *workspaceRootResourceGroup; // @synthesize workspaceRootResourceGroup=_workspaceRootResourceGroup;
+@property(readonly) GPUDebuggerController *debuggerController; // @synthesize debuggerController=_debuggerController;
 @property int state; // @synthesize state=_state;
 @property(retain) NSError *error; // @synthesize error=_error;
 @property BOOL readyToCapture; // @synthesize readyToCapture;
-@property(readonly) NSString *captureUnavailabilityReason; // @synthesize captureUnavailabilityReason=_captureUnavailabilityReason;
 @property(readonly) NSString *deviceIdentifier; // @synthesize deviceIdentifier=_deviceIdentifier;
 @property(retain) GPUTraceSession *currentTraceSession; // @synthesize currentTraceSession=_currentTraceSession;
 @property BOOL archiveFinalized; // @synthesize archiveFinalized;
-@property BOOL capturing; // @synthesize capturing;
-@property(readonly) DYCaptureSessionInfo *captureSessionInfo; // @synthesize captureSessionInfo=_captureSessionInfo;
-@property(readonly) DYCaptureArchive *currentCaptureArchive; // @synthesize currentCaptureArchive=_currentCaptureArchive;
-- (void)_handleCaptureSessionStateChangeNotification:(id)arg1;
+@property(readonly) IDELaunchSession *launchSession; // @synthesize launchSession=_launchSession;
+- (id)infoDictForProgram:(unsigned int)arg1 sharegroup:(unsigned long long)arg2;
+- (void)setInfoDictForProgram:(unsigned int)arg1 dict:(id)arg2 sharegroup:(unsigned long long)arg3;
+- (id)findOriginalResource:(id)arg1 sharegroup:(unsigned long long)arg2 remove:(BOOL)arg3;
+- (void)addOriginalResource:(id)arg1 sharegroup:(unsigned long long)arg2;
+- (id)updatedResources;
+- (void)removeResourceOverride:(id)arg1 sharegroup:(unsigned long long)arg2;
+- (void)addResourceOverride:(id)arg1 sharegroup:(unsigned long long)arg2;
+- (void)addUpdatedResource:(id)arg1 sharegroup:(unsigned long long)arg2;
+- (void)_removeModifiedResourceFromDict:(id)arg1 resource:(id)arg2 sharegroup:(unsigned long long)arg3;
+- (void)_addModifiedResourceToDict:(id)arg1 resource:(id)arg2 sharegroup:(unsigned long long)arg3;
+- (id)generateTraceSessionForCaptureArchive:(id)arg1;
+- (void)handleTraceSessionCreationSuccess:(id)arg1;
+- (void)handleTraceSessionCreationFailure:(id)arg1;
+- (void)handleCompleteCaptureSession:(id)arg1;
+- (void)handleIncompleteCaptureSession:(id)arg1;
+- (void)_handleCaptureSessionStateChange:(int)arg1;
 - (void)captureGPUTrace:(id)arg1;
-- (void)_configureCaptureSession:(id)arg1;
-- (void)_handleGuestAppStatusChangeNotification:(id)arg1;
-- (void)_handleBreakpointHitNotification:(id)arg1;
-- (void)_handleGuestAppSessionDidLaunchNotification:(id)arg1;
+- (void)_handleBreakpointHit;
+- (void)_handleAppDidLaunch;
+- (void)ensureNextCaptureArchive;
+- (void)createNextCaptureArchive;
+- (void)_handleContextsInfoUpdate:(id)arg1;
 - (void)_recursivePollForContext;
-- (id)prepareForLaunch:(id)arg1;
+- (id)prepareForLaunch:(id)arg1 error:(id *)arg2;
 - (void)_observeMagicSymbolBreakpoint;
 @property(readonly) id <IDEDebugProcess> process;
 - (void)invalidate;
 - (void)releaseCurrentGPUTrace;
+@property(readonly) DYCaptureSessionInfo *captureSessionInfo; // @dynamic captureSessionInfo;
 - (void)finalize;
-- (id)createDeviceWithLaunchSession:(id)arg1 error:(id *)arg2;
-- (id)initWithAppName:(id)arg1 launchSession:(id)arg2 error:(id *)arg3;
+- (id)initWithAppName:(id)arg1 launchSession:(id)arg2 controller:(id)arg3 error:(id *)arg4;
 
 @end
 
@@ -1401,17 +1949,182 @@ typedef struct DYSMContextStateMirror<GPUSMObjectTypes> {
 
 @end
 
-@interface GPUMemoryMetrics : NSObject
+@interface GPUDebuggerController : NSObject
 {
-    DVTMapTable *_trackingObjects;
-    DVTMapTable *_trackingObjectNames;
+    DYCaptureSessionInfo *_captureSessionInfo;
+    GPUTraceSession *_traceSession;
+    GPUInferiorSession *_inferiorSession;
+    id <DVTObservingToken> _inferiorSessionStateObs;
+    id <DVTObservingToken> _inferiorSessionReadyToCaptureObs;
+    id <DVTObservingToken> _traceSessionStateObs;
+    id <DVTObservingToken> _inferiorSessionUpdatedResourcesObserverToken;
+    id <DVTObservingToken> _inferiorSessionOriginalResourcesObserverToken;
+    id <DVTObservingToken> _inferiorSessionProgramInfoLogsObserverToken;
+    id <DVTObservingToken> _extensionsObserver;
+    NSString *_appName;
+    NSArray *_appArguments;
+    double _appFrameRate;
+    double _appTargetFrameRate;
+    DYDeviceInfo *_deviceInfo;
+    NSError *_error;
+    DYAnalyzerArchiveVisitor *_analyzerVisitor;
+    NSArray *_analyzerFindings;
+    NSArray *_extensions;
+    int _debugState;
+    int _postCaptureDebugState;
+    NSMutableArray *_debugStateObservers;
+    NSURL *_captureArchiveURL;
+    GPUExpertGroupItem *_expertReports;
+    GPUExpertReportItem *_reportItem;
+    GPUExpertGroupItem *_domainProviderRootReportGroup;
+    BOOL _archiveHasPendingChanges;
+    BOOL _isExpertReady;
+    BOOL _isExpertready;
 }
 
-+ (id)defaultMetrics;
++ (id)logAspect;
+@property(readonly) double appFrameRate; // @synthesize appFrameRate=_appFrameRate;
+@property(readonly) double appTargetFrameRate; // @synthesize appTargetFrameRate=_appTargetFrameRate;
+@property(retain, nonatomic) GPUExpertReportItem *reportItem; // @synthesize reportItem=_reportItem;
+@property(readonly) GPUExpertGroupItem *expertReports; // @synthesize expertReports=_expertReports;
+@property(retain) GPUExpertGroupItem *domainProviderRootReportGroup; // @synthesize domainProviderRootReportGroup=_domainProviderRootReportGroup;
+@property BOOL archiveHasPendingChanges; // @synthesize archiveHasPendingChanges=_archiveHasPendingChanges;
+@property(retain) NSArray *extensions; // @synthesize extensions=_extensions;
+@property(retain) NSArray *analyzerFindings; // @synthesize analyzerFindings=_analyzerFindings;
+@property(readonly) DYAnalyzerArchiveVisitor *analyzerVisitor; // @synthesize analyzerVisitor=_analyzerVisitor;
+@property(nonatomic) __weak GPUInferiorSession *inferiorSession; // @synthesize inferiorSession=_inferiorSession;
+@property int debugState; // @synthesize debugState=_debugState;
+@property(nonatomic) __weak GPUTraceSession *traceSession; // @synthesize traceSession=_traceSession;
+@property(retain) NSArray *appArguments; // @synthesize appArguments=_appArguments;
+@property(retain) NSString *appName; // @synthesize appName=_appName;
+@property(retain) NSError *error; // @synthesize error=_error;
+@property(retain) DYDeviceInfo *deviceInfo; // @synthesize deviceInfo=_deviceInfo;
+@property(retain) DYCaptureSessionInfo *captureSessionInfo; // @synthesize captureSessionInfo=_captureSessionInfo;
+@property(retain) NSURL *captureArchiveURL; // @synthesize captureArchiveURL=_captureArchiveURL;
+@property BOOL isExpertReady; // @synthesize isExpertReady=_isExpertready;
+- (void)createReportWithCompletionBlock:(id)arg1;
+- (void)archiveReports;
+- (BOOL)isDeviceBusy;
+- (BOOL)relinquishAutomatedDebugState;
+- (BOOL)requestAutomatedDebugState:(int)arg1;
+- (void)_handleDebuggerStateChanges;
+- (void)handleInferiorSessionActiveState;
+- (void)onObservedDictionaryUpdated:(id)arg1 archiveKey:(id)arg2;
+- (void)traceSessionEstablishedWithNewArchive:(BOOL)arg1;
+- (id)unarchiveDictionaryForKey:(id)arg1;
+- (void)handleUpdatedDictionary:(id)arg1 forKey:(id)arg2;
+- (void)captureGPUTraceFromBreakpoint:(id)arg1;
+- (id)copyAdjunctDataForFilename:(id)arg1 error:(id *)arg2;
+- (BOOL)storeAdjunctData:(id)arg1 filename:(id)arg2 error:(id *)arg3;
+- (id)retrieveArchivedDataForKey:(id)arg1 error:(id *)arg2;
+- (BOOL)archiveData:(id)arg1 withKey:(id)arg2 replaceData:(BOOL)arg3 error:(id *)arg4;
+- (void)handleCaptureSessionFinalization:(id)arg1;
+- (void)_handleExtensions;
+- (void)analyzeStoredCaptureArchive;
+- (void)setupCaptureSession:(id)arg1;
+- (void)setupGuestAppSession:(id)arg1;
+- (BOOL)archiveLastDrawRenderBufferImage;
+@property(readonly) NSImage *archivedRenderbufferImage; // @dynamic archivedRenderbufferImage;
+- (void)handleAppSessionTransportMessage:(id)arg1;
+- (void)cancelAnalysis;
+- (void)beginAnalysis;
+@property(readonly) GPUTraceOutline *outline; // @dynamic outline;
+- (id)captureArchive;
+
+@end
+
+@interface GPUDebuggerError : NSError
+{
+}
+
+- (id)localizedDescription;
+
+@end
+
+@interface GPUExpertGroupItem : GPUTraceOutlineItem
+{
+}
+
+- (void)archiveReports;
+
+@end
+
+@interface GPUExpertReportItem : GPUTraceOutlineItem
+{
+    NSArray *_currentAutomaticItems;
+    NSString *_reportUUID;
+}
+
+@property(readonly, nonatomic) NSString *reportUUID; // @synthesize reportUUID=_reportUUID;
+@property(retain, nonatomic) NSArray *currentAutomaticItems; // @synthesize currentAutomaticItems=_currentAutomaticItems;
+- (id)archive;
+- (unsigned long long)hash;
+- (void)setParent:(id)arg1;
+- (id)initWithController:(id)arg1 parent:(id)arg2 label:(id)arg3;
+
+@end
+
+@interface GPUStackFrame : DYStackFrame
+{
+    IDELaunchSession *_launchSession;
+}
+
+@property(readonly, nonatomic) IDELaunchSession *launchSession; // @synthesize launchSession=_launchSession;
+- (id)copyWithZone:(struct _NSZone *)arg1;
+- (id)initWithLaunchSession:(id)arg1;
+
+@end
+
+@interface GPUCaptureArchiveManager : NSObject <NSFileManagerDelegate>
+{
+    struct dispatch_queue_s *_queue;
+    NSFileManager *_fileManager;
+    DVTMapTable *_urlToCaptureArchiveTable;
+    DVTMapTable *_hashToURLTable;
+    DVTMapTable *_documentNameToCountTable;
+    NSMutableSet *_reportURLSet;
+}
+
++ (id)sharedArchiveManager;
+- (BOOL)isValidReportURL:(id)arg1;
+- (void)unregisterReportURL:(id)arg1;
+- (void)registerReportURL:(id)arg1;
+- (id)URLForHashkeyString:(id)arg1;
+- (unsigned long long)hashKeyForURL:(id)arg1;
+- (BOOL)copyWriteArchiveAtURL:(id)arg1 toURL:(id)arg2 error:(id *)arg3;
+- (id)copyAdjunctDataForFilename:(id)arg1 fromArchiveAtURL:(id)arg2 error:(id *)arg3;
+- (BOOL)storeAdjunctData:(id)arg1 filename:(id)arg2 toArchiveAtURL:(id)arg3 error:(id *)arg4;
+- (id)retrieveArchivedDataForKey:(id)arg1 fromArchiveAtURL:(id)arg2 error:(id *)arg3;
+- (BOOL)archiveData:(id)arg1 withKey:(id)arg2 toArchiveAtURL:(id)arg3 replaceData:(BOOL)arg4 error:(id *)arg5;
+- (BOOL)invalidateArchiveWithURL:(id)arg1 eraseFromDisk:(BOOL)arg2 error:(id *)arg3;
+- (void)closeArchiveAtURL:(id)arg1;
+- (id)createNewArchiveWithInferiorName:(id)arg1 error:(id *)arg2;
+- (id)openCaptureArchiveAtURL:(id)arg1 error:(id *)arg2;
+- (id)bufferedWriteURLForURL:(id)arg1;
+- (BOOL)commitArchiveChangesForArchiveAtURL:(id)arg1 error:(id *)arg2;
+- (BOOL)swapBufferedArchiveAtURL:(id)arg1 error:(id *)arg2;
+- (id)_writeCaptureArchiveForURL:(id)arg1 createIfNeeded:(BOOL)arg2;
+- (id)_copyAndOpenArchiveAtURL:(id)arg1;
+- (id)_copyArchiveToTemporaryDirectoryAtURL:(id)arg1 error:(id *)arg2;
+- (id)captureArchiveForURL:(id)arg1;
+- (id)_readCaptureArchiveForURL:(id)arg1;
+- (id)_addCaptureArchive:(id)arg1;
+- (void)_incrementDocumentCountForInferiorName:(id)arg1;
+- (unsigned long long)_documentCountForInferiorName:(id)arg1;
+- (void)dealloc;
+- (void)finalize;
 - (id)init;
-- (void)dumpTrackedObjectsWithCategory:(id)arg1 label:(id)arg2;
-- (unsigned long long)_totalSizeOfObjects:(id)arg1;
-- (void)trackObject:(id)arg1 name:(id)arg2 inCategory:(id)arg3;
+
+@end
+
+// Not exported
+@interface GPUCaptureStoreDelegate : NSObject
+{
+    GPUDebuggerController *_controller;
+}
+
+- (id)forwardingTargetForSelector:(SEL)arg1;
+- (id)initWithController:(id)arg1;
 
 @end
 

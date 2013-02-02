@@ -30,9 +30,9 @@ struct _NSRange {
 
 /*
  * File: /Applications/Xcode.app/Contents/PlugIns/IDEFindReplace.ideplugin/Contents/MacOS/IDEFindReplace
- * UUID: CBE2AF30-B841-3282-9142-D83C1BE279E8
+ * UUID: B580F196-0BD4-3179-95AF-107C62A28B8F
  * Arch: Intel x86-64 (x86_64)
- *       Current version: 1170.0.0, Compatibility version: 1.0.0
+ *       Current version: 2061.0.0, Compatibility version: 1.0.0
  *       Minimum Mac OS X version: 10.7.0
  *
  *       Objective-C Garbage Collection: Required
@@ -56,6 +56,15 @@ struct _NSRange {
 - (id)dynamicTableView:(id)arg1 viewForHeaderInSection:(long long)arg2;
 @end
 
+@protocol DVTFindPatternManager <NSObject>
+- (id)replaceFieldForField:(id)arg1;
+- (id)findFieldForField:(id)arg1;
+
+@optional
+- (BOOL)supportsPatterns;
+- (void)findPatternField:(id)arg1 findPatternDoubleClicked:(id)arg2;
+@end
+
 @protocol DVTInvalidation <NSObject>
 @property(readonly) DVTStackBacktrace *invalidationBacktrace;
 @property(readonly, nonatomic, getter=isValid) BOOL valid;
@@ -74,6 +83,7 @@ struct _NSRange {
 - (struct CGRect)expressionFrameForExpression:(id)arg1;
 
 @optional
+@property(readonly, nonatomic) NSString *selectedText;
 @property(readonly) DVTSourceExpression *quickHelpExpression;
 - (void)unregisterMouseOverExpressionObserver:(id)arg1;
 - (void)registerMouseOverExpressionObserver:(id)arg1;
@@ -92,7 +102,12 @@ struct _NSRange {
 - (BOOL)replaceFindResults:(id)arg1 withString:(id)arg2 withError:(id *)arg3;
 
 @optional
+- (BOOL)replaceFindResults:(id)arg1 inSelection:(struct _NSRange)arg2 withString:(id)arg3 withError:(id *)arg4;
 - (BOOL)replaceTextWithContentsOfURL:(id)arg1 error:(id *)arg2;
+@end
+
+@protocol DVTTextlikeFindDescriptor <NSObject>
+@property(readonly) int matchStyle;
 @end
 
 @protocol IDEBatchFindResultGroupDelegate <NSObject>
@@ -176,6 +191,9 @@ struct _NSRange {
 - (Class)superclass;
 - (unsigned long long)hash;
 - (BOOL)isEqual:(id)arg1;
+
+@optional
+- (id)debugDescription;
 @end
 
 @protocol NSRuleEditorDelegate <NSObject>
@@ -245,6 +263,16 @@ struct _NSRange {
 - (BOOL)validateUserInterfaceItem:(id)arg1;
 @end
 
+@protocol __ARCLiteIndexedSubscripting__
+- (void)setObject:(id)arg1 atIndexedSubscript:(unsigned long long)arg2;
+- (id)objectAtIndexedSubscript:(unsigned long long)arg1;
+@end
+
+@protocol __ARCLiteKeyedSubscripting__
+- (void)setObject:(id)arg1 forKeyedSubscript:(id)arg2;
+- (id)objectForKeyedSubscript:(id)arg1;
+@end
+
 @interface IDEBatchFindCriteria : NSObject
 {
     DVTFindDescriptor *_findDescriptor;
@@ -253,6 +281,7 @@ struct _NSRange {
 @property(readonly) DVTFindDescriptor *findDescriptor; // @synthesize findDescriptor=_findDescriptor;
 - (BOOL)isEqual:(id)arg1;
 - (unsigned long long)hash;
+- (Class)findQueryClass;
 - (id)initWithFindDescriptor:(id)arg1;
 
 @end
@@ -307,12 +336,9 @@ struct _NSRange {
 - (id)findStringMatchingDescriptor:(id)arg1 backwards:(BOOL)arg2 from:(id)arg3 to:(id)arg4;
 - (void)main;
 
-// Remaining properties
-@property unsigned long long supportedMatchingOptions;
-
 @end
 
-@interface IDEBatchFindNavigator : IDENavigator <NSTextFieldDelegate, IDEProgressSearchFieldCommandDelegate, IDEProgressSearchFieldDelegate>
+@interface IDEBatchFindNavigator : IDENavigator <NSTextFieldDelegate, IDEProgressSearchFieldCommandDelegate, IDEProgressSearchFieldDelegate, DVTFindPatternManager>
 {
     DVTStackView_ML *searchContentView;
     DVTBorderedView *topBorderView;
@@ -324,23 +350,34 @@ struct _NSRange {
     NSView *statusView;
     NSPopUpButton *_findModeButton;
     IDEProgressSearchField *_findStringField;
-    NSTextField *_replaceStringField;
+    DVTFindPatternTextField *_replaceStringField;
     double _statusCellHeight;
     NSMutableArray *_observerTokens;
     id <DVTObservingToken> _historyToken;
     id <DVTObservingToken> _replacePreviewViewToken;
     int _findMode;
-    NSString *_findString;
-    NSString *_replaceString;
+    NSAttributedString *_findAttributedString;
+    NSAttributedString *_replaceAttributedString;
     NSString *_statusString;
     NSString *_statusTitle;
     double _lastStatusUpdate;
+    double _lastStatusUpdateDrawTime;
+    double _batchFindStartTime;
+    double _totalBatchFindTime;
+    double _minBatchSearchTime;
+    double _maxBatchSearchTime;
+    long long _totalBatchFindCount;
+    long long _totalResultsCount;
+    double _minResultperSec;
+    double _maxResultperSec;
     NSArray *_selectedResultNavigables;
     NSArray *_selectedObjects;
     IDEBatchFindReplaceableSheetController *_replacePreviewSheet;
     IDEBatchFindStrategiesController *_configurationController;
     IDEBatchFindQuery *_activeQuery;
     BOOL _showsOptions;
+    NSString *_lastFindString;
+    BOOL _findStringValid;
     IDEProgressSearchSuggestionItem *_currentSearchSuggestion;
     NSArray *_textualSuggestions;
     NSArray *_regularExpressionTextualSuggestions;
@@ -352,16 +389,29 @@ struct _NSRange {
 + (id)keyPathsForValuesAffectingCanReplaceAll;
 + (id)_keyPathsForValuesAffectingCanReplaceAllAndCanShowReplacePreview;
 + (id)keyPathsForValuesAffectingCanReplace;
++ (id)keyPathsForValuesAffectingReplaceString;
++ (id)keyPathsForValuesAffectingFindString;
 + (void)configureStateSavingObjectPersistenceByName:(id)arg1;
 + (id)defaultViewNibName;
+@property(nonatomic) BOOL findStringValid; // @synthesize findStringValid=_findStringValid;
+@property(copy, nonatomic) NSString *lastFindString; // @synthesize lastFindString=_lastFindString;
 @property(copy, nonatomic) NSString *findResultFilterString; // @synthesize findResultFilterString=_findResultFilterString;
 @property(nonatomic) BOOL showsOptions; // @synthesize showsOptions=_showsOptions;
 @property(retain) IDEBatchFindQuery *activeQuery; // @synthesize activeQuery=_activeQuery;
 @property(nonatomic) int findMode; // @synthesize findMode=_findMode;
 @property(copy) NSString *statusTitle; // @synthesize statusTitle=_statusTitle;
 @property(copy) NSString *statusString; // @synthesize statusString=_statusString;
-@property(copy) NSString *replaceString; // @synthesize replaceString=_replaceString;
-@property(copy, nonatomic) NSString *findString; // @synthesize findString=_findString;
+@property(copy, nonatomic) NSAttributedString *replaceAttributedString; // @synthesize replaceAttributedString=_replaceAttributedString;
+@property(copy, nonatomic) NSAttributedString *findAttributedString; // @synthesize findAttributedString=_findAttributedString;
+- (void)_insertFindPattern:(id)arg1;
+- (void)findPatternField:(id)arg1 findPatternDoubleClicked:(id)arg2;
+- (BOOL)_hasValidFindPattern;
+- (BOOL)_hasFindPattern;
+- (id)replaceFieldForField:(id)arg1;
+- (id)findFieldForField:(id)arg1;
+- (id)_replaceField;
+- (id)_findField;
+- (BOOL)supportsPatterns;
 - (BOOL)searchFieldShouldShowSuggestionsPanel;
 - (void)searchField:(id)arg1 receivedCommandSelector:(SEL)arg2;
 - (void)updateFilterPredicate;
@@ -376,6 +426,9 @@ struct _NSRange {
 - (void)_prepareReplaceOnResults:(id)arg1 withCompletionBlock:(id)arg2;
 - (void)replaceAllAction:(id)arg1;
 - (void)replaceSelectedAction:(id)arg1;
+- (void)findSymbolInWorkspace:(id)arg1;
+- (void)searchInProjectNavigatorSelection:(id)arg1;
+- (void)showFindOptions:(id)arg1;
 - (BOOL)makePrimaryFilterControlKey;
 - (void)selectFindField:(id)arg1;
 - (void)replaceStringFieldAction:(id)arg1;
@@ -395,6 +448,7 @@ struct _NSRange {
 - (void)_updateStatus;
 - (id)_statusAttributes;
 - (void)_setupSearchField;
+- (void)_uninstallBindings;
 - (void)_setupBindings;
 - (void)_setupObservers;
 - (void)performReplaceFromPreview:(id)arg1 withCompletionBlock:(id)arg2;
@@ -405,11 +459,13 @@ struct _NSRange {
 @property(readonly) IDEBatchFindStrategiesController *configurationController;
 - (void)layoutReplaceButtons;
 - (void)sizeToFitWithAnimation:(BOOL)arg1;
+@property(copy) NSString *replaceString;
+@property(copy, nonatomic) NSString *findString;
+- (void)sanitizeStrings;
 @property(readonly) IDEBatchFindResultsOutlineController *resultsOutlineController;
 - (void)commitStateToDictionary:(id)arg1;
 - (void)revertStateWithDictionary:(id)arg1;
 - (BOOL)delegateFirstResponder;
-- (void)invalidate;
 - (void)viewDidInstall;
 - (void)viewWillUninstall;
 - (void)loadView;
@@ -443,6 +499,7 @@ struct _NSRange {
 - (void)_transitionToCancelledState;
 - (void)_transitionToExecutingState;
 @property(readonly) BOOL isCancelled;
+@property(readonly) BOOL shouldDisplayNotification;
 @property(readonly) BOOL isComplete;
 @property(readonly) BOOL isRunning;
 @property(readonly) unsigned long long findQueueOperationCount;
@@ -464,7 +521,6 @@ struct _NSRange {
     IDEBatchFindCandidateFile *_fileCandidate;
     unsigned long long _replaceableCount;
     unsigned long long _filteredReplaceableCount;
-    NSImage *_displayImage;
     IDEIndex *_index;
     BOOL _symbolLookUpEnabled;
     DVTFilePath *_filePath;
@@ -477,7 +533,7 @@ struct _NSRange {
 @property(readonly) DVTFilePath *filePath; // @synthesize filePath=_filePath;
 @property(copy) NSString *groupTitle; // @synthesize groupTitle=_groupTitle;
 @property(getter=isSymbolLookUpEnabled) BOOL symbolLookUpEnabled; // @synthesize symbolLookUpEnabled=_symbolLookUpEnabled;
-@property(retain) IDEIndex *index; // @synthesize index=_index;
+@property __weak IDEIndex *index; // @synthesize index=_index;
 @property(readonly) IDEBatchFindCandidateFile *fileCandidate; // @synthesize fileCandidate=_fileCandidate;
 - (void)_beginSymbolLookupForResults;
 - (void)resetHiddenResults;
@@ -544,7 +600,7 @@ struct _NSRange {
 
 @end
 
-@interface IDEProgressSearchField : DVTSearchField
+@interface IDEProgressSearchField : DVTFindPatternSearchField
 {
     NSString *_sanatizedSuggestionString;
     NSTableView *_suggestionTableView;
@@ -642,12 +698,15 @@ struct _NSRange {
     DVTReplacementView *_locationEditorContentView;
     NSArray *_customFindScope;
     IDEWorkspace *_workspace;
+    IDENavigableItem *_workspaceRootNavigable;
     NSString *_findScopeUUID;
     IDENavigableItemCoordinator *_navigableItemCoordinator;
     NSArray *_workspaceProjectItems;
-    NSImage *_cachedWorkspaceIcon;
+    NSArray *_projectNavigatorSearchNavItems;
     NSString *_cachedWorkspacePathDescription;
     NSString *_findWorkspacePath;
+    NSMutableArray *_containerNavItemDictionaryReps;
+    IDENavigableItemArchivableRepresentation *_selectedContainerScopeNavItemArchivableRep;
     int _findType;
     int _matchStyle;
     BOOL _ignoresCase;
@@ -655,21 +714,10 @@ struct _NSRange {
     id <DVTObservingToken> _findTypeWatcher;
 }
 
++ (void)configureStateSavingObjectPersistenceByName:(id)arg1;
 + (id)scopeImage;
 + (void)initialize;
 + (id)sharedStrategiesController;
-+ (void)setDefaultSearchFrameworks:(BOOL)arg1;
-+ (BOOL)defaultSearchFrameworks;
-+ (void)setDefaultFindWorkspacePath:(id)arg1;
-+ (id)defaultFindWorkspacePath;
-+ (void)setDefaultFindType:(int)arg1;
-+ (int)defaultFindType;
-+ (void)setDefaultFindScopeUUID:(id)arg1;
-+ (id)defaultFindScopeUUID;
-+ (void)setDefaultIgnoresCase:(BOOL)arg1;
-+ (BOOL)defaultIgnoresCase;
-+ (void)setDefaultMatchStyle:(int)arg1;
-+ (int)defaultMatchStyle;
 @property(nonatomic) BOOL searchFrameworks; // @synthesize searchFrameworks=_searchFrameworks;
 @property(copy, nonatomic) NSString *findWorkspacePath; // @synthesize findWorkspacePath=_findWorkspacePath;
 @property(copy, nonatomic) NSString *findScopeUUID; // @synthesize findScopeUUID=_findScopeUUID;
@@ -680,25 +728,32 @@ struct _NSRange {
 - (void)_updateFindScopeMenu;
 - (void)_appendCustomScopesToMenu:(id)arg1;
 - (void)_appendWorkspaceProjectItemsToMenu:(id)arg1;
+- (void)_appendContainerNavItemsToMenu:(id)arg1;
 - (void)_addItemsFromNavigable:(id)arg1 toArray:(id)arg2 forPath:(id)arg3 withDepth:(long long)arg4;
 - (id)_typesToTraverse;
 - (id)_typesToInclude;
 - (id)_menuItemForNavigable:(id)arg1 withPath:(id)arg2 withDepth:(long long)arg3;
 - (void)_workspacePathSelected:(id)arg1;
+- (void)_containerNavItemSelected:(id)arg1;
 - (BOOL)validateMenuItem:(id)arg1;
-- (id)descriptionForCriteriaForString:(id)arg1;
+- (id)descriptionForCriteriaForAttributedString:(id)arg1;
 @property(readonly) NSString *customWorkspacePathDescription;
 @property(readonly) NSString *customScopeDescription;
 - (void)setParametersFromCriteria:(id)arg1;
-- (id)findCriteriaForString:(id)arg1 error:(id *)arg2;
+- (id)findCriteriaForAttributedString:(id)arg1 error:(id *)arg2;
 - (id)_predicateForScope;
 - (BOOL)_findScopeUUIDValid:(id)arg1;
+- (void)addFindOptionMenuItemForContainerNavigableItem:(id)arg1;
+- (id)_navItemFromDictionaryRep:(id)arg1;
+- (id)_dictionaryRepOfNavItem:(id)arg1;
 - (void)doneLocationEditor:(id)arg1;
 - (void)selectScopeFromMenu:(id)arg1;
 - (void)showScopeEditor:(id)arg1;
 - (void)viewWillUninstall;
 - (void)viewDidInstall;
 - (void)loadView;
+- (void)commitStateToDictionary:(id)arg1;
+- (void)revertStateWithDictionary:(id)arg1;
 - (void)_loadDefaultValues;
 - (id)initWithWorkspace:(id)arg1;
 
@@ -720,19 +775,22 @@ struct _NSRange {
     DVTBorderedView *_ruleEditorBorderView;
     id selectionObserverToken;
     DVTStackView_ML *contentView;
-    NSRuleEditor *ruleEditor;
+    IDEBatchFindRuleEditor *ruleEditor;
     NSArray *_topLevelRows;
     NSArray *_workspaceMenuItems;
     BOOL _dontRespondToEditorChange;
     BOOL _addingNewCompoundRow;
-    IDEBatchFindScopePredicate *_invalidScope;
+    NSView *_editorField;
+    NSTextField *_errorLabel;
+    NSImageView *_errorImage;
 }
 
 + (id)fileTypeTitles;
 + (id)fileTypes;
 @property(copy) NSArray *workspaceMenuItems; // @synthesize workspaceMenuItems=_workspaceMenuItems;
 - (void)ruleEditorRowsDidChange:(id)arg1;
-- (void)_checkRules;
+- (BOOL)_checkRules;
+- (void)_updateErrorStatus:(id)arg1;
 - (void)_commitChanges;
 - (void)revertScope:(id)arg1 toPredicate:(id)arg2;
 - (void)ruleRow:(id)arg1 changedDisplayValue:(id)arg2;
@@ -752,7 +810,7 @@ struct _NSRange {
 - (void)_addScope:(id)arg1 atIndex:(long long)arg2;
 @property(retain) IDEBatchFindScopePredicate *selectedScope;
 @property(copy) NSArray *scopePredicates;
-- (void)checkRulesAndCommit;
+- (BOOL)checkRulesAndCommit;
 - (void)viewWillUninstall;
 - (id)scopeImage;
 - (void)loadView;
@@ -802,20 +860,17 @@ struct _NSRange {
 
 @interface IDEBatchFindCandidateFile : NSObject
 {
-    IDEFileReference *_fileReference;
     DVTFilePath *_filePath;
     DVTFileDataType *_dataType;
     NSString *_groupTitle;
     BOOL _inLinkedFramework;
-    id <DVTObservingToken> _fileReferenceObservingToken;
 }
 
++ (void)purgeCachedFilePaths;
++ (id)cachedFileForPathString:(id)arg1;
 @property(readonly) BOOL inLinkedFramework; // @synthesize inLinkedFramework=_inLinkedFramework;
 @property(readonly) NSString *groupTitle; // @synthesize groupTitle=_groupTitle;
 @property(readonly) DVTFilePath *filePath; // @synthesize filePath=_filePath;
-@property(readonly) IDEFileReference *fileReference; // @synthesize fileReference=_fileReference;
-- (id)_generateGroupTitleForPath:(id)arg1 isInFramework:(char *)arg2;
-- (id)_majorContainerForContainer:(id)arg1 isFramework:(char *)arg2;
 - (long long)compare:(id)arg1;
 @property(readonly) DVTFileDataType *dataType; // @synthesize dataType=_dataType;
 @property(readonly) NSString *pathExtension;
@@ -825,7 +880,7 @@ struct _NSRange {
 - (BOOL)isEqual:(id)arg1;
 - (unsigned long long)hash;
 - (id)initWithPath:(id)arg1 fromSearchPath:(id)arg2;
-- (id)initWithFileReference:(id)arg1;
+- (id)initWithFileReference:(id)arg1 groupTitle:(id)arg2 inLinkedFramework:(BOOL)arg3;
 
 @end
 
@@ -866,6 +921,7 @@ struct _NSRange {
 
 + (id)_predicateForComparisonPredicate:(id)arg1;
 + (id)_substituteGenericPredicate:(id)arg1;
++ (id)_containerForNavigableItem:(id)arg1 workspace:(id)arg2 skipFrameworks:(BOOL)arg3;
 + (BOOL)_isLocationPredicate:(id)arg1;
 + (id)_builtInFileFilter;
 @property(readonly) BOOL searchFrameworks; // @synthesize searchFrameworks=_searchFrameworks;
@@ -875,13 +931,15 @@ struct _NSRange {
 - (id)_locatorFromLocationPredicate:(id)arg1 withCriteriaPredicate:(id)arg2;
 - (void)_addUnresolvedContainerItemPath:(id)arg1;
 - (id)matchingFileOperationForWorkspace:(id)arg1 withResultBlock:(id)arg2;
+- (id)trimmedSearchPathsForPaths:(id)arg1 findString:(id)arg2 workspace:(id)arg3;
 - (id)description;
 - (BOOL)isEqual:(id)arg1;
 - (unsigned long long)hash;
-- (id)initWithFindDescriptor:(id)arg1 frameworks:(BOOL)arg2 andFilterPredicate:(id)arg3 workspace:(id)arg4 strategiesController:(id)arg5;
+- (id)initWithFindDescriptor:(id)arg1 frameworks:(BOOL)arg2 filterPredicate:(id)arg3 containerScope:(id)arg4 workspace:(id)arg5 strategiesController:(id)arg6;
 - (void)_reportInvalidLocationPaths;
 - (void)_batchFindInvalidScopeSheetDidEnd:(id)arg1 returnCode:(long long)arg2 contextInfo:(void *)arg3;
 - (void)_showScopeEditor;
+- (Class)findQueryClass;
 - (id)initWithCoder:(id)arg1;
 - (void)encodeWithCoder:(id)arg1;
 
@@ -895,6 +953,7 @@ struct _NSRange {
     IDEIndexSymbol *_symbol;
     IDEBatchFindCandidateFile *_foundInFile;
     BOOL _backingFileChangedOnDisk;
+    NSDate *_resultTime;
 }
 
 + (id)findResultsSortedByFileByDocumentLocation:(id)arg1;
@@ -912,6 +971,8 @@ struct _NSRange {
 @property(readonly) struct _NSRange symbolRange;
 @property(readonly) NSString *wholeWordMatch;
 @property(readonly) struct _NSRange wholeWordRange;
+- (BOOL)resultValid;
+- (void)fileWasSavedDuringReplace;
 @property(readonly, getter=isReplaceable) BOOL replacable;
 - (BOOL)hasSymbol;
 - (id)initWithCoder:(id)arg1;
@@ -935,7 +996,9 @@ struct _NSRange {
 + (id)_selectedTextInWindow:(id)arg1;
 + (id)handlerForAction:(SEL)arg1 withSelectionSource:(id)arg2;
 + (BOOL)_isValidForAction:(SEL)arg1 withSelectionSource:(id)arg2;
++ (id)selectedItemInSelectionSource:(id)arg1;
 @property(readonly) id <IDESelectionSource> selectionSource; // @synthesize selectionSource=_selectionSource;
+- (void)contextMenu_searchInSelection:(id)arg1;
 - (void)findAndReplaceInWorkspace:(id)arg1;
 - (void)findSelectedTextInWorkspace:(id)arg1;
 - (void)findInWorkspace:(id)arg1;
@@ -946,7 +1009,7 @@ struct _NSRange {
 
 @interface IDEProgressSearchSuggestionItem : NSObject
 {
-    NSString *_title;
+    NSAttributedString *_title;
     NSString *_titleFormat;
     long long _tag;
     id _representedObject;
@@ -967,7 +1030,7 @@ struct _NSRange {
 @property(copy) id actionBlock; // @synthesize actionBlock=_actionBlock;
 @property(copy) NSString *subtitle; // @synthesize subtitle=_subtitle;
 @property(copy) NSString *titleFormat; // @synthesize titleFormat=_titleFormat;
-@property(copy) NSString *title; // @synthesize title=_title;
+@property(copy) NSAttributedString *title; // @synthesize title=_title;
 - (id)initWithTitle:(id)arg1;
 - (id)initWithTitleFormat:(id)arg1;
 
@@ -977,9 +1040,9 @@ struct _NSRange {
 {
     DVTReplacementView *_resultsReplacementView;
     NSArray *_orderedGroupNavigables;
-    NSMapTable *_previewProviderByGroupNavigable;
+    DVTMapTable *_previewProviderByGroupNavigable;
     DVTMapTable *_rowViewObserverMapTable;
-    NSCache *_rowViewCache;
+    NSMutableDictionary *_rowViewCache;
     NSString *_replaceString;
     DVTDynamicTableView *_dynamicTableView;
     DVTBorderedView *_bottomBorder;
@@ -990,6 +1053,7 @@ struct _NSRange {
     BOOL _viewFirstLayedOut;
     BOOL _hasSelectedItems;
     BOOL _hasCheckedItems;
+    BOOL _executingCheckedResultNavigablesObserver;
     BOOL _isViewReadyToPopulateTable;
     IDEBatchFindNavigator *_findNavigator;
     DVTPerformanceMetric *_rebuildSectionsPerfMetric;
@@ -1009,7 +1073,6 @@ struct _NSRange {
 @property(retain) DVTReplacementView *resultsReplacementView; // @synthesize resultsReplacementView=_resultsReplacementView;
 @property(retain) NSString *replaceString; // @synthesize replaceString=_replaceString;
 - (void)_setupMiniNavigator;
-- (void)cache:(id)arg1 willEvictObject:(id)arg2;
 - (long long)dynamicTableView:(id)arg1 numberOfRowsInSection:(long long)arg2;
 - (long long)numberOfSectionsInDynamicTableView:(id)arg1;
 - (double)dynamicTableView:(id)arg1 heightForHeaderInSection:(long long)arg2;
@@ -1028,7 +1091,7 @@ struct _NSRange {
 @property(retain) IDEBatchFindResultSet *resultSet;
 @property(readonly) IDEBatchFindResultsOutlineController *resultsOutlineController;
 @property(getter=isViewReadyToPopulateTable) BOOL viewIsReadyToPopulateTable;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)layoutComplete;
 - (void)viewDidInstall;
 - (void)loadView;
@@ -1071,13 +1134,16 @@ struct _NSRange {
 @interface IDEBatchFindWorkspaceFileLocator : IDEBatchFindFileLocator
 {
     BOOL _skipFrameworks;
+    IDEContainer *_scopeContainer;
 }
 
 + (id)_containerForPath:(id)arg1 inGroup:(id)arg2;
 + (id)containerItemForWorkspacePath:(id)arg1 inWorkspace:(id)arg2;
 - (id)locationOperationForWorkspace:(id)arg1 withResultsBlock:(id)arg2;
+- (id)_generateGroupTitleForPath:(id)arg1 isInFramework:(char *)arg2 fileReferenceAssociatedFiles:(id)arg3;
+- (id)_majorContainerForContainer:(id)arg1 isFramework:(char *)arg2;
 - (BOOL)requiresMainThread;
-- (id)initWithPath:(id)arg1 skippingLinkedFrameworks:(BOOL)arg2 andPredicate:(id)arg3;
+- (id)initWithPath:(id)arg1 skippingLinkedFrameworks:(BOOL)arg2 andPredicate:(id)arg3 container:(id)arg4;
 
 @end
 
@@ -1118,12 +1184,15 @@ struct _NSRange {
 {
     NSArray *_displayValues;
     NSArray *_predicateValues;
+    NSView *_view;
     NSTextField *_textField;
+    NSImageView *_imageView;
 }
 
 + (id)_displayStringForComparisonType:(unsigned long long)arg1;
+@property(readonly) NSTextField *textField; // @synthesize textField=_textField;
+- (void)setError:(BOOL)arg1;
 @property(readonly) NSString *rhsPredicateValue;
-@property(readonly) NSTextField *rhsDisplayView;
 @property(readonly) NSArray *comparisonPredicateValues;
 @property(readonly) NSArray *comparisonDisplayValues;
 @property(readonly) NSString *lhsPredicateValue;
@@ -1210,6 +1279,7 @@ struct _NSRange {
 
 + (void)initialize;
 - (void)_observerQuery:(id)arg1 inWorkspace:(id)arg2;
+- (id)_patternAttributes;
 - (id)initWithWorkspace:(id)arg1;
 
 @end
@@ -1242,6 +1312,7 @@ struct _NSRange {
 @property(readonly) long long allResultsCount;
 @property(readonly) NSArray *allResults;
 @property(readonly) NSString *searchString;
+@property(readonly) NSAttributedString *searchAttributedString;
 - (void)encodeWithCoder:(id)arg1;
 - (id)copyWithZone:(struct _NSZone *)arg1;
 - (id)initWithCoder:(id)arg1;
@@ -1320,6 +1391,7 @@ struct _NSRange {
     double _lastOutlineUpdate;
     NSMutableSet *_collapsedItems;
     NSMutableSet *_groupsExpandedNeedingSelectionChange;
+    NSMutableSet *_observedFilePaths;
     BOOL _dontPublishSelectionChanges;
     BOOL _showsStatusImage;
     BOOL _allowsDelete;
@@ -1344,7 +1416,6 @@ struct _NSRange {
 @property(readonly) IDENavigableItemCoordinator *navigableItemCoordinator; // @synthesize navigableItemCoordinator=_navigableItemCoordinator;
 @property(retain, nonatomic) NSArray *selectedResultNavigables; // @synthesize selectedResultNavigables=_selectedResultNavigables;
 @property(retain) NSArray *selectedObjects; // @synthesize selectedObjects=_selectedObjects;
-@property(retain) IDEBatchFindResultSet *resultSet; // @synthesize resultSet=_resultSet;
 @property BOOL allowsDelete; // @synthesize allowsDelete=_allowsDelete;
 @property BOOL showsStatusImage; // @synthesize showsStatusImage=_showsStatusImage;
 - (BOOL)outlineView:(id)arg1 shouldSelectItem:(id)arg2;
@@ -1381,6 +1452,7 @@ struct _NSRange {
 - (void)selectAllResults;
 @property(readonly) NSArray *rootNavigables;
 - (id)domainIdentifier;
+@property(retain) IDEBatchFindResultSet *resultSet;
 - (id)resultsNavigable;
 - (void)_setupObservers;
 - (void)updateBatchFindResults;
@@ -1388,7 +1460,7 @@ struct _NSRange {
 - (void)reload;
 - (id)dvtExtraBindings;
 - (BOOL)delegateFirstResponder;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)loadView;
 - (id)resultPrototypeCell;
 - (id)groupPrototypeCell;
@@ -1421,6 +1493,39 @@ struct _NSRange {
 - (void)noteLinesInString:(id)arg1 throughRange:(struct _NSRange)arg2 completionBlock:(id)arg3;
 - (long long)_lineForLocation:(long long)arg1 withColumn:(long long *)arg2;
 - (void)invalidate;
+
+@end
+
+@interface IDEBatchFindSymbolicQuery : IDEBatchFindQuery
+{
+    DVTDispatchLock *_statusLock;
+    DVTDispatchLock *_resultLock;
+    unsigned long long _totalFilesSearched;
+    unsigned long long _totalFilesCompleted;
+    unsigned long long _filesRequiringMainThread;
+    DVTOperation *_findFilesOperation;
+}
+
+- (void)_checkForEndStateOnMainThread;
+- (void)_startFileFinderOperation;
+- (void)setState:(int)arg1;
+- (void)start;
+- (id)initWithSearchCriteria:(id)arg1 forWorkspace:(id)arg2 inController:(id)arg3;
+
+// Remaining properties
+@property(readonly) IDEBatchFindTextualFindCriteria *criteria; // @dynamic criteria;
+
+@end
+
+@interface IDEBatchFindSymbolicFindCriteria : IDEBatchFindTextualFindCriteria
+{
+    BOOL _includeReferences;
+}
+
+@property(readonly) BOOL includeReferences; // @synthesize includeReferences=_includeReferences;
+- (id)trimmedSearchPathsForPaths:(id)arg1 findString:(id)arg2 workspace:(id)arg3;
+- (Class)findQueryClass;
+- (id)initWithFindDescriptor:(id)arg1 frameworks:(BOOL)arg2 references:(BOOL)arg3 filterPredicate:(id)arg4 containerScope:(id)arg5 workspace:(id)arg6 strategiesController:(id)arg7;
 
 @end
 

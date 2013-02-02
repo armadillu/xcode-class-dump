@@ -4,11 +4,23 @@
  *     class-dump is Copyright (C) 1997-1998, 2000-2001, 2004-2011 by Steve Nygard.
  */
 
+#pragma mark Named Structures
+
+struct CGPoint {
+    double x;
+    double y;
+};
+
+struct _NSRange {
+    unsigned long long _field1;
+    unsigned long long _field2;
+};
+
 #pragma mark -
 
 /*
  * File: /Applications/Xcode.app/Contents/PlugIns/IDEPDFViewer.ideplugin/Contents/MacOS/IDEPDFViewer
- * UUID: 5509E3C2-E7F1-3A1A-AEB9-D6DF4104090D
+ * UUID: 3FD3C9E2-335D-3758-9FCE-FD3F964E32E0
  * Arch: Intel x86-64 (x86_64)
  *       Current version: 1.0.0, Compatibility version: 1.0.0
  *       Minimum Mac OS X version: 10.7.0
@@ -30,6 +42,7 @@
 @protocol DVTFindBarFindable
 
 @optional
+- (struct _NSRange)selectedRangeForFindBar:(id)arg1;
 - (id)startingLocationForFindBar:(id)arg1 findingBackwards:(BOOL)arg2;
 - (void)dvtFindBar:(id)arg1 didUpdateCurrentResult:(id)arg2;
 - (void)dvtFindBar:(id)arg1 didUpdateResults:(id)arg2;
@@ -59,6 +72,19 @@
 - (Class)superclass;
 - (unsigned long long)hash;
 - (BOOL)isEqual:(id)arg1;
+
+@optional
+- (id)debugDescription;
+@end
+
+@protocol __ARCLiteIndexedSubscripting__
+- (void)setObject:(id)arg1 atIndexedSubscript:(unsigned long long)arg2;
+- (id)objectAtIndexedSubscript:(unsigned long long)arg1;
+@end
+
+@protocol __ARCLiteKeyedSubscripting__
+- (void)setObject:(id)arg1 forKeyedSubscript:(id)arg2;
+- (id)objectForKeyedSubscript:(id)arg1;
 @end
 
 @interface IDEPDFViewerDocument : IDEEditorDocument <IDEDocumentStructureProviding>
@@ -66,7 +92,7 @@
     PDFDocument *_pdfDocument;
 }
 
-+ (id)pdfNavigableForPDFOutline:(id)arg1;
++ (id)pdfNavigableForDocumentURL:(id)arg1 PDFOutline:(id)arg2;
 + (id)keyPathsForValuesAffectingIdeTopLevelStructureObjects;
 @property(retain) PDFDocument *pdfDocument; // @synthesize pdfDocument=_pdfDocument;
 @property(readonly) NSArray *ideTopLevelStructureObjects;
@@ -77,18 +103,20 @@
 
 @interface IDEPDFViewerOutlineNavigable : NSObject
 {
+    NSURL *_documentURL;
     PDFDocument *_pdfDocument;
     PDFOutline *_pdfOutline;
 }
 
 @property(readonly) PDFDocument *pdfDocument; // @synthesize pdfDocument=_pdfDocument;
 @property(readonly) PDFOutline *pdfOutline; // @synthesize pdfOutline=_pdfOutline;
+@property(readonly) NSURL *documentURL; // @synthesize documentURL=_documentURL;
 @property(readonly) DVTDocumentLocation *navigableItem_contentDocumentLocation;
 @property(readonly) NSString *navigableItem_name;
 @property(readonly) NSImage *navigableItem_image;
 @property(readonly) DVTFileDataType *navigableItem_documentType;
 - (id)ideModelObjectTypeIdentifier;
-- (id)initWithPDFOutline:(id)arg1;
+- (id)initWithDocumentURL:(id)arg1 PDFOutline:(id)arg2;
 
 @end
 
@@ -108,14 +136,16 @@
 
 @interface IDEPDFViewerDocumentLocation : DVTDocumentLocation
 {
-    PDFOutline *_outline;
+    unsigned long long _pageIndex;
+    struct CGPoint _point;
 }
 
-@property(readonly) PDFOutline *outline; // @synthesize outline=_outline;
+@property(readonly) struct CGPoint point; // @synthesize point=_point;
+@property(readonly) unsigned long long pageIndex; // @synthesize pageIndex=_pageIndex;
 - (void)encodeWithCoder:(id)arg1;
 - (id)initWithCoder:(id)arg1;
 - (id)description;
-- (id)initWithPDFOutline:(id)arg1 inPDFDocument:(id)arg2;
+- (id)initWithPDFDestination:(id)arg1 inPDFDocument:(id)arg2 atURL:(id)arg3;
 
 @end
 

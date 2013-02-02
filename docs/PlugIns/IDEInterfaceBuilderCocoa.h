@@ -25,9 +25,9 @@ struct CGSize {
 
 /*
  * File: /Applications/Xcode.app/Contents/PlugIns/IDEInterfaceBuilderCocoa.ideplugin/Contents/MacOS/IDEInterfaceBuilderCocoa
- * UUID: DABB2E80-260E-3E48-809A-88A3CB8774E8
+ * UUID: 4BC1D3FB-C50A-32E5-BD2A-F32B6E4381F7
  * Arch: Intel x86-64 (x86_64)
- *       Current version: 1117.0.0, Compatibility version: 1.0.0
+ *       Current version: 2053.0.0, Compatibility version: 1.0.0
  *       Minimum Mac OS X version: 10.7.0
  *
  *       Objective-C Garbage Collection: Required
@@ -77,6 +77,19 @@ struct CGSize {
 - (Class)superclass;
 - (unsigned long long)hash;
 - (BOOL)isEqual:(id)arg1;
+
+@optional
+- (id)debugDescription;
+@end
+
+@protocol __ARCLiteIndexedSubscripting__
+- (void)setObject:(id)arg1 atIndexedSubscript:(unsigned long long)arg2;
+- (id)objectAtIndexedSubscript:(unsigned long long)arg1;
+@end
+
+@protocol __ARCLiteKeyedSubscripting__
+- (void)setObject:(id)arg1 forKeyedSubscript:(id)arg2;
+- (id)objectForKeyedSubscript:(id)arg1;
 @end
 
 @interface ABPeoplePickerFakeInterfaceBuilderController : NSObject
@@ -108,20 +121,30 @@ struct CGSize {
 {
     NSTableView *_propertyTableView;
     NSMenu *_propertyMenu;
-    NSSegmentedControl *_actionSegments;
     NSArrayController *_propertyColumnsArrayController;
     NSArrayController *_propertyNamesAndTitlesArrayController;
+    DVTBorderedView *_controlBar;
+    DVTGradientImageButton *_removeButton;
+    DVTGradientImageButton *_addButton;
+    IDEControlGroup *_controlGroup;
 }
 
+@property(retain, nonatomic) IDEControlGroup *controlGroup; // @synthesize controlGroup=_controlGroup;
+@property(nonatomic) __weak DVTGradientImageButton *addButton; // @synthesize addButton=_addButton;
+@property(nonatomic) __weak DVTGradientImageButton *removeButton; // @synthesize removeButton=_removeButton;
+@property(retain, nonatomic) DVTBorderedView *controlBar; // @synthesize controlBar=_controlBar;
 @property(retain) NSArrayController *propertyNamesAndTitlesArrayController; // @synthesize propertyNamesAndTitlesArrayController=_propertyNamesAndTitlesArrayController;
 @property(retain) NSArrayController *propertyColumnsArrayController; // @synthesize propertyColumnsArrayController=_propertyColumnsArrayController;
-@property(retain) NSSegmentedControl *actionSegments; // @synthesize actionSegments=_actionSegments;
 @property(retain) NSMenu *propertyMenu; // @synthesize propertyMenu=_propertyMenu;
 @property(retain) NSTableView *propertyTableView; // @synthesize propertyTableView=_propertyTableView;
+- (void)tableViewSelectionDidChange:(id)arg1;
 - (void)loadView;
+- (void)updateAddRemoveButtonEnabledState;
+- (void)setupControlBarAfterLoading;
 - (BOOL)validateMenuItem:(id)arg1;
 - (void)removeProperty:(id)arg1;
 - (void)addProperty:(id)arg1;
+- (void)popMenu:(id)arg1;
 - (id)propertyNames;
 - (id)selectedPickerView;
 
@@ -289,6 +312,52 @@ struct CGSize {
 
 @end
 
+@interface SCNViewTemplate : NSView
+{
+    BOOL _playing;
+    BOOL _autoenablesDefaultLighting;
+    BOOL _encodeAsRuntimeInstance;
+    BOOL _loops;
+    BOOL _allowsCameraControl;
+    NSColor *_backgroundColor;
+    BOOL _ibWantsMultisampling;
+    BOOL _jitteringEnabled;
+    NSString *_ibSceneName;
+}
+
++ (id)keyPathsForValuesAffectingIbDefaultLabel;
+@property(copy, nonatomic) NSString *ibSceneName; // @synthesize ibSceneName=_ibSceneName;
+@property(nonatomic, getter=isJitteringEnabled) BOOL jitteringEnabled; // @synthesize jitteringEnabled=_jitteringEnabled;
+@property(nonatomic) BOOL ibWantsMultisampling; // @synthesize ibWantsMultisampling=_ibWantsMultisampling;
+@property(copy, nonatomic) NSColor *backgroundColor; // @synthesize backgroundColor=_backgroundColor;
+@property(nonatomic) BOOL allowsCameraControl; // @synthesize allowsCameraControl=_allowsCameraControl;
+@property(nonatomic) BOOL loops; // @synthesize loops=_loops;
+@property BOOL encodeAsRuntimeInstance; // @synthesize encodeAsRuntimeInstance=_encodeAsRuntimeInstance;
+@property(nonatomic) BOOL autoenablesDefaultLighting; // @synthesize autoenablesDefaultLighting=_autoenablesDefaultLighting;
+@property(nonatomic, getter=isPlaying) BOOL playing; // @synthesize playing=_playing;
+- (id)initWithFrame:(struct CGRect)arg1;
+- (void)encodeWithCoder:(id)arg1;
+- (id)initWithCoder:(id)arg1;
+- (void)ibFinishArchivingDocument:(id)arg1 withContext:(id)arg2;
+- (void)ibBeginArchivingDocument:(id)arg1 withContext:(id)arg2;
+- (Class)classForCoder;
+- (id)ibDefaultLabel;
+- (id)ibRuntimeClassName;
+- (void)drawRect:(struct CGRect)arg1;
+
+@end
+
+@interface IBInspectorSceneKitResourceProperty : IDEInspectorProperty
+{
+    NSComboBox *comboBox;
+}
+
+- (id)bindAndConfigure;
+- (id)suggestedSceneNames;
+- (double)baseline;
+
+@end
+
 @interface ABPeoplePickerView (ABPeoplePickerViewIntegration)
 - (void)ibWarnings:(id)arg1 forDocument:(id)arg2 withComputationContext:(id)arg3;
 - (id)ibSwizzledInitWithCoder:(id)arg1;
@@ -299,18 +368,9 @@ struct CGSize {
 @end
 
 @interface QCView (IBInspectorIntegration)
-- (BOOL)ibCanMakeNonAutolayoutSafeCallsTo_addSubview:(id)arg1;
 - (unsigned long long)eventForwarding;
 - (void)setEventForwarding:(id)arg1;
 - (void)drawRect:(struct CGRect)arg1;
-@end
-
-@interface QCCompositionParameterView (IBQCCompositionParameterViewIntegration)
-- (BOOL)ibCanMakeNonAutolayoutSafeCallsTo_addSubview:(id)arg1;
-@end
-
-@interface QCCompositionPickerView (IBQCCompositionPickerViewIntegration)
-- (BOOL)ibCanMakeNonAutolayoutSafeCallsTo_addSubview:(id)arg1;
 @end
 
 @interface IKImageBrowserView (IKImageBrowserViewIntegration)
@@ -349,7 +409,6 @@ struct CGSize {
 
 @interface IKScannerDeviceView (IKScannerDeviceViewIntegration)
 + (void)ibSwizzle;
-- (BOOL)ibCanMakeNonAutolayoutSafeCallsTo_addSubview:(id)arg1;
 - (void)ibOverrideCleanup;
 - (void)ibOverrideSetup;
 - (void)ibSwizzledCommonInit;
@@ -421,13 +480,8 @@ struct CGSize {
 @end
 
 @interface PDFView (IBIntegration)
-- (BOOL)ibCanMakeNonAutolayoutSafeCallsTo_addSubview:(id)arg1;
 - (BOOL)runningWithinInterfaceBuilder;
 - (id)ibSwizzledInitWithCoder:(id)arg1;
-@end
-
-@interface PDFThumbnailView (IBIntegration)
-- (BOOL)ibCanMakeNonAutolayoutSafeCallsTo_addSubview:(id)arg1;
 @end
 
 @interface ABPersonView (ABPersonViewIntegration)
@@ -438,10 +492,8 @@ struct CGSize {
 @end
 
 @interface IKCameraDeviceView (IBIKCameraDeviceViewIntegration)
-- (BOOL)ibCanMakeNonAutolayoutSafeCallsTo_addSubview:(id)arg1;
 @end
 
 @interface IKDeviceBrowserView (IBIKDeviceBrowserViewIntegration)
-- (BOOL)ibCanMakeNonAutolayoutSafeCallsTo_addSubview:(id)arg1;
 @end
 

@@ -8,9 +8,9 @@
 
 /*
  * File: /Applications/Xcode.app/Contents/PlugIns/IDEInterfaceBuilderAutomator.ideplugin/Contents/MacOS/IDEInterfaceBuilderAutomator
- * UUID: D16BFBC4-3088-326E-B4DD-462322D48C30
+ * UUID: B5C03D74-0A1C-3C58-857E-AA5967E97BBA
  * Arch: Intel x86-64 (x86_64)
- *       Current version: 1117.0.0, Compatibility version: 1.0.0
+ *       Current version: 2053.0.0, Compatibility version: 1.0.0
  *       Minimum Mac OS X version: 10.7.0
  *
  *       Objective-C Garbage Collection: Required
@@ -20,6 +20,16 @@
 
 @protocol IDEInitialization
 + (BOOL)ide_initializeWithOptions:(int)arg1 error:(id *)arg2;
+@end
+
+@protocol __ARCLiteIndexedSubscripting__
+- (void)setObject:(id)arg1 atIndexedSubscript:(unsigned long long)arg2;
+- (id)objectAtIndexedSubscript:(unsigned long long)arg1;
+@end
+
+@protocol __ARCLiteKeyedSubscripting__
+- (void)setObject:(id)arg1 forKeyedSubscript:(id)arg2;
+- (id)objectForKeyedSubscript:(id)arg1;
 @end
 
 @interface IDEInterfaceBuilderAutomator : NSObject <IDEInitialization>

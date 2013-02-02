@@ -38,7 +38,7 @@ struct GPUVertexAttributeComponent {
     int miBufLen;
     int miStride;
     int meFormat;
-    struct objc_wrapper<NSData *__strong> mData;
+    void *mpData;
     struct fixed_string<GPUTools::char_traits<64>> msName;
 };
 
@@ -46,7 +46,8 @@ struct GPUVertexAttributes {
     struct vector<GPUVertexAttribute *, std::__1::allocator<GPUVertexAttribute *>> mAttributes;
     struct GPUVertexAttributeComponent *mElementAttribute;
     _Bool mbIndexed;
-    int miNumVerts;
+    int miMinNumVerts;
+    int miMaxNumVerts;
     int miNumElts;
 };
 
@@ -58,10 +59,6 @@ struct _NSRange {
 struct fixed_string<GPUTools::char_traits<64>> {
     char _buffer[65];
     unsigned long long _iLen;
-};
-
-struct objc_wrapper<NSData *__strong> {
-    NSData *m_object;
 };
 
 struct vector<GPUVertexAttribute *, std::__1::allocator<GPUVertexAttribute *>> {
@@ -83,13 +80,47 @@ typedef struct {
 
 /*
  * File: /Applications/Xcode.app/Contents/PlugIns/GPURenderTargetEditor.ideplugin/Contents/MacOS/GPURenderTargetEditor
- * UUID: 108B54D5-F53B-3593-9BCB-A30F60884087
+ * UUID: 88FB785C-59BB-38D5-ABC3-7F212CCE903F
  * Arch: Intel x86-64 (x86_64)
  *       Current version: 1.0.0, Compatibility version: 1.0.0
  *       Minimum Mac OS X version: 10.7.0
  *
  *       Objective-C Garbage Collection: Required
  */
+
+@protocol DVTCompletingTextViewDelegate <NSTextViewDelegate>
+
+@optional
+- (void)setupTextViewContextMenuWithMenu:(id)arg1;
+- (BOOL)completingTextViewHandleCancel:(id)arg1;
+- (unsigned long long)textView:(id)arg1 lineEndingForWritingSelectionToPasteboard:(id)arg2 type:(id)arg3;
+- (unsigned long long)textView:(id)arg1 lineEndingForReadingSelectionFromPasteboard:(id)arg2 type:(id)arg3;
+- (void)textView:(id)arg1 layoutManager:(id)arg2 didLayoutGlyphsUpToCharacterIndex:(unsigned long long)arg3;
+- (id)completingTextView:(id)arg1 documentLocationForWordStartLocation:(unsigned long long)arg2;
+- (void)completingTextView:(id)arg1 willPassContextToStrategies:(id)arg2 atWordStartLocation:(unsigned long long)arg3;
+@end
+
+@protocol DVTSourceTextViewDelegate <DVTCompletingTextViewDelegate>
+
+@optional
+- (id)textViewWillReturnPrintJobTitle:(id)arg1;
+- (void)textViewDidScroll:(id)arg1;
+- (void)setupGutterContextMenuWithMenu:(id)arg1;
+- (void)tokenizableItemsForItemAtRealRange:(struct _NSRange)arg1 completionBlock:(id)arg2;
+- (void)textViewDidFinishAnimatingScroll:(id)arg1;
+- (void)textViewDidLoadAnnotationProviders:(id)arg1;
+- (void)textView:(id)arg1 didRemoveAnnotations:(id)arg2;
+- (void)textView:(id)arg1 didAddAnnotations:(id)arg2;
+- (id)annotationContextForTextView:(id)arg1;
+- (id)syntaxColoringContextForTextView:(id)arg1;
+- (void)textViewDidChangeFolding:(id)arg1;
+- (void)textViewWillChangeFolding:(id)arg1;
+- (void)textView:(id)arg1 didClickOnTemporaryLinkAtCharacterIndex:(unsigned long long)arg2 event:(id)arg3 isAltEvent:(BOOL)arg4;
+- (BOOL)textView:(id)arg1 shouldShowTemporaryLinkForCharacterAtIndex:(unsigned long long)arg2 proposedRange:(struct _NSRange)arg3 effectiveRanges:(id *)arg4;
+- (void)textView:(id)arg1 handleMouseDidExitSidebar:(id)arg2;
+- (void)textView:(id)arg1 handleMouseDidMoveOverSidebar:(id)arg2 atLineNumber:(unsigned long long)arg3;
+- (void)textView:(id)arg1 handleMouseDownInSidebar:(id)arg2 atLineNumber:(unsigned long long)arg3;
+@end
 
 @protocol GPUDataTableViewDataProvider <NSObject>
 - (id)dataTableView:(id)arg1 textForCellAtRow:(long long)arg2 column:(long long)arg3 inColumnGroup:(long long)arg4;
@@ -115,13 +146,15 @@ typedef struct {
 @end
 
 @protocol GPUTraceBubbleOwner <NSObject>
-- (void)settingsUpdateToneMapRange;
 - (void)settingsToggleAlphaEnable;
 - (void)settingsToggleBlueEnable;
 - (void)settingsToggleGreenEnable;
 - (void)settingsToggleRedEnable;
 - (void)settingsBubbleClosed;
 - (void)infoBubbleClosed;
+
+@optional
+- (void)settingsUpdate;
 @end
 
 @protocol GPUTraceResourceInfoDelegateProtocol
@@ -193,6 +226,9 @@ typedef struct {
 - (Class)superclass;
 - (unsigned long long)hash;
 - (BOOL)isEqual:(id)arg1;
+
+@optional
+- (id)debugDescription;
 @end
 
 @protocol NSTableViewDataSource <NSObject>
@@ -245,7 +281,49 @@ typedef struct {
 - (id)tableView:(id)arg1 viewForTableColumn:(id)arg2 row:(long long)arg3;
 @end
 
+@protocol NSTextDelegate <NSObject>
+
+@optional
+- (void)textDidChange:(id)arg1;
+- (void)textDidEndEditing:(id)arg1;
+- (void)textDidBeginEditing:(id)arg1;
+- (BOOL)textShouldEndEditing:(id)arg1;
+- (BOOL)textShouldBeginEditing:(id)arg1;
+@end
+
 @protocol NSTextFieldDelegate <NSControlTextEditingDelegate>
+@end
+
+@protocol NSTextViewDelegate <NSTextDelegate>
+
+@optional
+- (id)undoManagerForTextView:(id)arg1;
+- (void)textView:(id)arg1 draggedCell:(id)arg2 inRect:(struct CGRect)arg3 event:(id)arg4;
+- (void)textView:(id)arg1 doubleClickedOnCell:(id)arg2 inRect:(struct CGRect)arg3;
+- (void)textView:(id)arg1 clickedOnCell:(id)arg2 inRect:(struct CGRect)arg3;
+- (BOOL)textView:(id)arg1 clickedOnLink:(id)arg2;
+- (id)textView:(id)arg1 willShowSharingServicePicker:(id)arg2 forItems:(id)arg3;
+- (id)textView:(id)arg1 URLForContentsOfTextAttachment:(id)arg2 atIndex:(unsigned long long)arg3;
+- (id)textView:(id)arg1 didCheckTextInRange:(struct _NSRange)arg2 types:(unsigned long long)arg3 options:(id)arg4 results:(id)arg5 orthography:(id)arg6 wordCount:(long long)arg7;
+- (id)textView:(id)arg1 willCheckTextInRange:(struct _NSRange)arg2 options:(id)arg3 types:(unsigned long long *)arg4;
+- (id)textView:(id)arg1 menu:(id)arg2 forEvent:(id)arg3 atIndex:(unsigned long long)arg4;
+- (long long)textView:(id)arg1 shouldSetSpellingState:(long long)arg2 range:(struct _NSRange)arg3;
+- (BOOL)textView:(id)arg1 doCommandBySelector:(SEL)arg2;
+- (BOOL)textView:(id)arg1 shouldChangeTextInRange:(struct _NSRange)arg2 replacementString:(id)arg3;
+- (id)textView:(id)arg1 completions:(id)arg2 forPartialWordRange:(struct _NSRange)arg3 indexOfSelectedItem:(long long *)arg4;
+- (id)textView:(id)arg1 willDisplayToolTip:(id)arg2 forCharacterAtIndex:(unsigned long long)arg3;
+- (void)textViewDidChangeTypingAttributes:(id)arg1;
+- (void)textViewDidChangeSelection:(id)arg1;
+- (id)textView:(id)arg1 shouldChangeTypingAttributes:(id)arg2 toAttributes:(id)arg3;
+- (BOOL)textView:(id)arg1 shouldChangeTextInRanges:(id)arg2 replacementStrings:(id)arg3;
+- (id)textView:(id)arg1 willChangeSelectionFromCharacterRanges:(id)arg2 toCharacterRanges:(id)arg3;
+- (struct _NSRange)textView:(id)arg1 willChangeSelectionFromCharacterRange:(struct _NSRange)arg2 toCharacterRange:(struct _NSRange)arg3;
+- (BOOL)textView:(id)arg1 writeCell:(id)arg2 atIndex:(unsigned long long)arg3 toPasteboard:(id)arg4 type:(id)arg5;
+- (id)textView:(id)arg1 writablePasteboardTypesForCell:(id)arg2 atIndex:(unsigned long long)arg3;
+- (void)textView:(id)arg1 draggedCell:(id)arg2 inRect:(struct CGRect)arg3 event:(id)arg4 atIndex:(unsigned long long)arg5;
+- (void)textView:(id)arg1 doubleClickedOnCell:(id)arg2 inRect:(struct CGRect)arg3 atIndex:(unsigned long long)arg4;
+- (void)textView:(id)arg1 clickedOnCell:(id)arg2 inRect:(struct CGRect)arg3 atIndex:(unsigned long long)arg4;
+- (BOOL)textView:(id)arg1 clickedOnLink:(id)arg2 atIndex:(unsigned long long)arg3;
 @end
 
 @protocol NSWindowDelegate <NSObject>
@@ -263,6 +341,7 @@ typedef struct {
 - (void)windowWillStartLiveResize:(id)arg1;
 - (void)windowDidEndSheet:(id)arg1;
 - (void)windowWillBeginSheet:(id)arg1;
+- (void)windowDidChangeBackingProperties:(id)arg1;
 - (void)windowDidChangeScreenProfile:(id)arg1;
 - (void)windowDidChangeScreen:(id)arg1;
 - (void)windowDidUpdate:(id)arg1;
@@ -300,6 +379,16 @@ typedef struct {
 - (BOOL)windowShouldClose:(id)arg1;
 @end
 
+@protocol __ARCLiteIndexedSubscripting__
+- (void)setObject:(id)arg1 atIndexedSubscript:(unsigned long long)arg2;
+- (id)objectAtIndexedSubscript:(unsigned long long)arg1;
+@end
+
+@protocol __ARCLiteKeyedSubscripting__
+- (void)setObject:(id)arg1 forKeyedSubscript:(id)arg2;
+- (id)objectForKeyedSubscript:(id)arg1;
+@end
+
 // Not exported
 @interface GPUImageEditorOverlayFragmentShader : GPUImageEditorShader
 {
@@ -335,21 +424,20 @@ typedef struct {
 // Not exported
 @interface GPUAttachmentRenderJob : NSObject
 {
+    NSImage *outputImage;
     DYResourceObject *attachmentRO;
     DYFramebufferAttachment *attachment;
     GPUImageEditorDisplayAttributes *displayAttributes;
-    BOOL showDepth;
-    DYFuture *future;
     GPURenderBuffer *renderBuffer;
     unsigned int attachmentEnum;
+    BOOL showDepth;
 }
 
 @end
 
 // Not exported
-@interface GPUTraceEditor : IDEEditor <IDEDebuggingAddtionUIControllerLifeCycleObserver, GPUTraceResourceInfoDelegateProtocol, GPURenderBufferViewStateCoordinationProtocol>
+@interface GPUTraceEditor : GPUMainEditor <IDEDebuggingAddtionUIControllerLifeCycleObserver, GPUTraceResourceInfoDelegateProtocol, GPURenderBufferViewStateCoordinationProtocol>
 {
-    struct dispatch_queue_s *_queue;
     DVTBorderedView *_bottomToolBar;
     DVTSegmentedControl *_buffersSegmentedControl;
     NSSegmentedControl *_viewSegmentedControl;
@@ -357,6 +445,8 @@ typedef struct {
     NSSegmentedControl *_orientationSegmentedControl;
     GPURenderBufferCanvas *_renderBufferCanvas;
     NSMenuItem *_revealInDebugNavigatorMenuItem;
+    GPUTraceSubEditor *_subEditor;
+    NSView *_mainEditorContentView;
     GPURenderBuffer *_colorRenderBuffer;
     GPURenderBuffer *_depthRenderBuffer;
     GPURenderBuffer *_stencilRenderBuffer;
@@ -364,15 +454,16 @@ typedef struct {
     BOOL _showDepthBuffer;
     BOOL _showStencilBuffer;
     BOOL _showAllBuffer;
-    GPUTraceDrawItem *_currentDrawItem;
+    NSView *_superView;
+    BOOL _reloadingViewTree;
     GPUImageEditorRenderer *_renderer;
     BOOL _navIdle;
     GPUTraceOutlineItem *_nextNavItem;
-    NSMenuItem *toggleWireframeMenuItem;
+    NSMenuItem *_toggleWireframeMenuItem;
+    NSMenuItem *_toggleDeviceWireframeMenuItem;
     GPUDebuggingAdditionUIController *_debuggingAdditionUIController;
-    GPUSharedTabUIState *_sharedUIStateObj;
-    GPUTraceCurrentDrawBuffer *_currentDrawBuffer;
     id <DVTObservingToken> _debugBarSelectedModelItemToken;
+    id <DVTObservingToken> _debugerControllerDebugStateObserverToken;
     BOOL _ignoreDebugBarModelItemSelected;
     unsigned int _nextSliderIndex;
     BOOL _drawIdle;
@@ -394,6 +485,8 @@ typedef struct {
     double _scaleX;
     double _scaleY;
     int _rotation;
+    id <DVTObservingToken> _gpuTraceCurrentLocationObserverToken;
+    GPUTraceCurrentDrawBuffer *_currentDrawBuffer;
 }
 
 + (long long)version;
@@ -401,13 +494,9 @@ typedef struct {
 + (id)defaultViewNibBundle;
 + (id)defaultViewNibName;
 @property GPUTraceCurrentDrawBuffer *currentDrawBuffer; // @synthesize currentDrawBuffer=_currentDrawBuffer;
-@property(copy) NSMenuItem *toggleWireframeMenuItem; // @synthesize toggleWireframeMenuItem;
+@property(copy) NSMenuItem *toggleWireframeMenuItem; // @synthesize toggleWireframeMenuItem=_toggleWireframeMenuItem;
+@property(copy) NSMenuItem *toggleDeviceWireframeMenuItem; // @synthesize toggleDeviceWireframeMenuItem=_toggleDeviceWireframeMenuItem;
 - (id).cxx_construct;
-- (void)resourceUpdateToneMapRangeWithDisplayAttributes:(id)arg1;
-- (void)resourceToggleAlphaEnable:(id)arg1;
-- (void)resourceToggleBlueEnable:(id)arg1;
-- (void)resourceToggleGreenEnable:(id)arg1;
-- (void)resourceToggleRedEnable:(id)arg1;
 - (void)commitStateToDictionary:(id)arg1;
 - (void)revertStateWithDictionary:(id)arg1;
 - (void)renderBufferViewDidChangeState:(id)arg1;
@@ -420,6 +509,7 @@ typedef struct {
 - (void)selectDocumentLocations:(id)arg1;
 - (void)updateNavigationWithNavItem:(id)arg1;
 - (BOOL)_setCurrentNavItem:(id)arg1;
+- (void)_loadSubEditorForNavItem:(id)arg1;
 - (void)_updateScrubberForDrawItem:(id)arg1 isAssociatedDraw:(BOOL)arg2;
 - (id)currentSelectedDocumentLocations;
 - (id)currentSelectedItems;
@@ -452,49 +542,60 @@ typedef struct {
 - (BOOL)_colorBufferEnabled:(id)arg1;
 - (BOOL)_autoBuffersEnabled:(id)arg1;
 - (void)_updateRenderBuffersVisibilityAfterDelay;
-- (id)_updateViewsWithDrawItem:(id)arg1;
 - (id)_updateViewsWithStateItem:(id)arg1;
-- (id)_updateRenderBuffersWithDrawItem:(id)arg1;
+- (id)updateViewsWithDrawItem:(id)arg1;
 - (void)_renderFramebufferAttachments;
+- (void)renderFramebufferAttachments;
 - (id)_renderedImage:(id)arg1 overlayImage:(id)arg2 withAttachment:(id)arg3 withDrawItem:(id)arg4 withDisplayAttributes:(id)arg5 withShowDepth:(BOOL)arg6;
 - (void)viewWillUninstall;
 - (void)viewDidInstall;
-- (void)_initializeEditorControls;
+- (BOOL)_documentIsInQuickLookMode;
+- (void)_loadInitialDraw;
+- (void)replayCapture:(id)arg1;
 - (void)gpuBuffersStencil:(id)arg1;
 - (void)gpuBuffersDepth:(id)arg1;
 - (void)gpuBuffersColor:(id)arg1;
 - (void)gpuBuffersAuto:(id)arg1;
+- (void)toggleDeviceWireframe:(id)arg1;
 - (void)toggleWireframe:(id)arg1;
 - (BOOL)validateMenuItem:(id)arg1;
 - (void)loadView;
+- (id)_loadSubEditorWithIdentifier:(id)arg1;
+- (id)_subEditorInstanceForIdentifier:(id)arg1;
 - (void)_makeSegmentedControlImagesTemplates:(id)arg1;
-- (void)finalize;
 
 @end
 
-// Not exported
 @interface GPUTraceDocument : IDEEditorDocument <IDEDocumentStructureProviding>
 {
-    DYCaptureArchive *_captureArchive;
     GPUTraceOutline *_outline;
-    GPUTraceReplayController *_replayController;
     GPUTraceSession *_traceSession;
-    NSURL *_currentArchiveURL;
     GPUDebuggingAdditionUIController *_debuggingAdditionUIController;
+    GPUDebuggerController *_debuggerController;
+    BOOL _editorWasInstalled;
 }
 
-@property(retain) GPUDebuggingAdditionUIController *debuggingAdditionUIController; // @synthesize debuggingAdditionUIController=_debuggingAdditionUIController;
-@property(retain) GPUTraceSession *traceSession; // @synthesize traceSession=_traceSession;
-@property(readonly) GPUTraceReplayController *replayController; // @synthesize replayController=_replayController;
-@property(readonly) GPUTraceOutline *outline; // @synthesize outline=_outline;
-@property(readonly) DYCaptureArchive *captureArchive; // @synthesize captureArchive=_captureArchive;
-- (id)automaticSourceLocationForDocumentLocation:(id)arg1;
++ (BOOL)preservesVersions;
++ (BOOL)autosavesInPlace;
+@property(nonatomic) BOOL editorWasInstalled; // @synthesize editorWasInstalled=_editorWasInstalled;
+@property(retain, nonatomic) GPUDebuggingAdditionUIController *debuggingAdditionUIController; // @synthesize debuggingAdditionUIController=_debuggingAdditionUIController;
+@property(retain, nonatomic) GPUTraceSession *traceSession; // @synthesize traceSession=_traceSession;
+@property(readonly, nonatomic) GPUTraceOutline *outline; // @synthesize outline=_outline;
+- (id)sourceLocationForDocumentLocation:(id)arg1;
 - (id)boundResourcesGeniusLocationsForDocumentLocation:(id)arg1;
 - (id)allResourcesGeniusLocationsForDocumentLocation:(id)arg1;
 @property(readonly) NSArray *ideTopLevelStructureObjects;
+- (id)printOperationWithSettings:(id)arg1 error:(id *)arg2;
 - (void)editorDocumentDidClose;
 - (void)editorDocumentWillClose;
-- (id)dataOfType:(id)arg1 error:(id *)arg2;
+- (BOOL)prepareSavePanel:(id)arg1;
+- (id)backupFileURL;
+- (BOOL)writeSafelyToURL:(id)arg1 ofType:(id)arg2 forSaveOperation:(unsigned long long)arg3 error:(id *)arg4;
+- (id)fileWrapperOfType:(id)arg1 error:(id *)arg2;
+- (BOOL)canExportDocument;
+- (BOOL)validateUserInterfaceItem:(id)arg1;
+@property(readonly, nonatomic) DYCaptureSessionInfo *captureSessionInfo; // @dynamic captureSessionInfo;
+- (id)captureArchive;
 - (BOOL)readFromURL:(id)arg1 ofType:(id)arg2 error:(id *)arg3;
 
 @end
@@ -502,10 +603,11 @@ typedef struct {
 // Not exported
 @interface GPUTraceGeniusResultsFinder : IDEGeniusResultsFinder
 {
+    GPUTraceDocumentLocation *_previousLocation;
 }
 
 + (Class)editorDocumentClass;
-- (void)findGeniusResultsForEditorDocument:(id)arg1 selectedDocumentLocations:(id)arg2;
+- (void)_updateGeniusResults;
 
 @end
 
@@ -516,14 +618,21 @@ typedef struct {
     NSString *_resourceGroup;
     GPUSharedTabUIState *_sharedUIStateObj;
     id <DVTObservingToken> _mainEditorLocationObserverToken;
+    id <DVTObservingToken> _uiModeObservation;
     NSArray *_topLevelObjects;
 }
 
++ (BOOL)autosavesInPlace;
 + (id)keyPathsForValuesAffectingNavigableItem_name;
 @property(readonly) GPUTraceOutline *outline; // @synthesize outline=_outline;
+- (id)displayName;
+- (id)writableTypesForSaveOperation:(unsigned long long)arg1;
+- (BOOL)prepareSavePanel:(id)arg1;
+- (BOOL)canExportDocument;
+- (BOOL)canSave;
+- (BOOL)writeSafelyToURL:(id)arg1 ofType:(id)arg2 forSaveOperation:(unsigned long long)arg3 error:(id *)arg4;
 @property(readonly) NSArray *ideTopLevelStructureObjects;
 - (int)readOnlyStatus;
-- (id)displayName;
 - (void)editorDocumentWillClose;
 - (BOOL)readFromURL:(id)arg1 ofType:(id)arg2 error:(id *)arg3;
 - (void)refreshTopLevelObjects;
@@ -534,9 +643,11 @@ typedef struct {
 // Not exported
 @interface GPUResourceThumbnailBox : NSBox
 {
-    id delegate;
+    GPUTraceResourceCollectionViewItem *_collectionViewItem;
 }
 
+@property(nonatomic) __weak GPUTraceResourceCollectionViewItem *collectionViewItem; // @synthesize collectionViewItem=_collectionViewItem;
+- (void)viewDidChangeBackingProperties;
 - (void)keyDown:(id)arg1;
 - (void)mouseDown:(id)arg1;
 - (id)hitTest:(struct CGPoint)arg1;
@@ -546,37 +657,50 @@ typedef struct {
 // Not exported
 @interface GPUTraceResourceCollectionViewItem : NSCollectionViewItem
 {
-    NSTextField *_label;
+    GPUResourceThumbnailBox *_boxView;
 }
 
+@property GPUResourceThumbnailBox *boxView; // @synthesize boxView=_boxView;
+- (void)invalidateThumbnail;
 - (void)doubleClick:(id)arg1;
+- (void)updateViewUsingRepresentedObject;
+- (void)setView:(id)arg1;
+- (void)setRepresentedObject:(id)arg1;
+- (id)representedObjectAsResourceItem;
 - (void)setSelected:(BOOL)arg1;
-- (void)loadView;
+
+// Remaining properties
+@property NSImageView *imageView;
+@property NSTextField *textField;
 
 @end
 
 // Not exported
 @interface GPUTraceResourcesEditor : IDEEditor <NSCollectionViewDelegate, IDEGPUAssistantEditorAdditions>
 {
-    NSArrayController *resourceArrayController;
-    NSCollectionView *resourceCollectionView;
     NSMutableArray *_resources;
     GPUResourceEditor *_currentSubViewController;
     GPUTraceOutline *_gpuTraceOutline;
     GPUTraceDocumentLocation *_currentLocation;
     NSDictionary *_previousEditorState;
     BOOL _loadingEditor;
+    id <DVTObservingToken> _programShaderObserver;
+    int _lastShaderType;
     GPUSharedTabUIState *_sharedTabState;
     GPUImageEditorDisplayAttributes *_colorBufDispAttrs;
     GPUImageEditorDisplayAttributes *_depthBufDispAttrs;
     GPUImageEditorDisplayAttributes *_stencilBufDispAttrs;
+    NSArrayController *_resourceArrayController;
+    NSCollectionView *_resourceCollectionView;
 }
 
 + (long long)version;
 + (void)configureStateSavingObjectPersistenceByName:(id)arg1;
 + (id)defaultViewNibBundle;
 + (id)defaultViewNibName;
-@property(retain) NSMutableArray *resources; // @synthesize resources=_resources;
+@property(nonatomic) __weak NSCollectionView *resourceCollectionView; // @synthesize resourceCollectionView=_resourceCollectionView;
+@property(nonatomic) __weak NSArrayController *resourceArrayController; // @synthesize resourceArrayController=_resourceArrayController;
+@property(retain, nonatomic) NSMutableArray *resources; // @synthesize resources=_resources;
 - (void)_takeStateDictionaryFromPreviousGPUAssistantEditor:(id)arg1;
 - (BOOL)_shouldInstallGPUEditorWithPreviousStateDictionaryOrNil:(id)arg1;
 - (void)commitStateToDictionary:(id)arg1;
@@ -589,10 +713,13 @@ typedef struct {
 - (id)currentSelectedItems;
 - (void)_setCurrentLocation:(id)arg1;
 - (void)_loadResourceEditorForNavItem:(id)arg1;
+- (void)handleResourceItemThumbnailsInvalidation:(id)arg1;
+- (void)handleReloadResourceItem:(id)arg1;
+- (void)resetResourcesInTree:(id)arg1;
+- (void)_resetResource:(id)arg1;
 - (void)didSetupEditor;
 - (void)viewWillUninstall;
 - (void)viewDidInstall;
-- (void)invalidate;
 - (void)loadView;
 - (void)takeFocus;
 
@@ -601,14 +728,20 @@ typedef struct {
 // Not exported
 @interface GPUResourceThumbnailFactory : NSObject
 {
-    struct dispatch_queue_s *_queue;
-    GPUImageEditorRenderer *_renderer;
+    NSBundle *_assetBundle;
+    struct dispatch_semaphore_s *_renderersSema;
+    struct {
+        void *opaque1;
+        long long opaque2;
+    } _freeRenderers;
+    GPUImageEditorRenderer *_renderers[8];
 }
 
 + (id)sharedThumbnailFactory;
-- (id)thumbnailWithResourceItem:(id)arg1;
-- (id)_realizeThumbnailWithResourceItem:(id)arg1;
-- (id)_generateThumbnailForImage:(id)arg1;
+- (id).cxx_construct;
+- (id)thumbnailWithResourceItem:(id)arg1 scale:(double)arg2;
+- (id)defaultImageForResourceItem:(id)arg1;
+- (id)_generateThumbnailForImage:(id)arg1 scale:(double)arg2;
 - (void)finalize;
 - (id)init;
 
@@ -618,76 +751,77 @@ typedef struct {
 @interface GPUImageEditorDisplayAttributes : NSObject
 {
     GPUImageEditorDisplayAttributes *_globalDisplayAttributes;
-    float _xCenter;
-    float _yCenter;
-    float _scaleFactor;
-    BOOL _xFlip;
+    DYResourceObject *_toneMapResource;
     BOOL _yFlip;
-    unsigned int _rotate;
-    BOOL _redEnable;
-    BOOL _greenEnable;
-    BOOL _blueEnable;
-    int _alphaEnable;
-    BOOL _onlyLevel;
-    BOOL _allLevels;
-    int _currentLevel;
+    BOOL _allSamples;
+    int _viewRotation;
     BOOL _allFaces;
     unsigned int _currentFace;
-    BOOL _toneMapEnable;
-    BOOL _toneMapIsFromUser;
-    float _toneMapSliderMin;
-    float _toneMapSliderMax;
-    float _toneMapExtentMin;
-    float _toneMapExtentMax;
-    DYResourceObject *_toneMapResource;
-    BOOL _allSamples;
+    unsigned int _rotate;
     unsigned int _currentSample;
-    float _overlayRed;
-    float _overlayGreen;
-    float _overlayBlue;
-    struct CGPoint _viewScrollPoint;
-    double _viewZoomFactor;
-    double _viewScaleX;
-    double _viewScaleY;
-    int _viewRotation;
     _Bool _viewZoomToFit;
+    double _viewScaleX;
+    float _yCenter;
+    BOOL _allLevels;
+    float _toneMapSliderMin;
+    float _scaleFactor;
+    double _viewScaleY;
+    BOOL _xFlip;
+    int _currentLevel;
+    float _toneMapSliderMax;
+    BOOL _blueEnable;
+    struct CGPoint _viewScrollPoint;
+    float _toneMapExtentMin;
+    int _alphaEnable;
+    double _viewZoomFactor;
+    BOOL _onlyLevel;
+    float _xCenter;
+    float _toneMapExtentMax;
+    BOOL _redEnable;
+    float _overlayGreen;
+    BOOL _toneMapEnable;
+    float _overlayRed;
+    BOOL _greenEnable;
+    float _overlayBlue;
+    BOOL _toneMapIsFromUser;
 }
 
 + (CDStruct_b2fbf00d)globalToneMapParamsForResource:(id)arg1 showDepth:(BOOL)arg2;
 + (id)toneMapParamsForResource:(id)arg1 showDepth:(BOOL)arg2;
 + (BOOL)resourceIsDepthOrStencil:(id)arg1;
-@property _Bool viewZoomToFit; // @synthesize viewZoomToFit=_viewZoomToFit;
-@property int viewRotation; // @synthesize viewRotation=_viewRotation;
-@property double viewScaleY; // @synthesize viewScaleY=_viewScaleY;
-@property double viewScaleX; // @synthesize viewScaleX=_viewScaleX;
-@property double viewZoomFactor; // @synthesize viewZoomFactor=_viewZoomFactor;
-@property struct CGPoint viewScrollPoint; // @synthesize viewScrollPoint=_viewScrollPoint;
-@property float overlayBlue; // @synthesize overlayBlue=_overlayBlue;
-@property float overlayGreen; // @synthesize overlayGreen=_overlayGreen;
-@property float overlayRed; // @synthesize overlayRed=_overlayRed;
-@property unsigned int currentSample; // @synthesize currentSample=_currentSample;
-@property BOOL allSamples; // @synthesize allSamples=_allSamples;
-@property float toneMapSliderMax; // @synthesize toneMapSliderMax=_toneMapSliderMax;
-@property float toneMapSliderMin; // @synthesize toneMapSliderMin=_toneMapSliderMin;
-@property float toneMapExtentMax; // @synthesize toneMapExtentMax=_toneMapExtentMax;
-@property float toneMapExtentMin; // @synthesize toneMapExtentMin=_toneMapExtentMin;
-@property BOOL toneMapIsFromUser; // @synthesize toneMapIsFromUser=_toneMapIsFromUser;
-@property BOOL toneMapEnable; // @synthesize toneMapEnable=_toneMapEnable;
-@property unsigned int currentFace; // @synthesize currentFace=_currentFace;
-@property BOOL allFaces; // @synthesize allFaces=_allFaces;
-@property int currentLevel; // @synthesize currentLevel=_currentLevel;
-@property BOOL allLevels; // @synthesize allLevels=_allLevels;
-@property BOOL onlyLevel; // @synthesize onlyLevel=_onlyLevel;
-@property int alphaEnable; // @synthesize alphaEnable=_alphaEnable;
-@property BOOL blueEnable; // @synthesize blueEnable=_blueEnable;
-@property BOOL greenEnable; // @synthesize greenEnable=_greenEnable;
-@property BOOL redEnable; // @synthesize redEnable=_redEnable;
-@property unsigned int rotate; // @synthesize rotate=_rotate;
-@property BOOL yFlip; // @synthesize yFlip=_yFlip;
-@property BOOL xFlip; // @synthesize xFlip=_xFlip;
-@property float scaleFactor; // @synthesize scaleFactor=_scaleFactor;
-@property float yCenter; // @synthesize yCenter=_yCenter;
-@property float xCenter; // @synthesize xCenter=_xCenter;
+@property(nonatomic) BOOL toneMapIsFromUser; // @synthesize toneMapIsFromUser=_toneMapIsFromUser;
+@property(nonatomic) float overlayBlue; // @synthesize overlayBlue=_overlayBlue;
+@property(nonatomic) BOOL greenEnable; // @synthesize greenEnable=_greenEnable;
+@property(nonatomic) float overlayRed; // @synthesize overlayRed=_overlayRed;
+@property(nonatomic) BOOL toneMapEnable; // @synthesize toneMapEnable=_toneMapEnable;
+@property(nonatomic) float overlayGreen; // @synthesize overlayGreen=_overlayGreen;
+@property(nonatomic) BOOL redEnable; // @synthesize redEnable=_redEnable;
+@property(nonatomic) float toneMapExtentMax; // @synthesize toneMapExtentMax=_toneMapExtentMax;
+@property(nonatomic) float xCenter; // @synthesize xCenter=_xCenter;
+@property(nonatomic) BOOL onlyLevel; // @synthesize onlyLevel=_onlyLevel;
+@property(nonatomic) double viewZoomFactor; // @synthesize viewZoomFactor=_viewZoomFactor;
+@property(nonatomic) int alphaEnable; // @synthesize alphaEnable=_alphaEnable;
+@property(nonatomic) float toneMapExtentMin; // @synthesize toneMapExtentMin=_toneMapExtentMin;
+@property(nonatomic) struct CGPoint viewScrollPoint; // @synthesize viewScrollPoint=_viewScrollPoint;
+@property(nonatomic) BOOL blueEnable; // @synthesize blueEnable=_blueEnable;
+@property(nonatomic) float toneMapSliderMax; // @synthesize toneMapSliderMax=_toneMapSliderMax;
+@property(nonatomic) int currentLevel; // @synthesize currentLevel=_currentLevel;
+@property(nonatomic) BOOL xFlip; // @synthesize xFlip=_xFlip;
+@property(nonatomic) double viewScaleY; // @synthesize viewScaleY=_viewScaleY;
+@property(nonatomic) float scaleFactor; // @synthesize scaleFactor=_scaleFactor;
+@property(nonatomic) float toneMapSliderMin; // @synthesize toneMapSliderMin=_toneMapSliderMin;
+@property(nonatomic) BOOL allLevels; // @synthesize allLevels=_allLevels;
+@property(nonatomic) float yCenter; // @synthesize yCenter=_yCenter;
+@property(nonatomic) double viewScaleX; // @synthesize viewScaleX=_viewScaleX;
+@property(nonatomic) _Bool viewZoomToFit; // @synthesize viewZoomToFit=_viewZoomToFit;
+@property(nonatomic) unsigned int currentSample; // @synthesize currentSample=_currentSample;
+@property(nonatomic) unsigned int rotate; // @synthesize rotate=_rotate;
+@property(nonatomic) unsigned int currentFace; // @synthesize currentFace=_currentFace;
+@property(nonatomic) BOOL allFaces; // @synthesize allFaces=_allFaces;
+@property(nonatomic) int viewRotation; // @synthesize viewRotation=_viewRotation;
+@property(nonatomic) BOOL allSamples; // @synthesize allSamples=_allSamples;
+@property(nonatomic) BOOL yFlip; // @synthesize yFlip=_yFlip;
+- (id).cxx_construct;
 - (void)calculateToneMapParamsForResource:(id)arg1 showDepth:(BOOL)arg2;
 - (void)encodeWithCoder:(id)arg1;
 - (id)initWithCoder:(id)arg1;
@@ -794,6 +928,7 @@ typedef struct {
     } data;
 }
 
+- (id).cxx_construct;
 - (id)toString;
 - (void)encodeWithCoder:(id)arg1;
 - (id)initWithCoder:(id)arg1;
@@ -816,7 +951,6 @@ typedef struct {
     unsigned int _renderbufferTextureFace;
     unsigned int _renderbufferTextureLevel;
     NSString *_resourceLabel;
-    BOOL _stateful;
     NSOpenGLContext *_context;
     unsigned int _programId;
     unsigned int _vertexShaderId;
@@ -856,11 +990,9 @@ typedef struct {
     unsigned int _numSamples;
     unsigned int _numLevels;
     BOOL _isCubemap;
-    NSArray *_isCubemapArray;
     GPUImageEditorShaderProgram *_shaderProgram;
     GPUImageEditorOverlayShaderProgram *_shaderProgramOverlay;
     GPUImageEditorBackgroundShaderProgram *_shaderProgramBackground;
-    struct dispatch_queue_s *_renderQueue;
     BOOL _toneMapEnabledValid;
     BOOL _toneMapEnabled;
     NSArray *_geometry;
@@ -894,19 +1026,8 @@ typedef struct {
 + (void)_initializeBackgroundTextureImage;
 + (id)logAspect;
 + (void)initialize;
-@property(retain) NSString *resourceLabel; // @synthesize resourceLabel=_resourceLabel;
-@property unsigned int renderbufferTextureLevel; // @synthesize renderbufferTextureLevel=_renderbufferTextureLevel;
-@property unsigned int renderbufferTextureFace; // @synthesize renderbufferTextureFace=_renderbufferTextureFace;
-@property BOOL textureIsRenderbuffer; // @synthesize textureIsRenderbuffer=_textureIsRenderbuffer;
-@property(retain) DYRenderbufferObject *overlay; // @synthesize overlay=_overlay;
-@property struct CGSize outputSize; // @synthesize outputSize=_outputSize;
-@property BOOL showDepth; // @synthesize showDepth=_showDepth;
-@property(retain) GPUImageEditorDisplayAttributes *displayAttributes; // @synthesize displayAttributes=_displayAttributes;
-@property(retain) DYResourceObject *resourceObject; // @synthesize resourceObject=_resourceObject;
+- (id).cxx_construct;
 - (void)_resolveMultisamplePixelInfosWithFormat:(unsigned int)arg1 pixelInfo:(id)arg2;
-- (void)_getRenderbufferPixelAtI:(unsigned int)arg1 atK:(unsigned int)arg2 withFormat:(unsigned int)arg3 withWidth:(unsigned int)arg4 withData:(id)arg5 pixelInfo:(id)arg6;
-- (BOOL)_selectPixelAtX:(float)arg1 atY:(float)arg2 pixelInfo:(id)arg3;
-- (BOOL)selectPixelAtX:(float)arg1 atY:(float)arg2 pixelInfo:(id)arg3;
 - (void)_loadToneMapUniforms;
 - (void)_geometrySetLevelAndFace:(id)arg1 level:(unsigned int)arg2 face:(unsigned int)arg3;
 - (void)_geometrySetFace:(id)arg1 face:(unsigned int)arg2;
@@ -918,10 +1039,11 @@ typedef struct {
 - (id)_layoutAllMipmapLevels:(struct CGRect)arg1;
 - (id)_layoutAllMipmapLevelsAndAllCubemapFaces:(struct CGRect)arg1;
 - (id)_getImageForCurrentAttributes;
-- (id)getImageWithResourceObject:(id)arg1 withDisplayAttributes:(id)arg2 withShowDepth:(BOOL)arg3 withOutputSize:(struct CGSize)arg4 withOverlay:(id)arg5 withRenderbufferTextureFace:(unsigned int)arg6 withRenderbufferTextureLevel:(unsigned int)arg7 withResourceLabel:(id)arg8;
-- (id)getImageWithResourceObject:(id)arg1 withDisplayAttributes:(id)arg2 withShowDepth:(BOOL)arg3 withOutputSize:(struct CGSize)arg4 withOverlay:(id)arg5 withResourceLabel:(id)arg6;
-- (id)getImageWithResourceObject:(id)arg1 withDisplayAttributes:(id)arg2 withShowDepth:(BOOL)arg3 withOutputSize:(struct CGSize)arg4 withResourceLabel:(id)arg5;
-- (id)getImage;
+- (id)renderImageForResourceObject:(id)arg1 displayAttributes:(id)arg2 showDepth:(BOOL)arg3 outputSize:(struct CGSize)arg4 overlay:(id)arg5 renderbufferTextureFace:(unsigned int)arg6 renderbufferTextureLevel:(unsigned int)arg7 resourceLabel:(id)arg8;
+- (id)renderImageForResourceObject:(id)arg1 displayAttributes:(id)arg2 showDepth:(BOOL)arg3 outputSize:(struct CGSize)arg4 overlay:(id)arg5 resourceLabel:(id)arg6;
+- (void)_setupRenderingJob:(id)arg1 displayAttributes:(id)arg2 showDepth:(BOOL)arg3 outputSize:(struct CGSize)arg4 overlay:(id)arg5 resourceLabel:(id)arg6;
+- (id)renderImageForResourceObject:(id)arg1 displayAttributes:(id)arg2 showDepth:(BOOL)arg3 outputSize:(struct CGSize)arg4 resourceLabel:(id)arg5;
+- (void)_resetEverything;
 - (char *)_renderAndReadDisplayGeometry;
 - (void)_resizeGeometryElement:(id)arg1;
 - (void)_calcTexCoords;
@@ -951,13 +1073,8 @@ typedef struct {
 - (void)_setDisplayAttributes:(id)arg1;
 - (void)_determineResourceAttributes;
 - (void)_setResourceObject:(id)arg1;
-- (void)finalize;
 - (void)invalidate;
-- (void)encodeWithCoder:(id)arg1;
-- (id)initWithCoder:(id)arg1;
-- (id)copyWithZone:(struct _NSZone *)arg1;
 - (id)init;
-- (id)description;
 
 @end
 
@@ -967,6 +1084,7 @@ typedef struct {
     GPUDataTableView *_vaoView;
     struct GPUVertexAttributes _vertexAttributes;
     BOOL _indexedModeEnabled;
+    BOOL _isPopulated;
     NSArray *_colors;
     NSArray *_secondaryColors;
     NSMenuItem *_showIndexColumnMenuItem;
@@ -979,6 +1097,8 @@ typedef struct {
 - (id)supportedResourceClasses;
 - (id)displayAttributesWithProperties:(id)arg1;
 - (void)beginEditor;
+- (void)populate;
+- (void)setRepresentedObject:(id)arg1;
 - (void)loadView;
 - (void)toggleIndexColummn;
 - (void)dataTableViewWillShowContextMenu:(id)arg1;
@@ -1016,26 +1136,31 @@ typedef struct {
 // Not exported
 @interface GPUVBOEditor : GPUResourceEditor <GPUDataTableViewDataProvider, GPUDataTableViewDelegate>
 {
-    GPUDataTableView *_vboView;
     DVTBorderedView *_bottomToolBar;
+    GPUDataTableView *_vboView;
+    NSPopUpButton *_displayFormatPopup;
     long long _numberOfColumns;
     NSString *_displayFormat;
     int _dataFormat;
     struct GPUVertexAttributeComponent _bufferData;
     double _minColumnWidth;
+    BOOL _isPopulated;
 }
 
-@property long long numberOfColumns; // @synthesize numberOfColumns=_numberOfColumns;
-@property(retain) GPUDataTableView *vboView; // @synthesize vboView=_vboView;
+@property(nonatomic) long long numberOfColumns; // @synthesize numberOfColumns=_numberOfColumns;
+@property(retain, nonatomic) NSPopUpButton *displayFormatPopup; // @synthesize displayFormatPopup=_displayFormatPopup;
+@property(retain, nonatomic) GPUDataTableView *vboView; // @synthesize vboView=_vboView;
 - (id).cxx_construct;
 - (void).cxx_destruct;
 - (id)displayAttributesWithProperties:(id)arg1;
 - (void)beginEditor;
+- (void)populate;
+- (void)setRepresentedObject:(id)arg1;
 - (void)loadView;
 - (id)widthInColumns;
 - (void)setWidthInColumns:(id)arg1;
-@property(retain) NSString *displayFormat;
-@property(readonly) int dataFormat; // @synthesize dataFormat=_dataFormat;
+@property(retain, nonatomic) NSString *displayFormat;
+@property(readonly, nonatomic) int dataFormat; // @synthesize dataFormat=_dataFormat;
 - (double)dataTableView:(id)arg1 minimumWidthForColumn:(long long)arg2 inGroup:(long long)arg3;
 - (id)dataTableView:(id)arg1 textForCellAtRow:(long long)arg2 column:(long long)arg3 inColumnGroup:(long long)arg4;
 - (long long)dataTableView:(id)arg1 numberOfColumnsInGroup:(long long)arg2;
@@ -1046,41 +1171,79 @@ typedef struct {
 @end
 
 // Not exported
-@interface GPUProgramEditorItem : NSObject
+@interface GPUProgramEditor : GPUResourceEditor <DVTSourceTextViewDelegate>
 {
-    NSString *displayName;
-    NSAttributedString *source;
+    unsigned long long _sharegroupID;
+    NSView *mainView;
+    NSTabView *tabView;
+    GPUSimpleGLSLSourceView *sourceView;
+    DVTBorderedView *bottomBar;
+    NSButton *updateProgramButton;
+    NSTextField *updateProgramLabel;
+    NSTextField *compiledAndLinkedLabel;
+    NSImageView *_compiledAndLinkedLabelBadge;
+    id <DVTObservingToken> _programInfoUpdateToken;
+    id <DVTObservingToken> _gpuControllerStateObserverToken;
+    NSString *_programIdentifier;
+    NSString *_programHeader;
+    NSDictionary *programInfoDict;
+    GPUProgramEditorAnnotationContext *annotationContext;
 }
 
-@property(retain, nonatomic) NSAttributedString *source; // @synthesize source;
-@property(retain, nonatomic) NSString *displayName; // @synthesize displayName;
++ (id)_createProgramInfoDict:(id)arg1;
++ (id)assetBundle;
+@property(retain, nonatomic) NSDictionary *programInfoDict; // @synthesize programInfoDict;
+- (id)annotationContextForTextView:(id)arg1;
+- (id)annotationContext;
+- (void)_removeTextPreferencesObservers;
+- (void)_setupTextPreferencesObservers;
+- (void)updateProgram:(id)arg1;
+- (id)displayAttributesWithProperties:(id)arg1;
+- (void)makeAnnotationsWithInfoLog:(id)arg1 applyHeaderOffset:(BOOL)arg2;
+- (void)beginEditor;
+- (void)_setupReadOnlyShaderView:(id)arg1 programInfoLog:(id)arg2;
+- (BOOL)_isProgramEditable:(id)arg1;
+- (struct _NSRange)textView:(id)arg1 willChangeSelectionFromCharacterRange:(struct _NSRange)arg2 toCharacterRange:(struct _NSRange)arg3;
+- (BOOL)textView:(id)arg1 shouldChangeTextInRange:(struct _NSRange)arg2 replacementString:(id)arg3;
+- (void)textDidBeginEditing:(id)arg1;
+- (void)_alertDidEnd:(id)arg1 returnCode:(long long)arg2 contextInfo:(void *)arg3;
+- (void)_onProgramInfoDictUpdated;
+- (void)_showToolbar;
+- (BOOL)_shouldEnableUpdateProgramButton;
+- (void)viewWillUninstall;
+- (void)viewDidInstall;
+- (void)loadView;
+- (id)supportedResourceClasses;
+- (void)_updateCompiledAndLinkedLabel;
+- (id)_buildInfoLogWithDictionary:(id)arg1;
 
 @end
 
 // Not exported
-@interface GPUProgramEditor : GPUResourceEditor
+@interface GPUProgramEditorAnnotationContext : DVTAnnotationContext
 {
-    GPUSimpleSourceTextView *sourceView;
-    GPUSimpleSourceTextView *logView;
-    NSArrayController *_shaderArrayController;
-    NSPopUpButton *sourceMenu;
-    DVTBorderedView *bottomBar;
-    NSTextField *sourceMenuLabel;
-    NSAttributedString *infoLog;
-    unsigned long long selectedView;
+    unsigned long long _lineOffset;
+    NSString *_infoLog;
 }
 
-@property(retain, nonatomic) NSAttributedString *infoLog; // @synthesize infoLog;
-@property(nonatomic) unsigned long long selectedView; // @synthesize selectedView;
-- (id)displayAttributesWithProperties:(id)arg1;
-- (void)beginEditor;
-- (void)addLinkedShader:(id)arg1 type:(unsigned int)arg2 attachedShaders:(id)arg3;
-- (id)createItemWithLinkedShader:(id)arg1 type:(unsigned int)arg2 attachedShaders:(id)arg3;
-- (id)createItemWithProgram:(id)arg1 source:(id)arg2 type:(unsigned int)arg3;
-- (id)createItemWithShader:(id)arg1 suffix:(id)arg2;
-- (void)_unbindSourceControlsAndOptionallyDisplaySingleDisabledItem:(id)arg1;
-- (void)loadView;
-- (id)supportedResourceClasses;
+@property(copy, nonatomic) NSString *infoLog; // @synthesize infoLog=_infoLog;
+@property(nonatomic) unsigned long long lineOffset; // @synthesize lineOffset=_lineOffset;
+- (id)initWithFileDataType:(id)arg1;
+
+@end
+
+// Not exported
+@interface GPUProgramEditorAnnotationProvider : DVTAnnotationProvider
+{
+    GPUProgramEditorAnnotationContext *_context;
+}
+
++ (id)annotationProviderForContext:(id)arg1 error:(id *)arg2;
+@property(retain, nonatomic) GPUProgramEditorAnnotationContext *context; // @synthesize context=_context;
+- (void)rebuildAnnotations;
+- (void)createAnnotionForLine:(long long)arg1 error:(BOOL)arg2 message:(id)arg3;
+- (id)initWithContext:(id)arg1;
+- (id)init;
 
 @end
 
@@ -1114,17 +1277,28 @@ typedef struct {
 // Not exported
 @interface GPUResourceEditor : DVTViewController
 {
-    DYResourceObject *_resourceObject;
     id _displayAttributes;
+    GPUSharedTabUIState *_sharedTabState;
+    GPUSharedInferiorSessionUIState *_sharedInferiorSessionState;
+    DYResourceObject *_resourceObject;
+    IDEFileTextSettings *_fileTextSettings;
+    BOOL _valid;
 }
 
 + (id)defaultViewNibBundle;
 + (id)defaultViewNibName;
+@property(readonly, nonatomic, getter=isValid) BOOL valid; // @synthesize valid=_valid;
+@property(nonatomic) __weak IDEFileTextSettings *fileTextSettings; // @synthesize fileTextSettings=_fileTextSettings;
+@property(nonatomic) __weak DYResourceObject *resourceObject; // @synthesize resourceObject=_resourceObject;
+@property(nonatomic) __weak GPUSharedInferiorSessionUIState *sharedInferiorSessionState; // @synthesize sharedInferiorSessionState=_sharedInferiorSessionState;
+@property(nonatomic) __weak GPUSharedTabUIState *sharedTabState; // @synthesize sharedTabState=_sharedTabState;
 - (void)setRepresentedObject:(id)arg1;
+- (void)primitiveInvalidate;
+- (void)invalidate;
+- (void)loadView;
 - (void)beginEditor;
 - (id)displayAttributesWithProperties:(id)arg1;
-- (id)loadResource:(id)arg1;
-- (void)unload;
+- (BOOL)_checkResourceType;
 - (id)supportedResourceClasses;
 
 @end
@@ -1179,9 +1353,9 @@ typedef struct {
     int _locToneMapDstMin;
 }
 
-@property(readonly) BOOL toneMapEnabled; // @synthesize toneMapEnabled=_toneMapEnabled;
-@property unsigned int faceCode; // @synthesize faceCode=_faceCode;
-@property unsigned int level; // @synthesize level=_level;
+@property(readonly, nonatomic) BOOL toneMapEnabled; // @synthesize toneMapEnabled=_toneMapEnabled;
+@property(nonatomic) unsigned int faceCode; // @synthesize faceCode=_faceCode;
+@property(nonatomic) unsigned int level; // @synthesize level=_level;
 - (void)setToneMapUniformsWithSrcMin:(float *)arg1 withScale:(float *)arg2 withDestMin:(float *)arg3;
 - (void)setFace:(unsigned int)arg1;
 - (void)use;
@@ -1214,6 +1388,7 @@ typedef struct {
 }
 
 @property struct CGRect rect; // @synthesize rect=_rect;
+- (id).cxx_construct;
 - (BOOL)pointIsInsideWithX:(float)arg1 withY:(float)arg2;
 - (BOOL)hasFace;
 @property unsigned int face; // @dynamic face;
@@ -1240,8 +1415,6 @@ typedef struct {
 - (id)displayAttributesWithProperties:(id)arg1;
 - (void)beginEditor;
 - (id)supportedResourceClasses;
-- (void)dealloc;
-- (id)init;
 
 @end
 
@@ -1249,9 +1422,6 @@ typedef struct {
 @interface GPUQueryDisplayAttributes : NSObject
 {
 }
-
-- (void)dealloc;
-- (id)init;
 
 @end
 
@@ -1274,9 +1444,10 @@ typedef struct {
     BOOL _enableSettingsBubblePopup;
 }
 
-@property(copy) NSImage *image; // @synthesize image=_image;
-@property(retain) DYResourceObject *resource; // @synthesize resource=_resource;
-- (void)settingsUpdateToneMapRange;
++ (id)assetBundle;
+@property(copy, nonatomic) NSImage *image; // @synthesize image=_image;
+@property(retain, nonatomic) DYResourceObject *resource; // @synthesize resource=_resource;
+- (void)settingsUpdate;
 - (void)settingsToggleAlphaEnable;
 - (void)settingsToggleBlueEnable;
 - (void)settingsToggleGreenEnable;
@@ -1290,8 +1461,9 @@ typedef struct {
 - (void)infoBubbleClosed;
 - (void)reEnableInfoBubble;
 - (void)showInfo:(id)arg1;
-@property(readonly) GPURenderBufferView *renderBufferView; // @dynamic renderBufferView;
-@property(copy) NSString *name;
+- (struct CGPoint)_popoverScreenPointForParentButton:(id)arg1;
+@property(readonly, nonatomic) GPURenderBufferView *renderBufferView; // @dynamic renderBufferView;
+@property(copy, nonatomic) NSString *name;
 @property(readonly) double imageHeightWidthRatio;
 @property(readonly) double imageWidthHeightRatio;
 @property(readonly) struct CGSize imageSize;
@@ -1299,88 +1471,32 @@ typedef struct {
 - (struct CGSize)sizeForWidth:(double)arg1;
 - (void)loadView;
 - (id)description;
-- (id)initWithName:(id)arg1 contextMenu:(id)arg2 traceEditor:(id)arg3 infoDelegate:(id)arg4 withDisplayAttributes:(id)arg5 withShowDepth:(BOOL)arg6;
+- (id)initWithName:(id)arg1 contextMenu:(id)arg2 traceEditor:(id)arg3 infoDelegate:(id)arg4 displayAttributes:(id)arg5 showDepth:(BOOL)arg6;
 
 @end
 
 // Not exported
 @interface GPURenderBufferCanvas : DVTLayerHostingView
 {
-    int _layoutOrientation;
-    struct CGRect _boundsForContent;
     NSMutableArray *_displayedRenderBuffers;
     NSMapTable *_renderBufferObsTokens;
-    int layoutOrientation;
-    double _widthPerBuffer;
-    struct {
-        unsigned int needsLayout:1;
-        unsigned int animateLayout:1;
-        unsigned int _reserved:6;
-    } _flags;
+    NSArray *_renderBufferViewConstraints;
 }
 
-- (id).cxx_construct;
-@property(readonly) NSArray *renderBuffers; // @dynamic renderBuffers;
-- (void)_layoutVerticallyUsingAnimation:(BOOL)arg1;
-- (void)_layoutHorizontallyUsingAnimation:(BOOL)arg1;
-- (void)_layoutUsingAnimation:(BOOL)arg1;
-- (int)_getDynamicLayout;
-- (unsigned long long)_calcUsedAreaForVerticalLayout;
-- (unsigned long long)_calcUsedAreaForHorizontalLayout;
-- (void)setRenderBuffersUsingAnimation:(id)arg1;
-- (void)_unobserveRenderBuffer:(id)arg1;
-- (void)_observeRenderBuffer:(id)arg1;
-- (void)_frameUpdated;
-- (void)setFrame:(struct CGRect)arg1;
++ (BOOL)requiresConstraintBasedLayout;
++ (id)separatorColor;
++ (id)backgroundGradient;
+@property(retain, nonatomic) NSArray *renderBuffers; // @dynamic renderBuffers;
+- (void)updateConstraints;
+- (void)updateRenderBufferViewConstraints;
+- (id)constraintsForRenderBufferViews;
+- (void)setRenderBufferViewConstraints:(id)arg1;
 - (void)drawRect:(struct CGRect)arg1;
-- (void)viewWillDraw;
-- (void)_installSetFrameAnimation:(id)arg1;
 - (BOOL)canBecomeKeyView;
 - (BOOL)acceptsFirstResponder;
 - (void)_traceEditorCanvasCommonInit;
 - (void)awakeFromNib;
 - (id)initWithFrame:(struct CGRect)arg1;
-
-@end
-
-// Not exported
-@interface GPUResourceBackgroundView : NSView
-{
-}
-
-+ (id)standardResourceBackgroundGradient;
-- (void)drawRect:(struct CGRect)arg1;
-
-@end
-
-// Not exported
-@interface GPUSimpleGLSLSourceView : GPUSimpleSourceTextView
-{
-}
-
-- (id)languageIdentifier;
-
-@end
-
-// Not exported
-@interface GPUSimplePlainTextView : GPUSimpleSourceTextView
-{
-}
-
-@end
-
-// Not exported
-@interface GPUSimpleSourceTextView : DVTSourceTextView
-{
-    DVTTextSidebarView *_sidebarView;
-}
-
-- (void)installSidebarViewIfNeeded;
-- (id)languageIdentifier;
-@property(readonly) DVTTextSidebarView *sidebarView;
-- (id)initWithCoder:(id)arg1;
-- (id)initWithFrame:(struct CGRect)arg1 textContainer:(id)arg2;
-- (void)_commonInit;
 
 @end
 
@@ -1462,6 +1578,7 @@ typedef struct {
 - (void)close;
 - (void)_cleanUpAfterClosingPopupWindow;
 - (void)toggleVisibilityAtPoint:(struct CGPoint)arg1;
+- (void)viewDidInstall;
 - (id)initWithResource:(id)arg1 parentView:(id)arg2 nibName:(id)arg3 owner:(id)arg4 infoDelegate:(id)arg5;
 
 @end
@@ -1500,13 +1617,11 @@ typedef struct {
 @interface GPUTraceTextureInfoBubble : GPUTraceResourceInfoBubble
 {
     int _api;
-    int _textureID;
     NSDictionary *_dict1;
     NSTextField *_nameLabel;
     NSTextField *_sizeLabel;
-    NSTextField *_formatLabel;
-    NSTextField *_typeLabel;
-    NSTextField *_typeLabelLabel;
+    NSTextField *_internalFormatLabel;
+    NSTextField *_immutableLabel;
     NSTextField *_minFilterLabel;
     NSTextField *_magFilterLabel;
     NSTextField *_mipFilterLabel;
@@ -1521,7 +1636,6 @@ typedef struct {
 }
 
 - (void)viewDidInstall;
-- (void)finalize;
 - (id)initWithResource:(id)arg1 parentView:(id)arg2 owner:(id)arg3 infoDelegate:(id)arg4;
 
 @end
@@ -1569,6 +1683,8 @@ typedef struct {
 - (void)controlTextDidEndEditing:(id)arg1;
 - (void)updateToneMapRange:(id)arg1;
 - (void)_setupVisibleRangeSlider;
+- (void)_resetChannelToolTips;
+- (void)_resetButtonState;
 - (void)_setupChannelEnableControl;
 - (void)viewDidInstall;
 - (void)toggleChannelEnable:(id)arg1;
@@ -1584,7 +1700,6 @@ typedef struct {
 
 @end
 
-// Not exported
 @interface GPURenderBufferView : DVTLayerHostingView
 {
     CAScrollLayer *_scrollLayer;
@@ -1609,6 +1724,7 @@ typedef struct {
     double _zoomMomentumLastTimestamp;
     _Bool _ignoreScroll;
     _Bool _zoomToFit;
+    _Bool _enableZoomToFitAtMinimumZoomFactor;
     _Bool _clampZoomToIntegers;
     _Bool _clampZoomToPowersOfTwo;
     double _savedZoomFactor;
@@ -1622,20 +1738,21 @@ typedef struct {
     unsigned char _transactionState;
 }
 
-@property _Bool useFastShadows; // @synthesize useFastShadows=_useFastShadows;
-@property(readonly) double zoomFactor; // @synthesize zoomFactor=_zoomFactor;
-@property struct CGPoint scrollPoint; // @synthesize scrollPoint=_scrollPoint;
-@property(copy) id swipeHandler; // @synthesize swipeHandler=_swipeHandler;
-@property __weak id <GPURenderBufferViewStateCoordinationProtocol> coordinator; // @synthesize coordinator=_coordinator;
+@property(nonatomic) _Bool useFastShadows; // @synthesize useFastShadows=_useFastShadows;
+@property(readonly, nonatomic) double zoomFactor; // @synthesize zoomFactor=_zoomFactor;
+@property(nonatomic) struct CGPoint scrollPoint; // @synthesize scrollPoint=_scrollPoint;
+@property(copy, nonatomic) id swipeHandler; // @synthesize swipeHandler=_swipeHandler;
+@property(nonatomic) __weak id <GPURenderBufferViewStateCoordinationProtocol> coordinator; // @synthesize coordinator=_coordinator;
 - (id).cxx_construct;
-@property _Bool clampZoomToPowersOfTwo; // @dynamic clampZoomToPowersOfTwo;
-@property _Bool clampZoomToIntegers; // @dynamic clampZoomToIntegers;
-@property _Bool zoomToFit; // @dynamic zoomToFit;
-@property(readonly) double minimumZoomFactor; // @dynamic minimumZoomFactor;
-@property(readonly) double maximumZoomFactor; // @dynamic maximumZoomFactor;
-@property(copy) NSString *title; // @dynamic title;
-@property struct CGAffineTransform imageTransform; // @dynamic imageTransform;
-@property(copy) NSImage *image; // @dynamic image;
+@property(nonatomic) _Bool clampZoomToPowersOfTwo; // @dynamic clampZoomToPowersOfTwo;
+@property(nonatomic) _Bool clampZoomToIntegers; // @dynamic clampZoomToIntegers;
+@property(nonatomic) _Bool enableZoomToFitAtMinimumZoomFactor; // @dynamic enableZoomToFitAtMinimumZoomFactor;
+@property(nonatomic) _Bool zoomToFit; // @dynamic zoomToFit;
+@property(readonly, nonatomic) double minimumZoomFactor; // @dynamic minimumZoomFactor;
+@property(readonly, nonatomic) double maximumZoomFactor; // @dynamic maximumZoomFactor;
+@property(copy, nonatomic) NSString *title; // @dynamic title;
+@property(nonatomic) struct CGAffineTransform imageTransform; // @dynamic imageTransform;
+@property(copy, nonatomic) NSImage *image; // @dynamic image;
 - (BOOL)isOpaque;
 - (void)dispatchInTransaction:(id)arg1;
 - (void)setZoomFactor:(double)arg1 centerPoint:(struct CGPoint)arg2 roundToClosest:(_Bool)arg3;
@@ -1648,12 +1765,15 @@ typedef struct {
 - (void)setupDragging;
 - (void)teardownLayers;
 - (void)setupLayers;
-- (void)setLayer:(id)arg1;
+- (BOOL)useLayerHosting;
 - (id)makeBackingLayer;
+- (void)updateLayer;
+- (BOOL)wantsUpdateLayer;
 - (void)_buildLayerTree:(id)arg1;
 - (void)endGestureWithEvent:(id)arg1;
 - (void)beginGestureWithEvent:(id)arg1;
 - (void)swipeWithEvent:(id)arg1;
+- (void)smartMagnifyWithEvent:(id)arg1;
 - (void)magnifyWithEvent:(id)arg1;
 - (void)scrollWheel:(id)arg1;
 - (_Bool)_handleScrollEvent:(id)arg1;
@@ -1661,14 +1781,17 @@ typedef struct {
 - (void)mouseDragged:(id)arg1;
 - (void)mouseDown:(id)arg1;
 - (void)_handleSmartZoomEvent:(id)arg1;
+- (double)_calculateSmartZoomTargetFactor;
 - (void)_handleZoomEvent:(id)arg1 factor:(double)arg2 centeredAt:(struct CGPoint)arg3 animate:(_Bool)arg4;
 - (void)_handleDragEvent:(id)arg1 point:(struct CGPoint)arg2;
 - (void)_cancelSnapbackAnimation;
 - (BOOL)canBecomeKeyView;
 - (BOOL)acceptsFirstResponder;
-- (void)viewDidEndLiveResize;
-- (void)viewWillStartLiveResize;
+- (void)layout;
+- (BOOL)layer:(id)arg1 shouldInheritContentsScale:(double)arg2 fromWindow:(id)arg3;
+- (void)_updateContentsScale:(double)arg1 forLayer:(id)arg2;
 - (void)layoutSublayersOfLayer:(id)arg1;
+- (void)_layoutLayers;
 - (void)_updateImageLayerGeometry;
 - (void)_updateScrollPadding;
 - (void)_updateZoomToFitFactor;
@@ -1702,7 +1825,7 @@ typedef struct {
     NSPopUpButton *levelSelector;
     NSPopUpButton *faceSelector;
     NSPopUpButton *sampleSelector;
-    BOOL _isRenderbuffer;
+    NSButton *visualizeMipmapCheckbox;
     GPUImageEditorRenderer *_renderer;
     GPUTraceResourceInfoBubble *_infoBubble;
     GPUTraceResourceSettingsBubble *_settingsBubble;
@@ -1725,8 +1848,10 @@ typedef struct {
     GPUImageEditorDisplayAttributes *_onscreenDisplayAttributes;
 }
 
++ (id)assetBundle;
 - (id).cxx_construct;
-- (void)settingsUpdateToneMapRange;
+- (void)mipmapCheckBoxClicked:(id)arg1;
+- (void)settingsUpdate;
 - (void)settingsToggleAlphaEnable;
 - (void)settingsToggleBlueEnable;
 - (void)settingsToggleGreenEnable;
@@ -1766,7 +1891,7 @@ typedef struct {
 - (void)_updateUIForResourceAndAttributes;
 - (BOOL)validateMenuItem:(id)arg1;
 - (void)beginEditor;
-- (void)unload;
+- (void)primitiveInvalidate;
 - (void)loadView;
 - (void)_makeSegmentedControlImagesTemplates:(id)arg1;
 - (void)dealloc;
@@ -1776,7 +1901,6 @@ typedef struct {
 
 @end
 
-// Not exported
 @interface GPURenderBufferButton : NSControl
 {
     NSTrackingArea *_ta;
@@ -1794,8 +1918,8 @@ typedef struct {
 }
 
 + (Class)cellClass;
-@property(retain) NSImage *overImage; // @synthesize overImage=_overImage;
-@property(retain) NSImage *image; // @synthesize image=_image;
+@property(retain, nonatomic) NSImage *overImage; // @synthesize overImage=_overImage;
+@property(retain, nonatomic) NSImage *image; // @synthesize image=_image;
 - (id).cxx_construct;
 - (void)viewWillMoveToWindow:(id)arg1;
 - (void)updateTrackingAreas;
@@ -1808,8 +1932,10 @@ typedef struct {
 - (void)_updateImage:(id)arg1;
 - (void)mouseUp:(id)arg1;
 - (void)mouseDown:(id)arg1;
-- (void)_removeMousePressedFilter;
-- (void)_applyMousePressedFilters;
+- (id)_filtersForMousePressed;
+- (id)_filtersForDisabled;
+- (void)_updateFilters;
+- (void)setEnabled:(BOOL)arg1;
 - (BOOL)isOpaque;
 
 @end
@@ -1934,7 +2060,53 @@ typedef struct {
 
 @end
 
-@interface GPUTraceResourceItem (GPUTraceResourceItemThumbnailFactoryIntegration)
-- (id)thumbnail;
+@interface GPUTraceSubEditor : DVTViewController
+{
+    GPUSharedTabUIState *_sharedUIStateObj;
+    GPUTraceDocument *_editorDocument;
+}
+
++ (id)defaultViewNibBundle;
++ (id)defaultViewNibName;
+@property(readonly) GPUTraceDocument *editorDocument; // @synthesize editorDocument=_editorDocument;
+@property(readonly) GPUSharedTabUIState *sharedUIStateObj; // @synthesize sharedUIStateObj=_sharedUIStateObj;
+- (void)setRepresentedObject:(id)arg1;
+- (void)onReplayCapture:(id)arg1;
+- (BOOL)shouldEnableReplayCaptureMenuItem;
+- (void)viewDidInstall;
+- (void)beginEditor;
+- (id)initWithTraceDocument:(id)arg1 sharedUIState:(id)arg2;
+
+@end
+
+// Not exported
+@interface GPUEmptyBGView : NSView
+{
+}
+
+- (void)drawRect:(struct CGRect)arg1;
+- (id)hitTest:(struct CGPoint)arg1;
+- (BOOL)acceptsFirstResponder;
+
+@end
+
+// Not exported
+@interface GPUTraceEmptyEditor : GPUTraceSubEditor
+{
+    NSString *_emptyContentString;
+    NSTextField *_lozengeTextField;
+    GPUEmptyBGView *_bgView;
+}
+
+- (void)setEmptyContentString:(id)arg1;
+- (void)_centerViewInSuperView:(id)arg1;
+- (void)viewDidInstall;
+- (void)loadView;
+
+@end
+
+@interface GPUDebuggerController (ScreenshotSaving)
+- (id)archivedRenderbufferImage;
+- (id)_renderedImage:(id)arg1 withAttachment:(id)arg2 withDrawItem:(id)arg3;
 @end
 

@@ -30,9 +30,9 @@ struct _NSRange {
 
 /*
  * File: /Applications/Xcode.app/Contents/PlugIns/IDECodeSnippetLibrary.ideplugin/Contents/MacOS/IDECodeSnippetLibrary
- * UUID: 57460C28-9A29-3ACE-935D-91B961A3243A
+ * UUID: 77EE8DA4-CEFE-317F-B455-8D7A53F39712
  * Arch: Intel x86-64 (x86_64)
- *       Current version: 1165.0.0, Compatibility version: 1.0.0
+ *       Current version: 2055.0.0, Compatibility version: 1.0.0
  *       Minimum Mac OS X version: 10.7.0
  *
  *       Objective-C Garbage Collection: Required
@@ -41,6 +41,7 @@ struct _NSRange {
 @protocol DVTCompletingTextViewDelegate <NSTextViewDelegate>
 
 @optional
+- (void)setupTextViewContextMenuWithMenu:(id)arg1;
 - (BOOL)completingTextViewHandleCancel:(id)arg1;
 - (unsigned long long)textView:(id)arg1 lineEndingForWritingSelectionToPasteboard:(id)arg2 type:(id)arg3;
 - (unsigned long long)textView:(id)arg1 lineEndingForReadingSelectionFromPasteboard:(id)arg2 type:(id)arg3;
@@ -53,10 +54,8 @@ struct _NSRange {
 
 @optional
 - (id)textViewWillReturnPrintJobTitle:(id)arg1;
-- (id)cursorForAltTemporaryLink;
 - (void)textViewDidScroll:(id)arg1;
 - (void)setupGutterContextMenuWithMenu:(id)arg1;
-- (void)setupTextViewContextMenuWithMenu:(id)arg1;
 - (void)tokenizableItemsForItemAtRealRange:(struct _NSRange)arg1 completionBlock:(id)arg2;
 - (void)textViewDidFinishAnimatingScroll:(id)arg1;
 - (void)textViewDidLoadAnnotationProviders:(id)arg1;
@@ -73,18 +72,23 @@ struct _NSRange {
 - (void)textView:(id)arg1 handleMouseDownInSidebar:(id)arg2 atLineNumber:(unsigned long long)arg3;
 @end
 
-@protocol DVTTextCompletionItem
+@protocol DVTTextCompletionItem <NSObject>
 @property(readonly) BOOL notRecommended;
-@property long long priority;
+@property double priority;
 @property(readonly) NSImage *icon;
 @property(readonly) NSAttributedString *descriptionText;
+@property(readonly) NSString *parentText;
 @property(readonly) NSString *completionText;
 @property(readonly) NSString *displayType;
 @property(readonly) NSString *displayText;
 @property(readonly) NSString *name;
 
 @optional
-- (void)infoViewController:(id)arg1;
+@property(readonly) NSImage *highlightedStatusIcon;
+@property(readonly) NSImage *statusIcon;
+@property(readonly) NSArray *additionalCompletions;
+@property(readonly) int completionItemStyle;
+- (void)infoViewControllerWithWidth:(double)arg1 context:(id)arg2 completionBlock:(id)arg3;
 @end
 
 @protocol NSObject
@@ -107,6 +111,9 @@ struct _NSRange {
 - (Class)superclass;
 - (unsigned long long)hash;
 - (BOOL)isEqual:(id)arg1;
+
+@optional
+- (id)debugDescription;
 @end
 
 @protocol NSTextDelegate <NSObject>
@@ -127,6 +134,7 @@ struct _NSRange {
 - (void)textView:(id)arg1 doubleClickedOnCell:(id)arg2 inRect:(struct CGRect)arg3;
 - (void)textView:(id)arg1 clickedOnCell:(id)arg2 inRect:(struct CGRect)arg3;
 - (BOOL)textView:(id)arg1 clickedOnLink:(id)arg2;
+- (id)textView:(id)arg1 willShowSharingServicePicker:(id)arg2 forItems:(id)arg3;
 - (id)textView:(id)arg1 URLForContentsOfTextAttachment:(id)arg2 atIndex:(unsigned long long)arg3;
 - (id)textView:(id)arg1 didCheckTextInRange:(struct _NSRange)arg2 types:(unsigned long long)arg3 options:(id)arg4 results:(id)arg5 orthography:(id)arg6 wordCount:(long long)arg7;
 - (id)textView:(id)arg1 willCheckTextInRange:(struct _NSRange)arg2 options:(id)arg3 types:(unsigned long long *)arg4;
@@ -150,6 +158,16 @@ struct _NSRange {
 - (BOOL)textView:(id)arg1 clickedOnLink:(id)arg2 atIndex:(unsigned long long)arg3;
 @end
 
+@protocol __ARCLiteIndexedSubscripting__
+- (void)setObject:(id)arg1 atIndexedSubscript:(unsigned long long)arg2;
+- (id)objectAtIndexedSubscript:(unsigned long long)arg1;
+@end
+
+@protocol __ARCLiteKeyedSubscripting__
+- (void)setObject:(id)arg1 forKeyedSubscript:(id)arg2;
+- (id)objectForKeyedSubscript:(id)arg1;
+@end
+
 @interface IDECodeSnippetLibrary : DVTLibraryController
 {
     id <DVTObservingToken> _kvoSnippetRepositoryToken;
@@ -168,6 +186,7 @@ struct _NSRange {
 - (BOOL)createAsset:(id *)arg1 forLibrarySourceWithIdentifier:(id *)arg2 fromPasteboard:(id)arg3;
 - (BOOL)canCreateAssetsFromPasteboard:(id)arg1 targetingLibrarySourceIdentifier:(id *)arg2;
 - (id)readableAssetPasteboardTypes;
+- (void)dealloc;
 - (void)finalize;
 - (void)viewWillUninstall;
 - (void)libraryDidLoad;
@@ -237,7 +256,7 @@ struct _NSRange {
     NSMutableDictionary *_systemSnippetsByIdentifier;
     NSMutableDictionary *_snippetsByIdentifier;
     NSMutableSet *_codeSnippetsNeedingSaving;
-    DVTDelayedValidator *_savingValidator;
+    DVTDelayedInvocation *_savingInvocation;
     NSMutableSet *_codeSnippets;
 }
 
@@ -332,12 +351,14 @@ struct _NSRange {
 {
 }
 
-+ (id)_cacheKeyForSourceModelScopes:(id)arg1 language:(id)arg2 atBOL:(BOOL)arg3;
++ (id)_cacheKeyForSourceModelScopes:(id)arg1 language:(id)arg2 platformNames:(id)arg3 atBOL:(BOOL)arg4;
 + (void)_clearSnippetsCompletionsCache;
 + (void)codeSnippetDidChange:(id)arg1;
-+ (void)_generateCompletionsForScopes:(id)arg1 language:(id)arg2 atBOL:(BOOL)arg3;
++ (void)_generateCompletionsForScopes:(id)arg1 language:(id)arg2 platformNames:(id)arg3 atBOL:(BOOL)arg4;
++ (id)_cacheKeyForPlatformFamilyNames:(id)arg1;
 + (BOOL)_isAtBOLAtLocation:(unsigned long long)arg1 inString:(id)arg2;
 + (BOOL)_shouldIncludeSnippet:(id)arg1 inSourceModelScopes:(id)arg2 atBOL:(BOOL)arg3;
++ (BOOL)_snippet:(id)arg1 matchesPlatforms:(id)arg2;
 + (id)bestCompletionScopeForSourceModelScopes:(id)arg1 atBOL:(BOOL)arg2 language:(id)arg3;
 + (BOOL)_scope:(id)arg1 matchesSourceModelScopes:(id)arg2 atBOL:(BOOL)arg3;
 - (id)completionItemsForDocumentLocation:(id)arg1 context:(id)arg2 areDefinitive:(char *)arg3;
@@ -351,20 +372,29 @@ struct _NSRange {
     NSString *_completionText;
     NSString *_displayText;
     NSString *_displayType;
-    long long _priority;
+    double _priority;
     NSString *_name;
     NSImage *_icon;
 }
 
++ (id)infoViewControllerFont;
 @property(readonly) NSImage *icon; // @synthesize icon=_icon;
 @property(readonly) NSAttributedString *descriptionText; // @synthesize descriptionText=_descriptionText;
 @property(readonly) NSString *completionText; // @synthesize completionText=_completionText;
 @property(readonly) NSString *displayType; // @synthesize displayType=_displayType;
 @property(readonly) NSString *displayText; // @synthesize displayText=_displayText;
-@property long long priority; // @synthesize priority=_priority;
+@property double priority; // @synthesize priority=_priority;
 @property(readonly) NSString *name; // @synthesize name=_name;
+- (void)infoViewControllerWithWidth:(double)arg1 context:(id)arg2 completionBlock:(id)arg3;
 @property(readonly) BOOL notRecommended;
+@property(readonly) NSString *parentText;
 - (id)initWithCodeSnippet:(id)arg1;
+
+// Remaining properties
+@property(readonly) NSArray *additionalCompletions;
+@property(readonly) int completionItemStyle;
+@property(readonly) NSImage *highlightedStatusIcon;
+@property(readonly) NSImage *statusIcon;
 
 @end
 
@@ -386,6 +416,18 @@ struct _NSRange {
 @property(readonly) NSView *firstKeyView;
 - (void)awakeFromNib;
 - (id)initWithCompletionScope:(id)arg1 detailController:(id)arg2;
+
+@end
+
+@interface IDECodeSnippetCompletionItemInfoViewController : DVTInvalidatableViewController
+{
+    NSTextField *textField;
+}
+
++ (id)defaultViewNibName;
+@property NSTextField *textField; // @synthesize textField;
+- (void)primitiveInvalidate;
+- (id)initWithNibName:(id)arg1 bundle:(id)arg2;
 
 @end
 

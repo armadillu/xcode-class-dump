@@ -8,9 +8,9 @@
 
 /*
  * File: /Applications/Xcode.app/Contents/PlugIns/IDESubversion.ideplugin/Contents/MacOS/IDESubversion
- * UUID: 848635D1-F04D-3040-A7C3-841D84F02653
+ * UUID: 3DF7F03F-0A16-3EF3-96EF-3FBFB7032FC0
  * Arch: Intel x86-64 (x86_64)
- *       Current version: 1169.0.0, Compatibility version: 1.0.0
+ *       Current version: 2058.0.0, Compatibility version: 1.0.0
  *       Minimum Mac OS X version: 10.7.0
  *
  *       Objective-C Garbage Collection: Required
@@ -42,6 +42,19 @@
 - (Class)superclass;
 - (unsigned long long)hash;
 - (BOOL)isEqual:(id)arg1;
+
+@optional
+- (id)debugDescription;
+@end
+
+@protocol __ARCLiteIndexedSubscripting__
+- (void)setObject:(id)arg1 atIndexedSubscript:(unsigned long long)arg2;
+- (id)objectAtIndexedSubscript:(unsigned long long)arg1;
+@end
+
+@protocol __ARCLiteKeyedSubscripting__
+- (void)setObject:(id)arg1 forKeyedSubscript:(id)arg2;
+- (id)objectForKeyedSubscript:(id)arg1;
 @end
 
 @interface SVNController : NSObject <IDESourceControlProtocol>
@@ -63,6 +76,7 @@
 - (unsigned long long)propertyStatusValueForWorkingCopyStringValue:(id)arg1;
 - (id)defaultArguments;
 - (void)sanitizeFilenames;
+- (id)pathFromErrorMessage:(id)arg1;
 - (id)errorFromErrorMessage:(id)arg1;
 - (id)initWithRequest:(id)arg1;
 

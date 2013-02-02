@@ -30,9 +30,9 @@ struct _NSRange {
 
 /*
  * File: /Applications/Xcode.app/Contents/PlugIns/IDEStandardExecutionActionsUI.ideplugin/Contents/MacOS/IDEStandardExecutionActionsUI
- * UUID: 423C64E9-D9F3-3632-B8D1-4AD8D4B060BC
+ * UUID: 0BB71651-9582-32BD-AD06-2E38CC10029F
  * Arch: Intel x86-64 (x86_64)
- *       Current version: 1170.0.0, Compatibility version: 1.0.0
+ *       Current version: 2053.0.0, Compatibility version: 1.0.0
  *       Minimum Mac OS X version: 10.7.0
  *
  *       Objective-C Garbage Collection: Required
@@ -41,6 +41,7 @@ struct _NSRange {
 @protocol DVTCompletingTextViewDelegate <NSTextViewDelegate>
 
 @optional
+- (void)setupTextViewContextMenuWithMenu:(id)arg1;
 - (BOOL)completingTextViewHandleCancel:(id)arg1;
 - (unsigned long long)textView:(id)arg1 lineEndingForWritingSelectionToPasteboard:(id)arg2 type:(id)arg3;
 - (unsigned long long)textView:(id)arg1 lineEndingForReadingSelectionFromPasteboard:(id)arg2 type:(id)arg3;
@@ -61,10 +62,8 @@ struct _NSRange {
 
 @optional
 - (id)textViewWillReturnPrintJobTitle:(id)arg1;
-- (id)cursorForAltTemporaryLink;
 - (void)textViewDidScroll:(id)arg1;
 - (void)setupGutterContextMenuWithMenu:(id)arg1;
-- (void)setupTextViewContextMenuWithMenu:(id)arg1;
 - (void)tokenizableItemsForItemAtRealRange:(struct _NSRange)arg1 completionBlock:(id)arg2;
 - (void)textViewDidFinishAnimatingScroll:(id)arg1;
 - (void)textViewDidLoadAnnotationProviders:(id)arg1;
@@ -101,6 +100,9 @@ struct _NSRange {
 - (Class)superclass;
 - (unsigned long long)hash;
 - (BOOL)isEqual:(id)arg1;
+
+@optional
+- (id)debugDescription;
 @end
 
 @protocol NSTextDelegate <NSObject>
@@ -128,6 +130,7 @@ struct _NSRange {
 - (void)textView:(id)arg1 doubleClickedOnCell:(id)arg2 inRect:(struct CGRect)arg3;
 - (void)textView:(id)arg1 clickedOnCell:(id)arg2 inRect:(struct CGRect)arg3;
 - (BOOL)textView:(id)arg1 clickedOnLink:(id)arg2;
+- (id)textView:(id)arg1 willShowSharingServicePicker:(id)arg2 forItems:(id)arg3;
 - (id)textView:(id)arg1 URLForContentsOfTextAttachment:(id)arg2 atIndex:(unsigned long long)arg3;
 - (id)textView:(id)arg1 didCheckTextInRange:(struct _NSRange)arg2 types:(unsigned long long)arg3 options:(id)arg4 results:(id)arg5 orthography:(id)arg6 wordCount:(long long)arg7;
 - (id)textView:(id)arg1 willCheckTextInRange:(struct _NSRange)arg2 options:(id)arg3 types:(unsigned long long *)arg4;
@@ -149,6 +152,16 @@ struct _NSRange {
 - (void)textView:(id)arg1 doubleClickedOnCell:(id)arg2 inRect:(struct CGRect)arg3 atIndex:(unsigned long long)arg4;
 - (void)textView:(id)arg1 clickedOnCell:(id)arg2 inRect:(struct CGRect)arg3 atIndex:(unsigned long long)arg4;
 - (BOOL)textView:(id)arg1 clickedOnLink:(id)arg2 atIndex:(unsigned long long)arg3;
+@end
+
+@protocol __ARCLiteIndexedSubscripting__
+- (void)setObject:(id)arg1 atIndexedSubscript:(unsigned long long)arg2;
+- (id)objectAtIndexedSubscript:(unsigned long long)arg1;
+@end
+
+@protocol __ARCLiteKeyedSubscripting__
+- (void)setObject:(id)arg1 forKeyedSubscript:(id)arg2;
+- (id)objectForKeyedSubscript:(id)arg1;
 @end
 
 @interface IDEAlertExecutionActionViewController : IDEActionSliceViewController

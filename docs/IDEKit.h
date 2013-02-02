@@ -21,10 +21,6 @@ struct CGSize {
     double height;
 };
 
-struct NSObject {
-    Class _field1;
-};
-
 struct _IDEKeyBindingFieldCellFlags {
     unsigned int delegateRespondsToKeyboardShortcutIsPrefix:1;
     unsigned int delegateRespondsToAllowsMultipleKeyboardShortcut:1;
@@ -73,25 +69,30 @@ struct __va_list_tag {
 #pragma mark Typedef'd Structures
 
 typedef struct {
-    double _field1;
-    double _field2;
-    double _field3;
-    double _field4;
-} CDStruct_d2b197d1;
+    double minX;
+    double maxX;
+    double minY;
+    double maxY;
+} CDStruct_bf6d4a14;
 
 #pragma mark -
 
 /*
  * File: /Applications/Xcode.app/Contents/Frameworks/IDEKit.framework/Versions/A/IDEKit
- * UUID: 819982B3-C70C-368B-9E8C-CD7A33D59778
+ * UUID: DB6B2110-34AF-3575-82F7-46718C67928A
  * Arch: Intel x86-64 (x86_64)
- *       Current version: 1208.0.0, Compatibility version: 1.0.0
+ *       Current version: 2109.0.0, Compatibility version: 1.0.0
  *       Minimum Mac OS X version: 10.7.0
  *
  *       Objective-C Garbage Collection: Required
  *       Run path: @loader_path/../../../../Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib
  *               = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib
  */
+
+@protocol DVTAdditionalTextCompletion <NSObject>
+@property(readonly) unsigned long long completionLocation;
+@property(readonly) NSString *completionText;
+@end
 
 @protocol DVTAssertionHandling <NSObject>
 - (void)handleWarningInFunction:(id)arg1 fileName:(id)arg2 lineNumber:(long long)arg3 messageFormat:(id)arg4 arguments:(struct __va_list_tag [1])arg5;
@@ -100,7 +101,7 @@ typedef struct {
 - (void)handleFailureInMethod:(SEL)arg1 object:(id)arg2 fileName:(id)arg3 lineNumber:(long long)arg4 messageFormat:(id)arg5 arguments:(struct __va_list_tag [1])arg6;
 @end
 
-@protocol DVTCancellableToken <NSObject>
+@protocol DVTCancellable <NSObject>
 @property(readonly, getter=isCancelled) BOOL cancelled;
 - (void)cancel;
 @end
@@ -108,6 +109,7 @@ typedef struct {
 @protocol DVTCompletingTextViewDelegate <NSTextViewDelegate>
 
 @optional
+- (void)setupTextViewContextMenuWithMenu:(id)arg1;
 - (BOOL)completingTextViewHandleCancel:(id)arg1;
 - (unsigned long long)textView:(id)arg1 lineEndingForWritingSelectionToPasteboard:(id)arg2 type:(id)arg3;
 - (unsigned long long)textView:(id)arg1 lineEndingForReadingSelectionFromPasteboard:(id)arg2 type:(id)arg3;
@@ -130,6 +132,24 @@ typedef struct {
 - (void)downloadableNamed:(id)arg1 needsTerminationOfAppsWithBundleIdentifier:(id)arg2 completionBlock:(id)arg3;
 @end
 
+@protocol DVTDynamicTableViewDataSource <NSObject>
+- (long long)dynamicTableView:(id)arg1 numberOfRowsInSection:(long long)arg2;
+- (long long)numberOfSectionsInDynamicTableView:(id)arg1;
+@end
+
+@protocol DVTDynamicTableViewDelegate <NSObject>
+- (id)dynamicTableView:(id)arg1 viewForRow:(long long)arg2 inSection:(long long)arg3;
+- (double)dynamicTableView:(id)arg1 heightForRow:(long long)arg2 inSection:(long long)arg3;
+
+@optional
+- (void)dynamicTableView:(id)arg1 didAddRowView:(id)arg2 forRow:(long long)arg3 inSection:(long long)arg4;
+- (void)dynamicTableView:(id)arg1 didRemoveRowView:(id)arg2 forRow:(long long)arg3 inSection:(long long)arg4;
+- (id)dynamicTableView:(id)arg1 objectValueForHeaderInSection:(long long)arg2;
+- (id)dynamicTableView:(id)arg1 objectValueForRow:(long long)arg2 inSection:(long long)arg3;
+- (double)dynamicTableView:(id)arg1 heightForHeaderInSection:(long long)arg2;
+- (id)dynamicTableView:(id)arg1 viewForHeaderInSection:(long long)arg2;
+@end
+
 @protocol DVTEditor <NSObject>
 - (void)discardEditing;
 - (BOOL)commitEditingForAction:(int)arg1 errors:(id)arg2;
@@ -149,6 +169,7 @@ typedef struct {
 @protocol DVTFindBarFindable
 
 @optional
+- (struct _NSRange)selectedRangeForFindBar:(id)arg1;
 - (id)startingLocationForFindBar:(id)arg1 findingBackwards:(BOOL)arg2;
 - (void)dvtFindBar:(id)arg1 didUpdateCurrentResult:(id)arg2;
 - (void)dvtFindBar:(id)arg1 didUpdateResults:(id)arg2;
@@ -169,6 +190,11 @@ typedef struct {
 - (void)invalidate;
 @end
 
+@protocol DVTInvalidation_New <DVTInvalidation>
+@property(retain) DVTStackBacktrace *creationBacktrace;
+- (void)primitiveInvalidate;
+@end
+
 @protocol DVTIssueDisplayingView <NSObject>
 @property(copy) NSDictionary *issueInfoDictionary;
 @end
@@ -179,7 +205,7 @@ typedef struct {
 - (void)didClickMessageBubbleForAnnotation:(id)arg1 onIcon:(BOOL)arg2 inTextView:(id)arg3 event:(id)arg4;
 @end
 
-@protocol DVTObservingToken <DVTCancellableToken>
+@protocol DVTObservingToken <DVTCancellable>
 @end
 
 @protocol DVTOutlineViewDelegate <NSOutlineViewDelegate>
@@ -344,8 +370,27 @@ typedef struct {
 - (void)didClickAnnotation:(id)arg1 inTextSidebarView:(id)arg2 event:(id)arg3;
 @end
 
+@protocol DVTTextCompletionItem <NSObject>
+@property(readonly) BOOL notRecommended;
+@property double priority;
+@property(readonly) NSImage *icon;
+@property(readonly) NSAttributedString *descriptionText;
+@property(readonly) NSString *parentText;
+@property(readonly) NSString *completionText;
+@property(readonly) NSString *displayType;
+@property(readonly) NSString *displayText;
+@property(readonly) NSString *name;
+
+@optional
+@property(readonly) NSImage *highlightedStatusIcon;
+@property(readonly) NSImage *statusIcon;
+@property(readonly) NSArray *additionalCompletions;
+@property(readonly) int completionItemStyle;
+- (void)infoViewControllerWithWidth:(double)arg1 context:(id)arg2 completionBlock:(id)arg3;
+@end
+
 @protocol DVTTextCompletionItemInfoProvider
-- (void)infoViewControllerForCompletionItemName:(id)arg1 displayText:(id)arg2 completionBlock:(id)arg3;
+- (void)infoViewControllerForCompletionItemName:(id)arg1 container:(id)arg2 displayText:(id)arg3 descriptionText:(id)arg4 width:(double)arg5 context:(id)arg6 completionBlock:(id)arg7;
 @end
 
 @protocol DVTTextFindable <NSObject>
@@ -359,6 +404,7 @@ typedef struct {
 - (BOOL)replaceFindResults:(id)arg1 withString:(id)arg2 withError:(id *)arg3;
 
 @optional
+- (BOOL)replaceFindResults:(id)arg1 inSelection:(struct _NSRange)arg2 withString:(id)arg3 withError:(id *)arg4;
 - (BOOL)replaceTextWithContentsOfURL:(id)arg1 error:(id *)arg2;
 @end
 
@@ -417,9 +463,13 @@ typedef struct {
 @end
 
 @protocol IDEAttachToProcessSheetDelegate
-- (void)processIDEntered:(id)arg1 debuggerToUse:(id)arg2;
-- (void)processNameEntered:(id)arg1 debuggerToUse:(id)arg2;
-- (void)processInformationSelected:(id)arg1 debuggerToUse:(id)arg2;
+- (void)processIDEntered:(int)arg1 debuggerSpecifier:(id)arg2 debugProcessAsUID:(unsigned int)arg3;
+- (void)processNameEntered:(id)arg1 debuggerSpecifier:(id)arg2 debugProcessAsUID:(unsigned int)arg3;
+- (void)processInformationSelected:(id)arg1 debuggerSpecifier:(id)arg2 debugProcessAsUID:(unsigned int)arg3;
+@end
+
+@protocol IDEAttributedStringControlTextViewDelegate <NSTextViewDelegate>
+- (void)textViewDidCommitEditing:(id)arg1;
 @end
 
 @protocol IDEBindableDeclarativeInspectorController <NSObject>
@@ -452,6 +502,7 @@ typedef struct {
 @property(readonly) id <IDEBlueprint> blueprint;
 @property(readonly) NSString *buildableIdentifier;
 - (id)createBuilderForBuildCommand:(int)arg1 withBuildTaskQueueSet:(id)arg2 parameters:(id)arg3 buildOnlyTheseFiles:(id)arg4 restorePersistedBuildResults:(BOOL)arg5;
+- (id)implicitDependenciesForBuildParameters:(id)arg1 executionEnvironment:(id)arg2 returningMessages:(id *)arg3;
 - (id)implicitDependenciesForBuildParameters:(id)arg1 executionEnvironment:(id)arg2;
 - (id)directDependencies;
 - (id)uncachedOrderedRecursiveDependenciesIncludingSelf:(BOOL)arg1 visitedBuildables:(id)arg2;
@@ -537,7 +588,7 @@ typedef struct {
 - (id)documentForAncestorDocumentLocation:(id)arg1 completionBlock:(id)arg2;
 - (id)navigableItemsForSecondaryDocumentLocation:(id)arg1 usingNavigableItemCoordinator:(id)arg2 completionBlock:(id)arg3;
 - (id)navigableItemsForPrimaryDocumentLocation:(id)arg1 usingNavigableItemCoordinator:(id)arg2 completionBlock:(id)arg3;
-- (id)navigableItemsForPrimaryDocumentLocation:(id)arg1 secondaryDocumentLocation:(id)arg2 usingNavigableItemCoordinator:(id)arg3 completionBlock:(id)arg4;
+- (id)navigableItemsForPrimaryDocumentLocation:(id)arg1 secondaryDocumentLocation:(id)arg2 usingNavigableItemCoordinator:(id)arg3 forceReload:(BOOL)arg4 completionBlock:(id)arg5;
 - (BOOL)shouldSelectFirstDiff;
 - (id)secondaryDocumentLocationForNavigableItem:(id)arg1;
 - (id)primaryDocumentLocationForNavigableItem:(id)arg1;
@@ -559,7 +610,9 @@ typedef struct {
 @end
 
 @protocol IDECompletionDestinationDelegate <NSObject>
+- (id)targetWorkspacesForDestinationManager:(id)arg1;
 - (void)destinationManagerGroupDidChange:(id)arg1;
+- (void)destinationManagerWorkspaceDidChange:(id)arg1;
 - (BOOL)destinationManager:(id)arg1 shouldAddItemToMenu:(id)arg2;
 @end
 
@@ -615,32 +668,6 @@ typedef struct {
 @protocol IDEDebugProcess <IDEDebugNavigableModel>
 @property(copy, nonatomic) NSString *name;
 - (id)contentDelegateUIExtensionIdentifier;
-@end
-
-@protocol IDEDebugSession <NSObject>
-@property(readonly) NSMutableArray *loadedSharedLibraries;
-@property(readonly) DVTTextDocumentLocation *instructionPointerLocation;
-@property(readonly) BOOL breakpointsActivated;
-@property(readonly) id <IDEDebugProcess> process;
-@property(readonly) int coalescedState;
-@property int state;
-- (struct _NSRange)rangeOfExpressionForFullTextAtPrompt:(id)arg1;
-- (BOOL)canContinueToLocation:(id)arg1 withinBlockAtRange:(struct _NSRange)arg2;
-- (BOOL)consoleShouldTrackInputHistory;
-- (void)loadDebugSymbolsForSharedLibrary:(id)arg1;
-- (BOOL)shouldAcceptFromDebugSession:(id)arg1 error:(id *)arg2;
-- (BOOL)shouldRelinquishToDebugSession:(id)arg1 error:(id *)arg2;
-- (void)requestStop:(struct NSObject *)arg1;
-- (void)requestContinueToLocation:(id)arg1 inContext:(struct NSObject *)arg2;
-- (void)requestContinue:(struct NSObject *)arg1;
-- (void)requestPause:(struct NSObject *)arg1;
-- (void)requestStepOverSuspendOtherThreads:(struct NSObject *)arg1;
-- (void)requestStepInSuspendOtherThreads:(struct NSObject *)arg1;
-- (void)requestStepOverInstruction:(struct NSObject *)arg1;
-- (void)requestStepIntoInstruction:(struct NSObject *)arg1;
-- (void)requestStepOut:(struct NSObject *)arg1;
-- (void)requestStepOverLine:(struct NSObject *)arg1;
-- (void)requestStepIn:(struct NSObject *)arg1;
 @end
 
 @protocol IDEDebugSessionController <NSObject>
@@ -746,16 +773,16 @@ typedef struct {
 - (id)displayName;
 @end
 
+@protocol IDEGroupedSegmentedControlDelegate <NSObject>
+- (void)groupedSegmentedControl:(id)arg1 userClickedItem:(id)arg2 inGroup:(id)arg3;
+@end
+
 @protocol IDEInitialization
 + (BOOL)ide_initializeWithOptions:(int)arg1 error:(id *)arg2;
 @end
 
 @protocol IDEInspectorMatching <NSObject>
 - (id)applicableInspectorsForCategory:(id)arg1 suggestion:(id)arg2;
-@end
-
-@protocol IDEInspectorPropertyContainingView <NSObject>
-@property(readonly) NSArray *orderedInspectorProperties;
 @end
 
 @protocol IDEKeyBindingFieldCellDelegate <NSObject>
@@ -769,11 +796,6 @@ typedef struct {
 - (id)keyBindingFieldCell:(id)arg1 alternateKeyBindingsForKeyBinding:(id)arg2;
 - (BOOL)keyBindingFieldCellAllowsMultipleKeyboardShortcut:(id)arg1;
 - (BOOL)keyBindingFieldCell:(id)arg1 keyboardShortcutIsPrefix:(id)arg2;
-@end
-
-@protocol IDELegacyTargetInfo <NSObject>
-@property(readonly) NSArray *legacyArguments;
-@property(readonly) NSArray *legacyEnvironment;
 @end
 
 @protocol IDEMediaLibraryDelegate <NSObject>
@@ -851,6 +873,12 @@ typedef struct {
 - (void)outlineViewWillDrawInitialContent:(id)arg1;
 @end
 
+@protocol IDENavigatorTrayHeaderCellProtocol <NSObject>
+@property(copy) NSIndexSet *selectedTrayItems;
+@property(copy) NSArray *trayItemCells;
+@property BOOL internalHeaderIsSelected;
+@end
+
 @protocol IDEOpenQuicklyInitialStringProvider <NSObject>
 @property(readonly) NSString *openQuicklyInitialString;
 @end
@@ -873,6 +901,7 @@ typedef struct {
 @protocol IDEOrganizerSource <NSObject, DVTStatefulObject>
 
 @optional
+- (void)organizerSourceWillCloseInWindowController:(id)arg1;
 - (void)organizerSourceWillAppearInWindowController:(id)arg1;
 - (void)openFileURL:(id)arg1 withFileType:(id)arg2;
 - (void)searchWithString:(id)arg1;
@@ -885,14 +914,24 @@ typedef struct {
 - (void)installationStarted;
 @end
 
+@protocol IDEParagraphStylePopoverControllerDelegate <NSObject>
+- (void)paragraphStylePopoverControllerDidChangeAttributes:(id)arg1;
+@end
+
 @protocol IDEPathCellDelegate <NSPathCellDelegate>
 
 @optional
+- (void)pathCell:(id)arg1 didEndDragForComponentCell:(id)arg2;
+- (BOOL)pathCell:(id)arg1 beginDragForComponentCell:(id)arg2;
 - (id)pathCell:(id)arg1 toolTipForPathComponentCell:(id)arg2 atIndex:(unsigned long long)arg3;
 - (id)pathCell:(id)arg1 accessibilityDescriptionForPathComponentCell:(id)arg2 atIndex:(unsigned long long)arg3;
+- (id)pathCell:(id)arg1 titleForPathComponentCell:(id)arg2 atIndex:(unsigned long long)arg3;
 - (id)pathCellNoSelectionTitle;
+- (struct CGPoint)pathCell:(id)arg1 adjustPopupMenuLocation:(struct CGPoint)arg2;
 - (id)pathCell:(id)arg1 menuItemForNavigableItem:(id)arg2 defaultMenuItem:(id)arg3;
 - (void)pathCell:(id)arg1 didUpdateMenu:(id)arg2;
+- (BOOL)pathCell:(id)arg1 shouldEnableSelection:(id)arg2;
+- (BOOL)pathCell:(id)arg1 shouldInitiallyShowMenuSearch:(id)arg2;
 - (id)pathCell:(id)arg1 childItemsForItem:(id)arg2;
 - (BOOL)pathCell:(id)arg1 shouldPopUpMenuForPathComponentCell:(id)arg2 item:(id)arg3;
 - (BOOL)pathCell:(id)arg1 shouldSeparateDisplayOfChildItemsForItem:(id)arg2;
@@ -952,6 +991,10 @@ typedef struct {
 - (void)willOpenDocumentLocation:(id)arg1 completionBlock:(id)arg2;
 @end
 
+@protocol IDESchemeOptionMenuItem <NSObject>
+- (id)name;
+@end
+
 @protocol IDEScopeableView <NSObject>
 - (void)addScopeChoice:(id)arg1 tag:(long long)arg2;
 @end
@@ -980,15 +1023,21 @@ typedef struct {
 - (id)supportedSourceCodeLanguagesForSourceCodeGeneration;
 @end
 
-@protocol IDESourceControlConflictResolutionControllerContainer <NSObject>
-@property(readonly) IDESourceControlConflictResolutionController *conflictResolutionController;
-@end
-
 @protocol IDESourceControlLogControllerDelegate <NSObject>
 - (void)sourceControlLogViewController:(id)arg1 changeToRevision:(id)arg2;
 - (void)sourceControlLogViewController:(id)arg1 diffWithRevision:(id)arg2;
 - (void)sourceControlLogViewController:(id)arg1 compareToRevision:(id)arg2;
 - (void)sourceControlLogViewController:(id)arg1 compareRevisionToPreviousRevision:(id)arg2;
+@end
+
+@protocol IDESourceControlLogDetailDelegate <NSObject>
+- (id)viewWindow;
+- (void)compareToPrevious;
+@end
+
+@protocol IDESourceControlMergeControllerContainer <NSObject>
+@property(readonly) IDESourceControlInteractiveCommitController *interactiveCommitController;
+@property(readonly) IDESourceControlConflictResolutionController *conflictResolutionController;
 @end
 
 @protocol IDESourceControlNameTokenViewDelegate <NSObject>
@@ -997,6 +1046,7 @@ typedef struct {
 @end
 
 @protocol IDEStructureEditing
+- (BOOL)allowRemovingContainerGroup;
 - (BOOL)structureEditSetName:(id)arg1 inContext:(id)arg2;
 - (BOOL)canStructureEditName;
 - (BOOL)structureEditRemoveSubitemsAtIndexes:(id)arg1 error:(id *)arg2;
@@ -1018,17 +1068,24 @@ typedef struct {
 - (BOOL)structureEditingWriteItems:(id)arg1 toPasteboard:(id)arg2;
 @end
 
-@protocol IDEStructureEditingDropTarget
-- (BOOL)structureEditingAcceptInsertionOfSubitemsForContext:(id)arg1 atIndex:(long long)arg2;
-- (BOOL)structureEditingValidateInsertionOfSubitemsForContext:(id)arg1 atIndex:(long long)arg2;
+@protocol IDEStructureEditingDropTarget <NSObject>
+- (id)actualNavigableItem;
+- (long long)actualChildIndex;
+- (BOOL)structureEditingAcceptInsertionOfSubitemsForContext:(id)arg1;
+- (BOOL)structureEditingValidateInsertionOfSubitemsForContext:(id)arg1;
 - (id)insertSubitemsAssistantContext;
+
+@optional
+- (id)structureEditingNaturalFilePathForDropTarget;
 @end
 
 @protocol IDEStructureEditingGroupingTarget
+- (id)actualNavigableItem;
+- (long long)actualChildIndex;
 - (BOOL)structureEditingGroupSubitemsAtIndexes:(id)arg1 groupIndex:(long long *)arg2;
 - (BOOL)structureEditingCanGroupSubitemsAtIndexes:(id)arg1;
-- (BOOL)structureEditingAddNewSubgroupAtIndex:(long long)arg1;
-- (BOOL)structureEditingCanAddNewSubgroupAtIndex:(long long)arg1;
+- (BOOL)structureEditingAddNewSubgroup;
+- (BOOL)structureEditingCanAddNewSubgroup;
 @end
 
 @protocol IDEStructureEditingRemoveSubitemsTarget
@@ -1039,8 +1096,8 @@ typedef struct {
 
 @protocol IDEStructureEditingTarget
 - (id)structureEditingRemoveSubitemsTargetForParentNavigableItem:(id)arg1;
-- (id)structureEditingGroupingTargetForProposedNavigableItem:(id)arg1 proposedChildIndex:(long long)arg2 actualNavigableItem:(id *)arg3 actualChildIndex:(long long *)arg4;
-- (id)structureEditingTargetForProposedNavigableItem:(id)arg1 proposedChildIndex:(long long)arg2 actualNavigableItem:(id *)arg3 actualChildIndex:(long long *)arg4;
+- (id)structureEditingGroupingTargetForProposedNavigableItem:(id)arg1 proposedChildIndex:(long long)arg2;
+- (id)structureEditingTargetForProposedNavigableItem:(id)arg1 proposedChildIndex:(long long)arg2;
 - (id)structureEditingDraggingSource;
 @end
 
@@ -1050,11 +1107,12 @@ typedef struct {
 
 @protocol IDETemplateOptionParent <NSObject>
 - (void)valueDidChangeForOption:(id)arg1;
-- (id)index;
+- (id)workspace;
 - (id)identifier;
 @end
 
 @protocol IDETemplateSupportingNavigator <NSObject>
+- (id)defaultDestinationGroupForTemplateInstantiationWithDestinationIndex:(long long *)arg1;
 - (void)addTemplateInstantiatedItems:(id)arg1 primaryItem:(id)arg2;
 - (void)setupTemplateContext:(id)arg1;
 @end
@@ -1159,6 +1217,34 @@ typedef struct {
 - (id)copyWithZone:(struct _NSZone *)arg1;
 @end
 
+@protocol NSDraggingSource <NSObject>
+- (unsigned long long)draggingSession:(id)arg1 sourceOperationMaskForDraggingContext:(long long)arg2;
+
+@optional
+- (BOOL)ignoreModifierKeysForDraggingSession:(id)arg1;
+- (void)draggingSession:(id)arg1 endedAtPoint:(struct CGPoint)arg2 operation:(unsigned long long)arg3;
+- (void)draggingSession:(id)arg1 movedToPoint:(struct CGPoint)arg2;
+- (void)draggingSession:(id)arg1 willBeginAtPoint:(struct CGPoint)arg2;
+@end
+
+@protocol NSKeyedUnarchiverDelegate <NSObject>
+
+@optional
+- (void)unarchiverDidFinish:(id)arg1;
+- (void)unarchiverWillFinish:(id)arg1;
+- (void)unarchiver:(id)arg1 willReplaceObject:(id)arg2 withObject:(id)arg3;
+- (id)unarchiver:(id)arg1 didDecodeObject:(id)arg2;
+- (Class)unarchiver:(id)arg1 cannotDecodeObjectOfClassName:(id)arg2 originalClasses:(id)arg3;
+@end
+
+@protocol NSLayoutManagerDelegate <NSObject>
+
+@optional
+- (id)layoutManager:(id)arg1 shouldUseTemporaryAttributes:(id)arg2 forDrawingToScreen:(BOOL)arg3 atCharacterIndex:(unsigned long long)arg4 effectiveRange:(struct _NSRange *)arg5;
+- (void)layoutManager:(id)arg1 didCompleteLayoutForTextContainer:(id)arg2 atEnd:(BOOL)arg3;
+- (void)layoutManagerDidInvalidateLayout:(id)arg1;
+@end
+
 @protocol NSMenuDelegate <NSObject>
 
 @optional
@@ -1192,6 +1278,9 @@ typedef struct {
 - (Class)superclass;
 - (unsigned long long)hash;
 - (BOOL)isEqual:(id)arg1;
+
+@optional
+- (id)debugDescription;
 @end
 
 @protocol NSOpenSavePanelDelegate <NSObject>
@@ -1298,6 +1387,17 @@ typedef struct {
 - (BOOL)pathControl:(id)arg1 acceptDrop:(id)arg2;
 - (unsigned long long)pathControl:(id)arg1 validateDrop:(id)arg2;
 - (BOOL)pathControl:(id)arg1 shouldDragPathComponentCell:(id)arg2 withPasteboard:(id)arg3;
+@end
+
+@protocol NSPopoverDelegate <NSObject>
+
+@optional
+- (void)popoverDidClose:(id)arg1;
+- (void)popoverWillClose:(id)arg1;
+- (void)popoverDidShow:(id)arg1;
+- (void)popoverWillShow:(id)arg1;
+- (id)detachableWindowForPopover:(id)arg1;
+- (BOOL)popoverShouldClose:(id)arg1;
 @end
 
 @protocol NSSoundDelegate <NSObject>
@@ -1413,6 +1513,7 @@ typedef struct {
 - (void)textView:(id)arg1 doubleClickedOnCell:(id)arg2 inRect:(struct CGRect)arg3;
 - (void)textView:(id)arg1 clickedOnCell:(id)arg2 inRect:(struct CGRect)arg3;
 - (BOOL)textView:(id)arg1 clickedOnLink:(id)arg2;
+- (id)textView:(id)arg1 willShowSharingServicePicker:(id)arg2 forItems:(id)arg3;
 - (id)textView:(id)arg1 URLForContentsOfTextAttachment:(id)arg2 atIndex:(unsigned long long)arg3;
 - (id)textView:(id)arg1 didCheckTextInRange:(struct _NSRange)arg2 types:(unsigned long long)arg3 options:(id)arg4 results:(id)arg5 orthography:(id)arg6 wordCount:(long long)arg7;
 - (id)textView:(id)arg1 willCheckTextInRange:(struct _NSRange)arg2 options:(id)arg3 types:(unsigned long long *)arg4;
@@ -1450,19 +1551,12 @@ typedef struct {
 @protocol NSURLConnectionDelegate <NSObject>
 
 @optional
-- (id)connection:(id)arg1 willCacheResponse:(id)arg2;
-- (void)connection:(id)arg1 didFailWithError:(id)arg2;
-- (void)connectionDidFinishLoading:(id)arg1;
-- (void)connection:(id)arg1 didSendBodyData:(long long)arg2 totalBytesWritten:(long long)arg3 totalBytesExpectedToWrite:(long long)arg4;
-- (void)connection:(id)arg1 didReceiveData:(id)arg2;
-- (void)connection:(id)arg1 didReceiveResponse:(id)arg2;
-- (BOOL)connectionShouldUseCredentialStorage:(id)arg1;
 - (void)connection:(id)arg1 didCancelAuthenticationChallenge:(id)arg2;
-- (void)connection:(id)arg1 willSendRequestForAuthenticationChallenge:(id)arg2;
 - (void)connection:(id)arg1 didReceiveAuthenticationChallenge:(id)arg2;
 - (BOOL)connection:(id)arg1 canAuthenticateAgainstProtectionSpace:(id)arg2;
-- (id)connection:(id)arg1 needNewBodyStream:(id)arg2;
-- (id)connection:(id)arg1 willSendRequest:(id)arg2 redirectResponse:(id)arg3;
+- (void)connection:(id)arg1 willSendRequestForAuthenticationChallenge:(id)arg2;
+- (BOOL)connectionShouldUseCredentialStorage:(id)arg1;
+- (void)connection:(id)arg1 didFailWithError:(id)arg2;
 @end
 
 @protocol NSUserInterfaceValidations
@@ -1489,6 +1583,7 @@ typedef struct {
 - (void)windowWillStartLiveResize:(id)arg1;
 - (void)windowDidEndSheet:(id)arg1;
 - (void)windowWillBeginSheet:(id)arg1;
+- (void)windowDidChangeBackingProperties:(id)arg1;
 - (void)windowDidChangeScreenProfile:(id)arg1;
 - (void)windowDidChangeScreen:(id)arg1;
 - (void)windowDidUpdate:(id)arg1;
@@ -1534,43 +1629,14 @@ typedef struct {
 - (id)buttonForItem:(id)arg1 createIfNecessary:(BOOL)arg2;
 @end
 
-@interface IDEAlertEventTableCell : NSTextFieldCell <IDEKeyBindingFieldCellDelegate>
-{
-    BOOL _active;
-    BOOL _allowsKeyBindings;
-    BOOL _editingKeyboardShortcut;
-    IDEAlertEvent *_alertEvent;
-    IDEKeyBindingFieldCell *_keybindingFieldCell;
-    IDEKeyBindingFieldCell *_editingKeybindingFieldCell;
-}
+@protocol __ARCLiteIndexedSubscripting__
+- (void)setObject:(id)arg1 atIndexedSubscript:(unsigned long long)arg2;
+- (id)objectAtIndexedSubscript:(unsigned long long)arg1;
+@end
 
-+ (void)initialize;
-@property(retain, nonatomic) IDEAlertEvent *alertEvent; // @synthesize alertEvent=_alertEvent;
-@property(nonatomic) BOOL allowsKeyBindings; // @synthesize allowsKeyBindings=_allowsKeyBindings;
-@property(nonatomic, getter=isActive) BOOL active; // @synthesize active=_active;
-- (id)copyWithZone:(struct _NSZone *)arg1;
-- (void)keyBindingFieldCellWillRemoveKeyboardShortcut:(id)arg1;
-- (void)keyBindingFieldCellDidAddKeyboardShortcut:(id)arg1;
-- (id)keyBindingFieldCell:(id)arg1 validatedKeyboardShortcut:(id)arg2;
-- (BOOL)keyBindingFieldCellAllowsMultipleKeyboardShortcut:(id)arg1;
-- (void)endEditing:(id)arg1;
-- (void)drawWithFrame:(struct CGRect)arg1 inView:(id)arg2;
-- (void)drawInteriorWithFrame:(struct CGRect)arg1 inView:(id)arg2;
-- (BOOL)_controlViewInResponderChain:(id)arg1;
-- (id)editingKeyBinding;
-- (void)selectWithFrame:(struct CGRect)arg1 inView:(id)arg2 editor:(id)arg3 delegate:(id)arg4 start:(long long)arg5 length:(long long)arg6;
-- (id)fieldEditorForView:(id)arg1;
-- (struct CGRect)drawingRectForBounds:(struct CGRect)arg1;
-- (struct CGRect)keyboardShortcutHitRectForBounds:(struct CGRect)arg1;
-- (struct CGRect)keyboardShortcutHitRectForBounds:(struct CGRect)arg1 withString:(id)arg2;
-- (struct CGRect)keyboardShortcutRectForBounds:(struct CGRect)arg1;
-- (struct CGRect)keyboardShortcutRectForBounds:(struct CGRect)arg1 withString:(id)arg2;
-- (struct CGRect)titleRectForBounds:(struct CGRect)arg1;
-- (struct CGRect)imageRectForBounds:(struct CGRect)arg1;
-- (id)keyboardShortcut;
-- (id)customAlertEvent;
-- (id)keybindingFieldCell;
-
+@protocol __ARCLiteKeyedSubscripting__
+- (void)setObject:(id)arg1 forKeyedSubscript:(id)arg2;
+- (id)objectForKeyedSubscript:(id)arg1;
 @end
 
 @interface IDEAlertsMenuDelegate : NSObject
@@ -1589,11 +1655,263 @@ typedef struct {
 
 @end
 
+@interface IDEObjCModernizationTarget : IDEMigrationTarget
+{
+    IDEObjCModernizationAssistantContext *_assistantContext;
+    NSString *_title;
+    NSString *_subTitle;
+    BOOL _enabled;
+}
+
+@property BOOL enabled; // @synthesize enabled=_enabled;
+@property(readonly) NSString *subTitle; // @synthesize subTitle=_subTitle;
+@property(readonly) NSString *title; // @synthesize title=_title;
+@property(readonly) IDEObjCModernizationAssistantContext *assistantContext; // @synthesize assistantContext=_assistantContext;
+- (id)_treeControllerWarningMessage;
+- (void)updateBuildSettings;
+- (id)warningMessage;
+- (id)initWithBlueprint:(id)arg1 assistantContext:(id)arg2;
+
+@end
+
+@interface IDEObjCModernizationOverviewAssistant : IDEAssistant
+{
+    NSTextView *_textView;
+    DVTBorderedView *_borderedView;
+}
+
+- (void)loadView;
+- (id)_messageContentsURL;
+- (BOOL)canGoForward;
+- (id)nextAssistantIdentifier;
+
+@end
+
+@interface IDEObjCModernizationReviewChangesFile : NSObject
+{
+    DVTFilePath *_filePath;
+    NSImage *_image;
+    DVTDocumentLocation *_contentDocumentLocation;
+    DVTFileDataType *_documentType;
+    NSString *_name;
+}
+
++ (id)keyPathsForValuesAffectingNavigableItem_name;
+@property(readonly) DVTFileDataType *documentType; // @synthesize documentType=_documentType;
+@property(readonly) DVTDocumentLocation *contentDocumentLocation; // @synthesize contentDocumentLocation=_contentDocumentLocation;
+@property(readonly) NSImage *image; // @synthesize image=_image;
+@property(copy) NSString *name; // @synthesize name=_name;
+@property(readonly) DVTFilePath *filePath; // @synthesize filePath=_filePath;
+- (id)navigableItem_documentType;
+- (id)navigableItem_contentDocumentLocation;
+- (id)navigableItem_image;
+- (id)navigableItem_name;
+- (id)initWithPath:(id)arg1;
+
+@end
+
+@interface IDEObjCModernizationReviewChangesAssistant : IDEAssistant <IDEReviewFilesDataSource, IDEComparisonEditorDataSource>
+{
+    DVTMapTable *_editorDocumentByFilePath;
+    NSArray *_flatNavigableItems;
+    IDENavigableItemCoordinator *_flatFileNavItemCoordinator;
+    IDENavigatorDataCell *_containerFileReferenceDataCell;
+    IDENavigatorDataCell *_groupDataCell;
+    IDENavigatorDataCell *_fileReferenceDataCell;
+    IDEReviewFilesViewController *_reviewFilesViewController;
+    DVTBorderedView *_borderedView;
+    id <DVTObservingToken> _comparisonEditorObservingToken;
+    id _completionBlock;
+    NSOperationQueue *_operationQueue;
+    NSMutableSet *_readOnlyStatusObservationTokens;
+    unsigned long long _numCheckedFilePaths;
+    struct dispatch_semaphore_s *_completionSemaphore;
+}
+
+@property(copy) NSArray *flatNavigableItems; // @synthesize flatNavigableItems=_flatNavigableItems;
+- (BOOL)shouldSelectFirstDiff;
+- (id)navigableItemsForSecondaryDocumentLocation:(id)arg1 usingNavigableItemCoordinator:(id)arg2 completionBlock:(id)arg3;
+- (id)navigableItemsForPrimaryDocumentLocation:(id)arg1 usingNavigableItemCoordinator:(id)arg2 completionBlock:(id)arg3;
+- (id)documentForSecondaryDocumentLocation:(id)arg1 completionBlock:(id)arg2;
+- (id)documentForPrimaryDocumentLocation:(id)arg1 completionBlock:(id)arg2;
+- (id)_documentForLocation:(id)arg1 completionBlock:(id)arg2;
+- (id)reviewFilesNavigator:(id)arg1 documentLocationForNavigableItem:(id)arg2;
+- (id)reviewFilesNavigator:(id)arg1 outlineView:(id)arg2 dataCellForNavigableItem:(id)arg3;
+- (id)_fileReferenceCell;
+- (id)_groupCell;
+- (id)_containerFileReferenceCell;
+@property(readonly) NSArray *issueNavigableItems;
+- (id)fileSystemNavigableItems;
+@property(readonly) NSArray *workspaceNavigableItems;
+- (void)viewWillUninstall;
+- (void)viewDidInstall;
+- (void)loadView;
+- (id)_snapshotContainerItem:(id)arg1 customizationBlock:(id)arg2;
+- (void)_setInitialSelectionForNavigatorOutlineView:(id)arg1;
+- (BOOL)_selectedTargetsContainFilePath:(id)arg1;
+- (void)_snapshotAlertDidEnd:(id)arg1 returnCode:(long long)arg2 contextInfo:(void *)arg3;
+- (void)finishWithCompletionBlock:(id)arg1;
+- (void)_editorDocument:(id)arg1 didSave:(BOOL)arg2 contextInfo:(void *)arg3;
+- (void)_convertedEditorDocument:(id)arg1 didSave:(BOOL)arg2 contextInfo:(void *)arg3;
+- (void)_applyChanges;
+- (void)_updateBuildSettingsAndFinish;
+- (void)_finishWithError:(id)arg1;
+- (id)_checkedDocuments;
+- (BOOL)canFinish;
+- (BOOL)canGoBack;
+- (id)initWithNibName:(id)arg1 bundle:(id)arg2;
+
+@end
+
+@interface IDEObjCModernizationTargetChooserAssistant : IDEAssistant <NSOutlineViewDataSource, NSOutlineViewDelegate>
+{
+    NSArray *_targetItems;
+    NSString *_searchString;
+    NSMutableIndexSet *_expandedRowIndexes;
+    NSArray *_selectedTargetChooserItems;
+    IDEMigrationTargetChooserStatePersistence *_statePersistence;
+    IDEFilterControlBar *_filterControlBar;
+    DVTBorderedView *_scopeBarBorderedView;
+    DVTOutlineView *_outlineView;
+    DVTBorderedView *_borderedView;
+    NSImageView *_warningIconImageView;
+    NSTextField *_warningTextField;
+    NSTreeController *_targetChooserItemsController;
+}
+
++ (BOOL)automaticallyNotifiesObserversOfSearchString;
++ (id)keyPathsForValuesAffectingArrangedTargetItems;
++ (id)keyPathsForValuesAffectingCanGoForward;
+@property(copy, nonatomic) NSString *searchString; // @synthesize searchString=_searchString;
+@property(copy) NSArray *targetItems; // @synthesize targetItems=_targetItems;
+- (id)currentUIState;
+- (void)loadUIState:(id)arg1;
+- (id)stateRepositoryFilePath;
+- (double)outlineView:(id)arg1 heightOfRowByItem:(id)arg2;
+- (void)outlineView:(id)arg1 willDisplayCell:(id)arg2 forTableColumn:(id)arg3 item:(id)arg4;
+- (void)outlineView:(id)arg1 setObjectValue:(id)arg2 forTableColumn:(id)arg3 byItem:(id)arg4;
+- (id)_attributedStringByHighlightingFindResults:(id)arg1;
+- (id)_findResultAttributes;
+- (BOOL)validateMenuItem:(id)arg1;
+- (void)uncheckSelection:(id)arg1;
+- (void)checkSelection:(id)arg1;
+- (BOOL)canUncheckSelection;
+- (BOOL)canCheckSelection;
+- (unsigned long long)_numberOfCheckedItemsAtIndexes:(id)arg1;
+- (void)_setChecked:(BOOL)arg1 forTargetChooserItemAtIndexes:(id)arg2;
+- (id)_effectiveSelectedRowIndexes;
+- (id)filterButtonMenu;
+- (id)filterDefinitionIdentifier;
+- (void)_restoreSelectedTargetChooserItemsAndExpandedRows;
+- (void)_saveSelectedTargetChooserItemsAndExpandedRows;
+@property(readonly) NSArray *arrangedTargetItems;
+- (void)viewWillUninstall;
+- (void)viewDidInstall;
+- (void)loadView;
+- (id)nextAssistantIdentifier;
+- (BOOL)canGoForward;
+
+@end
+
+@interface IDEObjCModernizationTargetChooserItem : NSObject
+{
+    id _representedObject;
+    IDEObjCModernizationTargetChooserItem *_parentItem;
+    NSMutableArray *_childItems;
+}
+
++ (id)keyPathsForValuesAffectingArrangedChildItems;
+@property IDEObjCModernizationTargetChooserItem *parentItem; // @synthesize parentItem=_parentItem;
+@property(readonly) id representedObject; // @synthesize representedObject=_representedObject;
+- (void)removeObjectFromChildItemsAtIndex:(unsigned long long)arg1;
+- (void)insertObject:(id)arg1 inChildItemsAtIndex:(unsigned long long)arg2;
+- (id)_childItems;
+@property(readonly) NSMutableArray *mutableChildItems;
+- (id)arrangedChildItems;
+@property(readonly) NSArray *childItems;
+@property(readonly) double rowHeight;
+@property(readonly) NSString *warningMessage;
+@property(readonly) NSImage *iconImage;
+@property long long state;
+@property(readonly, getter=isEnabled) BOOL enabled;
+@property(readonly) NSString *subTitle;
+@property(readonly) NSString *title;
+- (id)initWithRepresentedObject:(id)arg1;
+
+@end
+
+@interface IDEObjCModernizationAssistantContext : IDEAssistantContext
+{
+    NSMutableArray *_targets;
+    NSMutableArray *_selectedTargets;
+    unsigned long long _currentConversionStage;
+    DVTMapTable *_convertedFilePathForOriginalFilePathMapTable;
+}
+
++ (BOOL)allowParallelBuild;
++ (void)initialize;
+@property(copy) NSArray *targets; // @synthesize targets=_targets;
+@property unsigned long long currentConversionStage; // @synthesize currentConversionStage=_currentConversionStage;
+- (id)convertedFilePathForOriginalFilePath:(id)arg1;
+- (unsigned long long)numberOfConvertedFilePaths;
+- (id)_convertedFilePathForOriginalFilePathMapTableParallel;
+- (id)_convertedFilePathForOriginalFilePathMapTable;
+- (void)setWorkspaceTabController:(id)arg1;
+- (id)buildActionEntries;
+- (id)runPhase;
+- (id)runContext;
+- (id)copyWithZone:(struct _NSZone *)arg1;
+- (id)init;
+
+// Remaining properties
+@property(readonly) NSMutableArray *mutableSelectedTargets; // @dynamic mutableSelectedTargets;
+@property(copy) NSArray *selectedTargets; // @dynamic selectedTargets;
+
+@end
+
+@interface IDEObjCModernizationGeneratingPreviewAssistant : IDEAssistant
+{
+    NSString *_message;
+}
+
++ (id)keyPathsForValuesAffectingCanGoForward;
+@property(copy) NSString *message; // @synthesize message=_message;
+- (void)_buildErrorsAlertDidEnd:(id)arg1 returnCode:(long long)arg2 contextInfo:(void *)arg3;
+- (void)_noSourceChangesNecessaryAlertDidEnd:(id)arg1 returnCode:(long long)arg2 contextInfo:(void *)arg3;
+- (void)loadView;
+- (BOOL)canGoBack;
+- (BOOL)canGoForward;
+- (id)nextAssistantIdentifier;
+
+@end
+
+@interface IDEObjCModernizationTargetChooserTargetItem : IDEObjCModernizationTargetChooserItem
+{
+    IDEObjCModernizationTargetChooserAssistant *_targetChooserAssistant;
+}
+
++ (id)keyPathsForValuesAffectingArrangedChildItems;
++ (id)keyPathsForValuesAffectingWarningMessage;
++ (id)keyPathsForValuesAffectingIconImage;
++ (id)keyPathsForValuesAffectingTitle;
+@property(retain) IDEObjCModernizationTargetChooserAssistant *targetChooserAssistant; // @synthesize targetChooserAssistant=_targetChooserAssistant;
+- (double)rowHeight;
+- (id)warningMessage;
+- (id)iconImage;
+- (long long)state;
+- (void)setState:(long long)arg1;
+- (BOOL)isEnabled;
+- (id)subTitle;
+- (id)title;
+
+@end
+
 @interface IDECustomAlertEvent : IDEAlertEvent
 {
     IDEKeyboardShortcut *_keyboardShortcut;
 }
 
++ (id)createNewEvent;
 + (id)customAlertEventForIdentifier:(id)arg1;
 + (id)customAlertEvents;
 + (void)initialize;
@@ -1624,25 +1942,32 @@ typedef struct {
 
 @end
 
-@interface IDESourceControlOperationInfo : NSObject <DVTInvalidation>
+@interface IDESourceControlOperationInfo : NSObject <DVTInvalidation_New>
 {
     NSOperationQueue *_queue;
     IDESourceControlWorkingTree *_workingTree;
     IDEWorkspace *_workspace;
     NSArray *_itemsToOperateOn;
-    DVTStackBacktrace *_invalidationBacktrace;
     BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
 + (id)containerFileTypesBlacklistedFromOutlineViewCompression;
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 @property(retain) NSArray *itemsToOperateOn; // @synthesize itemsToOperateOn=_itemsToOperateOn;
 @property(retain) IDEWorkspace *workspace; // @synthesize workspace=_workspace;
 @property(retain) IDESourceControlWorkingTree *workingTree; // @synthesize workingTree=_workingTree;
 - (id)calculateContainersForItem:(id)arg1;
 - (id)processInfoWithProgressBlock:(id)arg1 isSingleOperation:(void)arg2 completionBlock:(BOOL)arg3;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (id)init;
 
 @end
@@ -1650,11 +1975,15 @@ typedef struct {
 @interface IDESourceControlUpdateOperationInfo : IDESourceControlOperationInfo
 {
     NSMutableDictionary *_itemsWithConflicts;
+    BOOL _successfulFastForward;
     NSString *_currentRevisionIdentifier;
     NSString *_remoteRevisionIdentifier;
     NSString *_ancestorRevisionIdentifier;
+    BOOL _disableFastForward;
 }
 
+@property BOOL disableFastForward; // @synthesize disableFastForward=_disableFastForward;
+@property(readonly) BOOL successfulFastForward; // @synthesize successfulFastForward=_successfulFastForward;
 @property(readonly) NSMutableDictionary *itemsWithConflicts; // @synthesize itemsWithConflicts=_itemsWithConflicts;
 @property(copy) NSString *ancestorRevisionIdentifier; // @synthesize ancestorRevisionIdentifier=_ancestorRevisionIdentifier;
 @property(copy) NSString *remoteRevisionIdentifier; // @synthesize remoteRevisionIdentifier=_remoteRevisionIdentifier;
@@ -1669,10 +1998,8 @@ typedef struct {
 {
     IDESourceControlRemote *_remote;
     IDESourceControlBranch *_remoteBranch;
-    BOOL _successfulFastForward;
 }
 
-@property(readonly) BOOL successfulFastForward; // @synthesize successfulFastForward=_successfulFastForward;
 @property(retain) IDESourceControlBranch *remoteBranch; // @synthesize remoteBranch=_remoteBranch;
 @property(retain) IDESourceControlRemote *remote; // @synthesize remote=_remote;
 - (id)processInfoWithProgressBlock:(id)arg1 isSingleOperation:(void)arg2 completionBlock:(BOOL)arg3;
@@ -1718,6 +2045,7 @@ typedef struct {
 @interface IDEVariablesViewNode : NSObject <NSPasteboardWriting, NSCopying>
 {
     NSString *_name;
+    NSString *_manuallySetName;
     id <IDEDataValue> _dataValue;
     IDEVariablesViewNode *_parent;
     id _childObserver;
@@ -1730,17 +2058,19 @@ typedef struct {
 
 + (id)keyPathsForValuesAffectingFilteredChildren;
 + (id)keyPathsForValuesAffectingChildValuesCountValid;
++ (id)keyPathsForValuesAffectingName;
 + (id)rootWithChildren:(id)arg1;
 @property(nonatomic) BOOL expanded; // @synthesize expanded=_expanded;
 @property(retain, nonatomic) NSPredicate *childFilter; // @synthesize childFilter=_childFilter;
 @property(retain) IDEVariablesViewNode *parent; // @synthesize parent=_parent;
-@property(retain) id <IDEDataValue> dataValue; // @synthesize dataValue=_dataValue;
+@property(readonly) id <IDEDataValue> dataValue; // @synthesize dataValue=_dataValue;
 @property(readonly) unsigned long long type; // @synthesize type=_type;
+@property(copy) NSString *manuallySetName; // @synthesize manuallySetName=_manuallySetName;
 - (id)pasteboardPropertyListForType:(id)arg1;
 - (id)writableTypesForPasteboard:(id)arg1;
 - (id)objectInChildrenProxyAtIndex:(unsigned long long)arg1;
 - (unsigned long long)countOfChildrenProxy;
-- (void)_formattedChildrenChanged:(id)arg1;
+- (void)_dataValueChildValuesChanged:(id)arg1;
 @property(readonly) NSArray *children;
 - (id)_childVariableNodeForChildDataValue:(id)arg1;
 - (void)_calculateAndSetFilteredChildren;
@@ -1754,19 +2084,23 @@ typedef struct {
 - (BOOL)isEqual:(id)arg1;
 - (unsigned long long)hash;
 @property(readonly) NSString *fullNamePath;
+- (void)overrideDefaultName:(id)arg1;
 @property(readonly) NSString *name; // @synthesize name=_name;
+- (void)setDataValue:(id)arg1;
 - (id)initWithDataValue:(id)arg1 type:(unsigned long long)arg2;
 - (id)copyWithZone:(struct _NSZone *)arg1;
 
 @end
 
-@interface IDEVariableRootNode : IDEVariablesViewNode
+@interface IDEVariableViewRootNode : IDEVariablesViewNode
 {
 }
 
 - (BOOL)childValuesCountValid;
 - (BOOL)hasChildren;
 - (id)name;
+- (void)removeChildnode:(id)arg1;
+- (void)addChildNode:(id)arg1;
 - (id)initWithChildren:(id)arg1;
 - (id)copyWithZone:(struct _NSZone *)arg1;
 
@@ -1776,7 +2110,6 @@ typedef struct {
 {
     DVTBorderedView *_containerView;
     NSButton *_showHideDebuggerAreaButton;
-    BOOL _viewDidInstall;
     NSArray *_contentProviders;
     id <IDEDebuggerBarEditorInfoProvider> _editorInfoProvider;
     id <IDEDebuggerBarConsoleInfoProvider> _consoleInfoProvider;
@@ -1820,6 +2153,7 @@ typedef struct {
     NSTextField *statusTextField;
     NSSecureTextField *passwordTextField;
     NSProgressIndicator *progressIndicator;
+    NSButton *OKButton;
     IDESourceControlRepository *_repository;
     id _completionBlock;
     NSURLAuthenticationChallenge *_challenge;
@@ -1829,9 +2163,13 @@ typedef struct {
     NSMutableData *m_receivedData;
     BOOL _isCheckingPassword;
     BOOL _forceLoginPromptWhenSuccess;
+    NSString *_username;
+    NSString *_password;
 }
 
 @property BOOL isCheckingPassword; // @synthesize isCheckingPassword=_isCheckingPassword;
+@property(copy, nonatomic) NSString *password; // @synthesize password=_password;
+@property(copy, nonatomic) NSString *username; // @synthesize username=_username;
 - (void)finishAuthenticationSetup;
 - (void)connectionDidFinishLoading:(id)arg1;
 - (void)alertDidEnd:(id)arg1 returnCode:(long long)arg2 contextInfo:(void *)arg3;
@@ -1842,16 +2180,19 @@ typedef struct {
 - (void)connection:(id)arg1 didReceiveResponse:(id)arg2;
 - (id)connection:(id)arg1 willSendRequest:(id)arg2 redirectResponse:(id)arg3;
 - (void)connection:(id)arg1 willSendRequestForAuthenticationChallenge:(id)arg2;
-- (BOOL)showCertificatePanelForTrust:(struct OpaqueSecTrustRef *)arg1;
+- (void)writeAuthenticationHintsForChallenge:(id)arg1;
+- (BOOL)showCertificatePanelForChallenge:(id)arg1;
 - (void)dontAsk:(id)arg1;
 - (void)cancel:(id)arg1;
 - (void)ok:(id)arg1;
 - (void)windowWillClose:(id)arg1;
+- (void)cancelAutodismiss;
 - (void)autodismiss;
 - (void)beginAutodismissCountdown;
+- (void)startAutodismissTimer;
 - (void)presentWindow;
 - (id)_openWindowTerminationDisablingReason;
-- (void)testCredentialsWithCompletionBlock;
+- (void)testCredentials;
 - (void)presentAuthenticationWindowForRepository:(id)arg1 forceLoginPromptWhenSuccess:(BOOL)arg2;
 @property(copy) id completionBlock; // @synthesize completionBlock=_completionBlock;
 - (id)windowNibName;
@@ -1927,6 +2268,7 @@ typedef struct {
 - (void)runForEvent:(id)arg1 inWorkspace:(id)arg2 context:(id)arg3 completionBlock:(id)arg4;
 - (id)initWithPropertyList:(id)arg1;
 - (id)propertyList;
+- (id)valuesForProperty:(id)arg1;
 - (id)actions;
 
 @end
@@ -1939,8 +2281,8 @@ typedef struct {
 
 @interface IDEShowToolbarAlert : IDEAlert
 {
-    int _action;
     id _observationToken;
+    int _action;
 }
 
 @property(nonatomic) int action; // @synthesize action=_action;
@@ -1948,6 +2290,7 @@ typedef struct {
 - (void)performAction:(int)arg1 onWindow:(id)arg2 afterDelay:(double)arg3;
 - (id)initWithPropertyList:(id)arg1;
 - (id)propertyList;
+- (id)valuesForProperty:(id)arg1;
 - (id)actions;
 
 @end
@@ -1969,6 +2312,7 @@ typedef struct {
 - (void)runForEvent:(id)arg1 inWorkspace:(id)arg2 context:(id)arg3 completionBlock:(id)arg4;
 - (id)initWithPropertyList:(id)arg1;
 - (id)propertyList;
+- (id)valuesForProperty:(id)arg1;
 - (id)visibilities;
 - (id)actions;
 
@@ -1991,6 +2335,7 @@ typedef struct {
 - (BOOL)_isEnabledForEvent:(id)arg1 withContext:(id)arg2;
 - (id)initWithPropertyList:(id)arg1;
 - (id)propertyList;
+- (id)valuesForProperty:(id)arg1;
 - (id)actions;
 
 @end
@@ -2009,6 +2354,7 @@ typedef struct {
 + (id)keyPathsForValuesAffectingCanFinish;
 + (id)keyPathsForValuesAffectingCanGoForward;
 + (id)defaultViewNibName;
+- (void)commitInformation;
 - (BOOL)canFinish;
 - (BOOL)canGoForward;
 - (id)extensions;
@@ -2027,6 +2373,7 @@ typedef struct {
 @property BOOL forPanel; // @synthesize forPanel=_forPanel;
 @property BOOL showColoredBackground; // @synthesize showColoredBackground=_showColoredBackground;
 @property(retain) IDESourceControlRepositoryCreationContext *context; // @synthesize context=_context;
+- (void)viewWillUninstall;
 - (void)addBindings;
 - (void)removeBindings;
 - (void)commitInformation;
@@ -2056,7 +2403,7 @@ typedef struct {
     NSMutableSet *_documentsToRelease;
     NSMutableSet *_documentsToClose;
     NSMutableSet *_documentsToDelete;
-    NSMutableSet *_documentsToLock;
+    NSMutableSet *_readOnlyDocuments;
     id <DVTInvalidation> _sharedPathControlUpdateToken;
     IDEEditorDocument *_primaryDocument;
     id <DVTInvalidation> _primaryDocumentExportToken;
@@ -2066,6 +2413,7 @@ typedef struct {
     id <DVTInvalidation> _secondaryPathControlUpdateToken;
     IDEEditorDocument *_ancestorDocument;
     id <DVTInvalidation> _ancestorDocumentExportToken;
+    id <DVTObservingToken> _diffSessionObservingToken;
     int _editorSubmode;
     IDEComparisonEditorAutoLayoutView *_layoutView;
     DVTComparisonDocumentLocation *_internalComparisonDocumentLocation;
@@ -2073,26 +2421,32 @@ typedef struct {
     NSDictionary *_keyEditorAnnotationRepresentedObjectState;
     unsigned long long _conflictCount;
     IDESourceControlConflictResolutionController *_conflictResolutionController;
+    IDESourceControlInteractiveCommitController *_interactiveCommitController;
     NSSet *_blacklistedAnnotationProviders;
     BOOL _documentHasUnsavedChanges;
     BOOL _hideToolBar;
+    BOOL _hideSubmodeSegmentedControl;
     BOOL _hideNavTimelineBar;
     BOOL _disableChangeSourceTree;
     BOOL _disableChangeBranch;
     BOOL _disableChangeRevision;
     BOOL _ownsDataSource;
-    BOOL _hardFailPrimary;
-    BOOL _hardFailSecondary;
     BOOL _shouldSelectFirstDiff;
     BOOL _shouldTakeFocus;
+    BOOL _enableDiffToggles;
+    int _toggleAllDiffDescriptorsState;
     unsigned long long _exportOperationsFinished;
     unsigned long long _exportOperationsPending;
+    id <DVTObservingToken> _localStatusUpdateToken;
+    id _refreshObservationToken;
+    id _refreshWhenSwitchingObservationToken;
 }
 
 + (id)keyPathsForValuesAffectingCurrentSelectedDocumentLocations;
 + (id)keyPathsForValuesAffectingPrimaryEditorInstance;
 + (id)keyPathsForValuesAffectingCurrentSelectedItems;
 + (id)keyPathsForValuesAffectingKeyEditor;
++ (BOOL)automaticallyNotifiesObserversOfInternalComparisonDocumentLocation;
 + (id)keyPathsForValuesAffectingIsThreeWayDiff;
 + (id)keyPathsForValuesAffectingSecondaryRootNavigableItem_arrayOfOne;
 + (id)keyPathsForValuesAffectingPrimaryRootNavigableItem_arrayOfOne;
@@ -2101,6 +2455,8 @@ typedef struct {
 + (id)comparisonEditorLogAspect;
 @property(retain) IDENavigableItem *secondaryRootNavigableItem; // @synthesize secondaryRootNavigableItem=_secondaryRootNavigableItem;
 @property(retain) IDENavigableItem *primaryRootNavigableItem; // @synthesize primaryRootNavigableItem=_primaryRootNavigableItem;
+@property int toggleAllDiffDescriptorsState; // @synthesize toggleAllDiffDescriptorsState=_toggleAllDiffDescriptorsState;
+@property BOOL enableDiffToggles; // @synthesize enableDiffToggles=_enableDiffToggles;
 @property(retain) NSSet *blacklistedAnnotationProviders; // @synthesize blacklistedAnnotationProviders=_blacklistedAnnotationProviders;
 @property BOOL documentHasUnsavedChanges; // @synthesize documentHasUnsavedChanges=_documentHasUnsavedChanges;
 @property unsigned long long conflictCount; // @synthesize conflictCount=_conflictCount;
@@ -2146,10 +2502,11 @@ typedef struct {
 - (void)_trackDocument:(id)arg1 options:(int)arg2;
 - (void)_updateSecondaryPathControl;
 - (void)_updatePrimaryPathControl;
-- (void)_updateBothPathControls;
+- (void)_updateBothPathControlsForcingReload:(BOOL)arg1;
 - (id)_cleanupDocumentLocationFromStateSaving:(id)arg1;
 - (void)_convertDocumentLocationToComparisonDocumentLocation:(id)arg1 completionBlock:(id)arg2;
 - (struct CGRect)overlayFrameForView:(id)arg1;
+- (id)interactiveCommitController;
 - (id)conflictResolutionController;
 - (BOOL)disableBlame;
 @property(readonly) BOOL isThreeWayDiff;
@@ -2161,12 +2518,15 @@ typedef struct {
 @property(retain) IDENavigableItem *secondarySubNavigableItem; // @synthesize secondarySubNavigableItem=_secondarySubNavigableItem;
 @property(retain) IDENavigableItem *primarySubNavigableItem; // @synthesize primarySubNavigableItem=_primarySubNavigableItem;
 - (void)setInternalComparisonDocumentLocation:(id)arg1;
+- (void)reloadComparisonEditorWithComparisonDocumentLocation:(id)arg1 force:(BOOL)arg2;
 - (void)_exportOperationFinished;
-- (void)_pendingExportOperations:(unsigned long long)arg1 withDocumentLocation:(id)arg2;
+- (void)_pendingExportOperations:(unsigned long long)arg1 withDocumentLocation:(id)arg2 force:(BOOL)arg3;
 - (id)internalComparisonDocumentLocation;
 @property(readonly) IDEComparisonEditorSubmode *submode;
 @property int editorSubmode;
+@property BOOL hideChangesStepperControl;
 @property BOOL hideNavTimelineBar;
+@property BOOL hideSubmodeSegmentedControl; // @synthesize hideSubmodeSegmentedControl=_hideSubmodeSegmentedControl;
 @property BOOL hideToolBar;
 - (void)_willOpenSpecifier:(id)arg1;
 - (void)_validateAndUpdateOnSubmodeChange;
@@ -2182,7 +2542,7 @@ typedef struct {
 - (void)viewDidInstall;
 - (void)loadView;
 - (BOOL)shouldShowAnnotationsFromProviderClass:(Class)arg1;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (id)initWithNibName:(id)arg1 bundle:(id)arg2 document:(id)arg3;
 - (void)_setupNavItemCoordinators;
 - (void)_cleanupNavItemCoordinators;
@@ -2195,20 +2555,27 @@ typedef struct {
     id <IDEAttachToProcessSheetDelegate> _delegate;
     NSArray *_debuggerSpecifiers;
     IDEDebuggerSpecifier *_selectedDebuggerSpecifier;
+    unsigned int _debugProcessAsUID;
     NSButton *_attachButton;
     NSButton *_cancelButton;
     NSWindow *_sheetWindow;
     NSTextField *_pidTextField;
     NSImageView *_invalidPIDImage;
     NSImageView *_applicationImage;
-    NSTextField *_debuggerText;
-    NSPopUpButton *_debuggerPopUp;
+    NSView *_debuggerSlice;
+    NSView *_debugProcessAsSlice;
+    DVTStackView_AppKitAutolayout *_slicesStackView;
+    NSMatrix *_debugProcessAsMatrix;
+    NSButtonCell *_debugProcessAsMeButtonCell;
+    NSTextField *_debugProcessAsRootText;
 }
 
 + (void)showAttachToProcessSheetForWorkspaceTabController:(id)arg1 delegate:(id)arg2;
-@property(retain) IDEDebuggerSpecifier *selectedDebuggerSpecifier; // @synthesize selectedDebuggerSpecifier=_selectedDebuggerSpecifier;
+@property unsigned int debugProcessAsUID; // @synthesize debugProcessAsUID=_debugProcessAsUID;
+@property(readonly) IDEDebuggerSpecifier *selectedDebuggerSpecifier; // @synthesize selectedDebuggerSpecifier=_selectedDebuggerSpecifier;
 @property(readonly) NSArray *debuggerSpecifiers; // @synthesize debuggerSpecifiers=_debuggerSpecifiers;
 - (void)_rememberEnteredProcessNameIfNecessary;
+- (void)_rememberDebugProcessAsSelection;
 - (void)_sheetDidEnd;
 - (void)_attachToProcessUsingProcessInformations:(id)arg1;
 - (void)attachToProcess:(id)arg1;
@@ -2220,7 +2587,10 @@ typedef struct {
 - (id)_processInformationForProcessName:(id)arg1 processInformations:(id)arg2;
 - (id)_processInformationForUserEnteredText:(id)arg1;
 - (id)_processInformationForPID:(int)arg1 processInformations:(id)arg2;
+- (void)setSelectedDebuggerSpecifier:(id)arg1;
 - (void)loadView;
+- (void)_setupDebugProcessAsSlice;
+- (BOOL)_supportsDebugAs;
 - (id)_initWithWorkspaceTabControler:(id)arg1 delegate:(id)arg2;
 
 @end
@@ -2238,7 +2608,7 @@ typedef struct {
     NSMutableDictionary *_defaultEditorStateTree;
     NSMutableDictionary *_defaultPrimaryEditorFrameSizes;
     NSMutableSet *_editedDocuments;
-    DVTDelayedValidator *_stateSavingDelayedValidator;
+    DVTDelayedInvocation *_stateSavingDelayedInvocation;
     IDEActivityReportManager *_activityReportManager;
     id <DVTObservingToken> _runContextsObservingToken;
     id <DVTObservingToken> _isWorkspaceIdleToken;
@@ -2271,6 +2641,7 @@ typedef struct {
 + (long long)_unlimitedMaximumRecentEditorDocumentCountMarker;
 + (id)documentForWorkspace:(id)arg1;
 + (id)documentTypeName;
++ (BOOL)autosavesDrafts;
 + (BOOL)autosavesInPlace;
 + (BOOL)preservesVersions;
 + (void)initialize;
@@ -2301,8 +2672,9 @@ typedef struct {
 - (void)removeWindowController:(id)arg1;
 - (void)addWindowController:(id)arg1;
 - (void)makeWindowControllers;
-- (id)showTabNamed:(id)arg1 createIfNotFound:(BOOL)arg2;
-- (id)_recreateTabNamed:(id)arg1 withTabStateContext:(id)arg2 shouldRecreateWindowIfNeeded:(BOOL)arg3;
+- (id)showOrCreateTabNamed:(id)arg1 inNewWindow:(BOOL)arg2 restoringAfter:(double)arg3;
+- (id)_recreateTabNamed:(id)arg1 withTabStateContext:(id)arg2 shouldCreateWindow:(BOOL)arg3 restoringAfter:(double)arg4;
+- (id)_bestWindowControllerForTabNamed:(id)arg1 withTabStateContext:(id)arg2 shouldCreateWindow:(BOOL)arg3 restoringAfter:(double)arg4;
 - (id)_makeTabbedWindowControllerWithStateFromTabController:(id)arg1 documentURL:(id)arg2 simpleEditorWindowLayout:(BOOL)arg3 frontmost:(BOOL)arg4;
 - (id)windowControllerWithUniqueIdentifier:(id)arg1;
 - (id)makeTabbedWindowControllerShowingWindow:(BOOL)arg1;
@@ -2348,6 +2720,8 @@ typedef struct {
 - (void)setupUISubsystems;
 - (void)_workspace:(id)arg1 failedToResolveContainerForProjectFile:(id)arg2;
 - (void)_setupLaunchSessionsObservation;
+- (id)_firstErrorForExecutionTracker:(id)arg1;
+- (void)_recordWorkspaceStatisticsLater;
 - (void)_recordWorkspaceStatistics;
 - (BOOL)saveToURL:(id)arg1 ofType:(id)arg2 forSaveOperation:(unsigned long long)arg3 error:(id *)arg4;
 - (void)saveAsWorkspace:(id)arg1 showAlert:(BOOL)arg2 completionBlock:(id)arg3;
@@ -2381,7 +2755,7 @@ typedef struct {
 - (id)_openWindowTerminationDisablingReason;
 - (id)sdefSupport_clean:(id)arg1;
 - (id)sdefSupport_build:(id)arg1;
-- (void)observeValueForKeyPath:(id)arg1 ofObject:(id)arg2 change:(id)arg3 context:(void *)arg4;
+- (void)_resumeCommandAfterBuildCompleted:(id)arg1;
 - (id)sdefSupport_fileReferenceForPath:(id)arg1;
 - (id)objectSpecifier;
 - (id)displayName;
@@ -2464,7 +2838,7 @@ typedef struct {
 - (id)perNavigatorCacheKeyForNavigator:(id)arg1;
 - (void)activateFilterFieldForFocus;
 - (void)installFilterControlBarForNavigator:(id)arg1;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)loadView;
 - (id)supportedContext;
 
@@ -2489,14 +2863,16 @@ typedef struct {
     NSString *_name;
     IDELaunchSession *_currentLaunchSession;
     IDEWorkspaceDocument *_workspaceDocument;
-    NSMapTable *_controllerForDebugSessionTable;
-    NSMapTable *_additionControllersForLaunchSessionTable;
+    DVTMapTable *_controllerForDebugSessionTable;
+    DVTMapTable *_additionControllersForLaunchSessionTable;
     NSMutableArray *_debuggingUIControllerLifeCycleObservers;
     NSString *_userDefinedTabLabel;
     NSString *_lastValidUserDefinedName;
     NSString *_savedTabLabel;
+    DVTFilePath *_savedTabFilePath;
     id <DVTObservingToken> _mainCurrentLaunchSessionObserverToken;
     id <DVTObservingToken> _launchSessionStateObserverToken;
+    id <DVTObservingToken> _launchSessionAlertErrorObservingToken;
     id <DVTObservingToken> _debugSessionObserverToken;
     id <DVTObservingToken> _debugSessionCoalescedStateObservingToken;
     id <DVTObservingToken> _documentLoadingObservationToken;
@@ -2511,6 +2887,7 @@ typedef struct {
     IDERunAlertMonitor *_runAlertMonitor;
     DVTStackBacktrace *_creationBacktrace;
     IDEARCConversionAssistantContext *_conversionAssistantContext;
+    IDEObjCModernizationAssistantContext *_objcModernizationAssistantContext;
     BOOL _isAnimatingUtilities;
     BOOL _userWantsUtilitiesVisible;
     BOOL _userWantsNavigatorVisible;
@@ -2531,6 +2908,8 @@ typedef struct {
 + (void)configureStateSavingObjectPersistenceByName:(id)arg1;
 + (int)defaultAssistantEditorsLayout;
 + (void)setDefaultAssistantEditorsLayout:(int)arg1;
++ (BOOL)automaticallyNotifiesObserversOfSavedTabFilePath;
++ (BOOL)automaticallyNotifiesObserversOfSavedTabLabel;
 @property(readonly) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
 @property(retain) id <DVTObservingToken> buildCompleteObservationToken; // @synthesize buildCompleteObservationToken=_buildCompleteObservationToken;
 @property(retain) id <DVTObservingToken> firstIssueObservationToken; // @synthesize firstIssueObservationToken=_firstIssueObservationToken;
@@ -2538,6 +2917,7 @@ typedef struct {
 @property(nonatomic) BOOL tabLoadingCompleted; // @synthesize tabLoadingCompleted=_tabLoadingCompleted;
 @property BOOL stateRestoreCompleted; // @synthesize stateRestoreCompleted=_stateRestoreCompleted;
 @property(copy) NSString *userDefinedTabLabel; // @synthesize userDefinedTabLabel=_userDefinedTabLabel;
+@property(retain, nonatomic) DVTFilePath *savedTabFilePath; // @synthesize savedTabFilePath=_savedTabFilePath;
 @property(copy, nonatomic) NSString *savedTabLabel; // @synthesize savedTabLabel=_savedTabLabel;
 @property(copy) NSString *name; // @synthesize name=_name;
 @property(retain) IDEWorkspaceDocument *workspaceDocument; // @synthesize workspaceDocument=_workspaceDocument;
@@ -2550,6 +2930,7 @@ typedef struct {
 @property(nonatomic) int assistantEditorsLayout; // @synthesize assistantEditorsLayout=_assistantEditorsLayout;
 - (void)discardEditing;
 - (BOOL)commitEditingForAction:(int)arg1 errors:(id)arg2;
+@property(readonly) DVTFilePath *tabFilePath;
 @property(readonly) NSString *tabLabel;
 @property(retain) NSDocument<DVTTabbedWindowCreation> *document;
 - (void)moveKeyboardFocusToPreviousArea:(id)arg1;
@@ -2566,6 +2947,8 @@ typedef struct {
 - (void)_setDebuggingWindowBehavior:(int)arg1;
 - (void)clearConsole:(id)arg1;
 - (void)viewMemory:(id)arg1;
+- (void)_objCModernizationFoundErrorsAlertDidEnd:(id)arg1 returnCode:(long long)arg2 contextInfo:(void *)arg3;
+- (void)showModernObjectiveCConversionAssistant:(id)arg1;
 - (void)_arcConversionFoundErrorsAlertDidEnd:(id)arg1 returnCode:(long long)arg2 contextInfo:(void *)arg3;
 - (void)showARCConversionAssistant:(id)arg1;
 - (void)showSharedLibrariesPopUp:(id)arg1;
@@ -2586,6 +2969,14 @@ typedef struct {
 - (void)editWorkspaceUserSettings:(id)arg1;
 - (void)newRunContext:(id)arg1;
 - (void)manageRunContexts:(id)arg1;
+- (void)selectPreviousDestination:(id)arg1;
+- (void)selectNextDestination:(id)arg1;
+- (void)selectPreviousRunContext:(id)arg1;
+- (void)selectNextRunContext:(id)arg1;
+- (id)_prevIndex;
+- (id)_nextIndex;
+- (void)_selectDestination:(id)arg1;
+- (void)_selectRunContext:(id)arg1;
 - (void)editActiveRunContext:(id)arg1;
 - (void)editAndAnalyzeActiveRunContext:(id)arg1;
 - (void)editBuildAndArchiveActiveRunContext:(id)arg1;
@@ -2597,10 +2988,11 @@ typedef struct {
 - (void)editAndRunActiveRunContext:(id)arg1;
 - (void)_doCommandForEditAndSchemeCommand:(int)arg1;
 - (void)_doCommandForEditAndSchemeCommand:(int)arg1 schemeTask:(int)arg2;
+- (void)showModalAlertForScheme:(id)arg1;
+- (void)runWithoutBuildingForSchemeIdentifier:(id)arg1 runDestination:(id)arg2;
 - (void)generateAssemblyCodeForFilePath:(id)arg1 forSchemeCommand:(int)arg2;
 - (void)generatePreprocessedFileForFilePath:(id)arg1 forSchemeCommand:(int)arg2;
 - (void)cleanBuildFolder:(id)arg1;
-- (void)cleanBuildFolderAlertDidEnd:(id)arg1 returnCode:(long long)arg2 contextInfo:(void *)arg3;
 - (void)reallyCleanBuildFolder;
 - (void)cleanActiveRunContext:(id)arg1;
 - (void)installActiveRunContext:(id)arg1;
@@ -2616,29 +3008,31 @@ typedef struct {
 - (void)buildForProfileActiveRunContext:(id)arg1;
 - (void)profileActiveScheme:(id)arg1;
 - (void)runActiveRunContextWithoutBuilding:(id)arg1;
+- (void)_runWithoutBuildingForScheme:(id)arg1 runDestination:(id)arg2;
 - (void)buildForRunActiveRunContext:(id)arg1;
 - (void)_alertNonExistentWorkingDirectoryBeforeRunOrProfileForContext:(id)arg1 workingDirectory:(id)arg2 title:(id)arg3 defaultButton:(id)arg4 usingBlock:(id)arg5;
 - (void)_alertNonExistentWorkingDirectoryBeforeProfileForContext:(id)arg1 usingBlock:(id)arg2;
 - (void)_alertNonExistentWorkingDirectoryBeforeRunForContext:(id)arg1 usingBlock:(id)arg2;
-- (void)_alertNonExistentWorkingDirectoryBeforeRunOrProfileAlertDidEnd:(id)arg1 returnCode:(long long)arg2 contextInfo:(void *)arg3;
 - (void)_askShouldBuildBeforeRunOrProfileForContext:(id)arg1 title:(id)arg2 defaultButton:(id)arg3 usingBlock:(id)arg4;
-- (void)__buildAndActionAlertDidEnd:(id)arg1 returnCode:(long long)arg2 contextInfo:(void *)arg3;
 - (void)runActiveRunContext:(id)arg1;
-- (void)_performDebuggableContextTask:(int)arg1 command:(id)arg2 commandName:(id)arg3 buildCommand:(int)arg4 filePath:(id)arg5;
+- (void)_runScheme:(id)arg1 runDestination:(id)arg2;
+- (void)_performDebuggableSchemeTask:(int)arg1 onScheme:(id)arg2 runDestination:(id)arg3 command:(id)arg4 commandName:(id)arg5 buildCommand:(int)arg6 filePath:(id)arg7;
 - (void)_debugSessionCoalescedStateChanged:(id)arg1;
 - (BOOL)isActiveWorkspaceTabController;
+- (id)debuggingAddtionUIControllersForLaunchSession:(id)arg1;
 - (id)currentDebuggingAdditionUIControllers;
 - (id)debugSessionController;
 - (void)_updateForDebuggingKVOChange;
 - (BOOL)_contentSizeCanBeZeroSize;
 - (void)_performContextTask:(int)arg1 command:(id)arg2 commandName:(id)arg3 buildCommand:(int)arg4 filePath:(id)arg5 completionBlock:(id)arg6;
+- (void)_performSchemeTask:(int)arg1 onScheme:(id)arg2 runDestination:(id)arg3 command:(id)arg4 commandName:(id)arg5 buildCommand:(int)arg6 filePath:(id)arg7 completionBlock:(id)arg8;
 - (BOOL)_launchingOrProfiling:(int)arg1 withNonExistentWorkingDirectory:(id)arg2;
 - (void)_showWarningForBuild:(BOOL)arg1 forTest:(BOOL)arg2 forOtherExecution:(BOOL)arg3 trackersToStop:(id)arg4 taskActionBlock:(id)arg5;
 - (void)_runAnotherInstance:(id)arg1;
 - (void)_acceptStoppingExecutionAlert:(id)arg1;
 - (void)_rejectStoppingExecutionAlert:(id)arg1;
 - (void)_cleanupAfterStoppingExecutionAlert;
-- (void)_actuallyPerformContextTask:(int)arg1 command:(id)arg2 commandName:(id)arg3 buildCommand:(int)arg4 filePath:(id)arg5 completionBlock:(id)arg6;
+- (void)_actuallyPerformSchemeTask:(int)arg1 onScheme:(id)arg2 runDestination:(id)arg3 command:(id)arg4 commandName:(id)arg5 buildCommand:(int)arg6 filePath:(id)arg7 completionBlock:(id)arg8;
 - (void)invalidateAllBuildAlertMonitors;
 - (BOOL)_cleanBuildFolderWithExecutionContext:(id)arg1 commandName:(id)arg2 error:(id *)arg3;
 - (void)observeBuildOperationForRestoringState:(id)arg1;
@@ -2666,6 +3060,7 @@ typedef struct {
 - (id)_choiceWithKeyEquivalent:(id)arg1 modifierFlags:(unsigned long long)arg2 inUtilityArea:(id)arg3;
 - (void)showLibraryWithChoiceFromSender:(id)arg1;
 - (void)showInspectorWithChoiceFromSender:(id)arg1;
+- (void)showInspectorCategoryWithExtensionIdentifier:(id)arg1;
 - (void)showLibraryWithChoice:(id)arg1;
 - (void)showInspectorWithChoice:(id)arg1;
 - (id)libraryArea;
@@ -2695,7 +3090,7 @@ typedef struct {
 - (void)removeAssistantEditor:(id)arg1;
 - (void)addAssistantEditor:(id)arg1;
 @property(readonly) IDEWorkspaceTabController *structureEditWorkspaceTabController;
-@property(readonly) IDEWorkspace *structureEditWorkspace;
+- (id)structureEditWorkspace;
 - (BOOL)validateUserInterfaceItem:(id)arg1;
 - (BOOL)_validateEditorLayoutUserInterfaceItem:(id)arg1 forActionSelector:(SEL)arg2;
 - (id)supplementalTargetForAction:(SEL)arg1 sender:(id)arg2;
@@ -2716,14 +3111,9 @@ typedef struct {
 - (void)updateMinimumWindowSize:(BOOL)arg1;
 - (struct CGSize)minimumSizeForDesignArea;
 - (struct CGSize)minimumSizeForDesignAreaIfNavigatorVisible:(BOOL)arg1 editorVisisble:(BOOL)arg2 andUtilityAreaVisible:(BOOL)arg3;
-- (void)_recordLibrarySplitSize;
-- (void)_doRecordLibrarySplitSize;
-- (void)_recordUtilitySplitSize;
-- (void)_doRecordUtilitySplitSize;
-- (void)_recordNavigationSplitSize;
-- (void)_doRecordNavigationSplitSize;
 - (void)_removeCursorRectInterceptor:(id)arg1;
 - (void)_addCursorRectInterceptor:(id)arg1;
+- (void)_interceptWillInvalidateCursorRectsForViewsWithNoTrackingAreas;
 - (void)_interceptWillInvalidateCursorRectsForView:(id)arg1;
 - (BOOL)_interceptAddCursorRect:(struct CGRect)arg1 cursor:(id)arg2 forView:(id)arg3 inWindow:(id)arg4;
 - (BOOL)_interceptSetCursorForMouseLocation:(struct CGPoint)arg1 inWindow:(id)arg2;
@@ -2735,8 +3125,12 @@ typedef struct {
 - (void)addDebuggingAdditionUIControllerLifeCycleObserver:(id)arg1;
 - (void)_notifyDebuggingAdditionUIControllerLifeCycleObserversOfInvalidated:(id)arg1;
 - (void)_notifyDebuggingAdditionUIControllerLifeCycleObserversOfUpdated:(id)arg1;
+- (void)_invalidateAllDebuggingAdditionUIControllers;
+- (void)_notifyAllDebuggingAdditionUIControllersOfUpdated;
+- (void)_createDebuggingAdditionUIControllers;
+- (void)showAlertModallyInWorkspaceForError:(id)arg1;
 - (void)replacementView:(id)arg1 willInstallViewController:(id)arg2;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)viewWillUninstall;
 - (void)workspaceWindowIsClosing;
 - (void)viewDidInstall;
@@ -2783,7 +3177,7 @@ typedef struct {
     id _editorContextWillOpenNavigableItemNotificationToken;
     id _editorDocumentForNavBarStructureDidChangeNotificationToken;
     id _editorDocumentForNavBarStructureWillCloseNotificationToken;
-    id _editorDocumentWillCloseNotificationToken;
+    id <DVTObservingToken> _editorDocumentWillCloseNotificationToken;
     id _findStringChangedNotificationToken;
     id _navigableItemCoordinatorDidForgetItemsNotificationToken;
     id _workspaceWillWriteNotificationToken;
@@ -2791,7 +3185,9 @@ typedef struct {
     id <DVTObservingToken> _windowMainViewControllerChangedObservingToken;
     id <DVTObservingToken> _navigableItemIsValidObservingToken;
     id <DVTObservingToken> _currentSelectedItemsObservingToken;
-    id <DVTCancellableToken> _deferredUpdateSubDocumentNavigableItemsCancellableToken;
+    id <DVTObservingToken> _navBarNavigableItemRootChildItemsBindingToken;
+    id <DVTObservingToken> _navBarNavigableItemBindingToken;
+    id <DVTCancellable> _deferredUpdateSubDocumentNavigableItemsCancellableToken;
     IDEEditorGeniusResults *_editorGeniusResults;
     IDENavigableItem *_geniusResultsRootNavigableItem;
     id <DVTObservingToken> _counterpartsObservingToken;
@@ -2834,6 +3230,7 @@ typedef struct {
     BOOL _canAddSplit;
     BOOL _canRemoveSplit;
     BOOL _isReplacingClosedDocument;
+    BOOL _isDraggingPathCell;
     unsigned long long _currentSwipeAnimationGeneration;
     char *_swipeAnimationAborted;
     BOOL _disableGeniusResultUpdatesDuringSwipeAnimation;
@@ -2850,6 +3247,7 @@ typedef struct {
 + (id)_defaultDocumentExtensionForDocumentURL:(id)arg1 fileDataType:(id)arg2 withEditorCategories:(id)arg3;
 + (BOOL)automaticallyNotifiesObserversOfNavBarNavigableItem;
 + (BOOL)automaticallyNotifiesObserversOfNavigableItem;
++ (id)navigationLogAspect;
 + (void)initialize;
 + (BOOL)automaticallyNotifiesObserversOfGreatestDocumentAncestor;
 + (id)keyPathsForValuesAffectingValueForNavBarNavigableItemRootChildItems;
@@ -2905,6 +3303,7 @@ typedef struct {
 - (id)supplementalMainViewController;
 - (BOOL)canBecomeMainViewController;
 - (id)viewToShowWrapOrEndOfFileBezelOn:(id)arg1;
+- (struct _NSRange)selectedRangeForFindBar:(id)arg1;
 - (id)startingLocationForFindBar:(id)arg1 findingBackwards:(BOOL)arg2;
 - (void)dvtFindBar:(id)arg1 didUpdateCurrentResult:(id)arg2;
 - (void)dvtFindBar:(id)arg1 didUpdateResults:(id)arg2;
@@ -2926,7 +3325,7 @@ typedef struct {
 - (BOOL)dvtFindBar:(id)arg1 validateUserInterfaceItem:(id)arg2;
 @property(readonly) NSScrollView *scopeBarsAdjustableScrollView;
 @property(readonly) NSView *scopeBarsBaseView;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (BOOL)validateUserInterfaceItem:(id)arg1;
 - (BOOL)_validateOpenInAdjacentEditorCommandForUserInterfaceItem:(id)arg1 forEventBehavior:(int)arg2;
 - (void)showMiniIssuesNavigatorMenu:(id)arg1;
@@ -2938,7 +3337,7 @@ typedef struct {
 - (void)showPreviousFilesHistoryMenu:(id)arg1;
 - (void)showPreviousHistoryMenu:(id)arg1;
 - (void)showRelatedItemsMenu:(id)arg1;
-- (void)unlockDocument:(id)arg1;
+- (void)ide_unlockDocument:(id)arg1;
 - (void)_popUpMenuForNavigableItem:(id)arg1;
 - (void)closeDocument:(id)arg1;
 - (BOOL)_canAskDocumentToClose;
@@ -2971,10 +3370,15 @@ typedef struct {
 - (BOOL)pathControl:(id)arg1 acceptDrop:(id)arg2;
 - (unsigned long long)pathControl:(id)arg1 validateDrop:(id)arg2;
 - (id)pathControlPasteboardReadingOptions;
+- (unsigned long long)draggingSourceOperationMaskForLocal:(BOOL)arg1;
+- (void)pathCell:(id)arg1 didEndDragForComponentCell:(id)arg2;
+- (BOOL)pathCell:(id)arg1 beginDragForComponentCell:(id)arg2;
 - (id)pathCell:(id)arg1 menuItemForNavigableItem:(id)arg2 defaultMenuItem:(id)arg3;
+- (BOOL)pathCell:(id)arg1 shouldEnableSelection:(id)arg2;
 - (id)pathCell:(id)arg1 childItemsForItem:(id)arg2;
 - (void)pathCell:(id)arg1 didUpdateMenu:(id)arg2;
 - (id)_hiddenMenuItemForCommandExtension:(id)arg1;
+- (BOOL)pathCell:(id)arg1 shouldInitiallyShowMenuSearch:(id)arg2;
 - (BOOL)pathCell:(id)arg1 shouldSeparateDisplayOfChildItemsForItem:(id)arg2;
 - (void)_currentSelectedItemsChanged;
 - (void)_checkShouldCoalesceUpdatesForCurrentSelectedItemsChanged;
@@ -3002,7 +3406,7 @@ typedef struct {
 - (BOOL)_notifyDelegateAndOpenEditorHistoryItem:(id)arg1 previousHistoryItemOrNil:(id)arg2;
 - (BOOL)_notifyDelegateAndOpenEditorHistoryItem:(id)arg1 updateHistory:(BOOL)arg2;
 - (BOOL)_notifyDelegateAndOpenEditorOpenSpecifier:(id)arg1 updateHistory:(BOOL)arg2;
-- (BOOL)_notifyDelegateAndOpenNavigableItem:(id)arg1 withContentsURL:(id)arg2 documentExtensionIdentifier:(id)arg3 locationToSelect:(id)arg4 annotationRepresentedObject:(id)arg5 stateDictionary:(id)arg6 annotationWantsIndicatorAnimation:(BOOL)arg7 exploreAnnotationRepresentedObject:(id)arg8;
+- (BOOL)_notifyDelegateAndOpenNavigableItem:(id)arg1 withContentsURL:(id)arg2 documentExtensionIdentifier:(id)arg3 locationToSelect:(id)arg4 annotationRepresentedObject:(id)arg5 stateDictionary:(id)arg6 annotationWantsIndicatorAnimation:(BOOL)arg7 exploreAnnotationRepresentedObject:(id)arg8 highlightSelection:(BOOL)arg9;
 - (BOOL)_canEditEditorHistoryItem:(id)arg1;
 - (BOOL)_canEditEditorOpenSpecifier:(id)arg1;
 - (BOOL)_canEditEditorOpenSpecifier:(id)arg1 withEditorCategories:(id)arg2;
@@ -3070,8 +3474,11 @@ typedef struct {
 - (id)_descendentsAcceptingKeyView:(id)arg1;
 - (void)loadView;
 - (id)placeholderStringForInputNavigableItems:(id)arg1 derivedItems:(id)arg2 inCategory:(id)arg3;
-- (void)unbindReplacementView:(id)arg1 forSliceExtension:(id)arg2 inCategory:(id)arg3;
-- (void)bindReplacementView:(id)arg1 forSliceExtension:(id)arg2 inCategory:(id)arg3;
+- (void)invalidateContentView:(id)arg1;
+- (void)unbindContentView:(id)arg1 forSliceExtension:(id)arg2 inCategory:(id)arg3;
+- (void)bindContentView:(id)arg1 forSliceExtension:(id)arg2 inCategory:(id)arg3;
+- (id)_contentViewForSliceExtension:(id)arg1 inCategory:(id)arg2;
+- (id)viewControllerForContentView:(id)arg1;
 - (BOOL)documentsNeededForSlices:(id)arg1;
 - (id)categoryIdentifiersForEditorExtension:(id)arg1;
 - (id)titleKeyPathForSliceExtension:(id)arg1;
@@ -3089,11 +3496,12 @@ typedef struct {
 @interface IDENavigatorOutlineView : DVTOutlineView
 {
     double _groupHeaderRowHeight;
+    double _trayItemRowHeight;
     long long _batchRowUpdateCount;
     id _itemBeingFullyReloaded;
     NSHashTable *_unfilteredRootItems;
     NSPredicate *_filterPredicate;
-    DVTDelayedValidator *_delayedValidator;
+    DVTDelayedInvocation *_delayedInvocation;
     NSString *_emptyContentStringCopy;
     SEL _keyAction;
     id <IDENavigatorOutlineViewLoadingDelegate> _loadingDelegate;
@@ -3113,14 +3521,18 @@ typedef struct {
         unsigned int _reloadingItems:1;
         unsigned int _didRecieveKeyDownEvent:1;
         unsigned int _didPublishSelectedObjects:1;
-        unsigned int _extraFlags:18;
+        unsigned int _supportsTrackingAreasForCells:1;
+        unsigned int _extraFlags:17;
     } _idenovFlags;
+    _IDENavigatorOutlineViewDataSource *_interposedDelegate;
+    _IDENavigatorOutlineViewDataSource *_interposedDataSource;
 }
 
 + (void)initialize;
 @property(retain) id <IDENavigatorOutlineViewLoadingDelegate> loadingDelegate; // @synthesize loadingDelegate=_loadingDelegate;
 @property(nonatomic) SEL keyAction; // @synthesize keyAction=_keyAction;
 @property(copy, nonatomic) NSPredicate *filterPredicate; // @synthesize filterPredicate=_filterPredicate;
+@property double trayItemRowHeight; // @synthesize trayItemRowHeight=_trayItemRowHeight;
 @property double groupHeaderRowHeight; // @synthesize groupHeaderRowHeight=_groupHeaderRowHeight;
 - (void)processPendingChanges;
 - (void)drawRect:(struct CGRect)arg1;
@@ -3128,6 +3540,7 @@ typedef struct {
 - (BOOL)scrollRectToVisible:(struct CGRect)arg1;
 - (struct _NSRange)initialSelectionRangeForCell:(id)arg1 proposedRange:(struct _NSRange)arg2;
 - (void)drawBackgroundInClipRect:(struct CGRect)arg1;
+- (void)_drawGroupItemGradientInRect:(struct CGRect)arg1 borderSides:(int)arg2;
 - (void)_computeGroupsToDraw:(id)arg1 groupInfoByGroup:(id)arg2 forRowsInRange:(struct _NSRange)arg3;
 - (BOOL)item:(id)arg1 isDescendantOfItem:(id)arg2;
 - (struct CGRect)headerRectForGroupRange:(struct _NSRange)arg1;
@@ -3142,12 +3555,15 @@ typedef struct {
 - (id)enclosingGroupItemForItem:(id)arg1;
 - (id)enclosingGroupInfoForRow:(long long)arg1;
 - (void)highlightSelectionInClipRect:(struct CGRect)arg1;
+- (void)_drawSelectionForGroupItemInRect:(struct CGRect)arg1;
 - (void)_setNeedsDisplayInSelectedRows;
 - (BOOL)dvt_highlightColorDependsOnWindowState;
 - (void)accessibilitySetSelectedRowsAttribute:(id)arg1;
 - (void)keyUp:(id)arg1;
 - (void)keyDown:(id)arg1;
 - (void)mouseDown:(id)arg1;
+- (BOOL)_supportsTrackingAreasForCells;
+@property BOOL supportsTrackingAreasForCells;
 - (void)setSortDescriptors:(id)arg1;
 @property(copy) NSArray *rootItems;
 - (void)_updateRootItems:(id)arg1 sortDescriptors:(id)arg2;
@@ -3207,18 +3623,18 @@ typedef struct {
 
 @interface _IDENavigatorOutlineViewDataSource : NSObject <NSOutlineViewDataSource, NSOutlineViewDelegate>
 {
-    IDENavigatorOutlineView *_outlineView;
     id _expandedItems;
-    id _realObject;
     id _rootItems;
     id _filterProgressObserver;
     id _navigableItemGraphObserver;
     id _navigableItemPropertyObserver;
     id _forgottenNavigableItemsObserver;
-    NSMapTable *_navItemChangeCountByItem;
+    DVTMapTable *_navItemChangeCountByItem;
     IDENICFilterProxy *_coordinatorFilteredItems;
     unsigned long long _numberOfRowsBeforeExpandOrCollapse;
     BOOL _didWarnForUnusualRowHeight;
+    IDENavigatorOutlineView *_outlineView_dvtWeak;
+    id _realObject_dvtWeak;
     struct {
         unsigned int realDataSourceRespondsTo_child_ofItem:1;
         unsigned int realDataSourceRespondsTo_childItemsForItem:1;
@@ -3226,6 +3642,7 @@ typedef struct {
         unsigned int realDataSourceRespondsTo_numberOfChildrenOfItem:1;
         unsigned int realDataSourceRespondsTo_objectValueForTableColumn_byItem:1;
         unsigned int realDataSourceRespondsTo_setObjectValue_forTableColumn_byItem:1;
+        unsigned int realDataSourceRespondsTo_trayCellsForHeaderItem:1;
         unsigned int realDelegateRespondsTo_willDisplayCell_forTableColumn_item:1;
         unsigned int realDelegateRespondsTo_selectionIndexesForProposedSelection:1;
         unsigned int realDelegateRespondsTo_dataCell_forTableColumn_item:1;
@@ -3247,8 +3664,6 @@ typedef struct {
     } _idenovdsFlags;
 }
 
-@property(readonly) id realObject; // @synthesize realObject=_realObject;
-@property(readonly) IDENavigatorOutlineView *outlineView; // @synthesize outlineView=_outlineView;
 - (double)outlineView:(id)arg1 heightOfRowByItem:(id)arg2;
 - (double)_outlineView:(id)arg1 heightOfRowByItem:(id)arg2;
 - (BOOL)outlineView:(id)arg1 isGroupHeaderItem:(id)arg2;
@@ -3272,6 +3687,7 @@ typedef struct {
 - (id)outlineView:(id)arg1 child:(long long)arg2 ofItem:(id)arg3;
 - (id)forwardingTargetForSelector:(SEL)arg1;
 - (BOOL)respondsToSelector:(SEL)arg1;
+- (id)trayCellsForHeaderItem:(id)arg1;
 - (id)childItemsForItem:(id)arg1;
 - (void)refreshFilterPredicate;
 @property(copy) NSArray *rootItems; // @synthesize rootItems=_rootItems;
@@ -3282,14 +3698,15 @@ typedef struct {
 - (id)objectInOutlineViewDataSourceRootItemsAtIndex:(long long)arg1;
 - (long long)countOfOutlineViewDataSourceRootItems;
 - (id)initWithOutlineView:(id)arg1 realObject:(id)arg2;
+- (void)setRealObject:(id)arg1;
+@property(readonly) id realObject;
+- (void)setOutlineView:(id)arg1;
+@property(readonly) IDENavigatorOutlineView *outlineView;
 
 @end
 
 @interface IDEOutlineViewGroupInfo : NSObject
 {
-    struct _NSRange range;
-    id headerItem;
-    IDEOutlineViewGroupInfo *next;
     struct _NSRange _range;
     id _headerItem;
     IDEOutlineViewGroupInfo *_next;
@@ -3315,6 +3732,9 @@ typedef struct {
 @property(readonly, getter=isCollapsed) BOOL collapsed;
 - (void)showLibraryArea;
 - (id)_enclosingSplitView;
+- (void)invalidateContentView:(id)arg1;
+- (id)_contentViewForSliceExtension:(id)arg1 inCategory:(id)arg2;
+- (id)viewControllerForContentView:(id)arg1;
 - (void)loadView;
 - (id)categoryIdentifiersForEditorExtension:(id)arg1;
 - (BOOL)categorySupportsMultipleSlices:(id)arg1;
@@ -3331,7 +3751,7 @@ typedef struct {
 
 @end
 
-@interface IDEPathCell : NSPathCell <DVTFilteringMenuDelegate, NSMenuDelegate, DVTInvalidation>
+@interface IDEPathCell : NSPathCell <DVTFilteringMenuDelegate, NSMenuDelegate, NSDraggingSource, DVTInvalidation_New>
 {
     NSMenu *_trackingMenu;
     IDEPathComponentCell *_clickedIDEPathComponentCell;
@@ -3339,26 +3759,33 @@ typedef struct {
     NSMutableArray *_itemsObservedForChildItems;
     NSMutableSet *_cellsWithDirtyImages;
     NSMutableSet *_cellsWithDirtyNames;
-    DVTDelayedValidator *_dirtyCellValidator;
+    DVTDelayedInvocation *_dirtyCellInvocation;
     int _borderSides;
     int _gradientStyle;
-    DVTStackBacktrace *_invalidationBacktrace;
     struct {
         unsigned int _lastComponentFillsWidth:1;
         unsigned int _delegateRespondsToShouldSeparateDisplayOfChildItemsForItem:1;
         unsigned int _delegateRespondsToChildItemsForItem:1;
         unsigned int _delegateRespondsToShouldPopUpMenuForPathComponentCell:1;
+        unsigned int _delegateRespondsToBeginDrag:1;
+        unsigned int _delegateRespondsToTitleForPathComponentCellAtIndex:1;
         unsigned int _delegateProvidesMenuItems:1;
         unsigned int _delegateProvidesAccessibilityDescriptions:1;
         unsigned int _delegateProvidesToolTips:1;
     } _idePathCellFlags;
     BOOL _needsToUpdateComponentCells;
     BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
 + (unsigned long long)defaultFocusRingType;
 @property int borderSides; // @synthesize borderSides=_borderSides;
 @property(nonatomic) int gradientStyle; // @synthesize gradientStyle=_gradientStyle;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 - (id)ide_accessibilityPopUpMenuParent:(id)arg1;
 - (id)ide_accessibilityChildMenuForChild:(id)arg1;
@@ -3371,17 +3798,22 @@ typedef struct {
 - (id)accessibilityAttributeValue:(id)arg1;
 - (id)ide_accessibilityObjectForComponentCell:(id)arg1 atIndex:(unsigned long long)arg2;
 - (id)toolTipManager:(id)arg1 toolTipForView:(id)arg2 location:(struct CGPoint)arg3 tipSourceRect:(struct CGRect *)arg4;
+- (void)menu:(id)arg1 willHighlightItem:(id)arg2;
 - (void)menuDidClose:(id)arg1;
 - (void)menuWillOpen:(id)arg1;
 - (BOOL)trackMouse:(id)arg1 inRect:(struct CGRect)arg2 ofView:(id)arg3 untilMouseUp:(BOOL)arg4;
-- (void)_handleClickInComponentCell:(id)arg1 inRect:(struct CGRect)arg2 ofView:(id)arg3;
+- (void)_handleClickInComponentCell:(id)arg1 atPoint:(struct CGPoint)arg2 inRect:(struct CGRect)arg3 ofView:(id)arg4 event:(id)arg5;
+- (BOOL)_handleDragInComponentCell:(id)arg1 atPoint:(struct CGPoint)arg2 inRect:(struct CGRect)arg3 ofView:(id)arg4 event:(id)arg5;
 - (BOOL)acceptsFirstResponder;
+- (unsigned long long)draggingSourceOperationMaskForLocal:(BOOL)arg1;
+- (void)_performDragInComponentCell:(id)arg1 inRect:(struct CGRect)arg2 ofView:(id)arg3 event:(id)arg4;
 - (void)filterItems:(id)arg1 inMenu:(id)arg2 forSearchString:(id)arg3;
 - (void)popUpMenuForComponentCell:(id)arg1 inRect:(struct CGRect)arg2 ofView:(id)arg3;
 - (void)populatePopUpMenu:(id)arg1 withItems:(id)arg2;
 - (void)menuNeedsUpdate:(id)arg1;
 - (void)cancelMenuTracking;
 - (id)_menuItemWithNavigableItem:(id)arg1 additionalItems:(id *)arg2 currentGroupIdentifier:(id *)arg3;
+- (id)_menuItemWithNavigableItem:(id)arg1 additionalItems:(id *)arg2 currentGroupIdentifier:(id *)arg3 indentationLevel:(long long)arg4;
 - (void)_setupSubmenuForMenuItem:(id)arg1;
 - (void)_selectItem:(id)arg1;
 - (BOOL)_delegate_shouldSeparateDisplayOfChildItemsForItem:(id)arg1;
@@ -3399,8 +3831,9 @@ typedef struct {
 - (void)_updateDirtyCells:(id)arg1;
 - (id)lineageForNavigableItem:(id)arg1 rootItems:(id)arg2;
 - (id)_componentCellsFromItems:(id)arg1;
+- (id)_delegate_titleForPathComponentCell:(id)arg1 atIndex:(unsigned long long)arg2;
 - (id)_noSelectionComponentCell;
-- (id)_componentCellWithRepresentedObject:(id)arg1 title:(id)arg2 image:(id)arg3;
+- (id)_componentCellWithRepresentedObject:(id)arg1;
 - (void)invalidateComponentCells;
 - (struct CGRect)grabRectInView:(id)arg1;
 - (void)drawWithFrame:(struct CGRect)arg1 inView:(id)arg2;
@@ -3408,8 +3841,10 @@ typedef struct {
 - (struct CGRect)rectOfPathComponentCell:(id)arg1 withFrame:(struct CGRect)arg2 inView:(id)arg3;
 @property BOOL lastComponentFillsWidth;
 - (void)setFont:(id)arg1;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (void)setDelegate:(id)arg1;
 - (void)reset;
 - (id)initWithCoder:(id)arg1;
@@ -3421,7 +3856,7 @@ typedef struct {
 @interface IDEPathCellNavigableItemObserver : NSObject
 {
     IDEPathCell *_owner;
-    NSHashTable *_observedItems;
+    DVTHashTable *_observedItems;
 }
 
 - (void)observeValueForKeyPath:(id)arg1 ofObject:(id)arg2 change:(id)arg3 context:(void *)arg4;
@@ -3468,28 +3903,36 @@ typedef struct {
 @property BOOL isFirstItem; // @synthesize isFirstItem=_isFirstItem;
 @property BOOL isLastItem; // @synthesize isLastItem=_isLastItem;
 @property int gradientStyle; // @synthesize gradientStyle=_gradientStyle;
+- (void)drawInteriorWithFrame:(struct CGRect)arg1 inView:(id)arg2;
 - (void)drawWithFrame:(struct CGRect)arg1 inView:(id)arg2;
+- (BOOL)iconHitTest:(struct CGPoint)arg1 inFrame:(struct CGRect)arg2;
+- (double)_textOffsetForIcon:(id)arg1 inFrame:(struct CGRect)arg2 doDraw:(BOOL)arg3;
 - (void)_drawDividerForFrame:(struct CGRect)arg1 inControlView:(id)arg2;
+- (BOOL)_isActiveWindow:(id)arg1;
 - (void)_drawChevronDividerInFrame:(struct CGRect)arg1;
 - (id)shadow;
 - (struct CGSize)cellSizeForBounds:(struct CGRect)arg1;
 - (double)_rightDividerWidth;
 - (double)_leftDividerWidth;
 - (void)_useChevronForLeftEdge:(char *)arg1 rightEdge:(char *)arg2;
-- (id)_attributedStringValue;
+- (id)_attributedStringValue:(BOOL)arg1;
 - (double)iconSize;
 
 @end
 
-@interface IDEPathControl : NSPathControl <DVTInvalidation>
+@interface IDEPathControl : NSPathControl <DVTInvalidation_New>
 {
-    DVTStackBacktrace *_invalidationBacktrace;
     BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
++ (BOOL)automaticallyNotifiesObserversOfValue;
 + (Class)cellClass;
 + (unsigned long long)defaultFocusRingType;
 + (void)initialize;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 - (id)accessibilityPopUpMenuParent:(id)arg1;
 - (void)viewWillMoveToWindow:(id)arg1;
@@ -3501,8 +3944,10 @@ typedef struct {
 @property int borderSides;
 - (BOOL)isOpaque;
 @property int gradientStyle;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (id)outputSelection;
 - (void)updateBoundContent;
 - (void)updateBoundSelectedNavigableItem;
@@ -3529,14 +3974,17 @@ typedef struct {
 @interface IDEVariablesView : IDEViewController <NSOutlineViewDataSource, NSMenuDelegate, DVTOutlineViewDelegate, IDEScopeableView>
 {
     id <IDEVariablesViewContentProvider> _contentProvider;
-    IDEVariablesViewNode *_root;
+    IDEVariableViewRootNode *_root;
     NSMapTable *_variableNodeToObservationToken;
     IDEVariablesViewStateManager *_stateManager;
     long long _selectedScopeTag;
-    NSMutableSet *_dataValueWatchers;
     BOOL _showsFormattedSummary;
     BOOL _showsType;
     int _viewMode;
+    id <DVTObservingToken> _loadingNewVariablesInBackgroundObservationToken;
+    double _timeLodingIndicatorWasShown;
+    NSPopover *_currentPopover;
+    IDEVariablesViewQuickLookPopover *_quickLookPopover;
     DVTBorderedView *_containerView;
     DVTScopeBarView *_scopeBar;
     NSSearchField *_filterField;
@@ -3544,9 +3992,9 @@ typedef struct {
     NSScrollView *_scrollView;
     DVTOutlineView *_outlineView;
     NSPopUpButton *_scopePopup;
+    NSProgressIndicator *_loadingIndicator;
     BOOL _restoringExpandedState;
     BOOL _gutterVisible;
-    BOOL _waitingToRefresh;
 }
 
 + (long long)version;
@@ -3563,6 +4011,7 @@ typedef struct {
 @property(retain, nonatomic) id <IDEVariablesViewContentProvider> contentProvider; // @synthesize contentProvider=_contentProvider;
 - (void)commitStateToDictionary:(id)arg1;
 - (void)revertStateWithDictionary:(id)arg1;
+- (void)outlineViewSelectionDidChange:(id)arg1;
 - (void)outlineViewItemDidCollapse:(id)arg1;
 - (void)outlineViewItemDidExpand:(id)arg1;
 - (BOOL)_shouldExpandItemAsResultOfOptionClick:(id)arg1;
@@ -3579,12 +4028,15 @@ typedef struct {
 - (id)outlineView:(id)arg1 child:(long long)arg2 ofItem:(id)arg3;
 - (id)_predicateForMatchString:(id)arg1;
 - (void)toggleViewMode:(id)arg1;
-- (void)toggleShowsDataFormatters:(id)arg1;
+- (void)toggleShowsDataValueSummaries:(id)arg1;
 - (void)toggleShowsTypes:(id)arg1;
 - (void)filterChanged:(id)arg1;
 - (void)copy:(id)arg1;
 - (BOOL)validateUserInterfaceItem:(id)arg1;
-- (void)watchChangeOnObject:(id)arg1 atKeyPath:(id)arg2 withChangeBlock:(id)arg3;
+- (id)_quickLookIconForNode:(id)arg1;
+- (void)_showQuickLookForFirstSelectedRow;
+- (void)_toggleQuickLook;
+- (void)keyDown:(id)arg1;
 - (void)_restoreExpansionStateOfNodeAndChildren:(id)arg1;
 - (void)_restoreExpandedNodes;
 - (void)_restoreExpandedNodesEnsuringExpandedChildrenAreLoaded;
@@ -3594,17 +4046,26 @@ typedef struct {
 - (void)_addToggleDataFormattersMenuItemToMenu:(id)arg1;
 - (void)menuNeedsUpdate:(id)arg1;
 - (void)addScopeChoice:(id)arg1 tag:(long long)arg2;
+- (void)hideCurrentPopover;
+- (void)showPopover:(id)arg1 forRow:(long long)arg2;
 - (void)removeViewFromScopeBar:(id)arg1;
 - (void)addViewToScopeBarOnRight:(id)arg1;
+- (void)removeChildNodeFromRoot:(id)arg1;
+- (void)addChildNodeToRoot:(id)arg1;
 - (void)installNewRootFromChildrenOnceExpandedChildrenAreLoaded:(id)arg1;
+- (void)_handleDoubleClick:(id)arg1;
 - (void)_updateGutterFrame;
 - (void)_updateScopePopUpTitle;
 @property(readonly) NSString *filterString;
 - (BOOL)delegateFirstResponder;
-- (void)_reloadObject:(id)arg1;
+- (void)_reloadNode:(id)arg1 reloadChildren:(BOOL)arg2;
 - (void)_handleVariableNode:(id)arg1 change:(id)arg2;
+- (void)_handleVariableNodesFormattedChildrenChanged:(id)arg1 change:(id)arg2;
 - (void)_observeModelObject:(id)arg1;
-- (void)invalidate;
+- (void)_hideLoadingIndicatorIfNecessary;
+- (void)_showLoadingIndicatorIfNecessary;
+- (void)_handleLoadingNewVariablesInBackgroundChanged;
+- (void)primitiveInvalidate;
 - (void)viewDidInstall;
 - (void)loadView;
 - (void)_variablesViewCommonInit;
@@ -3822,7 +4283,7 @@ typedef struct {
 
 @interface _IDEApplicationControllerMenuDelegateForwarder : NSObject <NSMenuDelegate>
 {
-    id <NSMenuDelegate> _menuDelegate;
+    id <NSMenuDelegate> _menuDelegate_dvtWeak;
     BOOL _delegateRespondsToNeedsUpdate;
     BOOL _delegateRespondsToWillOpen;
     BOOL _delegateRespondsToDidClose;
@@ -3833,6 +4294,7 @@ typedef struct {
 - (void)menuNeedsUpdate:(id)arg1;
 - (id)description;
 - (id)initWithMenuDelegate:(id)arg1;
+@property __weak id <NSMenuDelegate> menuDelegate;
 
 @end
 
@@ -3841,8 +4303,9 @@ typedef struct {
     BOOL _haveScannedForPlugins;
     NSDictionary *_extensionIdToMenuDict;
     BOOL _closeKeyEquivalentClosesTab;
-    NSString *_documentExtensionIdForCurrentEditorAndNavigateMenus;
+    NSString *_extensionIdForCurrentEditorAndNavigateMenus;
     NSString *_currentEditorMenuExtensionId;
+    id <NSMenuDelegate> _editorMenuDelegate;
     NSString *_currentNavigateMenuExtensionId;
     long long _originalNavigateMenuItemCount;
     NSArray *_currentDebuggingAdditonUIExtensions;
@@ -3850,7 +4313,7 @@ typedef struct {
     NSMenuItem *_shiftedCloseAllMenuItem;
     IDEOrganizerWindowController *_windowController;
     IDESourceControlUIHandler *_sourceControlUIHandler;
-    DVTDelayedValidator *_tabStateContextDelayedSaveValidator;
+    DVTDelayedInvocation *_tabStateContextDelayedSaveInvocation;
     NSMutableDictionary *_tabStateContextForTabNameMap;
     NSString *_licenseAgreementPath;
     id <DVTObservingToken> _hotKeyToEnableFloatingDebuggerToken;
@@ -3861,6 +4324,7 @@ typedef struct {
     BOOL _isSafeToLoadMobileDevice;
     BOOL _hasScheduledMobileDeviceLoadBlock;
     BOOL _applicationWillTerminate;
+    BOOL _applicationShouldTerminateRecursionGuard;
 }
 
 + (id)sharedAppController;
@@ -3875,6 +4339,7 @@ typedef struct {
 @property(readonly) NSString *licenseAgreementPath;
 @property(readonly) NSString *formattedApplicationVersion;
 - (void)updateDebugMenuIfNeeded;
+- (void)editorMenuWillOpen:(id)arg1;
 - (void)_modifyMenu:(id)arg1 withItemsFromMenu:(id)arg2 replace:(BOOL)arg3;
 - (void)_updateEditorAndNavigateMenusIfNeeded;
 - (void)_updateMenuKeyBindingSet;
@@ -3883,6 +4348,7 @@ typedef struct {
 - (id)_debugMenu;
 - (id)_navigateMenu;
 - (id)_editorMenu;
+- (BOOL)_useOrganizerForMenuContent;
 - (id)_editorForMenuContent;
 - (void)_updateUtilitiesMenuIfNeeded;
 - (void)_updateEditMenuIfNeeded;
@@ -3905,7 +4371,6 @@ typedef struct {
 - (void)_updateGlobalHotKeyToEnableFloatingDebugger:(id)arg1;
 - (void)_currentPreferenceSetChanged;
 - (void)applicationDidFinishLaunching:(id)arg1;
-- (void)_recordStatistics;
 - (void)_incrementCountForKey:(id)arg1 in:(id)arg2;
 - (void)_handleGetURLEvent:(id)arg1 withReplyEvent:(id)arg2;
 - (BOOL)applicationOpenUntitledFile:(id)arg1;
@@ -3949,8 +4414,8 @@ typedef struct {
     BOOL _didRestoreState;
     BOOL _userWantsEditorVisible;
     BOOL _showDebuggerArea;
-    id <DVTCancellableToken> _setEditorModeAfterDelayToken;
-    id <DVTCancellableToken> _invokeCompletionBlockAfterDelayToken;
+    id <DVTCancellable> _setEditorModeAfterDelayToken;
+    id <DVTCancellable> _invokeCompletionBlockAfterDelayToken;
 }
 
 + (long long)version;
@@ -3987,8 +4452,6 @@ typedef struct {
 - (BOOL)splitView:(id)arg1 canCollapseSubview:(id)arg2;
 - (double)splitView:(id)arg1 constrainMaxCoordinate:(double)arg2 ofSubviewAt:(long long)arg3;
 - (double)splitView:(id)arg1 constrainMinCoordinate:(double)arg2 ofSubviewAt:(long long)arg3;
-- (void)_recordDebuggerSize;
-- (void)_doRecordDebuggerSize;
 - (BOOL)validateUserInterfaceItem:(id)arg1;
 - (void)toggleDebuggerVisibility:(id)arg1;
 - (void)activateConsole:(id)arg1;
@@ -4035,27 +4498,23 @@ typedef struct {
 - (BOOL)_canAddAssistantEditor;
 - (void)_setAssistantEditorsLayout:(int)arg1;
 - (BOOL)_canChangeAssistantEditorsLayout;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)loadView;
 - (void)_setEditorModeViewControllerWithPrimaryEditorContext:(id)arg1;
 
 @end
 
-@interface IDEViewController : DVTViewController <IDESelectionSource, DVTStatefulObject, DVTInvalidation>
+@interface IDEViewController : DVTInvalidatableViewController <IDESelectionSource, DVTStatefulObject>
 {
     IDEWorkspaceTabController *_workspaceTabController;
     id <IDEWorkspaceDocumentProvider> _workspaceDocumentProvider;
     id _outputSelection;
     id _contextMenuSelection;
-    id _commandForwarder;
     DVTStateToken *_stateToken;
-    DVTStackBacktrace *_invalidationBacktrace;
-    BOOL _isInvalidated;
 }
 
 + (void)configureStateSavingObjectPersistenceByName:(id)arg1;
 + (long long)version;
-@property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 @property(readonly) DVTStateToken *stateToken; // @synthesize stateToken=_stateToken;
 @property(retain, nonatomic) IDEWorkspaceTabController *workspaceTabController; // @synthesize workspaceTabController=_workspaceTabController;
 @property(copy) IDESelection *contextMenuSelection; // @synthesize contextMenuSelection=_contextMenuSelection;
@@ -4066,8 +4525,7 @@ typedef struct {
 - (void)commitState;
 - (void)commitStateToDictionary:(id)arg1;
 - (void)revertStateWithDictionary:(id)arg1;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)_invalidateSubViewControllersForView:(id)arg1;
 - (id)supplementalTargetForAction:(SEL)arg1 sender:(id)arg2;
 @property(readonly) IDEWorkspace *workspace;
@@ -4104,8 +4562,9 @@ typedef struct {
     DVTFindBar *_findBar;
     id _documentForwarder;
     id <DVTTextFindable> _findableObject;
-    id _documentDidChangeNotificationToken;
-    id _documentForNavBarStructureDidChangeNotificationToken;
+    id <DVTObservingToken> _documentDidChangeNotificationToken;
+    id <DVTObservingToken> _documentForNavBarStructureDidChangeNotificationToken;
+    id <DVTObservingToken> _documentFileURLObservingToken;
     IDEFileTextSettings *_fileTextSettings;
     id <IDEEditorDelegate> _delegate;
     BOOL _discardsFindResultsWhenContentChanges;
@@ -4124,7 +4583,7 @@ typedef struct {
 - (void)selectDocumentLocations:(id)arg1;
 - (id)currentSelectedDocumentLocations;
 - (id)currentSelectedItems;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (id)supplementalTargetForAction:(SEL)arg1 sender:(id)arg2;
 @property(readonly) NSScrollView *mainScrollView;
 @property(readonly) DVTScopeBarsManager *scopeBarsManager;
@@ -4170,7 +4629,7 @@ typedef struct {
     NSPanel *panel;
     NSScrollView *detailsView;
     NSTextView *detailsTextView;
-    NSMutableDictionary *originalMetrics;
+    NSMapTable *originalMetrics;
     id sheetDelegate;
     SEL sheetDidEndSelector;
     BOOL runningAsSheet;
@@ -4213,7 +4672,7 @@ typedef struct {
 {
 }
 
-+ (void)_handleAssertionWithLogString:(id)arg1;
++ (void)_handleAssertionWithLogString:(id)arg1 reason:(id)arg2;
 + (id)defaultHandler;
 + (BOOL)_crashOnAssertions;
 + (BOOL)_quietAssertions;
@@ -4319,7 +4778,8 @@ typedef struct {
 {
 }
 
-+ (void)insertToolbarForToolbarDefinitionIdentifier:(id)arg1 inWindow:(id)arg2;
++ (id)insertToolbarForToolbarDefinitionIdentifier:(id)arg1 forID:(id)arg2 inWindow:(id)arg3;
++ (id)toolbarIdentifierForToolbarDefinition:(id)arg1 andUniqueIdentifier:(id)arg2;
 
 @end
 
@@ -4405,6 +4865,7 @@ typedef struct {
     id <DVTObservingToken> _analyzePhaseSubtitleObservingToken;
     id <DVTObservingToken> _installPhaseSubtitleObservingToken;
     id <DVTObservingToken> _customDataStoresControllerObservingToken;
+    id <IDEClientTrackingToken> _clientTrackingToken;
     BOOL _okButtonReflectsSchemeCommand;
     int _selectedSchemeCommand;
     NSString *_selectedSchemeCommandTitle;
@@ -4524,8 +4985,14 @@ typedef struct {
     IDEEditorDocument *_lastObservedEditorDocument;
     IDEWorkspaceTabController *_activeWorkspaceTabController;
     id <DVTObservingToken> _toolbarVisibleToken;
+    IDEToolbarDelegate *_toolbarDelegate;
     BOOL _showToolbar;
     id <DVTObservingToken> _workspaceSimpleFilesFocusedObservingToken;
+    id <DVTObservingToken> _workspaceRepresentingFilePathObservingToken;
+    id <DVTObservingToken> _workspaceFinishedLoadingObservingToken;
+    id <DVTObservingToken> _activePrimaryEditorDocumentObservingToken;
+    id <DVTObservingToken> _editorDocumentHasEditsNotificationToken;
+    id <DVTObservingToken> _editorDocumentIsEditedNotificationToken;
     IDESourceControlWorkspaceUIHandler *_sourceControlWorkspaceUIHandler;
     IDEWorkspace *_workspace;
     _IDEWindowFullScreenSavedDebuggerTransitionValues *_fullScreenSavedDebuggerTransitionValues;
@@ -4605,10 +5072,12 @@ typedef struct {
 - (void)morphingDragImage:(id)arg1 draggingExited:(id)arg2;
 - (unsigned long long)morphingDragImage:(id)arg1 draggingUpdated:(id)arg2;
 - (unsigned long long)morphingDragImage:(id)arg1 draggingEntered:(id)arg2;
+- (void)workspaceWindowWillInvalidateCursorRectsForViewsWithNoTrackingAreas:(id)arg1;
 - (void)workspaceWindow:(id)arg1 willInvalidateCursorRectsForView:(id)arg2;
 - (BOOL)workspaceWindow:(id)arg1 interceptAddCursorRect:(struct CGRect)arg2 cursor:(id)arg3 forView:(id)arg4;
 - (BOOL)workspaceWindow:(id)arg1 interceptSetCursorForMouseLocation:(struct CGPoint)arg2;
 - (void)workspaceWindowDidRecalculateKeyViewLoop:(id)arg1;
+- (void)windowWillClose:(id)arg1;
 - (void)windowDidBecomeMain:(id)arg1;
 - (void)windowDidMove:(id)arg1;
 - (void)windowDidResize:(id)arg1;
@@ -4711,7 +5180,7 @@ typedef struct {
 - (void)_configureStateSavingObservers;
 - (void)revertStateWithDictionary:(id)arg1;
 - (void)_revertForNewWindowWithTabStateContext:(id)arg1 documentURL:(id)arg2 simpleEditorWindowLayout:(BOOL)arg3;
-- (void)_changeSizeForSimpleEditorWindowLayoutWithEditorDocumentURLOrNil:(id)arg1 workspaceTabController:(id)arg2;
+- (void)_changeSizeForSimpleEditorWindowLayoutWithEditorDocumentURLOrNil:(id)arg1 forSingleFile:(BOOL)arg2 workspaceTabController:(id)arg3;
 - (void)_updateToolbarIsVisible;
 - (BOOL)_canToggleToolbar;
 - (void)toggleToolbarShown:(id)arg1;
@@ -4720,8 +5189,6 @@ typedef struct {
 - (void)observeValueForKeyPath:(id)arg1 ofObject:(id)arg2 change:(id)arg3 context:(void *)arg4;
 - (void)_setupFullScreenNotifications;
 - (id)init;
-- (void)_recordWorkspaceWindowCount;
-- (void)_recordTabCount;
 
 @end
 
@@ -4765,7 +5232,7 @@ typedef struct {
 - (BOOL)_shouldEnableFilePickerItem:(id)arg1;
 @property(readonly) NSArray *blueprintProviderWrappers;
 @property(retain) IDEWorkspace *workspace;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)loadView;
 - (void)_updateDeleteButton;
 - (BOOL)_getItemsToDelete:(id *)arg1;
@@ -4816,6 +5283,8 @@ typedef struct {
     DVTBorderedView *_optionsBorderedView;
     NSPopUpButton *_runnablePopUp;
     NSPopUpButton *_debuggerSelectionControl;
+    NSMatrix *_debugProcessAsMatrix;
+    NSButtonCell *_debugProcessAsMeButtonCell;
     NSMatrix *_launchStyleMatrix;
     NSButtonCell *_waitForAppToLaunchButtonCell;
     DVTFilePathFieldCell *_workingDirectoryTextFieldCell;
@@ -4823,32 +5292,28 @@ typedef struct {
     NSView *_diagnosticsTabViewContentView;
     NSPopUpButton *_macroExpansionRunnableBuildablesPopUp;
     NSTextField *_macroExpansionDescription;
-    NSPopUpButton *_deviceAppDataPackagesPopUp;
-    NSPopUpButton *_locationSimulationPopUp;
     DVTStackView_ML *_optionsStackView;
-    NSView *_locationsOptionView;
-    NSView *_applicationDataOptionView;
-    NSView *_resumeOptionView;
-    NSView *_debugDocumentVersioningOptionView;
-    NSView *_workingDirectoryOptionView;
-    NSView *_OpenGLESOptionsView;
     DVTChoice *_infoChoice;
     DVTChoice *_conditionsChoice;
     DVTChoice *_optionsChoice;
     DVTChoice *_diagnosticsChoice;
     DVTChoice *_debuggingChoice;
-    BOOL _exectutableHasBeenSelected;
+    BOOL _executableHasBeenSelected;
     BOOL _debuggerHasBeenSelected;
+    BOOL _supportsDebugAsDifferentUser;
     NSColor *_descriptionTextColor;
+    NSColor *_debugAsRootDescriptionTextColor;
     IDEScheme *_runContext;
     IDEWorkspace *_workspace;
     IDELaunchSchemeAction *_runPhase;
     int _launchStyleWhenDebuggerSetToNil;
+    NSMutableArray *_launchActionViewControllers;
     BOOL _isSupportedApplicationData;
     BOOL _optionsUpdatedInCurrentRunLoop;
     id <DVTObservingToken> _runDestinationObservingToken;
     id <DVTObservingToken> _runnableBuildableProductsObservingToken;
     id <DVTObservingToken> _runContextRunnableObservingToken;
+    id <DVTObservingToken> _debugAsEnablementObservingToken;
     IDEArgumentsCapsuleSheetController *_argumentsViewController;
     IDEEnvironmentVariablesCapsuleSheetController *_environmentVariablesViewController;
     IDEManualSymbolLoadingCapsuleSheetController *_manualSymbolLoadingViewController;
@@ -4857,12 +5322,14 @@ typedef struct {
     BOOL _runnablePopUpHasCustomRunnable;
 }
 
-+ (BOOL)automaticallyNotifiesObserversForKey:(id)arg1;
 + (void)initialize;
+@property(retain) NSArray *debuggerSpecifiers; // @synthesize debuggerSpecifiers=_debuggerSpecifiers;
 @property(retain) DVTTabChooserView *tabChooser; // @synthesize tabChooser=_tabChooser;
+@property(copy) NSColor *debugAsRootDescriptionTextColor; // @synthesize debugAsRootDescriptionTextColor=_debugAsRootDescriptionTextColor;
 @property(copy) NSColor *descriptionTextColor; // @synthesize descriptionTextColor=_descriptionTextColor;
+@property BOOL supportsDebugAsDifferentUser; // @synthesize supportsDebugAsDifferentUser=_supportsDebugAsDifferentUser;
 @property BOOL debuggerHasBeenSelected; // @synthesize debuggerHasBeenSelected=_debuggerHasBeenSelected;
-@property BOOL exectutableHasBeenSelected; // @synthesize exectutableHasBeenSelected=_exectutableHasBeenSelected;
+@property BOOL executableHasBeenSelected; // @synthesize executableHasBeenSelected=_executableHasBeenSelected;
 @property(retain) IDELaunchSchemeAction *runPhase; // @synthesize runPhase=_runPhase;
 @property(retain) IDEScheme *runContext; // @synthesize runContext=_runContext;
 - (void)_collaspeManualSymbolLoadingCapsuleIfItExists;
@@ -4873,10 +5340,7 @@ typedef struct {
 - (void)DVTFilePathFieldCell:(id)arg1 chooserSelectedPath:(id)arg2;
 - (void)_resetOptionsUpdatedFlag;
 - (void)_updateSupportedOptions;
-- (void)_updateLocationSimulationUI;
-- (void)_updateDeviceAppDataUI;
-- (void)_selectMenuItemForDeviceApplicationPackage;
-- (void)_selectDeviceAppDataPackage:(id)arg1;
+- (id)_allOptions;
 - (id)_iconForBuildable:(id)arg1;
 - (void)_macroExpansionRunnableBuildableSelected:(id)arg1;
 - (void)_updateMacroExpansionDescriptionForSelectedItem;
@@ -4886,14 +5350,18 @@ typedef struct {
 - (void)_runnableBuildableProductsDidChange;
 - (void)_runDestinationChanged;
 - (void)runnablePopUpAction:(id)arg1;
+- (void)chooseDebugProcessAs:(id)arg1;
 - (void)_runPhaseRunnableChanged;
 - (void)_runnableDidUpdate;
 @property(retain) IDEDebuggerSpecifier *selectedDebuggerSpecifier;
 - (void)_updateDebuggerPopUp:(id)arg1;
-@property(readonly) NSArray *debuggerSpecifiers;
+- (id)debuggerSpecifiersForCurrentPlatform;
 - (void)_selectedSchemeChanged:(id)arg1;
-- (void)invalidate;
+- (void)primitiveInvalidate;
+- (void)_invalidateOptionViews;
 - (void)loadView;
+- (void)_setupDebugOptions;
+- (void)_updateDebugOptionsEnablement;
 - (void)updateBoundContent;
 - (void)updateBoundIDERunContextBinding;
 - (id)dvtExtraBindings;
@@ -4907,13 +5375,11 @@ typedef struct {
     DVTReplacementView *_consoleReplacementView;
     DVTExtension *_currentConsoleExtension;
     DVTExtension *_currentVariablesViewExtension;
-    int _layoutMode;
-    int _layoutFocusMode;
+    int _preferredLayoutMode;
+    int _actualLayoutMode;
     double _variableViewWidthProportion;
     DVTSplitViewItem *_variablesViewSplitViewItem;
     DVTSplitViewItem *_consoleAreaSplitViewItem;
-    int _preConsoleOnlyLayoutMode;
-    int _preConsoleOnlyLayoutFocusMode;
     NSSegmentedControl *_consoleSwapButton;
     NSSegmentedControl *_variablesSwapButton;
     id <DVTObservingToken> _launchSessionObserver;
@@ -4929,8 +5395,8 @@ typedef struct {
 + (long long)version;
 + (void)configureStateSavingObjectPersistenceByName:(id)arg1;
 @property(nonatomic) BOOL shouldOnlyAllowConsole; // @synthesize shouldOnlyAllowConsole=_shouldOnlyAllowConsole;
-@property(nonatomic) int layoutFocusMode; // @synthesize layoutFocusMode=_layoutFocusMode;
-@property(nonatomic) int layoutMode; // @synthesize layoutMode=_layoutMode;
+@property(nonatomic) int actualLayoutMode; // @synthesize actualLayoutMode=_actualLayoutMode;
+@property(nonatomic) int preferredLayoutMode; // @synthesize preferredLayoutMode=_preferredLayoutMode;
 - (double)_consoleAreaMinWidth;
 - (double)_variablesViewMinWidth;
 - (double)_currentVariableViewWidthProportion;
@@ -4938,7 +5404,7 @@ typedef struct {
 - (void)splitViewWillStartLiveResize:(id)arg1;
 - (void)_resizeOnlyVisibleSubview;
 - (void)_resizeBothVisibleSubviews;
-- (void)_setSideBySideModeEnabled:(BOOL)arg1;
+@property BOOL sideBySideModeEnabled;
 - (int)_layoutModeForForcedCollapse;
 - (BOOL)_canShowBothViewsUsingWidth:(double)arg1;
 - (void)splitViewItemDidExpandOrCollapseBecauseUserDraggedDivider:(id)arg1;
@@ -4957,7 +5423,7 @@ typedef struct {
 - (void)watchForConsoleOutput:(BOOL)arg1;
 - (void)_launchSessionChanged:(id)arg1;
 @property(retain) DVTExtension *currentConsoleExtension; // @dynamic currentConsoleExtension;
-@property(retain) DVTStateToken *stateToken; // @dynamic stateToken;
+- (void)setStateToken:(id)arg1;
 - (void)commitStateToDictionary:(id)arg1;
 - (void)revertStateWithDictionary:(id)arg1;
 - (void)_updateShouldOnlyAllowConsole;
@@ -5010,7 +5476,7 @@ typedef struct {
 - (void)_actionsChanged:(id)arg1;
 - (id)newActionSliceViewControllerForAction:(id)arg1;
 - (void)_setUpAddMenu;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)awakeFromNib;
 - (void)updateBoundContent;
 - (void)updateBoundIDEWorkspaceBinding;
@@ -5058,6 +5524,7 @@ typedef struct {
 - (void)_setButtonToTestStyle:(id)arg1 menuItem:(id)arg2;
 - (void)_setButtonToAnalyzeStyle:(id)arg1 menuItem:(id)arg2;
 - (void)_setButtonToRunStyle:(id)arg1 menuItem:(id)arg2;
+- (void)_setCellImages:(id)arg1 name:(id)arg2;
 - (void)_updateEnablement;
 - (void)_updateIcon;
 - (void)_updateToolbarItem;
@@ -5149,7 +5616,7 @@ typedef struct {
 
 @end
 
-@interface IDENavBar : DVTLayoutView_ML <DVTInvalidation>
+@interface IDENavBar : DVTLayoutView_ML <DVTInvalidation_New>
 {
     int _gradientStyle;
     DVTBorderedView *_pathBorderedView;
@@ -5157,11 +5624,14 @@ typedef struct {
     IDEControlGroup *_leftControlGroup;
     IDEControlGroup *_rightControlGroup;
     int _borderSides;
-    DVTStackBacktrace *_invalidationBacktrace;
-    BOOL _isInvalidated;
     BOOL _isGrouped;
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
++ (id)inactiveTextColorForGradientStyle:(int)arg1;
 + (id)textColorForGradientStyle:(int)arg1;
 + (id)interiorHighlightColorForGradientStyle:(int)arg1;
 + (id)inactiveInteriorBorderColorForGradientStyle:(int)arg1;
@@ -5170,6 +5640,9 @@ typedef struct {
 + (id)backgroundGradientForGradientStyle:(int)arg1;
 + (id)inactiveBorderColorForGradientStyle:(int)arg1;
 + (id)borderColorForGradientStyle:(int)arg1;
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 @property BOOL isGrouped; // @synthesize isGrouped=_isGrouped;
 @property(retain) IDEControlGroup *rightControlGroup; // @synthesize rightControlGroup=_rightControlGroup;
@@ -5178,8 +5651,10 @@ typedef struct {
 @property(nonatomic) int gradientStyle; // @synthesize gradientStyle=_gradientStyle;
 @property(nonatomic) int borderSides; // @synthesize borderSides=_borderSides;
 - (struct CGRect)grabRect;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (id)initWithCoder:(id)arg1;
 - (id)initWithFrame:(struct CGRect)arg1;
 - (void)_controlGroupDidChange:(id)arg1;
@@ -5196,8 +5671,10 @@ typedef struct {
 {
 }
 
++ (id)lastActiveWorkspaceWindowController;
 + (id)lastActiveWorkspaceWindow;
 - (void)_invalidateCursorRectsForView:(id)arg1 force:(BOOL)arg2;
+- (void)_invalidateCursorRectsForViewsWithNoTrackingAreas;
 - (BOOL)_addCursorRect:(struct CGRect)arg1 cursor:(id)arg2 forView:(id)arg3;
 - (void)_setCursorForMouseLocation:(struct CGPoint)arg1;
 - (BOOL)_keyViewRedirectionDisabled;
@@ -5220,14 +5697,14 @@ typedef struct {
     DVTReplacementView *_paneReplacementView;
     DVTExtension *_currentExtension;
     DVTStateRepository *_stateRepository;
-    DVTDelayedValidator *_stateSavingValidator;
+    DVTDelayedInvocation *_stateSavingInvocation;
     DVTStateToken *_stateToken;
 }
 
 + (void)configureStateSavingObjectPersistenceByName:(id)arg1;
 + (void)restoreWindowWithIdentifier:(id)arg1 state:(id)arg2 completionHandler:(id)arg3;
 + (id)defaultPreferencesController;
-@property(readonly) DVTDelayedValidator *stateSavingValidator; // @synthesize stateSavingValidator=_stateSavingValidator;
+@property(readonly) DVTDelayedInvocation *stateSavingInvocation; // @synthesize stateSavingInvocation=_stateSavingInvocation;
 @property(retain) DVTStateToken *stateToken; // @synthesize stateToken=_stateToken;
 @property(readonly) DVTStateRepository *stateRepository; // @synthesize stateRepository=_stateRepository;
 @property(retain) DVTExtension *currentExtension; // @synthesize currentExtension=_currentExtension;
@@ -5261,17 +5738,21 @@ typedef struct {
     id <DVTObservingToken> _editorToken;
     id <DVTObservingToken> _selectedMergeDescriptorObserver;
     id <DVTObservingToken> _conflictCountObserver;
+    id <DVTObservingToken> _toggledDiffDescriptorCountObserver;
     int _transientEditorSubmode;
     id _editorCustomizationBlock;
     DVTDiffDescriptor *_selectedMergeDescriptor;
     unsigned long long _conflictCount;
+    int _allDiffDescriptorsToggledState;
 }
 
 + (id)stateSavingIdentifiers;
 + (long long)version;
 + (void)configureStateSavingObjectPersistenceByName:(id)arg1;
++ (BOOL)automaticallyNotifiesObserversOfAllDiffDescriptorsToggledState;
 + (id)keyPathsForValuesAffectingComparisonEditorSubmode;
 + (id)keyPathsForValuesAffectingComparisonEditor;
+@property(nonatomic) int allDiffDescriptorsToggledState; // @synthesize allDiffDescriptorsToggledState=_allDiffDescriptorsToggledState;
 @property unsigned long long conflictCount; // @synthesize conflictCount=_conflictCount;
 @property(retain) DVTDiffDescriptor *selectedMergeDescriptor; // @synthesize selectedMergeDescriptor=_selectedMergeDescriptor;
 @property(copy) id editorCustomizationBlock; // @synthesize editorCustomizationBlock=_editorCustomizationBlock;
@@ -5292,6 +5773,9 @@ typedef struct {
 - (void)resetEditor;
 - (BOOL)canResetEditor;
 - (void)viewWillUninstall;
+- (void)untoggleCurrentSelectedDiffDescriptor;
+- (void)toggleCurrentSelectedDiffDescriptor;
+@property(readonly) BOOL currentSelectedDiffDescriptorToggled;
 - (void)viewDidInstall;
 - (void)loadView;
 - (id)_initWithPrimaryEditorContext:(id)arg1;
@@ -5503,7 +5987,6 @@ typedef struct {
 - (void)_setEditorMode:(int)arg1;
 - (long long)_stateForMenuItemTag:(long long)arg1 editorModeClass:(Class)arg2 classAccessor:(SEL)arg3 instanceAccessor:(SEL)arg4;
 - (id)_editorModeViewController;
-- (void)observeValueForKeyPath:(id)arg1 ofObject:(id)arg2 change:(id)arg3 context:(void *)arg4;
 - (id)menuForMenuFormRepresentation;
 - (id)initWithToolbarItemIdentifier:(id)arg1 window:(id)arg2;
 
@@ -5546,7 +6029,7 @@ typedef struct {
 - (void)viewWillUninstall;
 - (void)viewDidInstall;
 - (void)_finishViewDidInstall;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)loadView;
 - (void)_centerViewInSuperView:(id)arg1;
 - (id)initWithNibName:(id)arg1 bundle:(id)arg2 document:(id)arg3;
@@ -5563,13 +6046,13 @@ typedef struct {
     DVTExtension *_currentExtension;
     DVTStateToken *_stateToken;
     DVTStateRepository *_stateRepository;
-    DVTDelayedValidator *_stateSavingValidator;
+    DVTDelayedInvocation *_stateSavingInvocation;
 }
 
 + (void)configureStateSavingObjectPersistenceByName:(id)arg1;
 + (void)restoreWindowWithIdentifier:(id)arg1 state:(id)arg2 completionHandler:(id)arg3;
 + (id)sharedOrganizerWindowController;
-@property(readonly) DVTDelayedValidator *stateSavingValidator; // @synthesize stateSavingValidator=_stateSavingValidator;
+@property(readonly) DVTDelayedInvocation *stateSavingInvocation; // @synthesize stateSavingInvocation=_stateSavingInvocation;
 @property(retain) DVTStateToken *stateToken; // @synthesize stateToken=_stateToken;
 @property(readonly) DVTStateRepository *stateRepository; // @synthesize stateRepository=_stateRepository;
 @property(retain, nonatomic) DVTExtension *currentExtension; // @synthesize currentExtension=_currentExtension;
@@ -5582,6 +6065,7 @@ typedef struct {
 - (void)replacementView:(id)arg1 willCloseViewController:(id)arg2;
 - (void)replacementView:(id)arg1 didInstallViewController:(id)arg2;
 - (void)stateRepositoryDidChange:(id)arg1;
+- (void)replacementView:(id)arg1 willInstallViewController:(id)arg2;
 @property(readonly) IDEEditorArea *editorArea;
 - (void)showWindow:(id)arg1;
 - (void)selectPreviousTab:(id)arg1;
@@ -5593,7 +6077,6 @@ typedef struct {
 - (id)toolbarDefaultItemIdentifiers:(id)arg1;
 - (id)toolbarAllowedItemIdentifiers:(id)arg1;
 - (id)toolbar:(id)arg1 itemForItemIdentifier:(id)arg2 willBeInsertedIntoToolbar:(BOOL)arg3;
-- (void)windowDidResize:(id)arg1;
 - (void)_setWindowTitleWithExtension:(id)arg1;
 - (id)currentOrganizerSource;
 - (void)showOrganizerSourceWithIdentifier:(id)arg1;
@@ -5632,25 +6115,23 @@ typedef struct {
     NSPopUpButton *_filterModePopUpButton;
     NSButton *_clearConsoleButton;
     IDEWorkspaceDocument *_workspaceDocument;
-    double _clearConsoleButtonSeparation;
     NSMutableArray *_inputHistoryForDebugger;
     unsigned long long _inputHistoryIndexForDebugger;
     NSString *_userEnteredTextBeforeShowingCommandHistory;
     NSUndoManager *_undoManager;
     NSMutableSet *_consoleAdaptors;
-    NSMapTable *_launchSessionsToClearTimes;
+    DVTMapTable *_launchSessionsToClearTimes;
     id <DVTObservingToken> _workspaceDocumentObserverToken;
     id <DVTObservingToken> _launchSessionsObserverToken;
     id <DVTObservingToken> _consoleAdaptorsObservingToken;
     id <DVTObservingToken> _debugSessionStateObservingToken;
-    id <DVTObservingToken> _debugSessionObservingToken;
+    id <DVTObservingToken> _debugSessionPausedScriptingObservingToken;
     DVTFindBar *_findBar;
     DVTScopeBarController *_findScopeBarController;
     DVTScopeBarsManager *_scopeBarsManager;
     struct _NSRange _originalSelection;
     id _findStringChangedNotificationToken;
     int _filterMode;
-    BOOL _shouldShowLayoutControl;
     BOOL _hasNewInterestingOutput;
 }
 
@@ -5659,7 +6140,7 @@ typedef struct {
 @property BOOL hasNewInterestingOutput; // @synthesize hasNewInterestingOutput=_hasNewInterestingOutput;
 @property(nonatomic) int filterMode; // @synthesize filterMode=_filterMode;
 - (void)completingTextView:(id)arg1 willPassContextToStrategies:(id)arg2 atWordStartLocation:(unsigned long long)arg3;
-- (id)textView:(id)arg1 menu:(id)arg2 forEvent:(id)arg3 atIndex:(unsigned long long)arg4;
+- (void)setupTextViewContextMenuWithMenu:(id)arg1;
 - (id)undoManagerForTextView:(id)arg1;
 - (void)_assertUnsupportedAction;
 - (void)replaceAndFindPrevious:(id)arg1;
@@ -5694,6 +6175,7 @@ typedef struct {
 - (void)removeViewFromScopeBar:(id)arg1;
 - (void)addViewToScopeBarOnRight:(id)arg1;
 - (void)_outputForConsole:(id)arg1;
+- (void)_debugSessionPausedScriptingStateChanged;
 - (void)_debugSessionStateChanged;
 - (BOOL)delegateFirstResponder;
 - (void)_removeConsoleAdaptors:(id)arg1;
@@ -5703,7 +6185,7 @@ typedef struct {
 - (void)_appendItems:(id)arg1;
 - (void)_appendItem:(id)arg1;
 - (void)_clearText;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)_removeObserverForConsoleAdaptor:(id)arg1;
 - (void)_filterChanged;
 - (void)clearConsole:(id)arg1;
@@ -5741,8 +6223,10 @@ typedef struct {
     NSMutableArray *_itemsToAppendAfterDelay;
     BOOL _wasScrolledToBottomWhenHidden;
     int _logMode;
+    BOOL _shouldDoCommandBySelector;
 }
 
++ (id)autoCompleteChars;
 + (void)initialize;
 @property(nonatomic) int logMode; // @synthesize logMode=_logMode;
 @property(retain) id <IDEConsoleTextViewObjectiveCExpressionRangeDelegate> openingBracketLocationDelegate; // @synthesize openingBracketLocationDelegate=_openingBracketLocationDelegate;
@@ -5751,7 +6235,7 @@ typedef struct {
 - (id)startingLocationForFindBar:(id)arg1 findingBackwards:(BOOL)arg2;
 - (void)dvtFindBar:(id)arg1 didUpdateCurrentResult:(id)arg2;
 - (id)findStringMatchingDescriptor:(id)arg1 backwards:(BOOL)arg2 from:(id)arg3 to:(id)arg4;
-- (BOOL)readSelectionFromPasteboard:(id)arg1;
+- (id)menuForEvent:(id)arg1;
 - (void)paste:(id)arg1;
 - (void)moveToBeginningOfLineAndModifySelection:(id)arg1;
 - (void)moveToBeginningOfLine:(id)arg1;
@@ -5765,10 +6249,13 @@ typedef struct {
 - (void)moveDown:(id)arg1;
 - (void)moveUp:(id)arg1;
 - (BOOL)_isValidForHistoryTracking;
+- (BOOL)readSelectionFromPasteboard:(id)arg1;
+- (BOOL)writeSelectionToPasteboard:(id)arg1 type:(id)arg2;
 - (id)writablePasteboardTypes;
 - (BOOL)shouldChangeTextInRange:(struct _NSRange)arg1 replacementString:(id)arg2;
 - (void)keyDown:(id)arg1;
-- (void)_sendTextToTargetIfNecessary:(id)arg1;
+- (void)doCommandBySelector:(SEL)arg1;
+- (void)_sendKeyImmediatelyIfNecessary:(id)arg1;
 - (void)_moveInsertionPointToEnd;
 - (id)userEnteredTextAfterPromptUpToLocation:(unsigned long long)arg1;
 - (id)userEnteredTextAfterPrompt;
@@ -5799,6 +6286,7 @@ typedef struct {
 - (id)completionsDataSource;
 - (BOOL)shouldAutoCompleteAtLocation:(unsigned long long)arg1;
 - (double)autoCompletionDelay;
+- (struct _NSRange)wordRangeAtLocation:(unsigned long long)arg1;
 - (BOOL)acceptsFirstMouse:(id)arg1;
 - (id)undoManager;
 - (void)viewDidUnhide;
@@ -5807,9 +6295,6 @@ typedef struct {
 - (void)_commonInit;
 - (id)initWithCoder:(id)arg1;
 - (id)initWithFrame:(struct CGRect)arg1;
-
-// Remaining properties
-@property unsigned long long supportedMatchingOptions;
 
 @end
 
@@ -5865,25 +6350,29 @@ typedef struct {
 {
     NSArrayController *_inspectedDocumentsController;
     NSArrayController *_inspectedObjectsController;
-    NSArray *_content;
     NSArray *_inspectedDocuments;
-    id _selectionProxy;
-    id _selectedDocumentsProxy;
     NSDictionary *_issueInfoDictionary;
     NSView<DVTIssueDisplayingView> *_issueDisplayingView;
     IDEInspectorCategoryController *_categoryController;
     IDEUtilityArea *_utilityArea;
+    NSArray *_content;
+    id _selectionProxy;
+    id _selectedDocumentsProxy;
     NSMutableDictionary *_keyPathTriggeringReloadObservers;
-    DVTDelayedValidator *_reloadInspectorDelayedValidator;
+    DVTDelayedInvocation *_reloadInspectorDelayedInvocation;
 }
 
 + (id)inspectorConfiguredDisclosureView;
 + (id)keyPathsForValuesAffectingInspectedObject;
 + (id)keyPathsForValuesAffectingInspectedObjects;
+@property(retain, nonatomic) DVTDelayedInvocation *reloadInspectorDelayedInvocation; // @synthesize reloadInspectorDelayedInvocation=_reloadInspectorDelayedInvocation;
+@property(retain, nonatomic) NSMutableDictionary *keyPathTriggeringReloadObservers; // @synthesize keyPathTriggeringReloadObservers=_keyPathTriggeringReloadObservers;
+@property(retain, nonatomic) id selectedDocumentsProxy; // @synthesize selectedDocumentsProxy=_selectedDocumentsProxy;
+@property(retain, nonatomic) id selectionProxy; // @synthesize selectionProxy=_selectionProxy;
 @property(copy, nonatomic) NSArray *content; // @synthesize content=_content;
-@property(retain) IDEUtilityArea *utilityArea; // @synthesize utilityArea=_utilityArea;
-@property(retain) IDEInspectorCategoryController *categoryController; // @synthesize categoryController=_categoryController;
-@property(nonatomic) NSView<DVTIssueDisplayingView> *issueDisplayingView; // @synthesize issueDisplayingView=_issueDisplayingView;
+@property(retain, nonatomic) IDEUtilityArea *utilityArea; // @synthesize utilityArea=_utilityArea;
+@property(retain, nonatomic) IDEInspectorCategoryController *categoryController; // @synthesize categoryController=_categoryController;
+@property(nonatomic) __weak NSView<DVTIssueDisplayingView> *issueDisplayingView; // @synthesize issueDisplayingView=_issueDisplayingView;
 @property(copy, nonatomic) NSDictionary *issueInfoDictionary; // @synthesize issueInfoDictionary=_issueInfoDictionary;
 @property(readonly) NSArray *inspectedDocuments; // @synthesize inspectedDocuments=_inspectedDocuments;
 @property(readonly) id <IDEInspectorContentController> inspectedDocumentsController; // @synthesize inspectedDocumentsController=_inspectedDocumentsController;
@@ -5904,11 +6393,11 @@ typedef struct {
 - (void)editorDocumentShouldCommitEditing:(id)arg1;
 - (BOOL)tracksDocuments;
 - (void)viewWillUninstall;
-- (void)viewDidInstall;
 - (void)loadView;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)reloadInspectorFromFileWhenKeyPathChanges:(id)arg1;
 - (id)initWithNibName:(id)arg1 bundle:(id)arg2;
+- (BOOL)availableForMacOSX1080AndLater;
 - (id)selectedDocuments;
 - (id)selection;
 
@@ -5947,6 +6436,7 @@ typedef struct {
     DVTExtension *_extension;
     NSMutableSet *_documentEditors;
     NSMutableArray *_pendingChanges;
+    DVTMapTable *_readOnlyClientsForRegistrationBacktrace;
     DVTStackBacktrace *_creationBacktrace;
     DVTStackBacktrace *_invalidationBacktrace;
     int _readOnlyStatus;
@@ -5958,7 +6448,8 @@ typedef struct {
     DVTFileDataType *_ide_hintedFileDataType;
     NSDictionary *_willCloseNotificationUserInfo;
     struct dispatch_semaphore_s *_saveWaiter;
-    id <DVTCancellableToken> _closeAfterDelayToken;
+    id <DVTCancellable> _closeAfterDelayToken;
+    id _filePresenterWriter;
     BOOL _inSetUndoManager;
     BOOL _isClosing;
     BOOL _isClosingForRevert;
@@ -5972,42 +6463,42 @@ typedef struct {
     BOOL _isUnlockingDocument;
     BOOL _isUndoingAfterFailureToUnlockDocument;
     BOOL _ide_isTemporaryDocument;
-    BOOL _lockedForRefactoring;
-    BOOL _lockedForARCConversion;
-    BOOL _lockedForComparison;
-    BOOL _lockedForGeneratedContent;
     BOOL _isRespondingToFSChanges;
+    BOOL _shouldAssertIfNotInvalidatedBeforeDealloc;
+    NSSet *_readOnlyClients;
 }
 
 + (BOOL)_presentsVersionsUserInterface;
 + (BOOL)autosavesInPlace;
 + (id)editedFileContents;
 + (id)readableTypes;
-+ (void)_validateDocumentExtension:(id)arg1;
++ (BOOL)_validateDocumentExtension:(id)arg1;
 + (BOOL)_shouldShowUtilititesAreaAtLoadForSimpleFilesFocusedWorkspace;
 + (BOOL)shouldTrackFileSystemChanges;
 + (BOOL)shouldUnlockFileURLBeforeMakingChanges;
 + (void)initialize;
 @property(retain, nonatomic) DVTExtension *extension; // @synthesize extension=_extension;
-@property(readonly) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
 @property(retain) DVTFilePath *filePath; // @synthesize filePath=_filePath;
-@property(nonatomic, getter=isLockedForGeneratedContent) BOOL lockedForGeneratedContent; // @synthesize lockedForGeneratedContent=_lockedForGeneratedContent;
-@property(nonatomic, getter=isLockedForComparison) BOOL lockedForComparison; // @synthesize lockedForComparison=_lockedForComparison;
-@property(nonatomic, getter=isLockedForARCConversion) BOOL lockedForARCConversion; // @synthesize lockedForARCConversion=_lockedForARCConversion;
-@property(nonatomic, getter=isLockedForRefactoring) BOOL lockedForRefactoring; // @synthesize lockedForRefactoring=_lockedForRefactoring;
 @property int readOnlyStatus; // @synthesize readOnlyStatus=_readOnlyStatus;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 @property BOOL trackFileSystemChanges; // @synthesize trackFileSystemChanges=_trackFileSystemChanges;
 - (void)restoreStateWithCoder:(id)arg1;
 - (void)encodeRestorableStateWithCoder:(id)arg1;
 - (void)restoreDocumentWindowWithIdentifier:(id)arg1 state:(id)arg2 completionHandler:(id)arg3;
+- (void)unregisterReadOnlyClient:(id)arg1;
+- (void)registerReadOnlyClient:(id)arg1;
+@property(readonly) NSSet *readOnlyClients; // @synthesize readOnlyClients=_readOnlyClients;
 - (BOOL)makeWritableWithError:(id *)arg1;
 @property(readonly) NSURL *readOnlyItemURL;
 - (void)_updateReadOnlyStatus;
+- (void)exportDocument:(id)arg1;
+@property(readonly) BOOL canExportDocument;
 - (void)duplicateDocument:(id)arg1;
 - (void)revertDocumentToSaved:(id)arg1;
 - (BOOL)_checkAutosavingPossibilityAndReturnError:(id *)arg1;
 - (BOOL)checkAutosavingSafetyAndReturnError:(id *)arg1;
+- (BOOL)editingShouldAutomaticallyDuplicate;
 - (id)duplicateAndReturnError:(id *)arg1;
 - (id)printOperationWithSettings:(id)arg1 error:(id *)arg2;
 - (BOOL)readFromData:(id)arg1 ofType:(id)arg2 error:(id *)arg3;
@@ -6026,6 +6517,12 @@ typedef struct {
 - (void)updateChangeCount:(unsigned long long)arg1;
 - (void)ide_didFixupChangeCountWithWasEdited:(BOOL)arg1 didHaveEditsSinceLastUserInitiatedSave:(BOOL)arg2 changeString:(id)arg3;
 - (BOOL)hasBeenEditedSinceLastUserInitiatedSave;
+- (void)ide_revertDocumentToSaved:(id)arg1;
+- (void)ide_moveDocumentTo:(id)arg1;
+- (void)ide_renameDocument:(id)arg1;
+- (void)ide_saveDocumentAs:(id)arg1;
+- (void)ide_duplicateDocument:(id)arg1;
+- (void)ide_saveDocument:(id)arg1;
 - (BOOL)validateUserInterfaceItem:(id)arg1;
 @property(readonly) BOOL canSaveAs;
 @property(readonly) BOOL canSave;
@@ -6049,9 +6546,9 @@ typedef struct {
 - (BOOL)_windowForSheet:(id *)arg1 workspaceForSheet:(id *)arg2 editor:(id *)arg3;
 - (id)ide_displayName;
 - (void)setFileURL:(id)arg1;
+- (void)relinquishPresentedItemToWriter:(id)arg1;
 - (void)_respondToFileChangeOnDiskWithFilePath:(id)arg1;
 - (void)saveForOperation:(unsigned long long)arg1 withCompletionHandler:(id)arg2;
-- (BOOL)saveForOperation:(unsigned long long)arg1 error:(id *)arg2;
 - (void)saveToURL:(id)arg1 ofType:(id)arg2 forSaveOperation:(unsigned long long)arg3 completionHandler:(id)arg4;
 - (void)ide_finishSaving:(BOOL)arg1 forSaveOperation:(unsigned long long)arg2 previousPath:(id)arg3;
 - (BOOL)writeSafelyToURL:(id)arg1 ofType:(id)arg2 forSaveOperation:(unsigned long long)arg3 error:(id *)arg4;
@@ -6078,6 +6575,7 @@ typedef struct {
 @property(retain) DVTFileDataType *ide_hintedFileDataType;
 @property(copy) NSURL *ide_representedURL;
 @property(readonly) BOOL ide_isTextRepresentation;
+- (id)convertToDocumentAtFilePath:(id)arg1 forFileDataType:(id)arg2 completionBlock:(id)arg3;
 @property BOOL ide_isTemporaryDocument;
 
 @end
@@ -6087,8 +6585,10 @@ typedef struct {
     NSImage *_baseImage;
     NSImage *_badgeImage;
     BOOL _isDirty;
+    BOOL _isMissing;
 }
 
+@property BOOL isMissing; // @synthesize isMissing=_isMissing;
 @property BOOL isDirty; // @synthesize isDirty=_isDirty;
 @property(retain) NSImage *baseImage; // @synthesize baseImage=_baseImage;
 @property(retain, nonatomic) NSImage *badgeImage; // @synthesize badgeImage=_badgeImage;
@@ -6101,22 +6601,36 @@ typedef struct {
 }
 
 + (id)imageForURL:(id)arg1 fileDataTypeHint:(id)arg2;
++ (id)imageForDVTFilePath:(id)arg1 fileDataTypeHint:(id)arg2;
++ (id)imageForFileType:(id)arg1;
++ (id)_imageForFileType:(id)arg1 isDirty:(BOOL)arg2 isMissing:(BOOL)arg3;
++ (id)_baseImageForFileType:(id)arg1;
++ (id)_xcodeBundleImageForFileType:(id)arg1;
 + (id)imageWithBaseImage:(id)arg1 badgeImage:(id)arg2 isDirty:(BOOL)arg3;
 + (id)imageWithBaseImage:(id)arg1 isDirty:(BOOL)arg2;
-+ (id)_imageWithBaseImage:(id)arg1 badgeImage:(id)arg2 isDirty:(BOOL)arg3;
++ (id)_imageWithBaseImage:(id)arg1 badgeImage:(id)arg2 isDirty:(BOOL)arg3 isMissing:(BOOL)arg4;
++ (void)initialize;
 
 @end
 
 @interface IDENavigatorDataCell : DVTImageAndTextCell
 {
     BOOL _usesGroupHeaderStyle;
+    struct CGRect _cellFrameForTracking;
 }
 
 + (void)initialize;
 @property(nonatomic) BOOL usesGroupHeaderStyle; // @synthesize usesGroupHeaderStyle=_usesGroupHeaderStyle;
+- (void)mouseExited:(id)arg1;
+- (void)mouseEntered:(id)arg1;
+- (id)accessibilityAttributeValue:(id)arg1;
+- (void)_mouseEnteredOrExited:(BOOL)arg1 event:(id)arg2;
+- (void)addTrackingAreasForView:(id)arg1 inFrame:(struct CGRect)arg2 withUserInfo:(id)arg3 mouseLocation:(struct CGPoint)arg4;
+- (void)_iterateStatusCellsRectsInControlView:(id)arg1 inFrame:(struct CGRect)arg2 withCallback:(id)arg3;
 - (id)titleDropShadow;
 - (id)subtitleFont;
 - (void)setFont:(id)arg1;
+- (struct CGRect)dvt_frameOfOutlineCellForBounds:(struct CGRect)arg1 proposedFrame:(struct CGRect)arg2;
 - (struct CGRect)imageRectForBounds:(struct CGRect)arg1;
 - (void)setBaseImageSize:(struct CGSize)arg1;
 - (void)_setBaseImageSize:(struct CGSize)arg1;
@@ -6165,7 +6679,6 @@ typedef struct {
 - (void)endSheet:(id)arg1 returnCode:(long long)arg2;
 - (void)beginSheet:(id)arg1 modalForWindow:(id)arg2 modalDelegate:(id)arg3 didEndSelector:(SEL)arg4 contextInfo:(void *)arg5;
 - (void)closeAll:(id)arg1;
-- (BOOL)sendAction:(SEL)arg1 to:(id)arg2 from:(id)arg3;
 - (void)terminate:(id)arg1;
 - (void)sendEvent:(id)arg1;
 - (void)_errorAlert:(id)arg1 wasPresentedWithResult:(long long)arg2 inContext:(id)arg3;
@@ -6206,33 +6719,29 @@ typedef struct {
 @property(readonly) id <IDESelectionSource> selectionSource; // @synthesize selectionSource=_selectionSource;
 - (void)quickCheckoutCommand:(id)arg1;
 - (void)repositoriesCommand:(id)arg1;
-- (void)enableLocalAndRemoteStatusChecking;
+- (void)forceRefreshLocalAndRemoteStatusChecking;
 - (void)refreshFileStatusCommand:(id)arg1;
 - (void)toggleRemoteStatusCommand:(id)arg1;
 - (void)toggleLocalStatusCommand:(id)arg1;
 - (void)resolvedCommand:(id)arg1;
 - (void)ignoreCommand:(id)arg1;
-- (void)revertCommandAlertDidEnd:(id)arg1 returnCode:(long long)arg2 contextInfo:(void *)arg3;
 - (void)revertCommand:(id)arg1;
 - (void)addCommand:(id)arg1;
-- (void)updateSelectedFilesNoUICommand:(id)arg1;
-- (void)updateSelectedFilesCommand:(id)arg1;
-- (void)updateBeforeCommitAlertDidEnd:(id)arg1 returnCode:(long long)arg2 contextInfo:(void *)arg3;
 - (void)askToUpdateBeforeCommittingSelectedFilePaths:(id)arg1;
 - (void)_commitSelectedFilePaths:(id)arg1;
 - (void)commitSelectedFilesCommand:(id)arg1;
-- (void)updateAllCommand:(id)arg1;
-- (void)performSourceControlUpdateForFiles:(id)arg1;
-- (void)updateFilesNoUI:(id)arg1;
-- (void)updateFiles:(id)arg1;
+- (void)updateFiles:(id)arg1 showingVersionEditor:(BOOL)arg2;
 - (void)mergeBranchesCommand:(id)arg1;
 - (void)pushCommand:(id)arg1;
+- (void)updateSelectedFilesWithVECommand:(id)arg1;
+- (void)updateSelectedFilesCommand:(id)arg1;
+- (void)updateWithVECommand:(id)arg1;
 - (void)updateCommand:(id)arg1;
+- (void)updateSelectedFiles:(BOOL)arg1 showingVersionEditor:(BOOL)arg2;
 - (void)commitCommand:(id)arg1;
 - (void)presentWaitingForInitialScanToCompleteWithContinuationBlock:(id)arg1;
 - (void)presentInvalidSelectionError;
 - (void)presentNoSelectionError;
-- (void)configureForBranchingAlertDidEnd:(id)arg1 returnCode:(long long)arg2 contextInfo:(void *)arg3;
 - (void)presentBranchesNotConfiguredError;
 - (void)presentWorkingCopyUnreachableError;
 - (void)presentRepositoryUnreachableError;
@@ -6343,7 +6852,7 @@ typedef struct {
 - (void)_setWindowClosable:(BOOL)arg1;
 - (void)_replaceCurrentContentChildViewWithView:(id)arg1;
 - (void)_openWelcomeWindowIfAppropriate;
-- (void)_showFirstLaunchExperienceIfAppropriate;
+- (BOOL)_showFirstLaunchExperienceIfAppropriate;
 - (BOOL)isShowingFirstLaunchExperience;
 - (void)showFirstLaunchExperienceIfAppropriate;
 - (void)openWelcomeWindowAfterFirstLaunchExperienceIfAppropriate:(id)arg1;
@@ -6463,7 +6972,7 @@ typedef struct {
 
 @end
 
-@interface IDEEditorDocumentPreviewProvider : NSObject <DVTInvalidation>
+@interface IDEEditorDocumentPreviewProvider : NSObject <DVTInvalidation_New>
 {
     IDENavigableItem *_navigable;
     IDEEditorDocument<DVTTextReplacable> *_document;
@@ -6478,15 +6987,20 @@ typedef struct {
     DVTPointerArray *_previewRowViewCache;
     NSURL *_url;
     DVTDispatchLock *_cacheLock;
-    DVTStackBacktrace *_invalidationBacktrace;
     IDEWorkspaceDocument *_workspaceDocument;
-    BOOL _isInvalidated;
     BOOL _disclosed;
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
 + (double)minimumRowHeight;
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
 + (id)performanceLogAspect;
 + (struct dispatch_queue_s *)populationQueue;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 @property BOOL disclosed; // @synthesize disclosed=_disclosed;
 @property(retain) DVTDispatchLock *cacheLock; // @synthesize cacheLock=_cacheLock;
@@ -6513,8 +7027,10 @@ typedef struct {
 @property(readonly) IDEEditorDocument<DVTTextReplacable> *preview; // @synthesize preview=_preview;
 @property(readonly) IDEEditorDocument<DVTTextReplacable> *document; // @synthesize document=_document;
 @property(readonly) long long rowCount;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 @property(readonly) NSImage *image;
 @property(readonly) NSString *name;
 - (id)initWithBatchFindGroupNavigableItem:(id)arg1 workspaceDocument:(id)arg2;
@@ -6523,10 +7039,35 @@ typedef struct {
 
 @interface IDEIndexCompletionStrategy : DVTTextCompletionStrategy
 {
+    unsigned long long _importStatementLocation;
+    BOOL _shouldInsertIncludeStatements;
+    IDEIndexCodeCompletionContext *_codeCompletionContext;
+    NSArray *_knownSDKs;
+    DVTMapTable *_optimalBuildableProductForFileCache;
+    DVTDispatchLock *_buildableProductCachesLock;
+    NSArray *_sourceBuildableProductProxiesCache;
+    id _blueprintsDidChangeObserver;
+    id _blueprintDidAddFileObserver;
+    id _blueprintWillRemoveFileObserver;
+    id _blueprintProductSettingsDidChangeObserver;
+    id _blueprintProviderDidAddBlueprintObserver;
+    id _blueprintProviderWillRemoveBlueprintObserver;
 }
 
+- (void)dealloc;
+- (unsigned long long)locationForImportStatementWithContext:(id)arg1 shouldInsertIncludeStatements:(char *)arg2;
+- (id)autoImportCompletionItemsForDocumentLocation:(id)arg1 fileContext:(id)arg2 completionContexts:(id)arg3;
+- (void)addCompletionItems:(id)arg1 forAllSymbolsOfKind:(id)arg2 matchingLanguage:(id)arg3 inIndex:(id)arg4 context:(id)arg5;
+- (id)cachedResultOfQueryForAllSymbolsOfKind:(id)arg1 matchingLanguage:(id)arg2 inIndex:(id)arg3;
+- (void)addCompletionItems:(id)arg1 forAllSymbolsOfKind:(id)arg2 inIndex:(id)arg3 context:(id)arg4;
+- (id)cachedResultOfQueryForAllSymbolsOfKind:(id)arg1 inIndex:(id)arg2;
+- (BOOL)shouldAddAutoImportable:(id)arg1 intoContext:(id)arg2;
+- (id)optimalBuildableProductForAutoImportable:(id)arg1 inContext:(id)arg2 headerVisibility:(unsigned long long *)arg3 alreadyLinked:(char *)arg4;
+- (id)buildableProductsForFilePath:(id)arg1;
+- (id)additionalCompletionItemsForDocumentLocation:(id)arg1 context:(id)arg2;
 - (id)completionItemsForDocumentLocation:(id)arg1 context:(id)arg2 areDefinitive:(char *)arg3;
 - (void)prepareForDocumentLocation:(id)arg1 context:(id)arg2;
+- (id)init;
 
 @end
 
@@ -6572,11 +7113,15 @@ typedef struct {
 {
     NSImage *_activeImage;
     NSImage *_inactiveImage;
+    NSImage *_disabledImage;
+    NSImage *_disabledInactiveImage;
     NSImage *_pressedImage;
     BOOL _mouseDown;
 }
 
 @property(copy) NSImage *pressedImage; // @synthesize pressedImage=_pressedImage;
+@property(copy) NSImage *disabledInactiveImage; // @synthesize disabledInactiveImage=_disabledInactiveImage;
+@property(copy) NSImage *disabledImage; // @synthesize disabledImage=_disabledImage;
 @property(copy) NSImage *inactiveImage; // @synthesize inactiveImage=_inactiveImage;
 @property(copy) NSImage *activeImage; // @synthesize activeImage=_activeImage;
 - (struct CGSize)cellSize;
@@ -6591,7 +7136,7 @@ typedef struct {
 {
 }
 
-+ (id)toolbarButtonWithActiveImage:(id)arg1 inactiveImage:(id)arg2 pressedImage:(id)arg3 buttonType:(unsigned long long)arg4;
++ (id)toolbarButtonWithActiveImage:(id)arg1 inactiveImage:(id)arg2 disabledImage:(id)arg3 disabledInactiveImage:(id)arg4 pressedImage:(id)arg5 buttonType:(unsigned long long)arg6;
 - (id)hitTest:(struct CGPoint)arg1;
 - (BOOL)isFlipped;
 - (id)initWithCoder:(id)arg1;
@@ -6633,14 +7178,15 @@ typedef struct {
 
 @interface IDEOpenQuicklyMatchContext : NSObject
 {
+    NSString *_developerDirPath;
     NSString *_workspacePath;
-    NSString *_input;
     NSString *_line;
     IDEOpenQuicklyPattern *_pattern;
 }
 
 @property(readonly) IDEOpenQuicklyPattern *pattern; // @synthesize pattern=_pattern;
 @property(readonly) NSString *line; // @synthesize line=_line;
+@property(readonly) NSString *developerDirPath; // @synthesize developerDirPath=_developerDirPath;
 @property(readonly) NSString *workspacePath; // @synthesize workspacePath=_workspacePath;
 - (id)description;
 - (id)initWithWorkspacePath:(id)arg1 input:(id)arg2 line:(id)arg3;
@@ -6659,6 +7205,7 @@ typedef struct {
 + (void)THREAD_exploreURL:(id)arg1 mode:(long long)arg2 candidateMatchPath:(id)arg3 displayPath:(id)arg4 exploredURLs:(id)arg5 fileManager:(id)arg6 updateBlock:(id)arg7;
 + (id)sharedUserAbsolutePathDataSource;
 + (id)sharedSDKHeaderDataSource;
++ (void)initialize;
 @property long long scanningOperationCount; // @synthesize scanningOperationCount=_scanningOperationCount;
 @property(readonly, getter=isScanning) BOOL scanning;
 - (id)observeSearchPaths:(id)arg1 observeInitalValue:(BOOL)arg2 withObservationHandler:(id)arg3;
@@ -6673,8 +7220,8 @@ typedef struct {
 
 @interface IDEOpenQuicklyMatch : NSObject <NSCopying>
 {
-    NSString *_matchedCandidate;
     DVTDocumentLocation *_location;
+    NSString *_matchedCandidate;
 }
 
 @property(readonly) NSString *matchedCandidate; // @synthesize matchedCandidate=_matchedCandidate;
@@ -6725,26 +7272,36 @@ typedef struct {
 
 @end
 
-@interface IDEOpenQuicklyQuery : NSObject
+@interface IDEOpenQuicklyQuery : NSObject <DVTInvalidation_New>
 {
     NSArray *_matchProviders;
     NSArray *_observationTokens;
     IDEOpenQuicklySearchContext *_context;
-    id <DVTObservingToken> _trimmedInputObservingToken;
     NSArray *_matches;
     NSArray *_providerClasses;
-    DVTDelayedValidator *_matchValidator;
+    DVTDelayedInvocation *_matchInvocation;
     id <IDEOpenQuicklyQueryDelegate> _delegate;
-    BOOL _ignoreUpdates;
     BOOL _idle;
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
 + (id)unscopedProviderClasses;
 + (id)scopedProviderClasses;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
+@property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 @property(retain) id <IDEOpenQuicklyQueryDelegate> delegate; // @synthesize delegate=_delegate;
 @property(getter=isIdle) BOOL idle; // @synthesize idle=_idle;
 @property(copy) NSArray *matches; // @synthesize matches=_matches;
 @property(retain, nonatomic) IDEOpenQuicklySearchContext *context; // @synthesize context=_context;
+- (void)primitiveInvalidate;
+- (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (void)validateMatchesImmediately;
 - (void)validateMatches:(id)arg1;
 - (id)sortedTopMatches:(long long)arg1;
@@ -6767,12 +7324,9 @@ typedef struct {
 
 @interface IDEOpenQuicklyWindowController : NSWindowController <IDEOpenQuicklyQueryDelegate, NSTableViewDelegate>
 {
-    DVTScopeBarView *_scopeBarView;
     DVTSearchField *_searchField;
     NSArrayController *_arrayController;
     IDEOpenQuicklyTableView *_tableView;
-    DVTBorderedView *_pathControlBorderedView;
-    NSPathControl *_pathControl;
     NSButton *_okButton;
     NSTextField *_scanningLabel;
     NSProgressIndicator *_scanningProgressIndicator;
@@ -6793,7 +7347,6 @@ typedef struct {
 + (id)openQuicklyWindowController;
 @property(copy) NSURL *selectedURL; // @synthesize selectedURL=_selectedURL;
 @property(retain) IDEOpenQuicklyQuery *query; // @synthesize query=_query;
-- (void)pathControlAction:(id)arg1;
 - (void)tableDoubleClickAction:(id)arg1;
 - (void)cancelAction:(id)arg1;
 - (void)okAction:(id)arg1;
@@ -6814,6 +7367,7 @@ typedef struct {
 - (void)tableView:(id)arg1 willDisplayCell:(id)arg2 forTableColumn:(id)arg3 row:(long long)arg4;
 - (void)windowWillClose:(id)arg1;
 - (void)awakeFromNib;
+- (id)_activeWorkspaceWindowController;
 - (id)_openWindowTerminationDisablingReason;
 
 @end
@@ -6865,8 +7419,6 @@ typedef struct {
 - (void)setupLayers;
 - (struct CGColor *)activityViewBorderCGColorNoAlpha;
 - (struct CGRect)insetRootLayerBounds;
-- (struct CGRect)multiActionIndicatorLayerFrame;
-- (struct CGRect)issuesContainerLayerFrame;
 @property struct CGSize contentSize;
 - (void)sizeToFitToolbarDisplayMode:(unsigned long long)arg1 sizeMode:(unsigned long long)arg2;
 - (void)activityViewDataSource:(id)arg1 workspaceRepresentingTypeStringDidChangeTo:(id)arg2;
@@ -6912,14 +7464,14 @@ typedef struct {
     DVTDisclosureView *_lastDisclosureView;
     DVTChoice *_selectedCategoryChoice;
     NSMapTable *_categoriesToChoices;
-    NSMapTable *_sliceExtensionsToReplacementViews;
+    NSMapTable *_sliceExtensionsToContentViews;
     NSMapTable *_sliceExtensionsToWrappingViews;
-    NSMapTable *_installedSliceExtensionsToReplacementViews;
-    NSMutableSet *_invalidReplacementViewExtensions;
+    NSMapTable *_installedSliceExtensionsToContentViews;
+    NSMutableSet *_invalidExtensions;
     NSArray *_builtinCategories;
     DVTMutableOrderedSet *_userPreferredCategories;
     NSSet *_displayedSliceViewControllers;
-    DVTDelayedValidator *_validator;
+    DVTDelayedInvocation *_delayedInvocation;
     DVTExtension *_displayedCategory;
     IDESelection *_content;
     id <DVTObservingToken> _installToken;
@@ -6929,8 +7481,9 @@ typedef struct {
     IDENavigableItemCoordinator *_navigableItemCoordinator;
     IDEUtilityPlaceholderView *_placeholderView;
     IDEEditorDocument *_retainedDocument;
-    id _retainedDocumentWillCloseNotificationToken;
+    id <DVTObservingToken> _retainedDocumentWillCloseNotificationToken;
     BOOL _forceInputSelectionToEmpty;
+    BOOL _synchronouslyInvokingDelayedInvocation;
 }
 
 + (id)utilityConfiguredDisclosureView;
@@ -6945,13 +7498,15 @@ typedef struct {
 @property(readonly) DVTStackView_ML *stackView; // @synthesize stackView=_stackView;
 - (void)discardEditing;
 - (BOOL)commitEditingForAction:(int)arg1 errors:(id)arg2;
-- (void)invalidate;
+- (void)primitiveInvalidate;
+- (void)invalidateContentView:(id)arg1;
 - (void)viewWillUninstall;
 - (void)viewDidInstall;
 - (void)_navigableItemCoordinatorDidForgetItems:(id)arg1;
 - (void)workspaceWindowIsClosing;
 - (void)loadView;
 - (void)userSelectedCategoryChoiceFromMenu:(id)arg1;
+- (void)simulateUserSelectionOfChoice:(id)arg1;
 - (void)chooserView:(id)arg1 userDidSelectChoices:(id)arg2;
 - (void)noteUserDidExplicitlyChooseChoice:(id)arg1;
 - (id)willReplaceSliceViewControllers:(SEL)arg1;
@@ -6979,11 +7534,13 @@ typedef struct {
 - (id)_choiceForCategory:(id)arg1;
 - (id)_sliceViewsForSliceExtensions:(id)arg1 inCategory:(id)arg2;
 - (id)_cachedSliceViewForSliceExtension:(id)arg1 inCategory:(id)arg2;
-- (id)_disclosureViewForWrappingReplacementView:(id)arg1 fromSliceExtension:(id)arg2;
-- (id)_cachedReplacementViewForSliceExtension:(id)arg1 inCategory:(id)arg2;
+- (id)_disclosureViewForWrappingContentView:(id)arg1 fromSliceExtension:(id)arg2;
+- (id)_cachedContentViewForSliceExtension:(id)arg1 inCategory:(id)arg2;
+- (id)_contentViewForSliceExtension:(id)arg1 inCategory:(id)arg2;
 - (void)dropCachedViewsForExtension:(id)arg1;
 - (id)viewControllerForExtension:(id)arg1;
-- (id)_currentlyInstalledReplacementViewForSliceExtension:(id)arg1;
+- (id)viewControllerForContentView:(id)arg1;
+- (id)_currentlyInstalledContentViewForSliceExtension:(id)arg1;
 - (id)navigableItemCoordinator:(id)arg1 editorDocumentForNavigableItem:(id)arg2;
 - (void)dropRetainedDocument;
 @property(readonly) IDESelection *content;
@@ -6994,8 +7551,8 @@ typedef struct {
 - (void)setRepresentedObject:(id)arg1;
 - (void)validateIfNeeded;
 - (id)selectedCategory;
-- (void)unbindReplacementView:(id)arg1 forSliceExtension:(id)arg2 inCategory:(id)arg3;
-- (void)bindReplacementView:(id)arg1 forSliceExtension:(id)arg2 inCategory:(id)arg3;
+- (void)unbindContentView:(id)arg1 forSliceExtension:(id)arg2 inCategory:(id)arg3;
+- (void)bindContentView:(id)arg1 forSliceExtension:(id)arg2 inCategory:(id)arg3;
 - (id)placeholderStringForInputNavigableItems:(id)arg1 derivedItems:(id)arg2 inCategory:(id)arg3;
 - (id)navigableItemsForInputNavigableItems:(id)arg1 inCategory:(id)arg2;
 - (id)titleKeyPathForSliceExtension:(id)arg1;
@@ -7019,6 +7576,7 @@ typedef struct {
 
 + (id)annotationProviderForContext:(id)arg1 error:(id *)arg2;
 @property(retain) IDEAnnotationContext *context; // @synthesize context=_context;
+- (void)providerWillUninstall;
 - (void)_rebuildAnnotations;
 - (id)initWithContext:(id)arg1;
 - (id)init;
@@ -7117,7 +7675,7 @@ typedef struct {
     CABasicAnimation *_indeterminateDiagonalsAnimation;
     unsigned long long _progressStyle;
     NSImage *_indeterminateDiagonalsLayerContents;
-    DVTDelayedValidator *_progressValidator;
+    DVTDelayedInvocation *_progressInvocation;
     CALayer *_indeterminateDiagonalsLayer;
     CALayer *_indeterminateContainerLayer;
     CALayer *_progressContainerLayer;
@@ -7147,15 +7705,24 @@ typedef struct {
 - (void)validateProgressStateIfNeeded;
 - (void)updateProgressLayer;
 - (void)reflectStyle;
+- (void)updateIndeterminateDiagonalsLayerGeometry;
 - (struct CGRect)effectiveProgressLayerBounds;
 - (struct CGRect)effectiveProgressContainerLayerBounds;
 - (struct CGPoint)effectiveProgressContainerLayerPosition;
+- (void)updateIndeterminateDiagonalsLayerContents;
+- (void)clearCachedIndeterminateDiagonalsLayerContents;
 - (id)effectiveIndeterminateDiagonalsLayerContents;
+- (void)updateContainerLayerContents;
+- (void)clearCachedContainerLayerContents;
 - (id)effectiveContainerLayerContents;
+- (void)updateShadowLayerContents;
+- (void)clearCachedShadowLayerContents;
 - (id)effectiveShadowLayerContents;
 - (id)effectiveInnerShadow;
+- (void)updateProgressLayerContents;
 - (id)effectiveProgressLayerContents;
-- (id)effectiveProgressLayerGradient;
+- (void)clearCachedEffectiveProgressLayerContents;
+- (id)effectiveProgressLayerGradientForScaleFactor:(double)arg1;
 - (void)reflectIndeterminateState;
 - (void)setupLayers;
 - (void)setBounds:(struct CGRect)arg1;
@@ -7173,7 +7740,7 @@ typedef struct {
 
 @interface IDEActivityScrollingTextLayer : CALayer
 {
-    id _lastUpdateContext;
+    id _lastUpdateContext_dvtWeak;
     unsigned long long _activeTransactions;
     NSMutableArray *_textLayers;
     CALayer *_containerLayer;
@@ -7182,7 +7749,6 @@ typedef struct {
     NSArray *_segments;
 }
 
-@property __weak id lastUpdateContext; // @synthesize lastUpdateContext=_lastUpdateContext;
 @property(copy, nonatomic) NSString *textAlignmentMode; // @synthesize textAlignmentMode=_textAlignmentMode;
 @property(copy, nonatomic) NSDictionary *textAttributes; // @synthesize textAttributes=_textAttributes;
 - (void)setStringSegments:(id)arg1 context:(id)arg2 animateUpdate:(BOOL)arg3;
@@ -7199,6 +7765,7 @@ typedef struct {
 - (double)maximumTextWidth;
 - (double)rowHeight;
 - (id)effectiveAttributes;
+@property __weak id lastUpdateContext;
 - (id)accessibilityAttributeValue:(id)arg1;
 - (id)accessibilityAttributeNames;
 - (BOOL)accessibilityIsIgnored;
@@ -7216,13 +7783,12 @@ typedef struct {
     NSPopUpButtonCell *_popUpCell;
     NSMenu *_menu;
     struct CGSize _menuOffset;
-    id _currentMenuSource;
-    SEL _currentMenuSelector;
+    id _menuProvider;
 }
 
 - (void)mouseDown:(id)arg1;
 - (void)_runPopUp:(id)arg1;
-- (void)setCurrentMenuSource:(id)arg1 selector:(SEL)arg2;
+- (void)setCurrentMenuProvider:(id)arg1;
 - (id)menu;
 - (void)setMenu:(id)arg1;
 - (struct CGSize)menuOffset;
@@ -7281,7 +7847,7 @@ typedef struct {
 
 @end
 
-@interface IDEEditorIssueMenuController : NSObject <IDEEditorMenuStepperViewDelegate, NSMenuDelegate>
+@interface IDEEditorIssueMenuController : NSObject <IDEEditorMenuStepperViewDelegate, NSMenuDelegate, DVTInvalidation_New>
 {
     IDEIssueManager *_issueManager;
     IDEEditorContext *_editorContext;
@@ -7291,6 +7857,8 @@ typedef struct {
     id <DVTObservingToken> _editorDocumentObservingToken;
     unsigned long long _maxSeverity;
     NSMenu *_menu;
+    unsigned long long _numberOfIssuesInSelectedDocument;
+    unsigned long long _totalNumberOfIssues;
     NSURL *_selectedDocumentURL;
     IDEIssue *_selectedIssue;
     BOOL _issuesNeedUpdate;
@@ -7298,10 +7866,18 @@ typedef struct {
     BOOL _canMoveToFixIt;
     BOOL _showIssueMenuController;
     BOOL _canJump;
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
 @property(readonly) BOOL canJump; // @synthesize canJump=_canJump;
 @property BOOL showIssueMenuController; // @synthesize showIssueMenuController=_showIssueMenuController;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
+@property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 - (void)selectPreviousFixIt;
 - (void)selectNextFixIt;
 - (void)selectPrevious;
@@ -7320,6 +7896,10 @@ typedef struct {
 - (void)_issuesNeedUpdate;
 - (id)initWithEditorContext:(id)arg1;
 - (void)_setIssueManager:(id)arg1;
+- (void)primitiveInvalidate;
+- (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 
 @end
 
@@ -7437,7 +8017,6 @@ typedef struct {
     IDEActivityReport *_activeBuildOperationReport;
     IDEScheme *_activeBuildOperationRunContext;
     IDEBuildOperation *_activeBuildOperation;
-    NSString *_lastShownBuildable;
     IDEBuildOperationStatus *_buildStatusToUpdateUIWithAfterTimerExpires;
     NSTimer *_uiRefreshTimer;
 }
@@ -7511,25 +8090,13 @@ typedef struct {
 @interface IDEExecutionActivityReporter : IDEActivityReporter
 {
     id <DVTObservingToken> _launchSessionsStateObserverToken;
-    NSMapTable *_reportForLaunchSessionTable;
+    DVTMapTable *_reportForLaunchSessionTable;
 }
 
 + (void)initialize;
-- (void)updateActivityReport:(id)arg1;
+- (void)_updateActivityReport:(id)arg1;
 - (id)_titleForLaunchSession:(id)arg1 prefix:(id)arg2;
 - (id)initWithWorkspace:(id)arg1;
-
-@end
-
-@interface IDEInspectorCombinedProperty : IDEInspectorProperty
-{
-    IDEInspectorProperty *leftProperty;
-    IDEInspectorProperty *rightProperty;
-}
-
-- (void)loadView;
-- (struct CGRect)frameForLabel:(id)arg1;
-- (id)initWithLeftProperty:(id)arg1 andRightProperty:(id)arg2;
 
 @end
 
@@ -7617,24 +8184,16 @@ typedef struct {
 
 + (id)generateInspectorInterfaceFromFile:(id)arg1 boundTo:(id)arg2;
 + (id)generateInspectorInterfaceFromXMLElement:(id)arg1 boundTo:(id)arg2;
-+ (id)generateInterfaceFromXMLElement:(id)arg1 boundTo:(id)arg2;
++ (id)generateInspectorSectionFromXMLElement:(id)arg1 boundTo:(id)arg2 withTitle:(id)arg3 withSliverInsets:(BOOL)arg4;
++ (id)generateInspectorLayoutGroupFromXMLElement:(id)arg1 boundTo:(id)arg2 withSectionSliverInsets:(BOOL)arg3;
++ (id)generateInspectorLayoutGroupFromXMLElement:(id)arg1 boundTo:(id)arg2;
++ (void)enumerateTopLevelElements:(id)arg1 boundTo:(id)arg2 block:(id)arg3;
++ (id)topLevelXMLElementsInReverseOrder:(id)arg1;
 + (id)inspectorXMLElementsFromIncludeElement:(id)arg1 boundTo:(id)arg2;
++ (id)rootInspectorXMLElementFromIncludeElement:(id)arg1 boundTo:(id)arg2;
 + (id)parseInterfaceXMLDocumentFromFile:(id)arg1;
-+ (id)sectionHeaderTitleViewWithTitle:(id)arg1;
-+ (id)standardBorderedView;
++ (id)sectionHeaderTitleItemWithTitle:(id)arg1;
 + (id)localizedStringForAttributeNamed:(id)arg1 inXMLElement:(id)arg2 fromInspectorController:(id)arg3;
-
-@end
-
-@interface IDEInspectorAttributedStringProperty : IDEInspectorProperty
-{
-    NSTextView *textView;
-    NSScrollView *scrollView;
-}
-
-- (id)bindAndConfigure;
-- (void)textDidChange:(id)arg1;
-- (double)baseline;
 
 @end
 
@@ -7709,7 +8268,7 @@ typedef struct {
     NSMenuItem *notApplicableItem;
     NSMenuItem *invalidValueItem;
     NSMenuItem *noSelectionItem;
-    DVTDelayedValidator *contentValidator;
+    DVTDelayedInvocation *contentInvocation;
     NSArray *optionGroups;
     id controllerValue;
 }
@@ -7721,7 +8280,7 @@ typedef struct {
 - (void)menuWillPopUp:(id)arg1;
 - (void)rebuildMenuContent;
 - (id)menuItemWithTitle:(id)arg1 image:(id)arg2 representedObject:(id)arg3 hidden:(BOOL)arg4 enabled:(BOOL)arg5;
-- (void)enumeratDynamicOptionGroupContent:(id)arg1 withBlock:(id)arg2;
+- (void)enumerateDynamicOptionGroupContent:(id)arg1 withBlock:(id)arg2;
 - (void)controllerDidChangeValue;
 - (void)pushControllerValueToInterface;
 - (void)showValue:(id)arg1;
@@ -7800,27 +8359,6 @@ typedef struct {
 
 @end
 
-@interface IDEInspectorCombinedPropertyView : IDEInspectorPropertyContainingView
-{
-    NSView *leftView;
-    NSView *rightView;
-    IDEInspectorProperty *leftProperty;
-    IDEInspectorProperty *rightProperty;
-}
-
-@property(retain, nonatomic) IDEInspectorProperty *rightProperty; // @synthesize rightProperty;
-@property(retain, nonatomic) IDEInspectorProperty *leftProperty; // @synthesize leftProperty;
-@property(retain, nonatomic) NSView *rightView; // @synthesize rightView;
-@property(retain, nonatomic) NSView *leftView; // @synthesize leftView;
-- (void)layoutBottomUp;
-- (void)layoutTopDown;
-- (id)orderedInspectorProperties;
-- (void)awakeFromNib;
-- (id)initWithFrame:(struct CGRect)arg1;
-- (id)initWithLeftProperty:(id)arg1 rightProperty:(id)arg2;
-
-@end
-
 @interface IDEInspectorResizableSegmentedControlView : NSView
 {
     NSSegmentedControl *segmentedControl;
@@ -7834,24 +8372,21 @@ typedef struct {
 
 @end
 
-@interface IDEInspectorSliverView : IDEInspectorPropertyContainingView
+@interface IDEInspectorSliver : IDEInspectorLayoutGroup
 {
-    DVTStackView_ML *propertyStack;
-    NSTextField *labelView;
-    NSArray *properties;
-    BOOL fullWidth;
+    NSTextField *titleView;
+    IDEInspectorLayoutGroup *rightSubgroup;
+    IDEInspectorLayoutViewWrapper *titleViewLayoutWrapper;
+    id titleOriginBlock;
 }
 
 + (id)sliverForXMLElement:(id)arg1 boundTo:(id)arg2;
-+ (id)sliverViewWithTitle:(id)arg1 andProperties:(id)arg2 fullWidth:(BOOL)arg3;
++ (id)sliverWithProperties:(id)arg1 title:(id)arg2 fullWidth:(BOOL)arg3;
 + (id)labelWithTitle:(id)arg1;
-- (id)orderedInspectorProperties;
-- (void)layoutBottomUp;
-- (void)layoutTopDown;
-- (BOOL)isFlipped;
-- (id)initWithTitle:(id)arg1 andProperties:(id)arg2;
-- (id)initWithTitle:(id)arg1 andProperties:(id)arg2 fullWidth:(BOOL)arg3;
-- (void)_invalidateLayoutBecauseOfPropertyStackFrameChange:(id)arg1;
+- (double)layoutSubgroupsAndReturnHeightInInspectorContentView;
+- (void)insertSubgroup:(id)arg1 atIndex:(long long)arg2;
+- (id)initWithTitle:(id)arg1 rightSubgroup:(id)arg2 rightSubgroupInset:(CDStruct_bf6d4a14)arg3 titleOriginBlock:(id)arg4;
+- (id)initWithTitle:(id)arg1 titleOrigin:(struct CGPoint)arg2 rightSubgroup:(id)arg3 rightSubgroupInset:(CDStruct_bf6d4a14)arg4;
 
 @end
 
@@ -7936,9 +8471,8 @@ typedef struct {
 
 @end
 
-@interface IDEEditorGeniusResults : NSObject <DVTInvalidation>
+@interface IDEEditorGeniusResults : NSObject <DVTInvalidation_New>
 {
-    DVTStackBacktrace *_invalidationBacktrace;
     IDEWorkspaceTabController *_workspaceTabController;
     IDENavigableItemCoordinator *_navItemCoordinator;
     IDEEditorDocument *_editorDocument;
@@ -7950,11 +8484,15 @@ typedef struct {
     NSDictionary *_geniusResults;
     unsigned long long _numberOfGeniusResults;
     NSArray *_geniusResultsObservingTokens;
-    BOOL _isInvalidated;
     BOOL _ignoreGeniusResultsUpdates;
     BOOL _idle;
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
++ (BOOL)automaticallyNotifiesObserversOfValue;
 + (BOOL)automaticallyNotifiesObserversOfGeniusResults;
 + (BOOL)singleResultsCategoryForGeniusCategory:(id)arg1;
 + (id)groupForGeniusCategory:(id)arg1;
@@ -7966,13 +8504,16 @@ typedef struct {
 + (id)_finderExtensionsForEditorDocumentIdentifier:(id)arg1 fileDataType:(id)arg2;
 + (struct dispatch_queue_s *)indexRequestsQueue;
 + (void)initialize;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 @property(readonly) NSString *editorDocumentIdentifier; // @synthesize editorDocumentIdentifier=_editorDocumentIdentifier;
 @property BOOL idle; // @synthesize idle=_idle;
 @property(readonly) unsigned long long numberOfGeniusResults; // @synthesize numberOfGeniusResults=_numberOfGeniusResults;
 @property(readonly) NSDictionary *geniusResults; // @synthesize geniusResults=_geniusResults;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (BOOL)_updateGeniusResults;
 - (void)_setGeniusResults:(id)arg1;
 - (void)_breakIdleCoalescingOfGeniusResultsUpdates;
@@ -7987,10 +8528,8 @@ typedef struct {
 
 @end
 
-@interface IDEGeniusResultsFinder : NSObject <DVTInvalidation>
+@interface IDEGeniusResultsFinder : NSObject <DVTInvalidation_New>
 {
-    BOOL _isInvalidated;
-    DVTStackBacktrace *_invalidationBacktrace;
     DVTExtension *_extension;
     IDEWorkspaceTabController *_workspaceTabController;
     IDENavigableItemCoordinator *_navItemCoordinator;
@@ -7998,9 +8537,16 @@ typedef struct {
     NSArray *_documentLocations;
     NSSet *_geniusResults;
     BOOL _idle;
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
 + (Class)editorDocumentClass;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 @property BOOL idle; // @synthesize idle=_idle;
 @property(copy) NSSet *geniusResults; // @synthesize geniusResults=_geniusResults;
@@ -8008,8 +8554,10 @@ typedef struct {
 @property(readonly) IDEEditorDocument *editorDocument; // @synthesize editorDocument=_editorDocument;
 @property(readonly) IDEWorkspaceTabController *workspaceTabController; // @synthesize workspaceTabController=_workspaceTabController;
 @property(retain) DVTExtension *extension; // @synthesize extension=_extension;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 @property(readonly) IDEWorkspace *workspace;
 - (void)_updateGeniusResults;
 - (void)_primitiveSetGeniusResults:(id)arg1;
@@ -8028,7 +8576,7 @@ typedef struct {
 
 - (void)_updateGeniusResults;
 - (BOOL)_getUpdateGeniusResultsPhaseOneBlock:(id *)arg1 phaseTwoBlock:(void)arg2 phaseThreeBlock:(id *)arg3;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (id)_initWithWorkspaceTabController:(id)arg1 navigableItemCoordinator:(id)arg2;
 
 @end
@@ -8051,7 +8599,7 @@ typedef struct {
 
 @interface IDEFileNavigableItem : IDENavigableItem
 {
-    id _document;
+    id _document_dvtWeak;
     NSImage *_image;
     id <DVTObservingToken> _documentObservingToken;
     BOOL _invalidatingTopLevelObjects;
@@ -8078,6 +8626,8 @@ typedef struct {
 - (void)invalidateImage;
 - (void)updateImage;
 - (id)newImage;
+- (void)setDocument:(id)arg1;
+- (id)document;
 
 @end
 
@@ -8097,7 +8647,9 @@ typedef struct {
 
 + (id)keyPathsForValuesAffectingToolTip;
 + (id)_createExtraInfoObject;
-+ (void)editorDocumentDirtyStatusDidChange:(id)arg1;
++ (void)_editorDocumentDirtyStatusDidChange:(id)arg1;
++ (void)_anyEditorDocumentDirtyStatusWillClose:(id)arg1;
++ (void)_anyEditorDocumentDirtyStatusDidChange:(id)arg1;
 + (void)initialize;
 - (unsigned long long)conflictStateForUpdateOrMerge;
 - (id)sourceControlCurrentRevision;
@@ -8165,7 +8717,6 @@ typedef struct {
 - (id)contentDocumentLocation;
 - (id)documentType;
 - (id)fileURL;
-- (id)image;
 - (id)name;
 - (id)_frameworkFilePath;
 - (id)initWithRepresentedObject:(id)arg1;
@@ -8201,6 +8752,7 @@ typedef struct {
 {
 }
 
+- (id)toolTip;
 - (id)fileURL;
 - (id)contentDocumentLocation;
 - (id)documentType;
@@ -8231,7 +8783,7 @@ typedef struct {
 - (void)revealNavigableItems:(id)arg1;
 @property(readonly) NSString *filterDefinitionIdentifier;
 - (BOOL)canBecomeMainViewController;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (BOOL)makePrimaryFilterControlKey;
 @property(readonly) NSString *filterButtonAccessibilityDescription;
 @property(readonly) NSString *filterButtonToolTip;
@@ -8322,6 +8874,7 @@ typedef struct {
     DVTStateToken *_stateToken;
     long long _selectedIndex;
     id _lastFirstResponder;
+    NSMutableSet *_subviewFrameChangedObservers;
     BOOL _reloadAfterDrag;
     BOOL _restoringState;
     BOOL _togglingDisclosure;
@@ -8401,6 +8954,7 @@ typedef struct {
 - (BOOL)acceptsFirstResponder;
 - (void)doCommandBySelector:(SEL)arg1;
 - (void)keyDown:(id)arg1;
+- (void)tearDown;
 - (id)initWithFrame:(struct CGRect)arg1;
 
 @end
@@ -8413,7 +8967,7 @@ typedef struct {
 
 @end
 
-@interface IDEInspectorChooserView : DVTLayoutView_ML
+@interface IDEInspectorChooser : IDEInspectorLayoutStack
 {
     NSArray *categories;
     NSPopUpButton *choicePopUp;
@@ -8421,12 +8975,11 @@ typedef struct {
     IDEInspectorChooserChoice *defaultChoice;
     IDEInspectorChooserChoice *selectedChoice;
     IDEInspectorChooserChoice *nilChoice;
-    NSView *selectedChoiceView;
-    NSView *emptyChoiceView;
+    IDEInspectorLayoutGroup *selectedChoiceLayoutGroup;
+    IDEInspectorLayoutGroup *emptyChoiceLayoutGroup;
     NSMenuItem *defaultSeperator;
     NSMenuItem *specialMarkMenuItem;
     id selectedPrimitiveValue;
-    NSTextField *labelView;
     BOOL disableWhenNil;
 }
 
@@ -8435,17 +8988,13 @@ typedef struct {
 + (id)choiceForXMLElement:(id)arg1 choiceType:(id)arg2 owner:(id)arg3;
 + (id)choiceValueForElement:(id)arg1 type:(id)arg2;
 + (void)initialize;
-@property(retain, nonatomic) NSView *selectedChoiceView; // @synthesize selectedChoiceView;
-- (void)layoutBottomUp;
-- (void)layoutTopDown;
-- (BOOL)isFlipped;
+@property(retain, nonatomic) IDEInspectorLayoutGroup *selectedChoiceLayoutGroup; // @synthesize selectedChoiceLayoutGroup;
 - (void)userMadeSelection:(id)arg1;
 - (void)updateBoundValue;
-- (id)viewForSelectedChoice;
+- (id)inspectorItemForSelectedChoice;
 - (id)dvtExtraBindings;
 - (void)updateMenu;
 - (id)categoryTitleAttributes;
-- (void)_selectedChoiceViewFrameDidChange:(id)arg1;
 - (id)initWithTitle:(id)arg1 categories:(id)arg2 defaultChoice:(id)arg3 nilChoice:(id)arg4 disableWhenNil:(BOOL)arg5 keyPath:(id)arg6;
 - (void)configureAccessibilityForUIElement:(id)arg1 forAttribute:(id)arg2 keyPath:(id)arg3 withAppendedString:(id)arg4;
 - (id)humanReadableNameForInspectorKeyPath:(id)arg1;
@@ -8454,13 +9003,13 @@ typedef struct {
 
 @interface IDEInspectorChooserChoice : NSObject
 {
-    id viewInitializingBlock;
+    id inspectorLayoutGroupInitializingBlock;
     IDEInspectorChooserCategory *category;
     NSMenuItem *menuItem;
     id <NSCopying> value;
     NSString *title;
     NSImage *image;
-    NSView *view;
+    IDEInspectorLayoutGroup *inspectorLayoutGroup;
     BOOL separator;
 }
 
@@ -8471,8 +9020,8 @@ typedef struct {
 @property(readonly) id <NSCopying> value; // @synthesize value;
 @property(readonly) NSImage *image; // @synthesize image;
 @property(readonly) NSString *title; // @synthesize title;
-@property(readonly) NSView *view; // @synthesize view;
-- (id)initWithTitle:(id)arg1 image:(id)arg2 value:(id)arg3 andView:(id)arg4;
+@property(readonly) IDEInspectorLayoutGroup *inspectorLayoutGroup; // @synthesize inspectorLayoutGroup;
+- (id)initWithTitle:(id)arg1 image:(id)arg2 value:(id)arg3 andLayoutGroup:(id)arg4;
 - (id)initWithTitle:(id)arg1 image:(id)arg2 value:(id)arg3 sliceXML:(id)arg4 inspectorController:(id)arg5;
 
 @end
@@ -8621,6 +9170,8 @@ typedef struct {
 {
     IDEGroup *_targetGroup;
     id <DVTObservingToken> _targetGroupValidObservationToken;
+    IDENavigableItem *_targetNavigableItem;
+    long long _targetIndex;
 }
 
 + (void)_addFileURLsForContainerItem:(id)arg1 to:(id)arg2;
@@ -8629,26 +9180,30 @@ typedef struct {
 + (BOOL)_acceptDropAtIndex:(long long)arg1 withContext:(id)arg2;
 + (BOOL)_acceptDropAtIndex:(long long)arg1 withContext:(id)arg2 fileURLs:(id)arg3;
 + (BOOL)_acceptDropAtIndex:(long long)arg1 withContext:(id)arg2 containerItems:(id)arg3;
-+ (id)_targetForStructureEditingOperation:(int)arg1 proposedNavigableItem:(id)arg2 proposedChildIndex:(long long)arg3 actualNavigableItem:(id *)arg4 actualChildIndex:(long long *)arg5;
++ (id)_targetForStructureEditingOperation:(int)arg1 proposedNavigableItem:(id)arg2 proposedChildIndex:(long long)arg3;
 - (BOOL)structureEditingRemoveSubitemsAtIndexes:(id)arg1 error:(id *)arg2;
 - (id)structureEditingFileURLsForSubitemsAtIndexes:(id)arg1;
 - (BOOL)structureEditingCanRemoveSubitemsAtIndexes:(id)arg1;
 - (BOOL)structureEditingGroupSubitemsAtIndexes:(id)arg1 groupIndex:(long long *)arg2;
 - (BOOL)structureEditingCanGroupSubitemsAtIndexes:(id)arg1;
 - (BOOL)_canGroupSubitemsAtIndexes:(id)arg1 groupIndex:(long long *)arg2 shouldGroup:(BOOL)arg3;
-- (BOOL)structureEditingAddNewSubgroupAtIndex:(long long)arg1;
-- (BOOL)structureEditingCanAddNewSubgroupAtIndex:(long long)arg1;
+- (BOOL)structureEditingAddNewSubgroup;
+- (BOOL)structureEditingCanAddNewSubgroup;
 - (BOOL)_testOrAddNewGroupAtChildIndex:(long long)arg1 shouldAdd:(BOOL)arg2;
 - (BOOL)_addNewSubgroupAtIndex:(unsigned long long)arg1 newGroupBlock:(id)arg2;
-- (BOOL)structureEditingAcceptInsertionOfSubitemsForContext:(id)arg1 atIndex:(long long)arg2;
-- (BOOL)structureEditingValidateInsertionOfSubitemsForContext:(id)arg1 atIndex:(long long)arg2;
+- (BOOL)structureEditingAcceptInsertionOfSubitemsForContext:(id)arg1;
+- (BOOL)structureEditingValidateInsertionOfSubitemsForContext:(id)arg1;
+- (unsigned long long)_targetIndexForInsertion;
 - (id)insertSubitemsAssistantContext;
 - (BOOL)_structureEditingValidateDropWithContext:(id)arg1 atIndex:(long long)arg2;
 - (BOOL)_acceptTemplateDropWithContext:(id)arg1 atIndex:(long long)arg2;
 - (unsigned long long)_validateTemplateDropWithContext:(id)arg1 atIndex:(long long)arg2;
+- (id)structureEditingNaturalFilePathForDropTarget;
 - (BOOL)isEqual:(id)arg1;
 - (unsigned long long)hash;
-- (id)_initWithTargetGroup:(id)arg1;
+- (id)actualNavigableItem;
+- (long long)actualChildIndex;
+- (id)_initWithTargetGroup:(id)arg1 targetNavigableItem:(id)arg2 targetIndex:(long long)arg3;
 - (id)init;
 
 @end
@@ -8696,7 +9251,7 @@ typedef struct {
     NSImage *_templateIcon;
     BOOL _chooserOnly;
     NSString *_buildableType;
-    IDEIndex *_index;
+    IDEWorkspace *_workspace;
 }
 
 + (unsigned long long)readingOptionsForType:(id)arg1 pasteboard:(id)arg2;
@@ -8707,7 +9262,7 @@ typedef struct {
 + (void)_processChildrenOfFilePath:(id)arg1 enumerator:(id)arg2;
 + (void)initialize;
 + (id)_templateInfoForTemplateAtURL:(id)arg1 error:(id *)arg2;
-@property(retain, nonatomic) IDEIndex *index; // @synthesize index=_index;
+@property(retain, nonatomic) IDEWorkspace *workspace; // @synthesize workspace=_workspace;
 @property(readonly) NSString *buildableType; // @synthesize buildableType=_buildableType;
 @property(readonly) BOOL chooserOnly; // @synthesize chooserOnly=_chooserOnly;
 @property(readonly) NSString *mainTemplateFile; // @synthesize mainTemplateFile=_mainTemplateFile;
@@ -8792,7 +9347,6 @@ typedef struct {
 }
 
 + (id)standardSubstitutionsForMacrosWithWorkspaceName:(id)arg1 projectName:(id)arg2 packageName:(id)arg3 targetName:(id)arg4 productName:(id)arg5 fileName:(id)arg6 organizationName:(id)arg7;
-+ (id)fullUserName;
 + (id)substitutionsForMacrosWithWorkspaceName:(id)arg1 projectName:(id)arg2 packageName:(id)arg3 targetName:(id)arg4 productName:(id)arg5 fileName:(id)arg6;
 + (id)multiSubstitutionsForSubstitution:(id)arg1 forMacro:(id)arg2;
 - (void)setMultiSubstitution:(id)arg1 forMacro:(id)arg2;
@@ -8816,8 +9370,10 @@ typedef struct {
     unsigned long long _destinationIndex;
     NSArray *_destinationBuildables;
     NSArray *_templateSections;
+    IDEWorkspaceDocument *_createdDocument;
 }
 
+@property(retain) IDEWorkspaceDocument *createdDocument; // @synthesize createdDocument=_createdDocument;
 @property(copy) NSArray *templateSections; // @synthesize templateSections=_templateSections;
 @property(copy) NSArray *destinationBuildables; // @synthesize destinationBuildables=_destinationBuildables;
 @property unsigned long long destinationIndex; // @synthesize destinationIndex=_destinationIndex;
@@ -8826,6 +9382,8 @@ typedef struct {
 @property(copy) NSArray *instantiatedItems; // @synthesize instantiatedItems=_instantiatedItems;
 @property(retain) DVTFilePath *documentFilePath; // @synthesize documentFilePath=_documentFilePath;
 @property(retain, nonatomic) IDETemplate *documentTemplate; // @synthesize documentTemplate=_documentTemplate;
+- (void)finishTemplateInstantiation;
+@property(readonly) NSArray *targetWorkspaces;
 - (id)destinationBlueprintProvider;
 - (void)loadAvailableTemplatesOfKind:(id)arg1 navigableItemCoordinator:(id)arg2;
 - (id)copyWithZone:(struct _NSZone *)arg1;
@@ -8859,12 +9417,13 @@ typedef struct {
 {
     IDEWorkspaceTabController *_workspaceTabController;
     IDEAssistantWindowController *_assistantWindowController;
+    NSWindow *_workspaceWindow;
 }
 
+@property(retain) NSWindow *workspaceWindow; // @synthesize workspaceWindow=_workspaceWindow;
 @property(retain) IDEAssistantWindowController *assistantWindowController; // @synthesize assistantWindowController=_assistantWindowController;
 @property(retain) IDEWorkspaceTabController *workspaceTabController; // @synthesize workspaceTabController=_workspaceTabController;
 - (id)copyWithZone:(struct _NSZone *)arg1;
-@property(readonly) NSWindow *workspaceWindow;
 @property(readonly) IDEWorkspace *workspace;
 
 @end
@@ -8950,7 +9509,7 @@ typedef struct {
     NSStepper *widthStepper;
     NSStepper *heightStepper;
     NSButton *hasValueCheckBox;
-    DVTDelayedValidator *validator;
+    DVTDelayedInvocation *delayedInvocation;
     NSNumber *displayedWidth;
     NSNumber *displayedHeight;
     NSString *widthPlaceholder;
@@ -8990,7 +9549,7 @@ typedef struct {
     DVTBorderedView *_controlGroupBorderedView;
     NSArrayController *_prefSetsArrayController;
     DVTPreferenceSetManager *_preferenceSetManager;
-    NSMapTable *_observerTokensForPreferenceSetsMapTable;
+    DVTMapTable *_observerTokensForPreferenceSetsMapTable;
     id <DVTObservingToken> _currentPreferenceSetObserver;
     BOOL _hasBeenSetup;
 }
@@ -9221,21 +9780,28 @@ typedef struct {
 {
     BOOL _canInstantiateTemplate;
     id _completionBlock;
-    NSPopUpButton *_destinationPopUp;
+    NSPopUpButton *_destinationWorkspacePopUp;
+    NSPopUpButton *_destinationGroupPopUp;
     NSSavePanel *_currentSavePanel;
     IDEGroup *_initialDestinationGroup;
+    IDEWorkspace *_initialDestinationWorkspace;
     IDECompletionDestinationManager *_destinationManager;
     BOOL _shouldReplaceExisting;
     NSOpenPanel *_pendingOpenPanel;
 }
 
-@property(retain) NSPopUpButton *destinationPopUp; // @synthesize destinationPopUp=_destinationPopUp;
+@property(retain) NSPopUpButton *destinationWorkspacePopUp; // @synthesize destinationWorkspacePopUp=_destinationWorkspacePopUp;
+@property(retain) NSPopUpButton *destinationGroupPopUp; // @synthesize destinationGroupPopUp=_destinationGroupPopUp;
 - (BOOL)panel:(id)arg1 shouldEnableURL:(id)arg2;
 - (BOOL)panel:(id)arg1 validateURL:(id)arg2 error:(id *)arg3;
 - (id)finalURLForSelectedURL:(id)arg1;
 - (void)attemptRecoveryFromError:(id)arg1 optionIndex:(unsigned long long)arg2 delegate:(id)arg3 didRecoverSelector:(SEL)arg4 contextInfo:(void *)arg5;
+- (void)destinationManagerWorkspaceDidChange:(id)arg1;
 - (void)destinationManagerGroupDidChange:(id)arg1;
+- (id)targetWorkspacesForDestinationManager:(id)arg1;
 - (BOOL)destinationManager:(id)arg1 shouldAddItemToMenu:(id)arg2;
+- (BOOL)shouldShowDestinationGroupPopUp;
+- (BOOL)shouldShowDestinationWorkspacePopUp;
 - (BOOL)shouldShowAccessoryView;
 - (BOOL)canGoBack;
 - (void)finishWithCompletionBlock:(id)arg1;
@@ -9329,6 +9895,7 @@ typedef struct {
     DVTFileDataType *_contentType;
     NSMutableSet *_iconRequests;
     DVTFilePath *_path;
+    NSArray *_directoryContents;
     NSString *_name;
     NSImage *_icon;
     id _content;
@@ -9345,7 +9912,7 @@ typedef struct {
 + (id)allMediaTypes;
 + (void)discardCachedResource:(id)arg1;
 + (id)resourceWithName:(id)arg1 icon:(id)arg2 content:(id)arg3 contentType:(id)arg4;
-+ (id)resourceWithPath:(id)arg1;
++ (id)resourceWithPath:(id)arg1 contentType:(id)arg2;
 + (id)resourceWithPath:(id)arg1 name:(id)arg2 icon:(id)arg3 contentType:(id)arg4;
 @property(readonly) DVTFileDataType *contentType; // @synthesize contentType=_contentType;
 @property(readonly) DVTFilePath *path; // @synthesize path=_path;
@@ -9372,7 +9939,6 @@ typedef struct {
 - (void)setContent:(id)arg1;
 - (void)setIcon:(id)arg1;
 - (BOOL)isPathBased;
-- (id)initWithPath:(id)arg1;
 - (id)initWithPath:(id)arg1 name:(id)arg2 icon:(id)arg3 contentType:(id)arg4;
 - (id)initWithName:(id)arg1 icon:(id)arg2 content:(id)arg3 contentType:(id)arg4;
 
@@ -9391,7 +9957,7 @@ typedef struct {
 - (void)dvt_encodeAttributesWithXMLArchiver:(id)arg1;
 - (id)initFromXMLUnarchiver:(id)arg1 archiveVersion:(float)arg2;
 - (void)sound:(id)arg1 didFinishPlaying:(BOOL)arg2;
-- (void)performActionUsingConsole:(id)arg1 andBreakpoint:(id)arg2;
+- (void)performActionUsingContext:(id)arg1 andBreakpoint:(id)arg2;
 @property(copy) NSString *soundName; // @synthesize soundName=_soundName;
 - (void)_soundActionCommonInit;
 - (id)init;
@@ -9411,7 +9977,7 @@ typedef struct {
 - (void)dvt_awakeFromXMLUnarchiver:(id)arg1;
 - (id)initFromXMLUnarchiver:(id)arg1 archiveVersion:(float)arg2;
 - (void)speechSynthesizer:(id)arg1 didFinishSpeaking:(BOOL)arg2;
-- (void)performActionUsingConsole:(id)arg1 andBreakpoint:(id)arg2;
+- (void)performActionUsingContext:(id)arg1 andBreakpoint:(id)arg2;
 - (void)_handleMessageChanged;
 - (void)_logActionCommonInit;
 - (id)init;
@@ -9451,6 +10017,7 @@ typedef struct {
 - (void)populateAdditionalTypesToPasteboard:(id)arg1;
 - (id)mediaLibraryDetailControllerIdentifier;
 - (id)generateContent;
+- (id)generateIcon;
 
 @end
 
@@ -9515,31 +10082,33 @@ typedef struct {
 
 @end
 
-@interface IDENavigableItemCoordinator : NSObject <DVTInvalidation>
+@interface IDENavigableItemCoordinator : NSObject <DVTInvalidation_New>
 {
     NSHashTable *_coordinatedItems;
-    NSMapTable *_documentsByNavItem;
+    DVTMapTable *_documentsByNavItem;
     NSMapTable *_domainIdentifiersByNavItem;
     DVTMapTable *_rootItemsByRepresentedObject;
-    NSMapTable *_changeCountByNavItem;
+    DVTMapTable *_changeCountByNavItem;
     NSDictionary *_filteringProxiesByKey;
-    DVTDelayedValidator *_delayedValidator;
+    DVTDelayedInvocation *_delayedInvocation;
     NSSet *_pendingGraphChangedItems;
     NSSet *_pendingPropertyChangedItems;
-    DVTStackBacktrace *_creationBacktrace;
-    DVTStackBacktrace *_invalidationBacktrace;
-    id <IDENavigableItemCoordinatorDelegate> _delegate;
+    id <IDENavigableItemCoordinatorDelegate> _delegate_dvtWeak;
     struct __navigableItemCoordinatorFlags {
         unsigned int _delegateRespondsToDocumentForNavigableItem:1;
         unsigned int _hasWarnedAboutRootItemsCount:1;
         unsigned int _reservedNavigableItemCoordinator:30;
     } _navigableItemCoordinatorFlags;
-    BOOL _isValid;
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
++ (BOOL)automaticallyNotifiesObserversOfValue;
 + (void)initialize;
 + (id)navigableItemFilteringPerformanceMetric;
-@property __weak id <IDENavigableItemCoordinatorDelegate> delegate; // @synthesize delegate=_delegate;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 - (void)unhibernate;
 - (void)hibernate;
@@ -9560,12 +10129,15 @@ typedef struct {
 - (void)_noteNavigableItemChangedChildItems:(id)arg1;
 - (void)_incrementChangeCountForItem:(id)arg1;
 - (void)_noteNavigableItem:(id)arg1 valueWillChangeForProperty:(id)arg2;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
 @property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (void)delayedPostGraphAndPropertyChangeNotifications:(id)arg1;
 - (void)processPendingChanges;
 - (void)_postNotificationNamed:(id)arg1 forChangedItems:(id)arg2;
 - (void)postDidForgetNotificationForItems:(id)arg1;
+@property(nonatomic) __weak id <IDENavigableItemCoordinatorDelegate> delegate;
 - (id)navigableItemFromArchivableRepresentation:(id)arg1 forWorkspace:(id)arg2 error:(id *)arg3;
 - (id)_navigableItemFromArchivableRepresentation:(id)arg1 rootItem:(id)arg2 error:(id *)arg3;
 - (id)_documentContentNavigableItemFromArchivableRepresentation:(id)arg1 documentItem:(id)arg2;
@@ -9586,9 +10158,9 @@ typedef struct {
 
 @interface IDENICFilterProxy : IDENavigableItem
 {
-    NSHashTable *_itemsToFilterAfterDelay;
+    DVTHashTable *_itemsToFilterAfterDelay;
     NSHashTable *_rootItems;
-    NSHashTable *_itemsWithComputedArrangedChildItems;
+    DVTHashTable *_itemsWithComputedArrangedChildItems;
     NSMutableSet *_pendingItems;
     NSPredicate *_proxyFilterPredicate;
     double _filterStartTime;
@@ -9718,6 +10290,7 @@ typedef struct {
 - (id)fileURLsForDraggingInfo:(id)arg1;
 - (void)containerItems:(id *)arg1 orFileURLs:(id *)arg2 forDraggingInfo:(id)arg3;
 - (BOOL)structureEditingWriteItems:(id)arg1 toPasteboard:(id)arg2;
+- (BOOL)writeItems:(id)arg1 toPasteboard:(id)arg2;
 
 @end
 
@@ -9759,11 +10332,13 @@ typedef struct {
     BOOL _hasProcessedDraggingInfo;
     NSString *_buildToolPath;
     NSString *_buildArgumentsString;
+    BOOL _shouldHideCopyFilesToTargetGroupSwitchButton;
 }
 
 + (id)contextWithTargetGroup:(id)arg1;
 + (id)_containerAddingItemsAssistantExtensionForContainer:(id)arg1;
 + (void)initialize;
+@property BOOL shouldHideCopyFilesToTargetGroupSwitchButton; // @synthesize shouldHideCopyFilesToTargetGroupSwitchButton=_shouldHideCopyFilesToTargetGroupSwitchButton;
 @property(copy) id prepareBlock; // @synthesize prepareBlock=_prepareBlock;
 @property(copy) NSString *buildArgumentsString; // @synthesize buildArgumentsString=_buildArgumentsString;
 @property(copy) NSString *buildToolPath; // @synthesize buildToolPath=_buildToolPath;
@@ -9831,6 +10406,7 @@ typedef struct {
     IDEWorkspace *_workspace;
     BOOL _didSheetEnd;
     id <DVTObservingToken> _selectionObserverToken;
+    id <IDEClientTrackingToken> _clientTrackingToken;
 }
 
 + (id)keyPathsForValuesAffectingShouldAutocreateSchemes;
@@ -9840,6 +10416,7 @@ typedef struct {
 - (unsigned long long)tableView:(id)arg1 validateDrop:(id)arg2 proposedRow:(long long)arg3 proposedDropOperation:(unsigned long long)arg4;
 - (BOOL)tableView:(id)arg1 writeRowsWithIndexes:(id)arg2 toPasteboard:(id)arg3;
 - (BOOL)tableView:(id)arg1 shouldSelectRow:(long long)arg2;
+- (BOOL)tableView:(id)arg1 shouldEditTableColumn:(id)arg2 row:(long long)arg3;
 - (void)tableView:(id)arg1 willDisplayCell:(id)arg2 forTableColumn:(id)arg3 row:(long long)arg4;
 - (BOOL)tableView:(id)arg1 doCommandBySelector:(SEL)arg2;
 - (BOOL)validateUserInterfaceItem:(id)arg1;
@@ -9863,24 +10440,36 @@ typedef struct {
 @interface IDEInspectorArrayProperty : IDEInspectorProperty <NSTableViewDataSource>
 {
     NSTableView *itemsTableView;
-    NSButton *removeRowButton;
-    NSButton *addRowButton;
     NSArray *reflectedValues;
     NSString *placeholder;
+    IDEControlGroup *_controlGroup;
+    DVTBorderedView *_controlBar;
+    DVTGradientImageButton *_addButton;
+    DVTGradientImageButton *_removeButton;
+    BOOL _removeButtonEnabledState;
 }
 
+@property(nonatomic) BOOL removeButtonEnabledState; // @synthesize removeButtonEnabledState=_removeButtonEnabledState;
+@property(nonatomic) __weak DVTGradientImageButton *removeButton; // @synthesize removeButton=_removeButton;
+@property(nonatomic) __weak DVTGradientImageButton *addButton; // @synthesize addButton=_addButton;
+@property(retain, nonatomic) DVTBorderedView *controlBar; // @synthesize controlBar=_controlBar;
+@property(retain, nonatomic) IDEControlGroup *controlGroup; // @synthesize controlGroup=_controlGroup;
 - (void)removeRow:(id)arg1;
 - (BOOL)canRemoveRow;
 - (void)addRow:(id)arg1;
+- (void)tableViewSelectionDidChange:(id)arg1;
 - (void)tableView:(id)arg1 setObjectValue:(id)arg2 forTableColumn:(id)arg3 row:(long long)arg4;
 - (id)tableView:(id)arg1 objectValueForTableColumn:(id)arg2 row:(long long)arg3;
 - (long long)numberOfRowsInTableView:(id)arg1;
+- (void)updateRemoveButtonEnabledState;
 - (id)bindAndConfigure;
+- (void)awakeFromNib;
 - (double)baseline;
 - (void)setCellReflectedValues:(id)arg1;
 - (id)cellReflectedValues;
 - (void)setReflectedValues:(id)arg1;
 - (id)reflectedValues;
+- (void)setupControlBarAfterLoading;
 
 @end
 
@@ -9895,7 +10484,7 @@ typedef struct {
 
 @end
 
-@interface IDEReviewFilesViewController : IDEViewController <IDEEditorContextDelegate, IDESourceControlConflictResolutionControllerContainer>
+@interface IDEReviewFilesViewController : IDEViewController <IDEEditorContextDelegate, IDESourceControlMergeControllerContainer>
 {
     DVTSplitView *_splitView;
     DVTBorderedView *_structureBorderedView;
@@ -9904,8 +10493,9 @@ typedef struct {
     IDEEditorVersionsMode *_versionsMode;
     id <DVTObservingToken> _navigatorSelectedViewIndexesObservingToken;
     id <DVTObservingToken> _navigatorSelectedObjectsObservingToken;
-    id <IDEReviewFilesViewControllerDelegate> _delegate;
+    id <IDEReviewFilesViewControllerDelegate> _delegate_dvtWeak;
     IDESourceControlConflictResolutionController *_conflictResolutionController;
+    IDESourceControlInteractiveCommitController *_interactiveCommitController;
 }
 
 + (id)keyPathsForValuesAffectingVersionsEditor;
@@ -9913,7 +10503,6 @@ typedef struct {
 + (struct CGRect)minimumSheetFrame;
 + (struct CGSize)sheetSizeForHostWindow:(id)arg1;
 + (id)reviewFilesLogAspect;
-@property __weak id <IDEReviewFilesViewControllerDelegate> delegate; // @synthesize delegate=_delegate;
 @property(readonly) IDEEditorVersionsMode *versionsMode; // @synthesize versionsMode=_versionsMode;
 @property(readonly) IDEReviewFilesNavigator *navigator; // @synthesize navigator=_navigator;
 - (BOOL)splitView:(id)arg1 shouldAdjustSizeOfSubview:(id)arg2;
@@ -9922,36 +10511,48 @@ typedef struct {
 - (BOOL)splitView:(id)arg1 canCollapseSubview:(id)arg2;
 - (id)workspaceForEditorContext:(id)arg1;
 - (id)editorContext:(id)arg1 shouldEditNavigableItem:(id)arg2;
+@property(readonly) IDESourceControlInteractiveCommitController *interactiveCommitController; // @dynamic interactiveCommitController;
+- (void)setupInteractiveCommitController;
 @property(readonly) IDESourceControlConflictResolutionController *conflictResolutionController; // @dynamic conflictResolutionController;
 - (void)setupConflictResolutionController;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 @property(readonly) IDEEditorVersionsMode *versionsEditor;
 @property(readonly) IDEComparisonEditor *comparisonEditor;
 - (void)viewDidInstall;
 - (void)loadView;
 - (id)initWithNibName:(id)arg1 bundle:(id)arg2;
+@property __weak id <IDEReviewFilesViewControllerDelegate> delegate;
 
 @end
 
-@interface IDESourceControlCommitWindowController : IDESourceControlReviewFilesWindowController <IDENavigableItemCoordinatorDelegate, NSMenuDelegate>
+@interface IDESourceControlCommitWindowController : IDESourceControlReviewFilesWindowController <IDENavigableItemCoordinatorDelegate>
 {
     NSSplitView *_splitView;
     DVTTextViewWithPlaceholder *_commitMessageTextView;
     NSButton *_commitButton;
     NSButton *_cancelButton;
+    NSButton *_commitToBranchButton;
     DVTBorderedView *_reviewFilesView;
     DVTBorderedView *_contentView;
     DVTBorderedView *_textViewBorderedView;
-    NSImageView *_commitCountImageView;
-    NSTextField *_commitCountTextField;
+    NSImageView *_issuesCountImageView;
+    NSTextField *_issuesCountTextField;
     NSString *_commitMessage;
     IDESourceControlReviewFilesDataSource *_workspaceDataSource;
     IDESourceControlReviewFilesDataSource *_fileSystemDataSource;
     IDESourceControlReviewFilesDataSource *_flatDataSource;
     struct dispatch_semaphore_s *_multipleFileSaveWaiter;
+    DVTDispatchLock *_sendSwitchNotificationLock;
+    BOOL _didSendWillSwitchNotification;
+    BOOL _shouldCommitToBranch;
+    NSArray *_commitToBranchItems;
+    NSMutableDictionary *_branchesDictionary;
 }
 
 + (id)sourceControlCommitWindowLogAspect;
+@property(copy) NSMutableDictionary *branchesDictionary; // @synthesize branchesDictionary=_branchesDictionary;
+@property(retain) NSArray *commitToBranchItems; // @synthesize commitToBranchItems=_commitToBranchItems;
+@property BOOL shouldCommitToBranch; // @synthesize shouldCommitToBranch=_shouldCommitToBranch;
 @property(copy) NSString *commitMessage; // @synthesize commitMessage=_commitMessage;
 - (BOOL)textView:(id)arg1 doCommandBySelector:(SEL)arg2;
 - (BOOL)splitView:(id)arg1 shouldAdjustSizeOfSubview:(id)arg2;
@@ -9959,12 +10560,17 @@ typedef struct {
 - (double)splitView:(id)arg1 constrainMinCoordinate:(double)arg2 ofSubviewAt:(long long)arg3;
 - (void)cancel:(id)arg1;
 - (void)sheetDidEnd:(id)arg1 returnCode:(long long)arg2;
+- (void)commitToBranch:(id)arg1;
 - (void)commit:(id)arg1;
 - (void)_commit;
+- (void)finishInteractiveCommitForFiles:(id)arg1;
+- (void)startInteractiveCommitForFiles:(id)arg1;
 - (void)handleErrors:(id)arg1 forRequestsOfType:(int)arg2;
+- (BOOL)shouldEnableCommitToBranchButton;
 - (BOOL)shouldEnableCommitButton;
 - (BOOL)commitMessageRequiredForSourceTrees:(id)arg1;
 - (void)saveFilesAtFilePaths:(id)arg1;
+- (void)switchBranchesWithCompletionBlock:(id)arg1;
 - (unsigned long long)countOfCheckedItems;
 - (unsigned long long)countOfItemsThatCanBeCommitted;
 - (id)defaultDisabledFilePaths;
@@ -9980,6 +10586,9 @@ typedef struct {
 - (id)workspaceDataSource;
 - (void)beginStatusUpdate;
 - (void)beginSheetForWindow:(id)arg1;
+- (void)reviewFilesViewController:(id)arg1 didInstallComparisonEditor:(id)arg2;
+- (BOOL)validateMenuItem:(id)arg1;
+- (void)toggleAllowCommit;
 - (void)windowDidLoad;
 - (id)windowNibName;
 - (id)initWithWindow:(id)arg1;
@@ -9997,6 +10606,7 @@ typedef struct {
     IDESourceControlUpdateDataSource *_workspaceDataSource;
     IDESourceControlUpdateDataSource *_fileSystemDataSource;
     IDESourceControlUpdateDataSource *_flatDataSource;
+    BOOL _updateInProgress;
 }
 
 + (id)keyPathsForValuesAffectingSelectedMergeDescriptor;
@@ -10044,6 +10654,7 @@ typedef struct {
     IDESourceControlMergeDataSource *_workspaceDataSource;
     IDESourceControlMergeDataSource *_fileSystemDataSource;
     IDESourceControlMergeDataSource *_flatDataSource;
+    BOOL _mergeInProgress;
 }
 
 + (id)keyPathsForValuesAffectingSelectedMergeDescriptor;
@@ -10090,11 +10701,10 @@ typedef struct {
     DVTBorderedView *_outerBorderedView;
     IDEReviewFilesButtonCell *_checkboxCell;
     IDEReviewFilesImageCell *_imageCell;
-    NSImage *_successImage;
     NSImage *_failureImage;
     NSMutableArray *_checkedFilePaths;
     NSMutableArray *_completedFilePaths;
-    NSArray *_errorFilePaths;
+    NSMutableSet *_mixedStateFilePaths;
     NSMutableArray *_disabledFilePaths;
     NSArray *_viewChoices;
     NSIndexSet *_selectedViewIndexes;
@@ -10119,13 +10729,13 @@ typedef struct {
 + (void)initialize;
 + (id)keyPathsForValuesAffectingCheckedFilePaths;
 @property(copy) NSString *filterString; // @synthesize filterString=_filterString;
+@property(retain) NSMutableSet *mixedStateFilePaths; // @synthesize mixedStateFilePaths=_mixedStateFilePaths;
 @property BOOL showCheckboxes; // @synthesize showCheckboxes=_showCheckboxes;
 @property(copy) NSString *selectedChoiceWithoutWorkspaceKey; // @synthesize selectedChoiceWithoutWorkspaceKey=_selectedChoiceWithoutWorkspaceKey;
 @property(copy) NSString *selectedChoiceWithWorkspaceKey; // @synthesize selectedChoiceWithWorkspaceKey=_selectedChoiceWithWorkspaceKey;
 @property BOOL showFilter; // @synthesize showFilter=_showFilter;
 @property(readonly) DVTDocumentLocation *selectedDocumentLocation; // @synthesize selectedDocumentLocation=_selectedDocumentLocation;
 @property(readonly) NSArray *viewChoices; // @synthesize viewChoices=_viewChoices;
-@property(copy) NSArray *errorFilePaths; // @synthesize errorFilePaths=_errorFilePaths;
 @property(retain) NSMutableArray *disabledFilePaths; // @synthesize disabledFilePaths=_disabledFilePaths;
 @property(retain) NSMutableArray *completedFilePaths; // @synthesize completedFilePaths=_completedFilePaths;
 @property(retain) id <IDEReviewFilesDataSource> issueDataSource; // @synthesize issueDataSource=_issueDataSource;
@@ -10144,20 +10754,22 @@ typedef struct {
 - (double)outlineView:(id)arg1 heightOfRowByItem:(id)arg2;
 - (id)outlineView:(id)arg1 dataCellForTableColumn:(id)arg2 item:(id)arg3;
 - (id)outlineView:(id)arg1 childItemsForItem:(id)arg2;
-- (id)failureImage;
 - (id)successImage;
 - (id)imageCell;
 - (id)checkboxCell;
 - (id)navigableItemsInOutlineView:(id)arg1 forFilePaths:(id)arg2;
 - (id)navigableChildItemOfItem:(id)arg1 matchingFilePath:(id)arg2;
+- (void)addFilePathToMixedState:(id)arg1;
+- (void)removeFilePathFromMixedState:(id)arg1;
 - (void)uncheckItemsAtFilePaths:(id)arg1;
+- (void)checkItemsAtFilePaths:(id)arg1;
 - (void)refreshItemsAtFilePaths:(id)arg1;
 @property(readonly) IDESelection *contextMenuSelection;
 @property(retain) NSMenu *contextMenu;
 - (id)filterPredicate;
 - (void)updateSelectedDocumentLocation;
 @property int activity; // @synthesize activity=_activity;
-@property(retain) NSMutableArray *checkedFilePaths; // @synthesize checkedFilePaths=_checkedFilePaths;
+@property(retain) NSArray *checkedFilePaths; // @synthesize checkedFilePaths=_checkedFilePaths;
 @property(readonly) IDENavigatorOutlineView *currentOutlineView;
 - (void)setupViewChoices;
 - (void)reloadAvailableNavigators;
@@ -10234,17 +10846,18 @@ typedef struct {
     NSWindow *_attachedWindow;
     id _notificationToken;
     IDEComparisonNavTimelineView *_timelineView;
-    IDEComparisonEditor *_comparisonEditor;
+    IDEComparisonEditor *_comparisonEditor_dvtWeak;
 }
 
-@property __weak IDEComparisonEditor *comparisonEditor; // @synthesize comparisonEditor=_comparisonEditor;
 @property(retain) IDEComparisonNavTimelineView *timelineView; // @synthesize timelineView=_timelineView;
 @property(retain) id notificationToken; // @synthesize notificationToken=_notificationToken;
 @property(retain) IDEComparisonEditorTimelineNavBar *navTimelineBarContainerView; // @synthesize navTimelineBarContainerView=_navTimelineBarContainerView;
 - (void)animationDidStop:(id)arg1 finished:(BOOL)arg2;
 - (void)layoutContainerView;
+@property(readonly) IDEComparisonEditorChangesStepperView *changesStepperControl;
 @property(readonly) IDEPathControl *secondaryPathControl;
 @property(readonly) IDEPathControl *primaryPathControl;
+@property BOOL hideChangesStepperControl;
 @property BOOL hideTimelineButton;
 @property BOOL hideSecondaryPathControl;
 @property(retain) NSWindow *attachedWindow;
@@ -10252,10 +10865,11 @@ typedef struct {
 - (void)toggleTimelineVisibility:(id)arg1;
 - (void)hideTimeline;
 - (void)showTimeline;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)viewWillUninstall;
 - (void)loadView;
 - (id)initWithComparisonEditor:(id)arg1;
+@property __weak IDEComparisonEditor *comparisonEditor;
 
 @end
 
@@ -10270,6 +10884,10 @@ typedef struct {
 @property(retain) IDEComparisonEditor *comparisonEditor; // @synthesize comparisonEditor=_comparisonEditor;
 @property(retain) DVTSegmentedControl *submodeSegmentedControl; // @synthesize submodeSegmentedControl=_submodeSegmentedControl;
 @property(retain) DVTBorderedView *toolbarContainerView; // @synthesize toolbarContainerView=_toolbarContainerView;
+- (BOOL)validateMenuItem:(id)arg1;
+- (void)revertSelectedDifference:(id)arg1;
+- (void)toggleHideWhitespace:(id)arg1;
+- (void)copySourceChanges:(id)arg1;
 @property int editorSubmode;
 - (void)viewDidInstall;
 - (void)loadView;
@@ -10277,46 +10895,44 @@ typedef struct {
 
 @end
 
-@interface IDESourceControlLogItemViewController : DVTViewController
+@interface IDESourceControlLogItemViewController : DVTViewController <NSPopoverDelegate, IDESourceControlLogDetailDelegate>
 {
     IDESourceControlNameTokenView *_nameTokenView;
     DVTBorderedView *_borderedView;
     NSTextField *_messageTextField;
-    NSTextField *_revisionTextField;
     NSButton *_moreTextButton;
     NSTextField *_dateTextField;
     IDESourceControlLogItem *_logItem;
-    BOOL _messageTextFits;
-    BOOL _allMesssageShouldFit;
-    BOOL _isResizing;
-    BOOL _hasResizedView;
     double _minHeight;
-    IDESourceControlLogViewController *_owningController;
+    NSPopover *_logPopover;
+    IDESourceControlLogViewController *_owningController_dvtWeak;
     id <DVTObservingToken> _logTableViewBoundsChangedToken;
+    IDESourceControlLogDetailViewController *_detailController;
+    long long _trackingTag;
+    NSButton *_infoButton;
+    BOOL _messageTextFits;
 }
 
-+ (double)_setStyleAndComputeRequiredTextHeightForMessage:(id)arg1 withCurrentTextFrame:(struct CGRect)arg2;
 + (double)defaultMaxSize;
 + (id)messageTextAttributes;
++ (double)textHorizontalMargins;
 + (double)minHeight;
 + (id)defaultViewNibName;
 + (void)initialize;
-@property BOOL hasResizedView; // @synthesize hasResizedView=_hasResizedView;
 @property BOOL messageTextFits; // @synthesize messageTextFits=_messageTextFits;
-@property(retain) NSTextField *revisionTextField; // @synthesize revisionTextField=_revisionTextField;
-@property __weak IDESourceControlLogViewController *owningController; // @synthesize owningController=_owningController;
 @property(retain) IDESourceControlLogItem *logItem; // @synthesize logItem=_logItem;
+@property NSButton *infoButton; // @synthesize infoButton=_infoButton;
 @property(retain) NSTextField *dateTextField; // @synthesize dateTextField=_dateTextField;
-@property(retain) NSButton *moreTextButton; // @synthesize moreTextButton=_moreTextButton;
 @property(retain) NSTextField *messageTextField; // @synthesize messageTextField=_messageTextField;
 - (void)goToDiff:(id)arg1;
 - (void)goToCompare:(id)arg1;
 - (void)goToRevision:(id)arg1;
-- (void)compareToPriorRevision:(id)arg1;
+- (void)popoverDidClose:(id)arg1;
+- (void)popoverWillClose:(id)arg1;
+- (void)openDetail:(id)arg1;
+- (id)viewWindow;
+- (void)compareToPrevious;
 - (void)cleanup;
-- (BOOL)sizeToFitMessage:(double)arg1;
-- (BOOL)resizeToFitMessage;
-- (void)sizeToFullyFit:(id)arg1;
 - (BOOL)drawsShadow;
 @property(retain) DVTBorderedView *borderedView; // @synthesize borderedView=_borderedView;
 - (id)authorNameKeyPath;
@@ -10325,13 +10941,17 @@ typedef struct {
 - (id)displayLogItemMessage;
 - (void)viewWillUninstall;
 - (void)viewDidInstall;
+- (void)_setupTracking;
 - (void)_updateFrame;
+- (void)mouseExited:(id)arg1;
+- (void)mouseEntered:(id)arg1;
 - (void)loadView;
 - (id)dvtExtraBindings;
+@property __weak IDESourceControlLogViewController *owningController;
 
 @end
 
-@interface IDESourceControlLogViewController : IDEViewController
+@interface IDESourceControlLogViewController : IDEViewController <DVTDynamicTableViewDataSource, DVTDynamicTableViewDelegate>
 {
     DVTDynamicTableView *_logTableView;
     DVTBorderedView *_loadMoreView;
@@ -10439,6 +11059,8 @@ typedef struct {
     id <DVTObservingToken> _macroExpansionReferenceObservingToken;
     id <DVTObservingToken> _runContextObservingToken;
     NSMenu *_testDataMenu;
+    NSMutableSet *_forcingReloadForItems;
+    BOOL _forcingReloadAll;
 }
 
 + (void)initialize;
@@ -10471,7 +11093,15 @@ typedef struct {
 - (id)testableReferenceForTest:(id)arg1;
 - (BOOL)canExpandTestableReference:(id)arg1;
 - (void)indexChanged:(id)arg1;
-- (void)loadTestsForTestable:(id)arg1;
+- (void)cancelAndRemoveAllTestObservingTokens;
+- (void)unregisterSubtestsObservanceForTest:(id)arg1 inTestable:(id)arg2;
+- (id)subtestsObservanceForTest:(id)arg1 inTestable:(id)arg2;
+- (void)registerSubtestsObservance:(id)arg1 forTest:(id)arg2 inTestable:(id)arg3;
+- (void)loadTestsForTestable:(id)arg1 withItem:(id)arg2;
+- (void)forceReloadTestOutline;
+- (void)delayedForceReloadTestOutline;
+- (void)forceReloadTestOutlineItem:(id)arg1;
+- (void)delayedForceReloadTestOutlineItem:(id)arg1;
 - (id)_iconForBuildable:(id)arg1;
 - (void)_macroExpansionRunnableBuildableSelected:(id)arg1;
 - (void)_updateMacroExpansionDescriptionForSelectedItem;
@@ -10495,7 +11125,7 @@ typedef struct {
 - (id)currentToggleItemsAndEnable:(char *)arg1;
 - (void)viewWillUninstall;
 - (void)viewDidInstall;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)loadView;
 - (void)_setupLocationUI;
 - (void)_selectMenuItemForLocationForCell:(id)arg1 forItem:(id)arg2;
@@ -10559,16 +11189,14 @@ typedef struct {
 
 @interface IDECapsuleFooterView : DVTLayoutView_ML
 {
-    DVTGradientImageButton *_addButton;
-    DVTGradientImageButton *_removeButton;
+    NSMutableArray *_buttons;
     NSTextField *_labelField;
 }
 
-@property(readonly) DVTGradientImageButton *removeButton; // @synthesize removeButton=_removeButton;
-@property(readonly) DVTGradientImageButton *addButton; // @synthesize addButton=_addButton;
 - (void)layoutBottomUp;
 - (void)layoutTopDown;
 @property(copy) NSString *label;
+- (id)addButtonWithImage:(id)arg1;
 - (id)initWithFrame:(struct CGRect)arg1;
 
 @end
@@ -10586,8 +11214,8 @@ typedef struct {
     IDECapsuleFooterView *_footerView;
     id <IDECapsuleViewDelegate> _delegate;
     NSTrackingArea *_titleCursorArea;
-    IDEViewController<IDECapsuleViewController> *_viewController;
-    id _frameChangedObserver;
+    IDEViewController<IDECapsuleViewController> *_capsuleViewController_dvtWeak;
+    id <DVTObservingToken> _frameChangedObserver;
     id <DVTObservingToken> _disclosedObserver;
     struct {
         unsigned int supportedDragTypes:1;
@@ -10616,6 +11244,7 @@ typedef struct {
 - (BOOL)acceptsFirstResponder;
 - (void)_rename:(id)arg1;
 - (void)_remove:(id)arg1;
+- (void)tearDown;
 - (id)initWithCapsuleViewController:(id)arg1;
 - (id)initWithFrame:(struct CGRect)arg1;
 @property(readonly) BOOL _renamable;
@@ -10634,6 +11263,7 @@ typedef struct {
 - (struct CGRect)_footerRect;
 - (struct CGRect)_headerRect;
 @property(readonly) struct CGRect capsuleBounds;
+@property __weak IDEViewController<IDECapsuleViewController> *capsuleViewController;
 
 @end
 
@@ -10665,8 +11295,8 @@ typedef struct {
 
 @interface IDESpeechAlert : IDEAlert
 {
-    NSString *_voice;
     NSSpeechSynthesizer *_speech;
+    NSString *_voice;
 }
 
 @property(retain, nonatomic) NSString *voice; // @synthesize voice=_voice;
@@ -10674,6 +11304,7 @@ typedef struct {
 - (void)runForEvent:(id)arg1 inWorkspace:(id)arg2 context:(id)arg3 completionBlock:(id)arg4;
 - (id)initWithPropertyList:(id)arg1;
 - (id)propertyList;
+- (id)valuesForProperty:(id)arg1;
 - (id)availableVoices;
 - (id)init;
 
@@ -10681,8 +11312,8 @@ typedef struct {
 
 @interface IDESoundAlert : IDEAlert
 {
-    NSString *_soundPath;
     NSSound *_sound;
+    NSString *_soundPath;
 }
 
 + (id)systemSoundPaths;
@@ -10693,6 +11324,7 @@ typedef struct {
 - (void)runForEvent:(id)arg1 inWorkspace:(id)arg2 context:(id)arg3 completionBlock:(id)arg4;
 - (id)initWithPropertyList:(id)arg1;
 - (id)propertyList;
+- (id)valuesForProperty:(id)arg1;
 - (id)systemSoundPaths;
 - (id)init;
 
@@ -10745,6 +11377,7 @@ typedef struct {
 - (void)_finishSelectIssue:(id)arg1;
 - (id)initWithPropertyList:(id)arg1;
 - (id)propertyList;
+- (id)valuesForProperty:(id)arg1;
 - (id)findLogInItem:(id)arg1;
 - (id)findLogInWorkspace:(id)arg1;
 - (id)findIssue:(id)arg1 inItem:(id)arg2;
@@ -10767,6 +11400,7 @@ typedef struct {
 @property(retain) NSString *path; // @synthesize path=_path;
 - (int)alertPropertyListVersion;
 - (void)runForEvent:(id)arg1 inWorkspace:(id)arg2 context:(id)arg3 completionBlock:(id)arg4;
+- (id)valuesForProperty:(id)arg1;
 - (id)initWithPropertyList:(id)arg1;
 - (id)propertyList;
 
@@ -10792,21 +11426,25 @@ typedef struct {
 
 @interface IDEShowDebuggerAlert : IDEAlert
 {
-    NSString *_destination;
+    BOOL _finalOutputDelayed;
     int _action;
+    NSString *_destination;
     int _visibility;
 }
 
 @property(nonatomic) int visibility; // @synthesize visibility=_visibility;
-@property(nonatomic) int action; // @synthesize action=_action;
 @property(retain, nonatomic) NSString *destination; // @synthesize destination=_destination;
+@property(nonatomic) int action; // @synthesize action=_action;
+- (BOOL)finalOutputDelayed;
+- (void)setFinalOutputDelayed:(BOOL)arg1;
 - (int)alertPropertyListVersion;
 - (void)runForEvent:(id)arg1 inWorkspace:(id)arg2 context:(id)arg3 completionBlock:(id)arg4;
 - (void)_runForRunGeneratesOutputEventInWorkspace:(id)arg1 context:(id)arg2 showIfOutput:(long long)arg3 hideIfNoOutput:(long long)arg4;
+- (void)_configureDebugAreaInWorkspaceTabControler:(id)arg1;
 - (void)_resetActionToExternal;
-- (void)setActionWithoutKVO:(int)arg1;
 - (id)initWithPropertyList:(id)arg1;
 - (id)propertyList;
+- (id)valuesForProperty:(id)arg1;
 - (id)visibilities;
 - (id)actions;
 - (id)destinations;
@@ -10833,6 +11471,7 @@ typedef struct {
 - (void)runForEvent:(id)arg1 inWorkspace:(id)arg2 context:(id)arg3 completionBlock:(id)arg4;
 - (id)initWithPropertyList:(id)arg1;
 - (id)propertyList;
+- (id)valuesForProperty:(id)arg1;
 - (id)actions;
 - (id)navigators;
 - (id)init;
@@ -10879,7 +11518,11 @@ typedef struct {
 
 @interface IDEDialogAlertViewController : IDEAlertViewController
 {
+    NSTextField *alertKindLabel;
 }
+
+@property(retain) NSTextField *alertKindLabel; // @synthesize alertKindLabel;
+- (void)loadView;
 
 @end
 
@@ -10906,21 +11549,28 @@ typedef struct {
 
 @end
 
-@interface IDEEditorHistoryController : NSObject
+@interface IDEEditorHistoryController : NSObject <DVTInvalidation_New>
 {
     NSMutableArray *_previousHistoryItems;
     NSMutableArray *_nextHistoryItems;
     DVTDelayedMenuGradientImageButton *_backButton;
     DVTDelayedMenuGradientImageButton *_forwardButton;
     id <IDEEditorContextProtocol> _editorContext;
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
 + (id)keyPathsForValuesAffectingCanGoForwardByCommand;
 + (id)keyPathsForValuesAffectingCanGoBackByCommand;
 + (id)keyPathsForValuesAffectingCanSelectForwardButton;
 + (id)keyPathsForValuesAffectingCanSelectBackButton;
++ (BOOL)automaticallyNotifiesObserversOfValue;
 + (id)_historyButtonWithImageNamed:(id)arg1 width:(double)arg2 height:(double)arg3;
 + (void)initialize;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
+@property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 @property(readonly) DVTDelayedMenuGradientImageButton *forwardButton; // @synthesize forwardButton=_forwardButton;
 @property(readonly) DVTDelayedMenuGradientImageButton *backButton; // @synthesize backButton=_backButton;
 - (void)goBackInHistoryByCommandWithShiftPlusAlternate:(id)arg1;
@@ -10944,6 +11594,10 @@ typedef struct {
 @property(readonly) BOOL canSelectForwardButton;
 @property(readonly) BOOL canSelectBackButton;
 - (BOOL)canSelectButtonGoingForward:(BOOL)arg1;
+- (void)primitiveInvalidate;
+- (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (void)navigateAwayFromCurrentDocumentWithURL:(id)arg1;
 - (id)_lastHistoryItemNotMatchingDocumentURL:(id)arg1 goingForward:(BOOL)arg2;
 - (void)_removeHistoryItemsForDocumentURL:(id)arg1 goingForward:(BOOL)arg2;
@@ -10964,10 +11618,21 @@ typedef struct {
 
 @interface IDEComparisonEditorSubmode : IDEViewController
 {
-    IDEComparisonEditor *_comparisonEditor;
+    IDEComparisonEditor *_comparisonEditor_dvtWeak;
 }
 
 + (double)emptyEditorLoadingDelay;
+- (void)setCanSelectNext:(BOOL)arg1;
+@property(readonly) BOOL canSelectNext;
+- (void)setCanSelectPrevious:(BOOL)arg1;
+@property(readonly) BOOL canSelectPrevious;
+- (void)offsetCurrentSelectedIndexBy:(long long)arg1;
+- (void)setDifferenceMenu:(id)arg1;
+- (BOOL)validateMenuItem:(id)arg1;
+- (void)comparisonContextMenu_revertSelectedDiffDescriptor:(id)arg1;
+- (BOOL)canRevertSelectedDifference;
+- (void)copyDiff;
+- (BOOL)canCopyDiff;
 - (void)willBeRemovedFromComparisonEditor;
 - (void)_willOpenSpecifier:(id)arg1;
 - (void)revertComparisonEditorStateWithDictionary:(id)arg1;
@@ -10988,47 +11653,38 @@ typedef struct {
 
 @end
 
-@interface _IDEDividerCell : NSCell
-{
-}
-
-- (id)copyWithZone:(struct _NSZone *)arg1;
-- (void)setStringValue:(id)arg1;
-- (void)drawWithFrame:(struct CGRect)arg1 inView:(id)arg2;
-
-@end
-
 @interface IDEAlertsPrefsPaneController : IDEViewController
 {
-    NSPointerArray *_alertEvents;
-    NSArray *_customAlertEvents;
+    DVTPointerArray *_alertEvents;
     NSCell *_dividerCell;
-    IDEAlertsView *_alertsView;
-    NSTableView *_tableView;
-    IDEControlGroup *_controlGroup;
     NSMutableArray *_observationTokens;
     NSMutableArray *_customObservationTokens;
-    DVTGradientImageButton *_addButton;
-    DVTGradientImageButton *_removeButton;
     BOOL _ignoreNextEdit;
+    IDEControlGroup *_controlGroup;
+    IDEAlertsView *_alertsView;
+    DVTGradientImageButton *_addButton;
+    NSArray *_customAlertEvents;
+    DVTTableView *_tableView;
+    DVTGradientImageButton *_removeButton;
 }
 
+@property(retain, nonatomic) DVTGradientImageButton *removeButton; // @synthesize removeButton=_removeButton;
+@property(retain, nonatomic) DVTTableView *tableView; // @synthesize tableView=_tableView;
 @property(copy, nonatomic) NSArray *customAlertEvents; // @synthesize customAlertEvents=_customAlertEvents;
-@property(retain, nonatomic) NSButton *removeButton; // @synthesize removeButton=_removeButton;
-@property(retain, nonatomic) NSButton *addButton; // @synthesize addButton=_addButton;
-@property(retain, nonatomic) IDEControlGroup *controlGroup; // @synthesize controlGroup=_controlGroup;
-@property(retain, nonatomic) NSTableView *tableView; // @synthesize tableView=_tableView;
+@property(retain, nonatomic) DVTGradientImageButton *addButton; // @synthesize addButton=_addButton;
 @property(retain, nonatomic) IDEAlertsView *alertsView; // @synthesize alertsView=_alertsView;
+@property(retain, nonatomic) IDEControlGroup *controlGroup; // @synthesize controlGroup=_controlGroup;
+- (void)beginEditingFromClick:(id)arg1;
 - (void)removeCustomAlertEvent:(id)arg1;
 - (void)addCustomAlertEvent:(id)arg1;
 - (void)refreshKeyBindings;
 - (void)observeValueForKeyPath:(id)arg1 ofObject:(id)arg2 change:(id)arg3 context:(void *)arg4;
+- (BOOL)tableView:(id)arg1 doCommandBySelector:(SEL)arg2;
 - (void)tableViewSelectionDidChange:(id)arg1;
 - (BOOL)tableView:(id)arg1 shouldSelectRow:(long long)arg2;
-- (void)tableView:(id)arg1 willDisplayCell:(id)arg2 forTableColumn:(id)arg3 row:(long long)arg4;
-- (id)tableView:(id)arg1 dataCellForTableColumn:(id)arg2 row:(long long)arg3;
+- (BOOL)tableView:(id)arg1 isGroupRow:(long long)arg2;
+- (id)tableView:(id)arg1 viewForTableColumn:(id)arg2 row:(long long)arg3;
 - (BOOL)tableView:(id)arg1 shouldEditTableColumn:(id)arg2 row:(long long)arg3;
-- (double)tableView:(id)arg1 heightOfRow:(long long)arg2;
 - (void)tableView:(id)arg1 setKeyboardShortcut:(id)arg2 forTableColumn:(id)arg3 row:(long long)arg4;
 - (void)tableView:(id)arg1 setObjectValue:(id)arg2 forTableColumn:(id)arg3 row:(long long)arg4;
 - (id)tableView:(id)arg1 objectValueForTableColumn:(id)arg2 row:(long long)arg3;
@@ -11037,6 +11693,9 @@ typedef struct {
 - (void)loadView;
 - (id)view;
 - (void)awakeFromNib;
+- (void)reloadTableData;
+- (void)restoreSelection;
+- (id)groupRowAttributes;
 
 @end
 
@@ -11053,7 +11712,7 @@ typedef struct {
     BOOL _stopped;
     BOOL _alertedIssue;
     BOOL _cleanupWhenDoneRecording;
-    NSMapTable *_existingIssues;
+    DVTMapTable *_existingIssues;
     IDEIssue *_firstIssue;
 }
 
@@ -11076,27 +11735,36 @@ typedef struct {
 
 @end
 
-@interface IDERunAlertMonitor : NSObject <DVTInvalidation>
+@interface IDERunAlertMonitor : NSObject <DVTInvalidation_New>
 {
     IDEWorkspaceTabController *_workspaceTabController;
     id _currentLaunchSessionStateNotificationObserver;
     id _currentLaunchSessionTargetOutputNotificationObserver;
-    BOOL _targetOutputStateDetermined;
     BOOL _isInvalidated;
+    BOOL _isInvalidating;
     DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (void)executionComplete;
 - (void)executionStart;
+- (void)_setHasDeterminedOutput:(id)arg1;
+- (BOOL)_hasDeterminedOutput;
 - (void)_setHasDoneExecutionStopped;
 - (BOOL)_hasDoneExecutionStopped;
 - (void)_setHasDoneExecutionStarted;
 - (BOOL)_hasDoneExecutionStarted;
 - (void)_runEvent:(id)arg1 inWorkspace:(id)arg2 modifyContext:(id)arg3;
 - (void)_targetOutputStateChanged;
+- (BOOL)_targetHasOutput:(id)arg1;
 - (id)_createInternalHideIfNoOutputAlertForRunCompleteEvent:(id)arg1;
 - (id)initWithWorkspaceTabController:(id)arg1;
 
@@ -11143,8 +11811,9 @@ typedef struct {
 @property(copy) NSString *name; // @synthesize name=_name;
 @property(copy) NSString *identifier; // @synthesize identifier=_identifier;
 @property(copy) NSDictionary *requiredOptions; // @synthesize requiredOptions=_requiredOptions;
-@property(retain) id <IDETemplateOptionParent> parent; // @synthesize parent=_parent;
+@property __weak id <IDETemplateOptionParent> parent; // @synthesize parent=_parent;
 - (void)addImportMacroToEngine:(id)arg1;
+- (id)_importStringFromWorkspaceVisibilityForFilePath:(id)arg1;
 - (id)identifierValue;
 - (id)subclassesForClass:(id)arg1;
 - (BOOL)shouldPersistValue;
@@ -11370,6 +12039,7 @@ typedef struct {
 - (id)buildablesNotPartOfExistingContextAmongBuildables:(id)arg1;
 - (BOOL)isAutocreationSuppressedForBuildable:(id)arg1;
 - (id)candidateBuildablesForcedAutocreate:(BOOL)arg1;
+- (id)orderBuildables:(id)arg1;
 - (void)autocreateSchemesForcingAutocreate:(BOOL)arg1;
 - (id)buildablesToAutocreateSchemesForcedAutocreate:(BOOL)arg1;
 - (id)parentBuildableForBuildable:(id)arg1;
@@ -11450,7 +12120,6 @@ typedef struct {
     NSTrackingArea *_mainTrackingArea;
     CALayer *_previousHitLayer;
     struct CGPoint _centerOfMagnification;
-    struct CGLayer *_threePartTickLayer;
     NSMutableArray *_loadedRevisions;
     NSMutableDictionary *_revisionNameToRevisionTable;
     NSMutableDictionary *_revisionNameToLayerTable;
@@ -11472,7 +12141,6 @@ typedef struct {
 @property(retain) NSMutableDictionary *revisionNameToRevisionTable; // @synthesize revisionNameToRevisionTable=_revisionNameToRevisionTable;
 @property(retain) NSMutableDictionary *revisionNameToLayerTable; // @synthesize revisionNameToLayerTable=_revisionNameToLayerTable;
 @property(retain) NSMutableArray *loadedRevisions; // @synthesize loadedRevisions=_loadedRevisions;
-@property struct CGLayer *threePartTickLayer; // @synthesize threePartTickLayer=_threePartTickLayer;
 @property struct CGPoint centerOfMagnification; // @synthesize centerOfMagnification=_centerOfMagnification;
 @property(readonly) unsigned long long revisionsPerPage;
 - (void)layoutSublayersOfLayer:(id)arg1;
@@ -11492,9 +12160,6 @@ typedef struct {
 - (void)layoutOverlayWindow;
 - (id)rightInfoOverlayLayer;
 - (struct CGRect)rightInfoOverlayRect;
-- (void)dealloc;
-- (void)finalize;
-- (void)_teardown;
 - (void)updateBoundComparisonDocumentLocation;
 - (BOOL)_detectedBranchChange;
 - (id)dvtExtraBindings;
@@ -11508,23 +12173,28 @@ typedef struct {
     id _invalidationBacktrace;
 }
 
-@property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
+- (id)invalidationBacktrace;
 - (void)invalidate;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (BOOL)isValid;
 
 @end
 
-@interface IDESourceControlComparisonEditorDataSource : NSObject <IDEComparisonEditorDataSource, DVTInvalidation>
+@interface IDESourceControlComparisonEditorDataSource : NSObject <IDEComparisonEditorDataSource, DVTInvalidation_New>
 {
-    DVTStackBacktrace *_invalidationBacktrace;
     IDEEditorDocument *_originalDocument;
-    BOOL _isInvalidated;
     NSOperationQueue *_navItemQueue;
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
 + (id)dataSourceLogAspect;
-@property(retain) IDEEditorDocument *originalDocument; // @synthesize originalDocument=_originalDocument;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
+@property(retain) IDEEditorDocument *originalDocument; // @synthesize originalDocument=_originalDocument;
 - (id)documentForAncestorDocumentLocation:(id)arg1 completionBlock:(id)arg2;
 - (id)documentForSecondaryDocumentLocation:(id)arg1 completionBlock:(id)arg2;
 - (id)documentForPrimaryDocumentLocation:(id)arg1 completionBlock:(id)arg2;
@@ -11535,14 +12205,16 @@ typedef struct {
 - (id)_calculateSelectedRevisionForWorkingTreeItem:(id)arg1 selectedBranch:(id)arg2 selectedRevisionIdenfier:(id)arg3 baseRevision:(id)arg4 headRevision:(id)arg5 allRevisions:(id)arg6 error:(id *)arg7;
 - (id)_calculateRevisionsForWorkingTreeItem:(id)arg1 withSelectedRevision:(id *)arg2 selectedBranch:(id)arg3 selectedRevisionIdenfier:(id)arg4 currentRevision:(id)arg5 error:(id *)arg6;
 - (id)_selectedRevisionForRevisionIdentifier:(id)arg1 currentRevision:(id)arg2 inRevisions:(id)arg3;
-- (id)_navigableItemsForPrimaryDocumentLocation:(id)arg1 secondaryDocumentLocation:(id)arg2 usingNavigableItemCoordinator:(id)arg3 usingQueue:(id)arg4 completionBlock:(id)arg5;
-- (id)navigableItemsForPrimaryDocumentLocation:(id)arg1 secondaryDocumentLocation:(id)arg2 usingNavigableItemCoordinator:(id)arg3 completionBlock:(id)arg4;
+- (id)_navigableItemsForPrimaryDocumentLocation:(id)arg1 secondaryDocumentLocation:(id)arg2 usingNavigableItemCoordinator:(id)arg3 usingQueue:(id)arg4 forceReload:(BOOL)arg5 completionBlock:(id)arg6;
+- (id)navigableItemsForPrimaryDocumentLocation:(id)arg1 secondaryDocumentLocation:(id)arg2 usingNavigableItemCoordinator:(id)arg3 forceReload:(BOOL)arg4 completionBlock:(id)arg5;
 - (id)_documentLocationForNavigableItem:(id)arg1;
 - (id)secondaryDocumentLocationForNavigableItem:(id)arg1;
 - (id)primaryDocumentLocationForNavigableItem:(id)arg1;
 - (id)_documentLocationForRevisionName:(id)arg1 inBranch:(id)arg2;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (id)init;
 
 @end
@@ -11620,6 +12292,15 @@ typedef struct {
 
 @end
 
+@interface IDESourceControlDummyNavigableItem : IDEKeyDrivenNavigableItem
+{
+}
+
++ (id)keyPathsForValuesAffectingName;
+- (id)name;
+
+@end
+
 @interface IDESourceControlWorkingTreeItemNavigableItem : IDEKeyDrivenNavigableItem
 {
 }
@@ -11650,6 +12331,7 @@ typedef struct {
 {
     NSMutableArray *_computedChildItems;
     IDESourceControlTreeItem *_treeItem;
+    NSError *_error;
 }
 
 @property(retain) IDESourceControlTreeItem *treeItem; // @synthesize treeItem=_treeItem;
@@ -11660,10 +12342,8 @@ typedef struct {
 
 @end
 
-@interface IDEFileTextSettings : NSObject <DVTInvalidation>
+@interface IDEFileTextSettings : NSObject <DVTInvalidation_New>
 {
-    BOOL _isInvalidated;
-    DVTStackBacktrace *_invalidationBacktrace;
     IDEFileReference *_fileReference;
     unsigned long long _textEncoding;
     long long _tabWidth;
@@ -11671,8 +12351,15 @@ typedef struct {
     unsigned long long _lineEndings;
     BOOL _usesTabs;
     BOOL _wrapsLines;
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 @property BOOL wrapsLines; // @synthesize wrapsLines=_wrapsLines;
 @property long long indentWidth; // @synthesize indentWidth=_indentWidth;
@@ -11689,8 +12376,10 @@ typedef struct {
 - (void)updateTextEncoding;
 - (void)updateLineEndings;
 - (id)_textPreferences;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (void)_clearFileReferenceObservations;
 - (id)init;
 
@@ -11706,11 +12395,13 @@ typedef struct {
     id _annotationRepresentedObject;
     id _exploreAnnotationRepresentedObject;
     BOOL _annotationWantsIndicatorAnimation;
+    BOOL _highlightSelection;
 }
 
 + (id)structureEditorOpenSpecifierForDocumentURL:(id)arg1 inWorkspace:(id)arg2 annotationRepresentedObject:(id)arg3 wantsIndicatorAnimation:(BOOL)arg4 exploreAnnotationRepresentedObject:(id)arg5 error:(id *)arg6;
 + (id)structureEditorOpenSpecifierForDocumentLocation:(id)arg1 inWorkspace:(id)arg2 error:(id *)arg3;
 + (id)structureEditorOpenSpecifiersForNavigableItems:(id)arg1 inWorkspace:(id)arg2 error:(id *)arg3;
+@property BOOL highlightSelection; // @synthesize highlightSelection=_highlightSelection;
 @property(readonly) DVTFileDataType *fileDataType; // @synthesize fileDataType=_fileDataType;
 @property(readonly) IDENavigableItemArchivableRepresentation *navigableItemRepresentation; // @synthesize navigableItemRepresentation=_archivableRepresentation;
 @property(readonly) DVTDocumentLocation *locationToSelect; // @synthesize locationToSelect=_locationToSelect;
@@ -11801,7 +12492,7 @@ typedef struct {
 {
     NSAttributedString *_cachedAttributedCountString;
     NSString *_issueTypeDisplayName;
-    CATextLayer *_textLayer;
+    DVTTextLayer *_textLayer;
     CALayer *_imageLayer;
     long long _count;
 }
@@ -11852,14 +12543,13 @@ typedef struct {
 + (id)_archtiectureForTarget:(id)arg1;
 + (void)askUserForProcessIdentifierAndAttachToItFromWorkspaceTabController:(id)arg1;
 + (void)attachToProcess:(id)arg1 fromWorkspaceTabController:(id)arg2;
-- (void)processIDEntered:(id)arg1 debuggerToUse:(id)arg2;
-- (void)processNameEntered:(id)arg1 debuggerToUse:(id)arg2;
-- (void)processInformationSelected:(id)arg1 debuggerToUse:(id)arg2;
+- (void)processIDEntered:(int)arg1 debuggerSpecifier:(id)arg2 debugProcessAsUID:(unsigned int)arg3;
+- (void)processNameEntered:(id)arg1 debuggerSpecifier:(id)arg2 debugProcessAsUID:(unsigned int)arg3;
+- (void)processInformationSelected:(id)arg1 debuggerSpecifier:(id)arg2 debugProcessAsUID:(unsigned int)arg3;
 - (void)_showAlertForNonDebuggableArchitecture:(id)arg1;
-- (void)_attachToPID:(int)arg1 usingDebugger:(id)arg2 displayName:(id)arg3 processPath:(id)arg4 targetArchitecture:(id)arg5 launchStyle:(int)arg6;
-- (void)_attachToProcessID:(id)arg1 usingDebugger:(id)arg2;
-- (void)_attachToProcessName:(id)arg1 usingDebugger:(id)arg2;
-- (void)_attachToProcess:(id)arg1 usingDebugger:(id)arg2;
+- (void)_attachToPID:(int)arg1 debuggerSpecifier:(id)arg2 debugProcessAsUID:(unsigned int)arg3 displayName:(id)arg4 processPath:(id)arg5 targetArchitecture:(id)arg6 launchStyle:(int)arg7;
+- (void)_attachToProcessName:(id)arg1 debuggerSpecifier:(id)arg2 debugProcessAsUID:(unsigned int)arg3;
+- (void)_attachToProcess:(id)arg1 debuggerSpecifier:(id)arg2 debugProcessAsUID:(unsigned int)arg3;
 - (id)_initWithWorkspaceTabController:(id)arg1;
 
 @end
@@ -11919,6 +12609,7 @@ typedef struct {
 
 + (id)keyPathsForValuesAffectingIsModified;
 + (id)keyBindingWithTitle:(id)arg1 parentTitle:(id)arg2 group:(id)arg3 actions:(id)arg4 keyboardShortcuts:(id)arg5;
++ (id)_stringFromModifierMask:(unsigned long long)arg1;
 + (unsigned long long)_defaultMaxNumberOfShortcuts;
 @property unsigned long long maxNumberOfShortcuts; // @synthesize maxNumberOfShortcuts=_maxNumberOfShortcuts;
 @property(copy, nonatomic) NSArray *keyboardShortcuts; // @synthesize keyboardShortcuts=_keyboardShortcuts;
@@ -11986,6 +12677,7 @@ typedef struct {
 - (void)endEditing:(id)arg1;
 - (void)selectWithFrame:(struct CGRect)arg1 inView:(id)arg2 editor:(id)arg3 delegate:(id)arg4 start:(long long)arg5 length:(long long)arg6;
 - (id)fieldEditorForView:(id)arg1;
+- (id)attributedStringValueForEditing:(BOOL)arg1;
 - (id)attributedStringValue;
 - (void)setObjectValue:(id)arg1;
 - (id)copyWithZone:(struct _NSZone *)arg1;
@@ -12009,6 +12701,7 @@ typedef struct {
 @property(retain, nonatomic) NSColor *borderColor; // @synthesize borderColor=_borderColor;
 @property(readonly) IDEKeyBindingFieldCell *editingCell; // @synthesize editingCell=_editingCell;
 - (BOOL)validateUserInterfaceItem:(id)arg1;
+- (BOOL)shouldDrawInsertionPoint;
 - (void)drawRect:(struct CGRect)arg1;
 - (id)acceptableDragTypes;
 - (id)writablePasteboardTypes;
@@ -12025,6 +12718,7 @@ typedef struct {
 - (void)viewDidMoveToWindow;
 - (void)_restoreHotKeyOperationMode;
 - (void)_disableHotKeyOperationMode;
+- (void)setFrame:(struct CGRect)arg1;
 
 @end
 
@@ -12110,7 +12804,7 @@ typedef struct {
     IDEKeyBindingPreferenceSet *_keyBindingPreferenceSet;
     NSMutableArray *_keyBindings;
     NSMutableDictionary *_keyBindingForCommandIdentifier;
-    NSMapTable *_keyBindingOrSetForRawKeyboardShortcut;
+    DVTMapTable *_keyBindingOrArrayForRawKeyboardShortcut;
     NSUndoManager *_undoManager;
     struct _IDEKeyBindingSetFlags _kbsFlags;
 }
@@ -12156,12 +12850,18 @@ typedef struct {
     IDEKeyboardShortcut *_nextKeyboardShortcut;
 }
 
++ (id)commandKeyHumanRedableName;
++ (id)shiftKeyHumanRedableName;
++ (id)alternateKeyHumanRedableName;
++ (id)controlKeyHumanRedableName;
++ (id)humanReadableNameForKeyEquivalentCharacter:(unsigned short)arg1;
 + (id)translateKeyEquivalent:(id)arg1 modifierMask:(unsigned long long)arg2;
 + (id)emptyKeyboardShortcut;
 + (id)keyboardShortcutFromStringRepresentation:(id)arg1;
 + (id)keyboardShortcutWithKeyEquivalent:(id)arg1 modifierMask:(unsigned long long)arg2;
 @property(copy) IDEKeyboardShortcut *nextKeyboardShortcut; // @synthesize nextKeyboardShortcut=_nextKeyboardShortcut;
 @property(readonly) NSString *stringRepresentation;
+@property(readonly) NSString *humanRedableName;
 @property(readonly) NSString *localizedDisplayName;
 @property(readonly) NSString *displayName;
 @property(readonly) NSString *localizedModifierMaskDisplayName;
@@ -12297,6 +12997,7 @@ typedef struct {
     NSTextField *_statusTextField;
 }
 
++ (id)keyPathsForValuesAffectingSearchWords;
 @property(copy) NSString *statusText; // @synthesize statusText=_statusText;
 @property(nonatomic) int searchScope; // @synthesize searchScope=_searchScope;
 @property(nonatomic) int displayScope; // @synthesize displayScope=_displayScope;
@@ -12319,6 +13020,7 @@ typedef struct {
 - (id)_findResultAttributes;
 - (void)keyBindingFieldCellWillRemoveKeyboardShortcut:(id)arg1;
 - (void)keyBindingCellFieldDidEndEditing:(id)arg1;
+- (void)_userUpdateAlternateKeyBindingsForKeyBinding:(id)arg1;
 - (void)_updateAlternateKeyBindingsForKeyBinding:(id)arg1;
 - (id)keyBindingFieldCell:(id)arg1 validatedKeyboardShortcut:(id)arg2;
 - (id)keyBindingFieldCell:(id)arg1 alternateKeyBindingsForKeyBinding:(id)arg2;
@@ -12334,9 +13036,9 @@ typedef struct {
 - (void)_showConflictedKeyBindingsStatusForKeyBinding:(id)arg1;
 - (id)filterButtonMenu;
 - (id)filterDefinitionIdentifier;
+@property(readonly) NSArray *searchWords;
 - (void)updateKeyBindingsItems;
 - (BOOL)_keyBindingOutlineViewNeedsGroupItem;
-- (id)_searchFilterPredicateWithSearchString:(id)arg1 scope:(int)arg2;
 - (void)viewWillUninstall;
 - (void)viewDidInstall;
 - (void)loadView;
@@ -12451,7 +13153,7 @@ typedef struct {
 
 @end
 
-@interface IDERefactoringWindowController : NSWindowController <IDERefactoringSessionDelegate, IDEReviewFilesDataSource, IDEComparisonEditorDataSource, NSAnimationDelegate, DVTInvalidation>
+@interface IDERefactoringWindowController : NSWindowController <IDERefactoringSessionDelegate, IDEReviewFilesDataSource, IDEComparisonEditorDataSource, NSAnimationDelegate, DVTInvalidation_New>
 {
     NSView *_contentContainerView;
     NSView *_reviewFilesContainerView;
@@ -12476,7 +13178,7 @@ typedef struct {
     id _groupForNewFiles;
     NSMutableSet *_documentsToRelease;
     NSMutableSet *_documentsToClose;
-    NSMutableSet *_lockedDocuments;
+    NSMutableSet *_readOnlyDocuments;
     NSArray *_workspaceNavigableItems;
     NSArray *_flatNavigableItems;
     NSArray *_issueNavigableItems;
@@ -12488,15 +13190,20 @@ typedef struct {
     IDENavigableItemCoordinator *_workspaceNavItemCoordinator;
     IDENavigableItemCoordinator *_flatFileNavItemCoordinator;
     IDENavigableItemCoordinator *_issueNavItemCoordinator;
-    BOOL _invalidated;
-    DVTStackBacktrace *_invalidationBacktrace;
     NSOperationQueue *_queue;
     BOOL _hasFatalError;
     struct dispatch_semaphore_s *_errorResponseWaiter;
     struct dispatch_semaphore_s *_animationWaiter;
     struct dispatch_semaphore_s *_saveWaiter;
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 @property(retain) IDEWorkspaceDocument *workspaceDocument; // @synthesize workspaceDocument=_workspaceDocument;
 @property(retain) NSArray *issueNavigableItems; // @synthesize issueNavigableItems=_issueNavigableItems;
@@ -12547,8 +13254,10 @@ typedef struct {
 - (void)_beginReviewFilesTransition;
 - (void)refactoringSheetDidEnd:(id)arg1 returnCode:(long long)arg2 contextInfo:(void *)arg3;
 - (void)beginSheetForWindow:(id)arg1;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (id)initWithWindowNibName:(id)arg1 symbol:(id)arg2;
 
 @end
@@ -12624,7 +13333,7 @@ typedef struct {
 
 @interface IDEActivityMultiActionIndicatorLayer : DVTClickableLayer
 {
-    CATextLayer *_textLayer;
+    DVTTextLayer *_textLayer;
     long long _count;
 }
 
@@ -12653,21 +13362,13 @@ typedef struct {
 @property(readonly) IDEExecutionAction *action; // @synthesize action=_action;
 - (void)capsuleView:(id)arg1 setTitle:(id)arg2;
 - (void)capsuleViewDidClickRemoveButton:(id)arg1;
-@property(readonly) BOOL canUndisclose;
-@property BOOL canRemoveItems;
+- (BOOL)canUndisclose;
+- (BOOL)canRemoveItems;
 - (BOOL)capsuleViewCanBeRenamed:(id)arg1;
 - (BOOL)capsuleViewCanBeRemoved:(id)arg1;
 - (id)capsuleViewTitleForEditing:(id)arg1;
-@property(readonly) NSString *titleForDisplay;
+- (id)titleForDisplay;
 - (id)initWithAction:(id)arg1;
-
-// Remaining properties
-@property BOOL canAddItems;
-@property(readonly) BOOL canRemove;
-@property(readonly) BOOL canRename;
-@property(readonly) BOOL disclosedByDefault;
-@property(readonly) NSString *footerLabel;
-@property(readonly) NSImage *icon;
 
 @end
 
@@ -12698,6 +13399,7 @@ typedef struct {
     BOOL _didSheetEnd;
     BOOL _userHasEditedName;
     NSString *_name;
+    id <IDEClientTrackingToken> _clientTrackingToken;
 }
 
 + (BOOL)automaticallyNotifiesObserversForName;
@@ -12766,12 +13468,13 @@ typedef struct {
 // Not exported
 @interface IDEComparisonLineLayer : CALayer
 {
-    CATextLayer *_labelLayer;
+    DVTTextLayer *_labelLayer;
+    CALayer *_imageLineLayer;
     NSString *_revisionLabel;
     int _selection;
     double _magnification;
     IDEComparisonNavTimelineView *_owner;
-    id _representedObject;
+    id _representedObject_dvtWeak;
     NSDate *_date;
     int _lineLayerStyle;
     BOOL _mouseOver;
@@ -12780,12 +13483,9 @@ typedef struct {
 
 + (id)layerWithOwner:(id)arg1;
 + (id)layer;
-+ (struct CGImage *)tickFillImageRef;
-+ (struct CGImage *)tickRightEndcapImageRef;
-+ (struct CGImage *)tickLeftEndcapImageRef;
++ (id)tickImage;
 + (void)initialize;
 @property(retain) NSDate *date; // @synthesize date=_date;
-@property __weak id representedObject; // @synthesize representedObject=_representedObject;
 @property BOOL validated; // @synthesize validated=_validated;
 @property BOOL mouseOver; // @synthesize mouseOver=_mouseOver;
 @property double magnification; // @synthesize magnification=_magnification;
@@ -12802,6 +13502,7 @@ typedef struct {
 - (double)preferredHeight;
 - (id)initWithOwner:(id)arg1;
 - (id)init;
+@property __weak id representedObject;
 
 @end
 
@@ -12810,6 +13511,7 @@ typedef struct {
     NSTextField *_placeholderTextField;
 }
 
+@property(retain) NSTextField *placeholderTextField; // @synthesize placeholderTextField=_placeholderTextField;
 - (void)layoutBottomUp;
 @property(copy) NSString *placeholderString;
 - (id)initWithFrame:(struct CGRect)arg1;
@@ -12818,7 +13520,7 @@ typedef struct {
 
 @interface IDEFileIdentityAndType : IDEInspectorViewController
 {
-    id _sourceDescriptorDidChangeNotificationObservingToken;
+    NSArray *_contentsValidityObservationTokens;
 }
 
 + (id)keyPathsForValuesAffectingDefaultTypeDisplayValue;
@@ -12830,6 +13532,7 @@ typedef struct {
 + (id)keyPathsForValuesAffectingPathAllowFolder;
 + (id)keyPathsForValuesAffectingPathIsFileReference;
 + (id)keyPathsForValuesAffectingFileDataTypePopupItems;
++ (id)keyPathsForValuesAffectingExpectedFilePath;
 + (id)keyPathsForValuesAffectingResolvedFilePath;
 + (id)keyPathsForValuesAffectingResolutionStrategy;
 + (id)keyPathsForValuesAffectingCustomResolutionStrategiesPopupItems;
@@ -12842,6 +13545,7 @@ typedef struct {
 @property(readonly) NSArray *standardResolutionStrategiesDisplayNamePopupItems;
 - (id)_resolutionContextForContentWithStrategies:(id)arg1;
 @property(readonly) NSArray *standardResolutionStrategiesPopupItems;
+- (id)expectedFilePath;
 @property(readonly) NSString *resolvedFilePath;
 @property(retain) DVTReferenceResolutionStrategy *resolutionStrategy;
 @property(retain) NSString *path;
@@ -12854,18 +13558,26 @@ typedef struct {
 @property(readonly) BOOL pathIsFileReference;
 @property(readonly) BOOL isFileNameEditable;
 - (void)setContent:(id)arg1;
+- (void)viewWillUninstall;
+- (void)viewDidInstall;
+- (void)_scheduleDelayedRefreshPaths;
+- (void)_cancelDelayedRefreshPaths;
+- (id)_stringValueOrMarkerForKeyPath:(id)arg1;
+- (id)_representedFileReference;
+- (id)_representedNavigableItem;
 - (void)refreshPaths;
-- (void)loadView;
 
 @end
 
 @interface IDEGroupIdentityAndType : IDEInspectorViewController
 {
+    NSArray *_contentsValidityObservationTokens;
 }
 
 + (id)keyPathsForValuesAffectingCustomResolutionStrategiesDisplayNamePopupItems;
 + (id)keyPathsForValuesAffectingStandardResolutionStrategiesDisplayNamePopupItems;
 + (id)keyPathsForValuesAffectingCustomResolutionStrategiesPopupItems;
++ (id)keyPathsForValuesAffectingExpectedFilePath;
 + (id)keyPathsForValuesAffectingResolvedFilePath;
 + (id)keyPathsForValuesAffectingResolutionStrategy;
 + (id)keyPathsForValuesAffectingPath;
@@ -12875,16 +13587,21 @@ typedef struct {
 @property(readonly) NSArray *standardResolutionStrategiesDisplayNamePopupItems;
 - (id)_resolutionContextForContentWithStrategies:(id)arg1;
 @property(readonly) NSArray *standardResolutionStrategiesPopupItems;
+- (id)expectedFilePath;
 @property(readonly) NSString *resolvedFilePath;
-- (void)viewWillUninstall;
-- (void)viewDidInstall;
 - (void)setResolutionStrategy:(id)arg1;
 - (id)resolutionStrategy;
 @property(copy) NSString *path;
 @property(retain) NSString *name;
 - (void)setContent:(id)arg1;
+- (void)viewWillUninstall;
+- (void)viewDidInstall;
+- (void)_scheduleDelayedRefreshPaths;
+- (void)_cancelDelayedRefreshPaths;
+- (id)_stringValueOrMarkerForKeyPath:(id)arg1;
+- (id)_representedGroup;
+- (id)_representedNavigableItem;
 - (void)refreshPaths;
-- (void)loadView;
 
 @end
 
@@ -12945,7 +13662,6 @@ typedef struct {
 - (id)_applicationToArchiveBundleIdentifiers;
 - (id)_applicationPlatform;
 - (id)_applicationProducts;
-- (void)invalidate;
 - (void)loadView;
 @property(copy) NSString *customArchiveName;
 - (void)updateBoundContent;
@@ -12961,30 +13677,42 @@ typedef struct {
 
 @end
 
-@interface IDEComparisonEditorTimelineNavBar : DVTBorderedView <DVTInvalidation>
+@interface IDEComparisonEditorTimelineNavBar : DVTBorderedView <DVTInvalidation_New>
 {
-    IDEComparisonEditor *_comparisonEditor;
+    IDEComparisonEditor *_comparisonEditor_dvtWeak;
     IDEPathControl *_primaryPathControl;
     IDEPathControl *_secondaryPathControl;
+    IDEComparisonEditorChangesStepperView *_changesStepperControl;
     DVTGradientImageButton *_timelineActivationButton;
-    DVTStackBacktrace *_invalidationBacktrace;
     BOOL _hideTimelineButton;
     BOOL _hideSecondaryPathControl;
     BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
+    BOOL _hideChangesStepperControl;
 }
 
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
+@property(readonly) IDEComparisonEditorChangesStepperView *changesStepperControl; // @synthesize changesStepperControl=_changesStepperControl;
 @property(retain) DVTGradientImageButton *timelineActivationButton; // @synthesize timelineActivationButton=_timelineActivationButton;
 @property(retain) IDEPathControl *secondaryPathControl; // @synthesize secondaryPathControl=_secondaryPathControl;
 @property(retain) IDEPathControl *primaryPathControl; // @synthesize primaryPathControl=_primaryPathControl;
-@property __weak IDEComparisonEditor *comparisonEditor; // @synthesize comparisonEditor=_comparisonEditor;
 @property BOOL hideSecondaryPathControl;
+@property BOOL hideChangesStepperControl; // @synthesize hideChangesStepperControl=_hideChangesStepperControl;
 @property BOOL hideTimelineButton;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)centerChangesStepperControl;
 - (void)layoutTopDown;
 - (void)_dvt_commonInit;
 - (id)initWithFrame:(struct CGRect)arg1;
+@property __weak IDEComparisonEditor *comparisonEditor;
 
 @end
 
@@ -13095,14 +13823,19 @@ typedef struct {
 @interface IDEShowTabAlert : IDEAlert
 {
     NSString *_tabName;
+    int _tabTarget;
+    double _lastChanged;
 }
 
-@property(retain) NSString *tabName; // @synthesize tabName=_tabName;
+@property(nonatomic) double lastChanged; // @synthesize lastChanged=_lastChanged;
+@property(nonatomic) int tabTarget; // @synthesize tabTarget=_tabTarget;
+@property(retain, nonatomic) NSString *tabName; // @synthesize tabName=_tabName;
 - (int)alertPropertyListVersion;
 - (void)runForEvent:(id)arg1 inWorkspace:(id)arg2 context:(id)arg3 completionBlock:(id)arg4;
 - (id)initWithPropertyList:(id)arg1;
 - (id)propertyList;
-- (id)init;
+- (id)valuesForProperty:(id)arg1;
+- (id)tabTargets;
 
 @end
 
@@ -13170,6 +13903,7 @@ typedef struct {
 
 @interface IDESourceControlQuickCheckoutWindowController : IDESourceControlRepositorySetupWindowController
 {
+    IDESourceControlRepository *_distributedRepo;
     IDESourceControlWorkingTree *_addedWorkingTree;
     IDESourceControlRequest *_checkoutRequest;
     NSString *_startingLocation;
@@ -13258,7 +13992,6 @@ typedef struct {
 - (void)setLocation:(id)arg1 afterDelay:(double)arg2;
 @property(copy) NSString *location;
 - (void)viewWillUninstall;
-- (void)viewWillInstall;
 
 @end
 
@@ -13269,6 +14002,7 @@ typedef struct {
 
 + (id)keyPathsForValuesAffectingCanGoForward;
 + (id)defaultViewNibName;
+- (void)commitInformation;
 - (BOOL)canFinish;
 - (BOOL)canGoForward;
 - (BOOL)canGoBack;
@@ -13280,7 +14014,7 @@ typedef struct {
 
 @end
 
-@interface IDESourceControlRepositoryCreationContext : NSObject <DVTInvalidation>
+@interface IDESourceControlRepositoryCreationContext : NSObject <DVTInvalidation_New>
 {
     IDESourceControlRepository *_sourceTree;
     IDESourceControlRepository *_foundRepository;
@@ -13292,9 +14026,14 @@ typedef struct {
     BOOL _defaultTagsExists;
     BOOL _automaticallyDiscoveredType;
     BOOL _isInvalidated;
+    BOOL _isInvalidating;
     DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 @property BOOL automaticallyDiscoveredType; // @synthesize automaticallyDiscoveredType=_automaticallyDiscoveredType;
 @property BOOL defaultTagsExists; // @synthesize defaultTagsExists=_defaultTagsExists;
@@ -13306,8 +14045,10 @@ typedef struct {
 @property(retain) IDESourceControlRepository *foundRepository; // @synthesize foundRepository=_foundRepository;
 @property(retain) IDESourceControlRepository *sourceTree; // @synthesize sourceTree=_sourceTree;
 - (id)_guessName;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (id)init;
 
 @end
@@ -13321,21 +14062,6 @@ typedef struct {
 - (BOOL)canGoForward;
 - (id)finishedImage;
 @property(readonly) NSString *finishedString;
-
-@end
-
-@interface IDEInspectorPropertyContainingView : DVTLayoutView_ML <IDEInspectorPropertyContainingView>
-{
-    BOOL isInstalled;
-}
-
-- (void)viewDidMoveToSuperview;
-- (void)viewDidMoveToWindow;
-- (void)viewWillMoveToSuperview:(id)arg1;
-- (void)viewWillMoveToWindow:(id)arg1;
-- (void)propertiesWillUninstall;
-- (void)propertiesDidInstall;
-@property(readonly) NSArray *orderedInspectorProperties;
 
 @end
 
@@ -13459,32 +14185,11 @@ typedef struct {
 
 @interface IDEActivityPopUpBottomBarLayer : CALayer
 {
-    IDEActivityPopUpBottomBarDoneButtonLayer *_doneButtonLayer;
     IDEActivityIssuesContainerLayer *_issuesContainerLayer;
 }
 
 @property(readonly) IDEActivityIssuesContainerLayer *issuesContainerLayer; // @synthesize issuesContainerLayer=_issuesContainerLayer;
-- (void)layoutSublayers;
-@property(copy) id doneButtonHandlerBlock;
-- (void)setBounds:(struct CGRect)arg1;
 - (id)init;
-
-@end
-
-@interface IDEActivityPopUpBottomBarDoneButtonLayer : DVTClickableLayer
-{
-    NSImage *_clickedContents;
-    NSImage *_normalContents;
-}
-
-- (id)accessibilityAttributeValue:(id)arg1;
-- (id)accessibilityAttributeNames;
-- (void)layerShouldShowUnclickedState;
-- (void)layerShouldShowClickedState;
-- (void)setBounds:(struct CGRect)arg1;
-- (id)contentsForClickState:(BOOL)arg1;
-- (id)doneStringAttributes;
-- (id)doneStringShadow;
 
 @end
 
@@ -13509,6 +14214,7 @@ typedef struct {
 @property(retain, nonatomic) IDEActivityReport *activityReport; // @synthesize activityReport=_activityReport;
 - (void)updateImageLayer;
 - (void)updateVisibilityForTextFieldAndAdjustLayoutIfNeeded;
+- (BOOL)shouldHideProgress;
 - (void)startObservingActivityReport;
 - (void)stopObservingActivityReport;
 - (void)updateScrollingTextFieldStringValue;
@@ -13522,8 +14228,8 @@ typedef struct {
 - (id)defaultCompletionSummary;
 - (void)sizeToFit;
 - (struct CGPoint)imageLayerPosition;
-- (struct CGRect)scrollingTextLayerFrame;
-- (struct CGRect)progressIndicatorLayerFrame;
+- (void)layoutSublayers;
+- (void)updateConstraints;
 - (id)description;
 - (id)init;
 
@@ -13540,6 +14246,7 @@ typedef struct {
 - (void)runTestFromNotification:(id)arg1;
 - (void)stopTestingAllActivities:(id)arg1;
 - (void)testInstallActionActivity;
+- (void)testShowingDeterminateActivityBar;
 - (void)testDeterminateActivities;
 - (void)testIndeterminateActivities;
 - (void)removeActivityReports:(id)arg1;
@@ -13560,9 +14267,11 @@ typedef struct {
 
 @interface IDESourceControlUIHandler : NSObject
 {
+    NSMutableSet *_repositoriesWarnedAreNewer;
 }
 
 - (void)applicationDidActivate:(id)arg1;
+- (void)repositoryNewerNotification:(id)arg1;
 - (void)authenticationNeededNotification:(id)arg1;
 - (id)init;
 
@@ -13582,21 +14291,28 @@ typedef struct {
     NSTextField *statusTextField;
     NSSecureTextField *passwordTextField;
     NSProgressIndicator *progressIndicator;
+    NSButton *OKButton;
     IDESourceControlRepository *_repository;
     id _completionBlock;
     NSTimer *_autodismissTimer;
     long long _count;
     BOOL _isCheckingPassword;
+    NSString *_username;
+    NSString *_password;
 }
 
 @property BOOL isCheckingPassword; // @synthesize isCheckingPassword=_isCheckingPassword;
+@property(copy, nonatomic) NSString *password; // @synthesize password=_password;
+@property(copy, nonatomic) NSString *username; // @synthesize username=_username;
 - (void)dontAsk:(id)arg1;
 - (void)cancel:(id)arg1;
 - (void)alertDidEnd:(id)arg1 returnCode:(long long)arg2 contextInfo:(void *)arg3;
 - (void)ok:(id)arg1;
 - (void)windowWillClose:(id)arg1;
+- (void)cancelAutodismiss;
 - (void)autodismiss;
 - (void)beginAutodismissCountdown;
+- (void)startAutodismissTimer;
 - (void)testCredentialsWithCompletionBlock:(id)arg1;
 - (void)presentWindow;
 - (id)_openWindowTerminationDisablingReason;
@@ -13613,6 +14329,8 @@ typedef struct {
     id <DVTObservingToken> _workspaceValidObservingToken;
     id <DVTObservingToken> _executionTrackersObservingToken;
     id <DVTObservingToken> _executionTrackersStatusObserverToken;
+    id _sheetObservingToken;
+    BOOL _lastEnabled;
 }
 
 @property(retain) NSToolbarItem *toolbarItem; // @synthesize toolbarItem=_toolbarItem;
@@ -13656,6 +14374,7 @@ typedef struct {
     double _fileIOThrottleFactor;
 }
 
++ (id)keyPathsForValuesAffectingPaused;
 + (BOOL)automaticallyNotifiesObserversOfFileIOThrottleFactor;
 + (id)keyPathsForValuesAffectingCompleted;
 @property(readonly) double fileIOThrottleFactor; // @synthesize fileIOThrottleFactor=_fileIOThrottleFactor;
@@ -13671,6 +14390,7 @@ typedef struct {
 @property(copy, nonatomic) NSString *title; // @synthesize title=_title;
 @property(readonly) int options; // @synthesize options=_options;
 @property(readonly) NSString *stringValue;
+@property(readonly) BOOL paused;
 - (void)_setFileIOThrottleFactor:(double)arg1;
 @property(readonly, getter=isUserVisible) BOOL userVisible;
 @property(readonly, getter=isFileIOIntensive) BOOL fileIOIntensive;
@@ -13714,12 +14434,11 @@ typedef struct {
 
 @end
 
-@interface IDEActivityReportManager : NSObject <DVTInvalidation>
+@interface IDEActivityReportManager : NSObject <DVTInvalidation_New>
 {
     IDEActivityReport *_lastCompletedUserVisiblePersistentSchemeBasedReport;
     IDEActivityReport *_lastCompletedUserVisibleSchemeBasedReport;
     IDEActivityReport *_lastCompletedUserVisibleReport;
-    DVTStackBacktrace *_invalidationBacktrace;
     IDEWorkspaceDocument *_workspaceDocument;
     NSSet *_activityReporterObservingTokens;
     NSSet *_activityReporters;
@@ -13727,10 +14446,16 @@ typedef struct {
     NSArray *_orderedActivityReports;
     NSSet *_activityReports;
     BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
-@property(retain, nonatomic) IDEActivityReport *lastCompletedUserVisiblePersistentSchemeBasedReport; // @synthesize lastCompletedUserVisiblePersistentSchemeBasedReport=_lastCompletedUserVisiblePersistentSchemeBasedReport;
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
+@property(retain, nonatomic) IDEActivityReport *lastCompletedUserVisiblePersistentSchemeBasedReport; // @synthesize lastCompletedUserVisiblePersistentSchemeBasedReport=_lastCompletedUserVisiblePersistentSchemeBasedReport;
 @property(copy, nonatomic) NSArray *orderedActivityReports; // @synthesize orderedActivityReports=_orderedActivityReports;
 @property(copy, nonatomic) NSSet *activityReports; // @synthesize activityReports=_activityReports;
 @property(readonly) IDEWorkspaceDocument *workspaceDocument; // @synthesize workspaceDocument=_workspaceDocument;
@@ -13746,7 +14471,9 @@ typedef struct {
 - (void)handleUpdateFromActivityReporter:(id)arg1;
 @property(readonly) NSSet *activityReporters;
 - (void)loadActivityReporters;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
 @property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (id)initWithWorkspaceDocument:(id)arg1;
 
@@ -13862,6 +14589,7 @@ typedef struct {
 + (id)changeSetForFileAtPath:(id)arg1 transformation:(id)arg2 error:(id *)arg3;
 @property(retain) NSString *newName; // @synthesize newName=_newName;
 @property(readonly) NSArray *changes; // @synthesize changes=_changes;
+@property(readonly) DVTFilePath *tempFilePath; // @synthesize tempFilePath=_tempFilePath;
 @property(readonly) DVTFilePath *filePath; // @synthesize filePath=_filePath;
 - (void)writeTempResults;
 - (BOOL)writesOwnTempResults;
@@ -13889,6 +14617,7 @@ typedef struct {
 @property(readonly) IDEWorkspaceDocument *workspaceDocument; // @synthesize workspaceDocument=_workspaceDocument;
 - (id)commitInsertionOfSourceCodeForCompositeResult:(id)arg1 error:(id *)arg2;
 - (id)prepareToAddSourceCodeForCounterparts:(id)arg1 documentLocationForCounterpartBlock:(id)arg2 addSourceCodeForCounterpartBlock:(void)arg3 options:(id)arg4 error:(void)arg5;
+- (id)effectiveInsertionOptionsFromBaseOptions:(id)arg1 forCounterpart:(id)arg2 lineHintingCounterpart:(id)arg3 insertBeforeHint:(id)arg4 insertAfterHint:(id)arg5;
 - (void)releaseEditorDocumentsFromEditorDocumentComponents:(id)arg1;
 - (id)editorDocumentComponentsForCounterparts:(id)arg1 documentLocationForCounterpartBlock:(id)arg2 error:(void)arg3;
 @property(readonly) DVTSourceCodeLanguage *generatedLanguage;
@@ -13964,6 +14693,8 @@ typedef struct {
 - (id)description;
 - (id)firstCounterpartWithInsertionError;
 - (id)resultForCounterpart:(id)arg1;
+- (id)resultsForCounterparts:(id)arg1;
+@property(readonly) NSSet *counterpartsWithoutErrors;
 @property(readonly) NSSet *counterparts;
 - (id)initWithResultsByCounterpart:(id)arg1;
 
@@ -14050,6 +14781,8 @@ typedef struct {
 @interface IDEDocumentController : NSDocumentController <IDEVersionedFileManagerDelegate, IDEContainerErrorPresenter, IDEContainerReloadingDelegate, IDEContainerUnlockingDelegate, NSMenuDelegate>
 {
     BOOL _isClosingAllDocuments;
+    BOOL _hasScheduledMobileDeviceLoadBlock;
+    BOOL _isSafeToLoadMobileDevice;
 }
 
 + (void)_setOpenAsContextMenu:(id)arg1 withViewController:(id)arg2;
@@ -14072,7 +14805,7 @@ typedef struct {
 + (id)_documentExtensionForNavigableItem:(id)arg1;
 + (id)_editorDocumentExtensionsForOpenAsWhichSupportType:(id)arg1 editorCategories:(id)arg2;
 + (BOOL)_isAllowedToCreateEditorDocumentForFileDataType:(id)arg1;
-+ (BOOL)_THREAD_type:(id)arg1 isPreferableToType:(id)arg2;
++ (BOOL)_THREAD_type:(id)arg1 role:(int)arg2 isPreferableToType:(id)arg3 role:(int)arg4;
 + (void)_THREAD_cacheBestEditorDocumentExtension:(id)arg1 forType:(id)arg2 withEditorCategory:(id)arg3;
 + (id)_THREAD_cachedBestEditorDocumentExtensionForType:(id)arg1 withEditorCategory:(id)arg2;
 + (id)_THREAD_allOrganizerSourceExtensions;
@@ -14094,6 +14827,7 @@ typedef struct {
 + (id)sharedDocumentController;
 + (void)initialize;
 @property BOOL isClosingAllDocuments; // @synthesize isClosingAllDocuments=_isClosingAllDocuments;
+- (id)unsavedEditorDocumentFilePaths;
 - (void)container:(id)arg1 attemptToUnlockItems:(id)arg2 workspace:(id)arg3 completionQueue:(id)arg4 completionBlock:(id)arg5;
 - (int)responseToExternalChangesToBackingFileForContainer:(id)arg1 fileWasRemoved:(BOOL)arg2;
 - (void)attemptRecoveryFromError:(id)arg1 optionIndex:(unsigned int)arg2 delegate:(id)arg3 didRecoverSelector:(SEL)arg4 contextInfo:(void *)arg5;
@@ -14110,6 +14844,7 @@ typedef struct {
 - (id)_openAsDocumentExtensionsForFileDataTypes:(id)arg1 editorCategories:(id)arg2;
 - (void)_openAs:(id)arg1;
 - (void)noteNewRecentDocumentURL:(id)arg1;
+- (id)_recentDocumentRecordsKeyForMenuTag:(unsigned long long)arg1;
 - (id)_recentWorkspaceDocumentURLs;
 - (id)_recentEditorDocumentURLs;
 - (id)displayNameForType:(id)arg1;
@@ -14119,7 +14854,6 @@ typedef struct {
 - (id)_setupOpenPanel;
 - (id)currentDirectory;
 - (id)documentClassNames;
-- (void)performBlockAfterSavingAllEditorDocuments:(id)arg1;
 - (BOOL)validateUserInterfaceItem:(id)arg1;
 - (void)reviewUnsavedDocumentsWithAlertTitle:(id)arg1 cancellable:(BOOL)arg2 delegate:(id)arg3 didReviewAllSelector:(SEL)arg4 contextInfo:(void *)arg5;
 - (void)closeAllDocumentsWithDelegate:(id)arg1 didCloseAllSelector:(SEL)arg2 contextInfo:(void *)arg3;
@@ -14127,9 +14861,9 @@ typedef struct {
 - (void)_checkAndCloseAllDocumentsStartingWith:(id)arg1 shouldCloseDocuments:(BOOL)arg2 closeAllContext:(void *)arg3;
 - (void)saveAllEditorDocuments:(id)arg1;
 - (void)saveAllEditorDocumentsAsyncronouslyWithCompletionBlock:(id)arg1;
-- (BOOL)saveAllEditorDocumentsError:(id *)arg1;
-- (void)_saveEditorDocuments:(id)arg1 completionBlock:(id)arg2;
-- (BOOL)_saveEditorDocuments:(id)arg1 error:(id *)arg2;
+- (void)autosaveInPlaceAllEditorDocumentsAsyncronouslyWithCompletionBlock:(id)arg1;
+- (void)_saveEditorDocuments:(id)arg1 forOperation:(unsigned long long)arg2 completionBlock:(id)arg3;
+- (BOOL)_saveEditorDocuments:(id)arg1 forOperation:(unsigned long long)arg2 error:(id *)arg3;
 - (id)editedEditorDocuments;
 @property(readonly) NSArray *editorDocumentsToManuallySave;
 @property(readonly) NSArray *editorDocumentsToSave;
@@ -14144,10 +14878,13 @@ typedef struct {
 - (id)openDocumentWithContentsOfURL:(id)arg1 display:(BOOL)arg2;
 - (id)openDocumentsWithContentsOfURLs:(id)arg1 display:(BOOL)arg2 error:(id *)arg3;
 - (id)openDocumentWithContentsOfURL:(id)arg1 display:(BOOL)arg2 error:(id *)arg3;
-- (id)_openDocumentsForURLs:(id)arg1 display:(BOOL)arg2 error:(id *)arg3;
+- (void)openDocumentWithContentsOfURL:(id)arg1 display:(BOOL)arg2 completionHandler:(id)arg3;
+- (id)openDocumentLocation:(id)arg1 display:(BOOL)arg2 error:(id *)arg3;
+- (id)openDocumentLocation:(id)arg1 error:(id *)arg2;
+- (id)_openDocumentsForDocumentLocations:(id)arg1 display:(BOOL)arg2 error:(id *)arg3;
 - (BOOL)_openProjectsAndWorkspaces:(id)arg1 documents:(id *)arg2 simpleFileURLs:(id *)arg3 display:(BOOL)arg4 error:(id *)arg5;
-- (id)_workspaceOrProjectURLsInFolderURL:(id)arg1;
-- (BOOL)_openSimpleFileURLs:(id)arg1 documents:(id *)arg2 display:(BOOL)arg3 error:(id *)arg4;
+- (id)_workspaceOrProjectDocumentLocationsInFolderURL:(id)arg1;
+- (BOOL)_openSimpleFileDocumentLocations:(id)arg1 documents:(id *)arg2 display:(BOOL)arg3 error:(id *)arg4;
 - (id)_frontmostSimpleFilesFocusedWorkspaceWindowForTopLevelFilePaths:(id)arg1;
 - (BOOL)_workspace:(id)arg1 topLevelChildrenMatches:(id)arg2;
 - (id)_openProjectDocument:(id)arg1 displayDocument:(BOOL)arg2 error:(id *)arg3;
@@ -14158,27 +14895,38 @@ typedef struct {
 - (BOOL)_isWorkspaceWindow:(id)arg1 forWorkspaces:(id)arg2;
 - (id)typeForContentsOfURL:(id)arg1 error:(id *)arg2;
 - (void)reopenDocumentForURL:(id)arg1 withContentsOfURL:(id)arg2 display:(BOOL)arg3 completionHandler:(id)arg4;
-- (id)openDocumentLocation:(id)arg1 error:(id *)arg2;
 - (BOOL)saveUntitledWorkspaceDocument:(id)arg1 forProjectDocument:(id)arg2 error:(id *)arg3;
 - (id)openUntitledWorkspaceDocumentAndDisplay:(BOOL)arg1 error:(id *)arg2;
-- (id)_openUntitledWorkspaceDocumentAndDisplay:(BOOL)arg1 simpleFilesFocused:(BOOL)arg2 editorDocumentURLOrNil:(id)arg3 error:(id *)arg4;
+- (id)_openUntitledWorkspaceDocumentAndDisplay:(BOOL)arg1 simpleFilesFocused:(BOOL)arg2 forSingleFile:(BOOL)arg3 editorDocumentURLOrNil:(id)arg4 error:(id *)arg5;
 - (id)documentForURL:(id)arg1;
 - (id)defaultType;
 - (id)init;
 
 @end
 
-@interface IDEEditorReadOnlyIndicatorController : NSObject
+@interface IDEEditorReadOnlyIndicatorController : NSObject <DVTInvalidation_New>
 {
     IDEEditorContext *_editorContext;
     DVTGradientImageButton *_indicatorView;
     BOOL _showReadOnlyIndicator;
     id <DVTObservingToken> _documentStatusObserver;
     int _indicatorStatus;
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
+@property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 @property BOOL showReadOnlyIndicator; // @synthesize showReadOnlyIndicator=_showReadOnlyIndicator;
 - (void)_updateReadOnlyIndicator;
+- (void)primitiveInvalidate;
+- (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (id)readOnlyIndicatorView;
 - (id)initWithEditorContext:(id)arg1;
 - (id)init;
@@ -14245,7 +14993,7 @@ typedef struct {
 - (void)_addMenuItemForAnalysisTools:(id)arg1;
 - (void)_updateAnalysisToolsPopUp;
 - (void)_selectedSchemeChanged:(id)arg1;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)loadView;
 - (void)updateBoundContent;
 - (void)updateBoundIDERunContextBinding;
@@ -14279,6 +15027,7 @@ typedef struct {
 - (void)_startListeningForChatAvailability;
 - (id)_chatUUIDForPerson:(id)arg1;
 - (BOOL)_personWithStatusIsOnline:(unsigned long long)arg1;
+- (void)dealloc;
 - (void)finalize;
 @property(retain) ABPerson *pairedPerson; // @synthesize pairedPerson=_pairedPerson;
 - (id)_emailsFromPerson:(id)arg1;
@@ -14620,6 +15369,7 @@ typedef struct {
 - (id)name;
 - (void)updateAttributes;
 - (void)updateChildRepresentedObjects;
+- (id)textColor;
 - (id)childRepresentedObjects;
 - (BOOL)isLeaf;
 - (id)_group;
@@ -14792,6 +15542,7 @@ typedef struct {
 @property(retain) IDEEditorContext *selectedEditorContext; // @synthesize selectedEditorContext=_selectedEditorContext;
 - (void)splitView:(id)arg1 resizeSubviewsWithOldSize:(struct CGSize)arg2;
 - (void)_splitView:(id)arg1 resizeVerticalSubviewsWithOldSize:(struct CGSize)arg2;
+- (id)_splitViewResizingLogAspect;
 - (void)_splitView:(id)arg1 resizeHorizontalSubviewsWithOldSize:(struct CGSize)arg2;
 - (struct CGSize)minimumSizeForView:(id)arg1;
 - (struct CGRect)splitView:(id)arg1 additionalEffectiveRectOfDividerAtIndex:(long long)arg2;
@@ -14909,9 +15660,6 @@ typedef struct {
 
 @interface IDELocationsPrefsPaneController : IDEViewController <DVTFilePathFieldCellDelegate, IDEBuildFolderLocationSheetControllerDelegate>
 {
-    BOOL _useCustomDerivedDataLocation;
-    BOOL _useCustomSnapshotsLocation;
-    BOOL _useCustomDistributionArchivesLocation;
     NSString *_customDerivedDataLocation;
     NSString *_customSnapshotsLocation;
     NSString *_customDistributionArchivesLocation;
@@ -14923,6 +15671,7 @@ typedef struct {
     int _customBuildLocationType;
     NSString *_customBuildProductsPath;
     NSString *_customBuildIntermediatesPath;
+    IDEXcodeSelectHelper *_xcodeSelectHelper;
     DVTFilePathField *_derivedDataFilePathField;
     NSTextField *_derivedDataRelativePathField;
     DVTFilePathField *_snapshotsFilePathField;
@@ -14930,6 +15679,8 @@ typedef struct {
     DVTFilePathField *_derivedDataPathLabel;
     DVTFilePathField *_snapshotsPathLabel;
     DVTFilePathField *_distributionArchivesPathLabel;
+    NSPopUpButton *_commandLineToolsPopUp;
+    NSArrayController *_commandLineToolsArrayController;
     NSTextField *_derivedDataRelativePathLabel;
 }
 
@@ -14952,6 +15703,7 @@ typedef struct {
 - (BOOL)validateCustomDistributionArchivesLocation:(id *)arg1 error:(id *)arg2;
 - (BOOL)validateCustomDerivedDataLocation:(id *)arg1 error:(id *)arg2;
 - (void)buildFolderLocationSheetDidEndWithBuildLocationStyle:(int)arg1 sharedBuildFolderName:(id)arg2 customBuildLocationType:(int)arg3 customBuildProductsPath:(id)arg4 customBuildIntermediatesPath:(id)arg5;
+- (void)changeCommandLineTools:(id)arg1;
 - (void)showBuildFolderLocationSheet:(id)arg1;
 @property(readonly) NSString *defaultDistributionArchivesLocation;
 @property(readonly) NSString *defaultSnapshotsLocation;
@@ -14970,6 +15722,7 @@ typedef struct {
 - (void)_updateDerivedDataCustomLocationFieldForPathType;
 - (void)_updateCustomLocationFieldsForPathTypes;
 - (void)_saveLocationsPreferences;
+- (id)_xcodeSelectPopupSortDescriptors;
 - (void)_windowDidResignMain:(id)arg1;
 - (void)viewWillUninstall;
 - (void)loadView;
@@ -15035,7 +15788,7 @@ typedef struct {
 - (BOOL)canCreateNewWindow;
 - (unsigned long long)role;
 @property(readonly) NSArray *workspaceWindowControllers;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (id)initWithURL:(id)arg1 initialSelection:(id)arg2 options:(id)arg3 completionBlock:(id)arg4;
 - (id)initWithInitialSelection:(id)arg1 options:(id)arg2 completionBlock:(id)arg3;
 
@@ -15050,24 +15803,31 @@ typedef struct {
 
 @end
 
-@interface IDENavigationHUDSelectionView : DVTLayerHostingView <DVTInvalidation>
+@interface IDENavigationHUDSelectionView : DVTLayerHostingView <DVTInvalidation_New>
 {
     id <IDENavigationHUDSelectionViewDelegate> _delegate;
-    DVTDelayedValidator *_fileProxyValidator;
-    DVTDelayedValidator *_coverFlowValidator;
-    DVTDelayedValidator *_textAreaValidator;
+    DVTDelayedInvocation *_fileProxyInvocation;
+    DVTDelayedInvocation *_coverFlowInvocation;
+    DVTDelayedInvocation *_textAreaInvocation;
+    BOOL _setUp;
     DVTImageAndTextLayer *_fileProxyLayer;
     DVTImageAndTextLayer *_textLayer;
+    CALayer *_contentLayer;
     NSMapTable *_wrappingLayerToRealLayerMap;
     NSMapTable *_realLayerToWrappingLayerMap;
     unsigned long long _selectedCoverFlowLayerIndex;
     CAScrollLayer *_coverFlowScrollLayer;
     NSArray *_coverFlowLayers;
-    DVTStackBacktrace *_invalidationBacktrace;
     BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
 + (id)keyPathsForValuesAffectingSelectedCoverFlowLayer;
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 @property(nonatomic) unsigned long long selectedCoverFlowLayerIndex; // @synthesize selectedCoverFlowLayerIndex=_selectedCoverFlowLayerIndex;
 @property(retain, nonatomic) id <IDENavigationHUDSelectionViewDelegate> delegate; // @synthesize delegate=_delegate;
@@ -15089,8 +15849,11 @@ typedef struct {
 - (BOOL)requireOptimumPerformance;
 @property(retain) CALayer *selectedCoverFlowLayer;
 @property(readonly) struct CGSize fileProxyImageSize;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)viewDidMoveToWindow;
 - (id)initWithFrame:(struct CGRect)arg1;
 - (id)initWithCoder:(id)arg1;
 - (void)selectionViewCommonInit;
@@ -15235,7 +15998,7 @@ typedef struct {
 @property(retain) NSArray *objects; // @synthesize objects=_objects;
 @property(retain) IDENavigatorOutlineView *outlineView; // @synthesize outlineView=_outlineView;
 - (id)contextMenuSelection;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)updateBoundContent;
 - (void)_setupRootNavigableItemObserving;
 - (void)_clearRootNavigableItemObserving;
@@ -15245,7 +16008,7 @@ typedef struct {
 - (void)openClickedNavigableItemAction:(id)arg1;
 - (void)openSelectedNavigableItemsKeyAction:(id)arg1;
 - (id)openSpecifierForNavigableItem:(id)arg1 error:(id *)arg2;
-- (BOOL)shouldOpenNavigableItem:(id)arg1;
+- (BOOL)shouldOpenNavigableItem:(id)arg1 eventType:(unsigned long long)arg2;
 - (BOOL)delegateFirstResponder;
 - (id)initWithNibName:(id)arg1 bundle:(id)arg2;
 - (void)loadView;
@@ -15466,8 +16229,8 @@ typedef struct {
 @property(readonly) unsigned long long contentType; // @synthesize contentType=_contentType;
 @property(readonly) unsigned long long orientation; // @synthesize orientation=_orientation;
 @property(readonly) NSArray *children; // @synthesize children=_children;
-@property(retain, nonatomic) IDEWorkspaceTabControllerLayoutTreeNode *parent; // @synthesize parent=_parent;
-@property(retain, nonatomic) IDEWorkspaceTabControllerLayoutTree *layoutTree; // @synthesize layoutTree=_layoutTree;
+@property(nonatomic) __weak IDEWorkspaceTabControllerLayoutTreeNode *parent; // @synthesize parent=_parent;
+@property(nonatomic) __weak IDEWorkspaceTabControllerLayoutTree *layoutTree; // @synthesize layoutTree=_layoutTree;
 @property(readonly) NSString *fullDescription;
 - (void)appendDescriptionToString:(id)arg1 withIndentation:(id)arg2;
 - (id)description;
@@ -15713,6 +16476,7 @@ typedef struct {
 - (id)editorMultipleContextForRepresentedLayoutTreeNode:(id)arg1;
 - (id)editorContextForRepresentedLayoutTreeNode:(id)arg1;
 - (id)representedLayoutTreeNodeForEditorMultipleContext:(id)arg1;
+- (id)representedLayoutTreeNodeForEditorContextOrPrimaryEditorNodeIfNil:(id)arg1;
 - (id)representedLayoutTreeNodeForEditorContext:(id)arg1;
 - (void)encodeWithCoder:(id)arg1;
 - (id)initWithCoder:(id)arg1;
@@ -15727,18 +16491,20 @@ typedef struct {
     NSDate *_date;
     NSString *_message;
     NSDictionary *_filesWithStatus;
+    IDESourceControlTree *_sourceTree;
 }
 
-@property(readonly) NSDictionary *filesWithStatus; // @synthesize filesWithStatus=_filesWithStatus;
+@property(readonly) IDESourceControlTree *sourceTree; // @synthesize sourceTree=_sourceTree;
+@property(retain) NSDictionary *filesWithStatus; // @synthesize filesWithStatus=_filesWithStatus;
 @property(retain) NSString *message; // @synthesize message=_message;
 @property(readonly) NSDate *date; // @synthesize date=_date;
 @property(readonly) NSString *revision; // @synthesize revision=_revision;
 @property(readonly) IDESourceControlPerson *author; // @synthesize author=_author;
-- (id)initWithAuthor:(id)arg1 revision:(id)arg2 date:(id)arg3 message:(id)arg4 filesWithStatus:(id)arg5;
+- (id)initWithAuthor:(id)arg1 revision:(id)arg2 date:(id)arg3 message:(id)arg4 filesWithStatus:(id)arg5 sourceTree:(id)arg6;
 
 @end
 
-@interface IDESourceControlLog : NSObject <DVTInvalidation>
+@interface IDESourceControlLog : NSObject <DVTInvalidation_New>
 {
     NSMutableArray *_logRequests;
     DVTDispatchLock *_requestLock;
@@ -15748,17 +16514,22 @@ typedef struct {
     IDESourceControlBranch *_branch;
     NSString *_lastRevisionLoaded;
     struct dispatch_queue_s *_queue;
-    DVTStackBacktrace *_invalidationBacktrace;
-    BOOL _isInvalidated;
     BOOL _moreAvailable;
     BOOL _groupByDay;
     BOOL _displayFilesChanged;
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
 + (id)logAspect;
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
+@property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 @property(retain) IDESourceControlBranch *branch; // @synthesize branch=_branch;
 @property BOOL displayFilesChanged; // @synthesize displayFilesChanged=_displayFilesChanged;
-@property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 @property BOOL groupByDay; // @synthesize groupByDay=_groupByDay;
 @property(readonly) NSString *lastRevisionLoaded; // @synthesize lastRevisionLoaded=_lastRevisionLoaded;
 @property(readonly) NSArray *logItems; // @synthesize logItems=_logItems;
@@ -15773,8 +16544,10 @@ typedef struct {
 - (void)removeLogRequest:(id)arg1;
 - (void)addLogRequest:(id)arg1;
 @property(retain) IDESourceControlTreeItem *sourceTreeItem; // @synthesize sourceTreeItem=_sourceTreeItem;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (id)init;
 
 @end
@@ -15835,11 +16608,13 @@ typedef struct {
     NSString *_commandIdentifier;
     NSString *_commandGroupIdentifier;
     NSString *_groupIdentifier;
+    unsigned long long _defaultRawModifierMask;
 }
 
 + (id)keyPathsForValuesAffectingCombinedIdentifier;
-+ (id)combinedIdentifierWithCommandIdentifier:(id)arg1 groupIdentifier:(id)arg2;
++ (id)combinedIdentifierWithCommandIdentifier:(id)arg1 group:(id)arg2 groupIdentifier:(id)arg3;
 + (long long)_defaultMaxNumberOfShortcuts;
+@property unsigned long long defaultRawModifierMask; // @synthesize defaultRawModifierMask=_defaultRawModifierMask;
 @property(copy) NSString *groupIdentifier; // @synthesize groupIdentifier=_groupIdentifier;
 @property(copy) NSString *commandGroupIdentifier; // @synthesize commandGroupIdentifier=_commandGroupIdentifier;
 @property(copy) NSString *commandIdentifier; // @synthesize commandIdentifier=_commandIdentifier;
@@ -15951,6 +16726,7 @@ typedef struct {
     NSTextField *_progressField;
     NSImageView *_reachabilityImage;
     NSProgressIndicator *_progressIndicator;
+    NSTextField *_popupTitleField;
     IDESourceControlOperationInfo *_operationInfo;
     IDESourceControlRepositoryChooserItem *_repositoryChooserItem;
     id _continuationBlock;
@@ -15958,17 +16734,20 @@ typedef struct {
     NSString *_messageText;
     NSString *_infoText;
     NSWindow *_parentWindow;
-    NSImage *_successImage;
     id <DVTInvalidation> _operationToken;
     BOOL _inProgress;
+    IDEWorkspace *_workspace;
+    BOOL _disableFastForwards;
 }
 
+@property BOOL disableFastForwards; // @synthesize disableFastForwards=_disableFastForwards;
 @property(copy) NSString *infoText; // @synthesize infoText=_infoText;
 @property(copy) NSString *messageText; // @synthesize messageText=_messageText;
 @property int requestType; // @synthesize requestType=_requestType;
 @property(copy) id continuationBlock; // @synthesize continuationBlock=_continuationBlock;
 @property(retain) IDESourceControlRepositoryChooserItem *repositoryChooserItem; // @synthesize repositoryChooserItem=_repositoryChooserItem;
 @property(retain) IDESourceControlOperationInfo *operationInfo; // @synthesize operationInfo=_operationInfo;
+@property(retain) IDEWorkspace *workspace; // @synthesize workspace=_workspace;
 - (void)cancel:(id)arg1;
 - (void)cancelSheet;
 - (void)choose:(id)arg1;
@@ -16043,14 +16822,15 @@ typedef struct {
     NSString *_messageText;
     NSString *_infoText;
     NSWindow *_parentWindow;
-    NSImage *_successImage;
     NSImage *_errorImage;
     BOOL _inProgress;
     BOOL _canContinue;
     BOOL _willDismiss;
+    BOOL _disableFastForwards;
 }
 
 + (id)keyPathsForValuesAffectingCanContinue;
+@property BOOL disableFastForwards; // @synthesize disableFastForwards=_disableFastForwards;
 @property BOOL canContinue; // @synthesize canContinue=_canContinue;
 @property BOOL inProgress; // @synthesize inProgress=_inProgress;
 @property(copy) NSString *infoText; // @synthesize infoText=_infoText;
@@ -16100,7 +16880,7 @@ typedef struct {
 }
 
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (BOOL)isValid;
 - (void)invalidate;
 
 @end
@@ -16303,41 +17083,16 @@ typedef struct {
 
 @end
 
-@interface IDESourceControlConflictMergeData : NSObject
+@interface IDESourceControlConflictResolutionController : IDESourceControlMergeController
 {
-    NSFileWrapper *_fileWrapper;
-    BOOL _dirty;
-}
-
-@property(getter=isDirty) BOOL dirty; // @synthesize dirty=_dirty;
-@property(retain) NSFileWrapper *fileWrapper; // @synthesize fileWrapper=_fileWrapper;
-
-@end
-
-@interface IDESourceControlConflictResolutionController : NSObject <DVTInvalidation>
-{
-    BOOL _isInvalidated;
-    DVTStackBacktrace *_invalidationBacktrace;
-    DVTFilePath *_mergeDataPath;
     BOOL _shouldDisableMergeSaving;
 }
 
-+ (void)copyItemAtFilePath:(id)arg1 toFilePath:(id)arg2;
-+ (void)moveItemAtFilePath:(id)arg1 toFilePath:(id)arg2;
++ (void)replaceItemAtFilePath:(id)arg1 withFileWrapper:(id)arg2;
 + (int)binaryConflictMergeDirection:(id)arg1;
 + (BOOL)isBinaryConflictResolutionMergeData:(id)arg1;
-+ (id)mergeDataDictionary:(id)arg1;
-@property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 @property BOOL shouldDisableMergeSaving; // @synthesize shouldDisableMergeSaving=_shouldDisableMergeSaving;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
-- (void)invalidate;
 - (void)completeConflictResolution;
-- (void)removeMergeDataForTreeItem:(id)arg1;
-- (id)mergeDataForTreeItem:(id)arg1;
-- (void)setMergeData:(id)arg1 forTreeItem:(id)arg2;
-- (void)_validateMergeData:(id)arg1;
-- (id)pathToFileWrapper:(id)arg1 inMergeData:(id)arg2;
-@property(readonly) DVTFilePath *mergeDataPath;
 
 @end
 
@@ -16354,7 +17109,7 @@ typedef struct {
 - (void)finishCalculatingMatches;
 - (void)contextDidChange;
 - (void)startCalculatingMatches;
-- (void)addMaches:(id)arg1;
+- (void)addMatches:(id)arg1;
 @property(readonly) IDEOpenQuicklyPattern *pattern;
 @property(readonly) IDEWorkspace *workspace;
 - (id)initWithSearchContext:(id)arg1;
@@ -16369,18 +17124,19 @@ typedef struct {
 
 @end
 
-@interface IDEOpenQuicklyProjectMatchProvider : IDEOpenQuicklyMatchProvider
+@interface IDEOpenQuicklyProjectMatchProvider : IDEOpenQuicklyIndexMatchProvider
 {
-    NSArray *_candidates;
+    NSArray *_containerQueryMatches;
 }
 
-- (void)contextDidChange;
-- (void)finishCalculatingMatches;
-- (void)startCalculatingMatches;
-- (id)recomputeMatchCandidates;
-- (void)populateMatchCandidates:(id)arg1 containerItem:(id)arg2 displayPath:(id)arg3 visitedContainers:(id)arg4;
-- (id)matchForFileReference:(id)arg1 displayPath:(id)arg2;
-- (struct _NSRange)appendPathComponent:(id)arg1 toDisplayPath:(id)arg2;
++ (struct dispatch_queue_s *)sharedIndexQueryQueue;
+- (id)matchesFromCollectedData:(id)arg1;
+- (id)_displayPathForFileReference:(id)arg1;
+- (BOOL)_collectDisplayPath:(id)arg1 forFileReference:(id)arg2 checkedContainers:(id)arg3;
+- (id)collectDataForInput:(id)arg1 index:(id)arg2 currentGeneration:(unsigned int *)arg3 localGeneration:(unsigned int)arg4;
+- (void)restartQuery;
+- (id)containerQueryMatches;
+- (id)initWithSearchContext:(id)arg1;
 
 @end
 
@@ -16403,24 +17159,13 @@ typedef struct {
 
 @end
 
-@interface IDEOpenQuicklySymbolMatchProvider : IDEOpenQuicklyMatchProvider
+@interface IDEOpenQuicklySymbolMatchProvider : IDEOpenQuicklyIndexMatchProvider
 {
-    IDEOpenQuicklyPattern *_previousPattern;
-    IDEOpenQuicklyPattern *_originalPattern;
-    NSArray *_originalMatches;
-    unsigned int _currentGeneration;
-    BOOL _idle;
 }
 
-@property(getter=isIdle) BOOL idle; // @synthesize idle=_idle;
-@property(retain) IDEOpenQuicklyPattern *originalPattern; // @synthesize originalPattern=_originalPattern;
-@property(retain) IDEOpenQuicklyPattern *previousPattern; // @synthesize previousPattern=_previousPattern;
-@property(copy) NSArray *originalMatches; // @synthesize originalMatches=_originalMatches;
-- (void)finishCalculatingMatches;
-- (void)startCalculatingMatches;
-- (void)contextDidChange;
-- (void)restartQuery;
-- (id)initWithSearchContext:(id)arg1;
+- (int)minimumQueryStringLength;
+- (id)matchesFromCollectedData:(id)arg1;
+- (id)collectDataForInput:(id)arg1 index:(id)arg2 currentGeneration:(unsigned int *)arg3 localGeneration:(unsigned int)arg4;
 
 @end
 
@@ -16476,6 +17221,7 @@ typedef struct {
 - (double)scoreCandidate:(id)arg1;
 - (double)scoreCandidate:(id)arg1 matchedRanges:(id *)arg2;
 - (BOOL)matchesCandidate:(id)arg1;
+- (void)dealloc;
 - (id)initWithPattern:(id)arg1;
 
 @end
@@ -16501,9 +17247,9 @@ typedef struct {
     DVTDocumentLocation *_linelessDocumentLocation;
 }
 
+- (id)image;
 - (int)matchTypeGivenMatchContext:(id)arg1;
 - (id)locationGivenMatchContext:(id)arg1;
-- (id)displayPathGivenMatchContext:(id)arg1;
 - (BOOL)isEqualToOpenQuicklyMatch:(id)arg1;
 - (BOOL)isEqualToOpenQuicklyPathStringMatch:(id)arg1;
 - (id)initWithMatchedCandidate:(id)arg1 path:(id)arg2 displayPath:(id)arg3;
@@ -16836,74 +17582,6 @@ typedef struct {
 
 @end
 
-@interface IDEInspectorCapsule : NSObject
-{
-    unsigned long long matchType;
-    NSXMLElement *inspectorXMLElement;
-    id matchValue;
-}
-
-@property(readonly) id matchValue; // @synthesize matchValue;
-@property(readonly) NSXMLElement *inspectorXMLElement; // @synthesize inspectorXMLElement;
-@property(readonly) unsigned long long matchType; // @synthesize matchType;
-- (id)initWithXMLElement:(id)arg1 matchType:(unsigned long long)arg2 matchValue:(id)arg3;
-
-@end
-
-@interface IDEInspectorCapsuleListView : DVTStackView_ML
-{
-    NSObject<IDEBindableDeclarativeInspectorController> *inspectorController;
-    NSMapTable *capsuleControllersByRepresentedObject;
-    NSDictionary *capsuleVariantByMatchValueMap;
-    NSMapTable *capsulesByRepresentedObject;
-    IDEInspectorCapsule *defaultCapsule;
-    NSString *capsuleVariantKeyPath;
-    NSString *capsuleTitleKeyPath;
-    NSString *capsuleVariantType;
-    NSString *newCapsuleTitle;
-    id selectedPrimitiveValue;
-    SEL deleteCapsuleAction;
-    SEL newCapsuleAction;
-    NSArray *capsules;
-}
-
-+ (id)capsuleListForXMLElement:(id)arg1 boundTo:(id)arg2;
-+ (void)initialize;
-- (BOOL)isFlipped;
-- (void)updateBoundValue;
-- (id)addButtonLozenge;
-- (id)capsuleViewForStatusLabel:(id)arg1;
-- (id)capsuleViewForRepresentedObject:(id)arg1 boundTo:(id)arg2;
-- (id)capsuleForRepresentedObject:(id)arg1;
-- (id)dvtExtraBindings;
-- (id)initWithCapsules:(id)arg1 capsuleTitleKeyPath:(id)arg2 newCapsuleTitle:(id)arg3 newCapsuleAction:(SEL)arg4 deleteCapsuleAction:(SEL)arg5 inspectorController:(id)arg6 capsuleVariantKeyPath:(id)arg7 capsuleVariantType:(id)arg8;
-
-@end
-
-@interface IDEInspectorCapsuleRoundedRectView : NSView
-{
-    NSBezierPath *cachedPath;
-}
-
-- (void)drawRect:(struct CGRect)arg1;
-- (void)setFrame:(struct CGRect)arg1;
-- (id)cachedPath;
-
-@end
-
-@interface IDEInspectorCapsuleView : DVTLayoutView_ML
-{
-    IDEInspectorCapsuleRoundedRectView *roundedRectView;
-    NSView *view;
-}
-
-@property(readonly) NSView *view; // @synthesize view;
-- (void)layoutBottomUp;
-- (void)layoutTopDown;
-- (id)initWithView:(id)arg1;
-
-@end
-
 @interface IDEInspectorCapsuleController : NSObject <IDEBindableDeclarativeInspectorController>
 {
     NSObject<IDEBindableDeclarativeInspectorController> *parentInspectorController;
@@ -17081,11 +17759,25 @@ typedef struct {
 @interface IDEUpgradeTaskGroup : NSObject
 {
     NSString *_name;
+    NSArray *_upgradeTasks;
+    long long _selected;
+    BOOL _ignoreSelectionChanges;
 }
 
+@property(copy, nonatomic) NSArray *upgradeTasks; // @synthesize upgradeTasks=_upgradeTasks;
+@property(nonatomic) long long selected; // @synthesize selected=_selected;
 @property(readonly) NSString *name; // @synthesize name=_name;
+- (void)_updateSelected;
 - (id)navigableItem_name;
 - (id)initWithName:(id)arg1;
+
+@end
+
+@interface IDEUpgradeTableColumn : NSTableColumn
+{
+}
+
+- (void)setWidth:(double)arg1;
 
 @end
 
@@ -17114,18 +17806,20 @@ typedef struct {
 + (id)_blueprintContextForExtension:(id)arg1 blueprint:(id)arg2;
 + (id)_upgradeTasksProviderExtensionForContainer:(id)arg1;
 @property(readonly) BOOL displayingResults; // @synthesize displayingResults=_displayingResults;
+- (double)tableView:(id)arg1 heightOfRow:(long long)arg2;
 - (BOOL)tableView:(id)arg1 shouldShowCellExpansionForTableColumn:(id)arg2 row:(long long)arg3;
-- (void)tableView:(id)arg1 setObjectValue:(id)arg2 forTableColumn:(id)arg3 row:(long long)arg4;
 - (id)tableView:(id)arg1 objectValueForTableColumn:(id)arg2 row:(long long)arg3;
 - (void)tableView:(id)arg1 willDisplayCell:(id)arg2 forTableColumn:(id)arg3 row:(long long)arg4;
 - (id)tableView:(id)arg1 dataCellForTableColumn:(id)arg2 row:(long long)arg3;
 - (BOOL)_canSelectTaskForRow:(long long)arg1;
+- (BOOL)tableView:(id)arg1 shouldTrackCell:(id)arg2 forTableColumn:(id)arg3 row:(long long)arg4;
 - (BOOL)tableView:(id)arg1 shouldSelectRow:(long long)arg2;
 - (BOOL)tableView:(id)arg1 isGroupRow:(long long)arg2;
 - (long long)numberOfRowsInTableView:(id)arg1;
-- (void)skipChanges:(id)arg1;
 - (void)cancelAction:(id)arg1;
 - (void)performChanges:(id)arg1;
+- (void)clickedCheckbox:(id)arg1;
+- (BOOL)_isNothingSelected;
 - (void)_endSheetWithReturnCode:(id)arg1;
 - (void)windowDidLoad;
 - (BOOL)_loadAllUpgradeTasks;
@@ -17138,23 +17832,19 @@ typedef struct {
 
 @interface IDEDebugNavigator : IDENavigator <NSMenuDelegate>
 {
-    DVTScopeBarView *_scopeBarView;
     IDENavigatorOutlineView *_outlineView;
-    NSButton *_threadModeButton;
-    NSButton *_queueModeButton;
     NSButton *_showOnlyInterestingContentButton;
     NSButton *_autoCompressMaxButton;
     NSSlider *_autoCompressSlider;
     NSButton *_autoCompressMinButton;
     IDENavigatorDataCell *_regularCell;
-    IDENavigatorDataCell *_processHeaderCell;
+    DVTMapTable *_processHeaderCellForContentDelegateTable;
     NSMutableArray *_cachedNavigableDebugItems;
     NSMenu *_contextualMenu;
-    NSMapTable *_contentDelegateForIdentifierTable;
+    DVTMapTable *_contentDelegateForIdentifierTable;
     NSMutableArray *_selectedRepresentedObjects;
     unsigned long long _compressionValue;
     unsigned long long _maxCompressionValue;
-    int _threadOrQueueMode;
     NSImage *_showOnlyInterestingContentImage;
     NSImage *_showOnlyInterestingContentAlternateImage;
     id <DVTObservingToken> _rootNavigableChildItemsObservingToken;
@@ -17162,16 +17852,18 @@ typedef struct {
     BOOL _isInUserDirectSelection;
     BOOL _showOnlyInterestingContent;
     BOOL _isInOutlineViewProcessPendingChanges;
-    BOOL _viewWasInstalled;
+    NSMutableDictionary *_cachedStateDictionary;
+    DVTMapTable *_uiControllerToItemMap;
 }
 
 + (long long)version;
 + (void)configureStateSavingObjectPersistenceByName:(id)arg1;
++ (id)createProcessActionPopUpMenuItemWithPopUpImage:(id)arg1 menuItemImage:(id)arg2 action:(SEL)arg3;
 + (id)_transientStateForKey:(id)arg1;
++ (void)registerDelegateClassForStatePersistence:(Class)arg1;
 + (void)initialize;
 @property(readonly) BOOL isInUserDirectSelection; // @synthesize isInUserDirectSelection=_isInUserDirectSelection;
 @property(nonatomic) BOOL showOnlyInterestingContent; // @synthesize showOnlyInterestingContent=_showOnlyInterestingContent;
-@property(readonly) int threadOrQueueMode; // @synthesize threadOrQueueMode=_threadOrQueueMode;
 @property(readonly) IDENavigatorOutlineView *outlineView; // @synthesize outlineView=_outlineView;
 - (void)_resetFilterIconsAndToolTips;
 - (void)_checkToolTip:(id *)arg1 shouldShow:(char *)arg2 selector:(SEL)arg3 forContentDelegate:(id)arg4;
@@ -17179,12 +17871,14 @@ typedef struct {
 - (void)_outlineViewProcessPendingChanges;
 - (BOOL)_writeRepresentedObjects:(id)arg1 toPasteboard:(id)arg2;
 - (void)_updateForNewCompressionValue;
-- (void)_updateForNewThreadOrQueueMode;
 - (void)_handleLaunchSessionsChanged;
 - (id)_indexesOfSelectedRepresentedObjects;
 - (void)_openSelectedNavigableItemsWithEventType:(unsigned long long)arg1;
+- (id)representedObjectForSelectedRow;
 - (void)_recordSelectedRowsIntoRepresentedObjects;
 - (void)contentDelegateFinished:(id)arg1;
+- (id)processActionPopUpCellForContentDelegate:(id)arg1;
+- (void)recordPersistenceStateChanges:(id)arg1;
 - (void)restorePreviousTransientStates;
 - (id)transientStates;
 - (id)expandedItemTokens;
@@ -17198,8 +17892,6 @@ typedef struct {
 @property(copy) NSArray *selectedRepresentedObjects; // @dynamic selectedRepresentedObjects;
 - (void)commitStateToDictionary:(id)arg1;
 - (void)revertStateWithDictionary:(id)arg1;
-- (void)setStoredThreadOrQueueMode:(id)arg1;
-- (id)storedThreadOrQueueMode;
 - (void)setStoredCompressionValue:(id)arg1;
 - (id)storedCompressionValue;
 - (id)_contentDelegateForRightClickedItems;
@@ -17211,13 +17903,23 @@ typedef struct {
 - (BOOL)_handleUserDirectDeletion;
 - (BOOL)_handleUserDirectMoveUpOrDown:(BOOL)arg1;
 - (BOOL)_handleUserDirectShiftKeyMoveUpOrDown:(BOOL)arg1;
+- (id)outlineView:(id)arg1 toolTipForCell:(id)arg2 rect:(struct CGRect *)arg3 tableColumn:(id)arg4 item:(id)arg5 mouseLocation:(struct CGPoint)arg6;
 - (BOOL)outlineView:(id)arg1 writeItems:(id)arg2 toPasteboard:(id)arg3;
 - (id)outlineView:(id)arg1 selectionIndexesForProposedSelection:(id)arg2;
+- (BOOL)_wasActionPopUpCellClickedAtCurrentPoint;
+- (BOOL)outlineView:(id)arg1 shouldTrackCell:(id)arg2 forTableColumn:(id)arg3 item:(id)arg4;
+- (BOOL)_wasActionPopUpCellClickedForCell:(id)arg1 item:(id)arg2;
+- (BOOL)_isPoint:(struct CGPoint)arg1 inActionPopUpCellForCell:(id)arg2 forItem:(id)arg3;
+- (id)trayCellsForHeaderItem:(id)arg1;
+- (BOOL)debuggingAdditionUIControllerWantsTrayItems:(id)arg1;
+- (BOOL)_anyDebuggingAdditionUIControllersWantTray:(id)arg1;
+- (id)_trayCellsFromDebuggingAdditionsForModelObject:(id)arg1;
+- (id)debuggingUIControllerForItem:(id)arg1;
 - (double)outlineView:(id)arg1 heightOfRowByItem:(id)arg2;
 - (id)outlineView:(id)arg1 dataCellForTableColumn:(id)arg2 item:(id)arg3;
 - (void)outlineView:(id)arg1 willDisplayCell:(id)arg2 forTableColumn:(id)arg3 item:(id)arg4;
-- (id)processHeaderCell;
-- (id)regularCell;
+- (id)_processHeaderCellWithDebugNavigableModelObject:(id)arg1 contentDelegate:(id)arg2;
+- (id)_regularCell;
 - (void)outlineViewItemDidCollapse:(id)arg1;
 - (void)outlineViewItemDidExpand:(id)arg1;
 - (void)outlineViewItemWillExpand:(id)arg1;
@@ -17231,14 +17933,12 @@ typedef struct {
 - (void)copy:(id)arg1;
 - (void)viewWillUninstall;
 - (void)viewDidInstall;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)loadView;
 - (void)openDoubleClickedNavigableItemsAction:(id)arg1;
 - (void)openClickedNavigableItemAction:(id)arg1;
 - (void)openSelectedNavigableItemsKeyAction:(id)arg1;
 - (void)revealCurrentItem;
-- (void)showQueueMode:(id)arg1;
-- (void)showThreadMode:(id)arg1;
 - (void)autoCompressStackFrames:(id)arg1;
 
 // Remaining properties
@@ -17263,27 +17963,33 @@ typedef struct {
 }
 
 + (id)keyPathsForValuesAffectingDataValue;
-+ (id)keyPathsForValuesAffectingSummaryValue;
 @property(copy) NSString *filterMatchString; // @synthesize filterMatchString=_filterMatchString;
 @property BOOL showsType; // @synthesize showsType=_showsType;
 @property BOOL showsFormattedSummary; // @synthesize showsFormattedSummary=_showsFormattedSummary;
 - (void)selectWithFrame:(struct CGRect)arg1 inView:(id)arg2 editor:(id)arg3 delegate:(id)arg4 start:(long long)arg5 length:(long long)arg6;
 - (void)editWithFrame:(struct CGRect)arg1 inView:(id)arg2 editor:(id)arg3 delegate:(id)arg4 event:(id)arg5;
+- (void)drawWithExpansionFrame:(struct CGRect)arg1 inView:(id)arg2;
 - (struct CGRect)_rectForValueInFrame:(struct CGRect)arg1 inView:(id)arg2;
 - (id)calculateFullAttributedString;
 - (void)_recalculateAttributedStringValue;
 - (void)_highlightMatchOfString:(id)arg1 onAttributedString:(id)arg2;
 - (id)calculateSummaryAttributedString;
+- (BOOL)_treatSummaryAsValue;
 - (id)valueString;
 - (id)typeString;
 - (id)calculateNameString;
-- (id)_attributedString:(id)arg1 withFont:(id)arg2 color:(id)arg3 changed:(BOOL)arg4 partName:(id)arg5;
-- (id)summaryTextColor;
-- (id)changedAttributes;
+- (id)_attributedString:(id)arg1 withFont:(id)arg2 changed:(BOOL)arg3 partName:(id)arg4;
+- (id)_attributedString:(id)arg1 withFont:(id)arg2 changed:(BOOL)arg3;
+- (id)_attributedString:(id)arg1 withFont:(id)arg2;
+@property(readonly) NSDictionary *filterMatchedAttributes;
+@property(readonly) NSDictionary *changedAttributes;
+@property(readonly) NSColor *summaryTextColor;
+- (id)_summaryTextColor:(BOOL)arg1;
 - (id)textColor;
 @property(readonly) id <IDEDataValue> dataValue;
 - (void)setRepresentedObject:(id)arg1;
 - (void)_setupCell;
+- (void)invalidateAttributedStringValue;
 - (id)copyWithZone:(struct _NSZone *)arg1;
 - (id)initWithCoder:(id)arg1;
 - (id)initImageCell:(id)arg1;
@@ -17394,7 +18100,7 @@ typedef struct {
 @property(retain) DVTFilePath *repositoryLocation; // @synthesize repositoryLocation=_repositoryLocation;
 @property(retain) IDESnapshotItem *previousSnapshot; // @synthesize previousSnapshot=_previousSnapshot;
 @property(retain) IDESnapshotItem *selectedSnapshot; // @synthesize selectedSnapshot=_selectedSnapshot;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)previewSheetDidEnd:(id)arg1 returnCode:(long long)arg2 contextInfo:(void *)arg3;
 - (void)cancelAction:(id)arg1;
 - (void)exportConfirmationAlertDidEnd:(id)arg1 returnCode:(long long)arg2 contextInfo:(void *)arg3;
@@ -17433,16 +18139,23 @@ typedef struct {
 
 @end
 
-@interface IDESnapshotPreviewComparisonEditorDataSource : NSObject <IDEComparisonEditorDataSource, DVTInvalidation>
+@interface IDESnapshotPreviewComparisonEditorDataSource : NSObject <IDEComparisonEditorDataSource, DVTInvalidation_New>
 {
-    BOOL _isInvalidated;
-    DVTStackBacktrace *_invalidationBacktrace;
     BOOL _isExport;
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
-@property BOOL isExport; // @synthesize isExport=_isExport;
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
+@property BOOL isExport; // @synthesize isExport=_isExport;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
 @property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (id)documentForSecondaryDocumentLocation:(id)arg1 completionBlock:(id)arg2;
 - (id)documentForPrimaryDocumentLocation:(id)arg1 completionBlock:(id)arg2;
@@ -17496,7 +18209,7 @@ typedef struct {
 - (BOOL)tableView:(id)arg1 shouldShowCellExpansionForTableColumn:(id)arg2 row:(long long)arg3;
 - (void)tableViewColumnDidResize:(id)arg1;
 - (void)tableView:(id)arg1 willDisplayCell:(id)arg2 forTableColumn:(id)arg3 row:(long long)arg4;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)viewDidInstall;
 - (void)loadView;
 - (id)dvtExtraBindings;
@@ -17524,7 +18237,7 @@ typedef struct {
 @property(retain) NSWindow *workspaceWindow; // @synthesize workspaceWindow=_workspaceWindow;
 @property(retain) IDESnapshotsListController *listController; // @synthesize listController=_listController;
 @property(retain) IDEWorkspace *workspace; // @synthesize workspace=_workspace;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)snapshotsListSheetDidEnd:(id)arg1 returnCode:(long long)arg2 contextInfo:(void *)arg3;
 - (void)cancelRestore:(id)arg1;
 - (void)nothingToRestoreSheetDidEnd:(id)arg1 returnCode:(long long)arg2 contextInfo:(void *)arg3;
@@ -17614,6 +18327,7 @@ typedef struct {
 @property(readonly) NSString *projectTypeString; // @synthesize projectTypeString=_projectTypeString;
 @property(readonly) NSDate *lastOpenedDate; // @synthesize lastOpenedDate=_lastOpenedDate;
 - (id)description;
+- (void)assignPropertiesFromAnotherProjectItem:(id)arg1;
 - (BOOL)isEqual:(id)arg1;
 - (unsigned long long)hash;
 - (id)detailedStatusString;
@@ -17627,6 +18341,7 @@ typedef struct {
 {
 }
 
++ (id)schemeTitleErrorSuffixAttributedString;
 + (id)keyPathsForValuesAffectingName;
 - (id)childRepresentedObjects;
 - (BOOL)isLeaf;
@@ -17681,14 +18396,16 @@ typedef struct {
 + (id)keyPathsForValuesAffectingSelectedNavigable;
 + (id)keyPathsForValuesAffectingPathControlIsEnabled;
 @property(readonly) IDENavigableItem *rootNavigable; // @synthesize rootNavigable=_rootNavigable;
-- (void)_openMoreSimulators:(id)arg1;
 - (void)_newContextAction:(id)arg1;
 - (void)_manageContextsAction:(id)arg1;
 - (void)_editActiveContextAction:(id)arg1;
+- (void)_noSchemeAction:(id)arg1;
 - (BOOL)validateUserInterfaceItem:(id)arg1;
+- (id)pathCell:(id)arg1 titleForPathComponentCell:(id)arg2 atIndex:(unsigned long long)arg3;
 - (id)pathCell:(id)arg1 accessibilityDescriptionForPathComponentCell:(id)arg2 atIndex:(unsigned long long)arg3;
 - (id)pathCellNoSelectionTitle;
 - (void)pathCell:(id)arg1 didUpdateMenu:(id)arg2;
+- (struct CGPoint)pathCell:(id)arg1 adjustPopupMenuLocation:(struct CGPoint)arg2;
 - (void)didUpdateRunDestinationMenu:(id)arg1;
 - (void)didUpdateSchemeMenu:(id)arg1;
 @property(retain) IDENavigableItem *selectedNavigable;
@@ -17724,13 +18441,17 @@ typedef struct {
     NSMutableDictionary *_viewControllerClasses;
     NSMutableDictionary *_inputValidatorClasses;
     id <IDESelectionSource> _selectionSource;
+    IDERefactoringWindowController *_windowController;
+    IDERefactoringSession *_session;
 }
 
++ (void)refactoringCommandCompleted;
 + (id)_refactoringForMainWindow;
 + (id)handlerForAction:(SEL)arg1 withSelectionSource:(id)arg2;
-+ (void)initialize;
++ (id)_sharedHandler;
+@property(retain) IDERefactoringSession *session; // @synthesize session=_session;
+@property(retain) IDERefactoringWindowController *windowController; // @synthesize windowController=_windowController;
 @property(retain) id <IDESelectionSource> selectionSource; // @synthesize selectionSource=_selectionSource;
-- (void)genericAlertDidEnd:(id)arg1 returnCode:(long long)arg2 contextInfo:(void *)arg3;
 - (BOOL)validateUserInterfaceItem:(id)arg1;
 - (void)contextMenu_refactorEncapsulate:(id)arg1;
 - (void)contextMenu_refactorMoveDown:(id)arg1;
@@ -17746,6 +18467,7 @@ typedef struct {
 - (void)refactorRename:(id)arg1;
 - (void)refactor:(id)arg1 contextMenu:(BOOL)arg2;
 - (BOOL)_validateTransformation:(id)arg1 contextMenu:(BOOL)arg2 error:(id *)arg3;
+- (void)genericAlertDidEnd:(id)arg1 returnCode:(long long)arg2 contextInfo:(void *)arg3;
 - (id)init;
 
 @end
@@ -17753,31 +18475,16 @@ typedef struct {
 @interface IDEDeclarativeInspectorDynamicVisibilityManager : NSObject
 {
     NSObject<IDEBindableDeclarativeInspectorController> *_owner;
-    NSMutableArray *_orderedIdentifiers;
-    NSMutableSet *_visibleIdentifiers;
-    NSMapTable *_visibleIdentifiersToSubIdentifiersMap;
+    NSMutableArray *_orderedItems;
+    IDEInspectorLayoutGroup *_layoutGroup;
 }
 
-@property(readonly) NSArray *orderedIdentifiers; // @synthesize orderedIdentifiers=_orderedIdentifiers;
-- (void)registerIdentifier:(id)arg1 forKeyPath:(id)arg2 withInstallBlock:(id)arg3 andUninstallBlock:(void)arg4;
-- (void)uninstallIdentifier:(id)arg1 usingBlock:(id)arg2;
-- (void)installIdentifier:(id)arg1 forReason:(unsigned long long)arg2 usingBlock:(id)arg3;
-- (BOOL)identifierIsVisible:(id)arg1;
+- (void)registerSubgroup:(id)arg1 forKeyPath:(id)arg2;
+- (void)uninstallSubgroup:(id)arg1;
+- (void)installSubgroup:(id)arg1;
+- (BOOL)subgroupIsVisible:(id)arg1;
 - (BOOL)keyPathShouldBeConsideredVisible:(id)arg1;
-- (id)initWithOwner:(id)arg1;
-
-@end
-
-@interface IDEDeclarativeInspectorViewBasedDynamicVisibilityManager : IDEDeclarativeInspectorDynamicVisibilityManager
-{
-    NSMapTable *_identifierToBorderedViewsMap;
-    BOOL _alternateBorderedViews;
-    NSView *_view;
-}
-
-- (void)registerIdentifier:(id)arg1 forKeyPath:(id)arg2 withInstallBlock:(id)arg3 andUninstallBlock:(void)arg4;
-- (void)reflowBorderedViews;
-- (id)initWithView:(id)arg1 alternateSubViewBorderedViews:(BOOL)arg2 owner:(id)arg3;
+- (id)initWithInspectorLayoutGroup:(id)arg1 owner:(id)arg2;
 
 @end
 
@@ -17786,7 +18493,7 @@ typedef struct {
     NSMutableArray *_activityReports;
     NSMutableSet *_runningThrottleableActivityReports;
     NSMutableSet *_runningUnthrottleableActivityReports;
-    BOOL _isAddingReports;
+    DVTMapTable *_activityReportObservations;
 }
 
 + (id)sharedActivityReportFileIOCoordinator;
@@ -17828,13 +18535,14 @@ typedef struct {
     long long _numIncompatibilityErrors;
     BOOL _wasContinueBuildingAfterErrors;
     BOOL _shouldRemoveContinueBuildingAfterErrors;
-    NSMapTable *_convertedFilePathForOriginalFilePathMapTable;
+    DVTMapTable *_convertedFilePathForOriginalFilePathMapTable;
 }
 
 + (void)initialize;
 @property unsigned long long currentConversionStage; // @synthesize currentConversionStage=_currentConversionStage;
 @property long long numberOfIncompatibilityErrors; // @synthesize numberOfIncompatibilityErrors=_numIncompatibilityErrors;
 @property(readonly) NSArray *targets; // @synthesize targets=_targets;
+- (id)migrateFolderForBuildable:(id)arg1;
 - (id)convertedFilePathForOriginalFilePath:(id)arg1;
 - (unsigned long long)numberOfConvertedFilePaths;
 - (id)_convertedFilePathForOriginalFilePathMapTable;
@@ -17893,7 +18601,7 @@ typedef struct {
 
 @interface IDEARCConversionReviewChangesAssistant : IDEAssistant <IDEReviewFilesDataSource, IDEComparisonEditorDataSource>
 {
-    NSMapTable *_editorDocumentByFilePath;
+    DVTMapTable *_editorDocumentByFilePath;
     NSArray *_flatNavigableItems;
     IDENavigableItemCoordinator *_flatFileNavItemCoordinator;
     IDENavigatorDataCell *_containerFileReferenceDataCell;
@@ -17944,30 +18652,24 @@ typedef struct {
 
 @end
 
-@interface IDEARCConversionTarget : NSObject
+@interface IDEARCConversionTarget : IDEMigrationTarget
 {
-    id <IDEBlueprint> _blueprint;
     IDEARCConversionAssistantContext *_assistantContext;
-    NSMutableArray *_buildFiles;
-    NSImage *_iconImage;
     NSString *_displayName;
+    BOOL _fileOveridesARCSetting;
 }
 
 @property(readonly) NSString *displayName; // @synthesize displayName=_displayName;
-@property(readonly) NSImage *iconImage; // @synthesize iconImage=_iconImage;
-@property(readonly) NSArray *buildFiles; // @synthesize buildFiles=_buildFiles;
 @property(readonly) IDEARCConversionAssistantContext *assistantContext; // @synthesize assistantContext=_assistantContext;
-@property(readonly) id <IDEBlueprint> blueprint; // @synthesize blueprint=_blueprint;
+@property(readonly) BOOL fileOveridesARCSetting; // @synthesize fileOveridesARCSetting=_fileOveridesARCSetting;
 - (id)_treeControllerWarningMessage;
 - (id)_treeControllerChildren;
 - (void)updateBuildSettings;
 - (void)disableOverridingBuildSettings;
 - (void)enableOverridingBuildSettings;
 @property BOOL convertsToARC;
-@property(readonly) NSString *warningMessage;
+- (id)warningMessage;
 @property(readonly) BOOL buildsWithARC;
-@property(readonly) BOOL buildsWithClang;
-@property(readonly) BOOL buildsValidArchtectures;
 @property(readonly) BOOL canConvertToUseARC;
 - (id)initWithBlueprint:(id)arg1 assistantContext:(id)arg2;
 
@@ -17978,11 +18680,13 @@ typedef struct {
     IDEFileReference *_fileReference;
     IDEARCConversionTarget *_target;
     NSImage *_iconImage;
+    NSString *_warningMessage;
     BOOL _enablesARC;
 }
 
 @property BOOL enablesARC; // @synthesize enablesARC=_enablesARC;
 @property(readonly) NSImage *iconImage; // @synthesize iconImage=_iconImage;
+@property(readonly) NSString *warningMessage; // @synthesize warningMessage=_warningMessage;
 @property(readonly) IDEARCConversionTarget *target; // @synthesize target=_target;
 @property(readonly) IDEFileReference *fileReference; // @synthesize fileReference=_fileReference;
 - (id)_treeControllerWarningMessage;
@@ -18002,6 +18706,7 @@ typedef struct {
     NSString *_searchString;
     NSMutableIndexSet *_expandedRowIndexes;
     NSArray *_selectedTargetChooserItems;
+    IDEMigrationTargetChooserStatePersistence *_statePersistence;
     IDEFilterControlBar *_filterControlBar;
     DVTBorderedView *_scopeBarBorderedView;
     DVTOutlineView *_outlineView;
@@ -18016,8 +18721,13 @@ typedef struct {
 + (id)keyPathsForValuesAffectingCanFinish;
 @property(copy, nonatomic) NSString *searchString; // @synthesize searchString=_searchString;
 @property(copy) NSArray *targetItems; // @synthesize targetItems=_targetItems;
+- (id)currentUIState;
+- (void)loadUIState:(id)arg1;
+- (id)_getPathStringForItem:(id)arg1;
+- (id)stateRepositoryFilePath;
 - (double)outlineView:(id)arg1 heightOfRowByItem:(id)arg2;
 - (void)outlineView:(id)arg1 willDisplayCell:(id)arg2 forTableColumn:(id)arg3 item:(id)arg4;
+- (void)outlineView:(id)arg1 setObjectValue:(id)arg2 forTableColumn:(id)arg3 byItem:(id)arg4;
 - (id)_attributedStringByHighlightingFindResults:(id)arg1;
 - (id)_findResultAttributes;
 - (BOOL)validateMenuItem:(id)arg1;
@@ -18043,35 +18753,53 @@ typedef struct {
 
 @end
 
-@interface IDESimulateLocationMenuController : NSObject <NSMenuDelegate>
+@interface IDESchemeOptionMenuController : NSObject <NSMenuDelegate>
 {
     BOOL _validateMenuItems;
     int _extraItems;
     IDEWorkspaceTabController *_tabController;
-    id _selectActionHandler;
-    id _configurationBlock;
-    id _contextBlock;
+    id _itemWasSelectedCallback;
+    id _menuWasUpdatedCallback;
+    id _willAddFileCallback;
+    id _didAddFilesCallback;
+    id _additionContext;
     NSMenu *_menu;
+    NSString *_uti;
+    NSString *_doNothingItemTitle;
+    id _doNothingItemRepresentedObject;
+    NSArray *_defaultItems;
+    NSString *_menuTitle;
+    id _enabledCallback;
+    NSArray *_itemsForFilesInWorkspace;
 }
 
-@property(copy) id addGPXFileContextBlock; // @synthesize addGPXFileContextBlock=_contextBlock;
-@property(copy) id configurationBlock; // @synthesize configurationBlock=_configurationBlock;
-@property(copy) id selectActionHandler; // @synthesize selectActionHandler=_selectActionHandler;
+@property(readonly) NSArray *itemsForFilesInWorkspace; // @synthesize itemsForFilesInWorkspace=_itemsForFilesInWorkspace;
+@property(copy) id enabledCallback; // @synthesize enabledCallback=_enabledCallback;
+@property(readonly) NSString *menuTitle; // @synthesize menuTitle=_menuTitle;
+@property(readonly) NSArray *defaultItems; // @synthesize defaultItems=_defaultItems;
+@property(readonly) id doNothingItemRepresentedObject; // @synthesize doNothingItemRepresentedObject=_doNothingItemRepresentedObject;
+@property(readonly) NSString *doNothingItemTitle; // @synthesize doNothingItemTitle=_doNothingItemTitle;
+@property(readonly) NSString *uti; // @synthesize uti=_uti;
+@property(retain) id additionContext; // @synthesize additionContext=_additionContext;
+@property(copy) id didAddFilesCallback; // @synthesize didAddFilesCallback=_didAddFilesCallback;
+@property(copy) id willAddFileCallback; // @synthesize willAddFileCallback=_willAddFileCallback;
+@property(copy) id menuWasUpdatedCallback; // @synthesize menuWasUpdatedCallback=_menuWasUpdatedCallback;
+@property(copy) id itemWasSelectedCallback; // @synthesize itemWasSelectedCallback=_itemWasSelectedCallback;
 @property(retain, nonatomic) IDEWorkspaceTabController *tabController; // @synthesize tabController=_tabController;
 @property(nonatomic) int extraItems; // @synthesize extraItems=_extraItems;
 @property BOOL validateMenuItems; // @synthesize validateMenuItems=_validateMenuItems;
 - (void)attachToMenu:(id)arg1;
 - (void)menuNeedsUpdate:(id)arg1;
 - (void)_updateMenu:(id)arg1;
-- (void)newGPXFile:(id)arg1;
-- (void)addGPXFile:(id)arg1;
-- (void)selectLocationScenarioItem:(id)arg1;
-- (void)_selectLocationScenario:(id)arg1 withContext:(id)arg2;
+- (void)newFile:(id)arg1;
+- (void)addFile:(id)arg1;
+- (void)selectItem:(id)arg1;
+- (void)_selectItemWithRepresentedObject:(id)arg1;
 - (BOOL)validateMenuItem:(id)arg1;
-- (id)_buildLocationSimulationMenu;
-- (id)_locationScenarioWithFilePath:(id)arg1;
+- (id)_buildMenu;
+- (id)_filesInWorkspaceMatchingUTI;
 - (unsigned long long)_indexOfIconItem;
-- (unsigned long long)_indexOfDontSimulateItem;
+- (unsigned long long)_indexOfDoNothingItem;
 - (unsigned long long)_indexOfNoneItem;
 - (id)init;
 
@@ -18293,7 +19021,7 @@ typedef struct {
 
 @end
 
-@interface IDESourceControlReviewFilesWindowController : NSWindowController <IDENavigableItemCoordinatorDelegate, NSMenuDelegate>
+@interface IDESourceControlReviewFilesWindowController : NSWindowController <IDENavigableItemCoordinatorDelegate, IDEReviewFilesViewControllerDelegate, NSMenuDelegate>
 {
     IDEReviewFilesViewController *_reviewFilesViewController;
     IDEWorkspace *_workspace;
@@ -18303,11 +19031,14 @@ typedef struct {
     IDESourceControlRequest *_currentRequest;
     IDENavigableItemCoordinator *_navigableItemCoordinator;
     NSWindow *_parentWindow;
+    BOOL _hasSetupDefaultCheckedFilePaths;
+    BOOL _settingDiffDescriptorToggledState;
     BOOL _showIgnoredFiles;
 }
 
 + (id)containerFileTypesBlacklistedFromOutlineViewCompression;
 + (id)sourceControlReviewFilesWindowControllerLogAspect;
+@property(retain) NSWindow *parentWindow; // @synthesize parentWindow=_parentWindow;
 @property BOOL showIgnoredFiles; // @synthesize showIgnoredFiles=_showIgnoredFiles;
 @property(copy) NSArray *files; // @synthesize files=_files;
 @property(retain) IDEWorkspace *workspace; // @synthesize workspace=_workspace;
@@ -18316,9 +19047,6 @@ typedef struct {
 @property(readonly) IDEReviewFilesViewController *reviewFilesViewController; // @synthesize reviewFilesViewController=_reviewFilesViewController;
 - (void)uncheckAll:(id)arg1;
 - (void)checkAll:(id)arg1;
-- (void)toggleIgnoredFiles:(id)arg1;
-- (void)unignoreFile:(id)arg1;
-- (void)ignoreFile:(id)arg1;
 - (void)revertChangesAlertDidEnd:(id)arg1 returnCode:(long long)arg2 contextInfo:(void *)arg3;
 - (void)revertChanges:(id)arg1;
 - (id)filesPathsOfContextualMenuSelectedItems;
@@ -18352,8 +19080,70 @@ typedef struct {
 - (void)beginReviewFiles;
 - (void)beginSheetForWindow:(id)arg1;
 - (void)setWindowSize;
+- (void)reviewFilesViewController:(id)arg1 didInstallComparisonEditor:(id)arg2;
+- (void)windowDidLoad;
 - (id)windowNibName;
 - (id)initWithWindow:(id)arg1;
+
+@end
+
+@interface IDEAutoImportCompletionItem : NSObject <DVTTextCompletionItem>
+{
+    id <IDEAutoImportable> _autoImportable;
+    NSMutableArray *_additionalCompletions;
+    NSString *_displayType;
+    NSString *_displayText;
+    NSString *_completionText;
+    NSString *_name;
+    unsigned long long _partialSelectorCount;
+    NSAttributedString *_descriptionText;
+}
+
+@property(nonatomic) unsigned long long partialSelectorCount; // @synthesize partialSelectorCount=_partialSelectorCount;
+@property(readonly) NSArray *additionalCompletions; // @synthesize additionalCompletions=_additionalCompletions;
+- (unsigned long long)hash;
+- (BOOL)isEqual:(id)arg1;
+- (id)description;
+- (void)infoViewControllerWithWidth:(double)arg1 context:(id)arg2 completionBlock:(id)arg3;
+- (void)removeAllAdditionalCompletions;
+- (void)addImportStatementForAutoImportable:(id)arg1 forInsertionIntoContext:(id)arg2 withHeaderVisibility:(unsigned long long)arg3;
+@property(readonly) int completionItemStyle;
+@property(readonly) BOOL notRecommended;
+@property double priority;
+@property(readonly) NSImage *icon;
+@property(readonly) NSAttributedString *descriptionText; // @synthesize descriptionText=_descriptionText;
+@property(readonly) NSString *completionText;
+@property(readonly) NSString *parentText;
+@property(readonly) NSImage *highlightedStatusIcon;
+@property(readonly) NSImage *statusIcon;
+@property(readonly) NSString *displayType;
+@property(readonly) NSString *displayText;
+@property(readonly) NSString *name;
+- (void)_parseCompletionString;
+- (id)initWithAutoImportable:(id)arg1;
+
+@end
+
+@interface IDEImportStatementAdditionalCompletion : NSObject <DVTAdditionalTextCompletion>
+{
+    NSString *_importString;
+    BOOL _usesIncludeInsteadOfImport;
+    DVTFilePath *_headerFilePath;
+    id <IDEAutoImportable> _autoImportable;
+    unsigned long long _completionLocation;
+    unsigned long long _headerVisibility;
+    NSString *_optimalBuildableProductName;
+}
+
+@property(retain, nonatomic) NSString *optimalBuildableProductName; // @synthesize optimalBuildableProductName=_optimalBuildableProductName;
+@property(nonatomic) unsigned long long headerVisibility; // @synthesize headerVisibility=_headerVisibility;
+@property(readonly) unsigned long long completionLocation; // @synthesize completionLocation=_completionLocation;
+@property(retain, nonatomic) id <IDEAutoImportable> autoImportable; // @synthesize autoImportable=_autoImportable;
+@property(readonly, nonatomic) DVTFilePath *headerFilePath; // @synthesize headerFilePath=_headerFilePath;
+@property(readonly) NSString *completionText;
+- (id)importStatement;
+- (id)frameworkStyleImportStatementForHeaderAtFilePath:(id)arg1;
+- (id)initWithAutoImportable:(id)arg1 inContext:(id)arg2 headerVisibility:(unsigned long long)arg3;
 
 @end
 
@@ -18419,14 +19209,13 @@ typedef struct {
     NSString *_fileSizeForDisplay;
     id _downloadCompletionBlock;
     BOOL _cancelable;
-    IDEComponentDownloadsPrefPaneController *_controller;
+    IDEComponentDownloadsPrefPaneController *_controller_dvtWeak;
     id <DVTObservingToken> _downloadCancelledToken;
     id <DVTObservingToken> _downloadFinishedToken;
     NSMutableSet *_downloadOperationObservationTokens;
 }
 
 + (id)itemWithDownloadable:(id)arg1 state:(int)arg2 downloadOperation:(id)arg3 controller:(id)arg4;
-@property(readonly) IDEComponentDownloadsPrefPaneController *controller; // @synthesize controller=_controller;
 @property(readonly) BOOL cancelable; // @synthesize cancelable=_cancelable;
 @property(readonly) NSString *fileSizeForDisplay; // @synthesize fileSizeForDisplay=_fileSizeForDisplay;
 @property(retain, nonatomic) DVTDownloadableOperation *downloadOperation; // @synthesize downloadOperation=_downloadOperation;
@@ -18438,6 +19227,7 @@ typedef struct {
 - (void)_updateCancelable;
 - (void)cancelDownload;
 - (BOOL)downloadWithError:(id *)arg1 downloadCompletionBlock:(id)arg2;
+@property __weak IDEComponentDownloadsPrefPaneController *controller;
 
 @end
 
@@ -18459,7 +19249,7 @@ typedef struct {
     IDEComponentDownloadsProgressCell *_downloadProgressCell;
     DVTImageAndTextCell *_downloadNameCell;
     NSArray *_availableDownloads;
-    NSMapTable *_buttonsByItem;
+    DVTMapTable *_buttonsByItem;
     DVTMapTable *_downloadItemsByDownloadable;
     DVTDownloadableManager *_downloadableManager;
 }
@@ -18515,23 +19305,28 @@ typedef struct {
 
 @end
 
-@interface IDEActivityPopUpWindowController : NSWindowController <DVTInvalidation>
+@interface IDEActivityPopUpWindowController : NSWindowController <DVTInvalidation_New>
 {
     NSArray *_notificationsToClosePopUpTokens;
     IDEActivityPopUpContentView *_contentView;
-    DVTStackBacktrace *_invalidationBacktrace;
     IDEWorkspaceDocument *_workspaceDocument;
     IDEActivityView *_activityView;
     double _targetHeight;
     id _localEventHandler;
-    BOOL _isInvalidated;
     BOOL _isClosed;
     BOOL _isOpen;
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
 + (id)activityPopUpWindowForActivityView:(id)arg1;
-@property(readonly) IDEWorkspaceDocument *workspaceDocument; // @synthesize workspaceDocument=_workspaceDocument;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
+@property(readonly) IDEWorkspaceDocument *workspaceDocument; // @synthesize workspaceDocument=_workspaceDocument;
 @property(readonly) IDEActivityView *activityView; // @synthesize activityView=_activityView;
 - (void)stopMonitoringForEventsToClosePopUp;
 - (void)startMonitoringForEventsToClosePopUp;
@@ -18542,8 +19337,10 @@ typedef struct {
 - (struct CGRect)popUpScreenRectOverActivityViewTakingIntoAccountContentInset;
 - (struct CGRect)activityViewScreenRect;
 - (id)workspaceTabControllerForNavigation;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (id)initWithActivityView:(id)arg1 initialDataSource:(id)arg2;
 
 @end
@@ -18582,16 +19379,21 @@ typedef struct {
 
 @end
 
-@interface IDEActivityPopUpContentView : DVTLayerHostingView <IDEActivityPopUpContentLayerControllerDelegate, DVTInvalidation>
+@interface IDEActivityPopUpContentView : DVTLayerHostingView <IDEActivityPopUpContentLayerControllerDelegate, DVTInvalidation_New>
 {
     IDEActivityPopUpContentLayerController *_contentController;
     IDEActivityPopUpWindowController *_popUpController;
-    DVTStackBacktrace *_invalidationBacktrace;
-    DVTDelayedValidator *_heightValidator;
-    double _lastPreferredHeight;
+    DVTDelayedInvocation *_heightInvocation;
     BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
+    BOOL _setUp;
 }
 
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 @property(readonly) IDEActivityPopUpWindowController *popUpController; // @synthesize popUpController=_popUpController;
 - (void)animateToBoundsHeight:(double)arg1 completionHandler:(id)arg2;
@@ -18605,14 +19407,17 @@ typedef struct {
 @property(readonly) double preferredHeight;
 - (double)contentHeightForBoundsHeight:(double)arg1;
 - (double)boundsHeightForContentHeight:(double)arg1;
-@property(readonly) CDStruct_d2b197d1 contentInset;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
+@property(readonly) CDStruct_bf6d4a14 contentInset;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)viewDidMoveToWindow;
 - (id)initWithPopUpController:(id)arg1 initialDataSource:(id)arg2;
 
 @end
 
-@interface IDEActivityViewDataSource : NSObject <DVTInvalidation>
+@interface IDEActivityViewDataSource : NSObject <DVTInvalidation_New>
 {
     IDEWorkspaceDocument *_workspaceDocument;
     NSMutableSet *_registeredConsumers;
@@ -18624,7 +19429,7 @@ typedef struct {
     NSMapTable *_strongReportToStrongMinimumTimeTimerMap;
     NSMutableSet *_activityReportsUnderMinimumDisplayTime;
     NSMutableArray *_backgroundActivitiesLongerThanDelay;
-    NSMapTable *_strongDelayedValidatorsByStrongReport;
+    NSMapTable *_strongDelayedInvocationsByStrongReport;
     NSMapTable *_strongIssueCategoryToIssueCountByURLTable;
     id <DVTObservingToken> _containerLabelObservingToken;
     id <DVTObservingToken> _issueManagerObservingToken;
@@ -18633,13 +19438,18 @@ typedef struct {
     IDEActivityIssueCategory *_analyzerIssueCategory;
     IDEActivityIssueCategory *_errorsIssueCategory;
     NSArray *_issueCategories;
-    DVTStackBacktrace *_invalidationBacktrace;
     BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
+@property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 @property(copy) NSString *debugName; // @synthesize debugName=_debugName;
 @property(copy) NSArray *issueCategories; // @synthesize issueCategories=_issueCategories;
-@property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 @property(readonly) IDEWorkspaceDocument *workspaceDocument; // @synthesize workspaceDocument=_workspaceDocument;
 - (void)stopObservingActivityReports;
 - (void)startObservingActivityReports;
@@ -18675,8 +19485,10 @@ typedef struct {
 - (id)activityReportManager;
 - (id)workspace;
 - (id)dataSourceByCloningReportTimingData;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (id)initWithWorkspaceDocument:(id)arg1;
 
 @end
@@ -18686,6 +19498,7 @@ typedef struct {
 }
 
 + (void)_activateXcode;
++ (id)_activeEditorDocumentDictionariesForWorkspaceDocument:(id)arg1 allEditorDocumentDictionaries:(id *)arg2;
 + (void)_createAttributedTitlesForItemDictionaries:(id)arg1 includeIconInTitles:(BOOL)arg2;
 + (void)_createDisambiguatedAttributedTitlesForItemDictionaries:(id)arg1 includeIconInTitles:(BOOL)arg2;
 + (id)titleForItemWithURL:(id)arg1 name:(id)arg2 parentLocations:(id)arg3 presentedParentLocationCount:(unsigned long long)arg4 includeIconInTitles:(BOOL)arg5;
@@ -18699,10 +19512,11 @@ typedef struct {
 - (id)dockWindowMenuItems;
 - (id)windowMenuItems;
 - (id)_windowMenuItemsWithIconInTitles:(BOOL)arg1;
+- (id)_menuItemForEditorDocumentDictionary:(id)arg1 withIndentationLevel:(long long)arg2;
 
 @end
 
-@interface IDEActivityPopUpContentLayerController : DVTLayerController <IDEActivityViewDataConsumer, IDEActivityPopUpContentLayerDelegate, DVTInvalidation>
+@interface IDEActivityPopUpContentLayerController : DVTLayerController <IDEActivityViewDataConsumer, IDEActivityPopUpContentLayerDelegate, DVTInvalidation_New>
 {
     id <IDEActivityPopUpContentLayerControllerDelegate> _delegate;
     IDEWorkspaceDocument *_workspaceDocument;
@@ -18711,10 +19525,15 @@ typedef struct {
     NSMapTable *_strongReportsToStrongReportLayers;
     NSMutableArray *_orderedDisplayedReports;
     NSMutableSet *_completedReportsInPopUp;
-    DVTStackBacktrace *_invalidationBacktrace;
     BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 @property(retain) id <IDEActivityPopUpContentLayerControllerDelegate> delegate; // @synthesize delegate=_delegate;
 @property(readonly) IDEWorkspaceDocument *workspaceDocument; // @synthesize workspaceDocument=_workspaceDocument;
@@ -18738,8 +19557,10 @@ typedef struct {
 - (id)activityReportLayerForReport:(id)arg1;
 - (void)setActivityReportLayer:(id)arg1 forReport:(id)arg2;
 - (id)layer;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (id)init;
 - (void)loadLayer;
 - (id)initWithWorkspaceDocument:(id)arg1 initialDataSource:(id)arg2;
@@ -18781,6 +19602,8 @@ typedef struct {
 @property(retain) NSPopUpButton *formatPopUp; // @synthesize formatPopUp=_formatPopUp;
 @property(retain) NSPopUpButton *destinationPopUp; // @synthesize destinationPopUp=_destinationPopUp;
 @property(retain, nonatomic) IDESaveDestinationContext *context; // @synthesize context=_context;
+- (id)targetWorkspacesForDestinationManager:(id)arg1;
+- (void)destinationManagerWorkspaceDidChange:(id)arg1;
 - (void)destinationManagerGroupDidChange:(id)arg1;
 - (BOOL)destinationManager:(id)arg1 shouldAddItemToMenu:(id)arg2;
 - (void)changeDestinationFormat:(id)arg1;
@@ -18796,26 +19619,35 @@ typedef struct {
 {
     id <IDECompletionDestinationDelegate> _delegate;
     NSPopUpButton *_destinationPopUp;
+    NSPopUpButton *_destinationWorkspacePopUp;
     NSSavePanel *_savePanel;
+    NSURL *_lastSetDirectoryURL;
     IDEWorkspace *_workspace;
     IDEGroup *_destinationGroup;
     IDENavigableItemCoordinator *_navigableItemCoordinator;
     IDENavigableItem *_workspaceNavigableItem;
+    NSPopUpButton *_destinationGroupPopUp;
 }
 
 @property(retain, nonatomic) IDENavigableItemCoordinator *navigableItemCoordinator; // @synthesize navigableItemCoordinator=_navigableItemCoordinator;
 @property(retain) IDEGroup *destinationGroup; // @synthesize destinationGroup=_destinationGroup;
 @property(retain) IDEWorkspace *workspace; // @synthesize workspace=_workspace;
 @property(retain) NSSavePanel *savePanel; // @synthesize savePanel=_savePanel;
-@property(retain, nonatomic) NSPopUpButton *destinationPopUp; // @synthesize destinationPopUp=_destinationPopUp;
+@property(retain, nonatomic) NSPopUpButton *destinationWorkspacePopUp; // @synthesize destinationWorkspacePopUp=_destinationWorkspacePopUp;
+@property(retain, nonatomic) NSPopUpButton *destinationGroupPopUp; // @synthesize destinationGroupPopUp=_destinationGroupPopUp;
 @property(retain) id <IDECompletionDestinationDelegate> delegate; // @synthesize delegate=_delegate;
 - (id)workspaceNavigableItem;
 - (void)deactivate;
 - (void)activate;
+- (void)clearDestinationWorkspace;
+- (void)selectedWorkspaceDidChange:(id)arg1;
+- (void)populateDestinationWorkspacePopUp;
+- (void)clearDestinationGroup;
 - (void)selectedGroupDidChange:(id)arg1;
 - (void)populateDestinationGroupPopUp;
 - (void)addMenuItemsToPopUpButton:(id)arg1 menu:(id)arg2 forItem:(id)arg3 indentationLevel:(unsigned long long)arg4 items:(id)arg5;
 - (BOOL)shouldAddItemToDestinationMenu:(id)arg1;
+- (id)menuItemForDestinationGroup:(id)arg1;
 - (id)destinationGroupForMenuItem:(id)arg1;
 
 @end
@@ -18904,9 +19736,11 @@ typedef struct {
 {
     id _sourceControlCommandContinuationBlock;
     NSAlert *_waitingOnInitialScanAlert;
+    NSAlert *_checkingForUpdatesAlert;
     id _didScanToken;
     BOOL _initialScanAlertIsShowing;
     BOOL _initialWorkspaceScanIsComplete;
+    BOOL _checkingForUpdatesAlertIsShowing;
 }
 
 @property(copy) id sourceControlCommandContinuationBlock; // @synthesize sourceControlCommandContinuationBlock=_sourceControlCommandContinuationBlock;
@@ -18917,7 +19751,7 @@ typedef struct {
 
 @end
 
-@interface IDESourceControlRepositorySetupWindowController : NSWindowController <DVTReplacementViewDelegate, NSWindowDelegate>
+@interface IDESourceControlRepositorySetupWindowController : NSWindowController <DVTReplacementViewDelegate, NSWindowDelegate, NSAnimationDelegate>
 {
     DVTBorderedView *_borderedView;
     DVTReplacementView *_replacementView;
@@ -18926,18 +19760,15 @@ typedef struct {
     NSView *_nextKeyView;
     NSImageView *_replacementImageView;
     BOOL _animationInProgress;
-    BOOL _backendSetupFinishedWhileAnimationInProgress;
+    BOOL _stepFinishedWhileAnimationInProgress;
 }
 
 @property(retain) IDESourceControlRepositoryCreationStep *currentStep; // @synthesize currentStep=_currentStep;
 @property(retain) IDESourceControlRepositoryCreationContext *context; // @synthesize context=_context;
 - (void)goBackWithWindowControllerClass:(Class)arg1;
 - (void)goNextWithWindowControllerClass:(Class)arg1;
-- (void)animationDidStop:(id)arg1 finished:(BOOL)arg2;
-- (void)_cleanUpAnimationForView:(id)arg1;
+- (void)animationDidEnd:(id)arg1;
 - (void)_setUpAnimationImageViewWithDirection:(double)arg1 actionBlock:(id)arg2;
-- (void)_addAnimationForKey:(id)arg1 toView:(id)arg2;
-- (void)_setAnimationDuration;
 - (void)cancelSession:(id)arg1;
 - (void)goBack:(id)arg1;
 - (void)cancel;
@@ -18951,6 +19782,43 @@ typedef struct {
 - (void)windowDidLoad;
 - (void)windowWillClose:(id)arg1;
 - (id)_openWindowTerminationDisablingReason;
+
+@end
+
+@interface IDEAutoImportBuildableProductProxy : NSObject
+{
+    NSString *_productName;
+    id <IDEBuildableProduct> _buildableProduct;
+    NSSet *_projectHeaders;
+    NSSet *_privateHeaders;
+    NSSet *_namesOfLinkedBinaries;
+    id <IDEBlueprint> _blueprint;
+    NSSet *_publicHeaders;
+    NSSet *_sourceCodeFilePaths;
+    BOOL _cached;
+    DVTFilePath *_filePath;
+    DVTHashTable *_SDKs;
+    DVTHashTable *_supportedPlatforms;
+}
+
+@property(retain, nonatomic) DVTHashTable *supportedPlatforms; // @synthesize supportedPlatforms=_supportedPlatforms;
+@property(retain, nonatomic) DVTHashTable *SDKs; // @synthesize SDKs=_SDKs;
+@property(retain, nonatomic) DVTFilePath *filePath; // @synthesize filePath=_filePath;
+@property(nonatomic, getter=isCached) BOOL cached; // @synthesize cached=_cached;
+@property(copy, nonatomic) NSSet *sourceCodeFilePaths; // @synthesize sourceCodeFilePaths=_sourceCodeFilePaths;
+@property(copy, nonatomic) NSSet *publicHeaders; // @synthesize publicHeaders=_publicHeaders;
+@property(nonatomic) __weak id <IDEBlueprint> blueprint; // @synthesize blueprint=_blueprint;
+@property(retain, nonatomic) NSSet *namesOfLinkedBinaries; // @synthesize namesOfLinkedBinaries=_namesOfLinkedBinaries;
+@property(copy, nonatomic) NSSet *privateHeaders; // @synthesize privateHeaders=_privateHeaders;
+@property(copy, nonatomic) NSSet *projectHeaders; // @synthesize projectHeaders=_projectHeaders;
+@property(nonatomic) __weak id <IDEBuildableProduct> buildableProduct; // @synthesize buildableProduct=_buildableProduct;
+@property(copy, nonatomic) NSString *productName; // @synthesize productName=_productName;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (unsigned long long)visibilityOfHeaderAtFilePath:(id)arg1;
+- (BOOL)containsFilePath:(id)arg1;
+- (void)cacheBuildableProductDataIfNecessary;
+- (void)cacheBuildableProductData;
+- (id)initWithBuildableProduct:(id)arg1;
 
 @end
 
@@ -19032,6 +19900,7 @@ typedef struct {
     NSView *_foregroundContentView;
 }
 
++ (void)initialize;
 @property NSView *foregroundContentView; // @synthesize foregroundContentView=_foregroundContentView;
 @property int agreementStatus; // @synthesize agreementStatus=_agreementStatus;
 - (void)agreeToLicense:(id)arg1;
@@ -19109,20 +19978,32 @@ typedef struct {
     NSProgressIndicator *_progressBar;
     NSTextView *_errorTextView;
     NSTextField *_needToRestartXcodeLabel;
-    NSTimer *_timer;
+    NSWindow *_appsToQuitSheet;
+    NSButton *_quitAllButton;
+    NSTimer *_alertAllAppTimer;
+    NSTimer *_appsToQuitTimer;
     double _progress;
     IDEPackageInstallerHelper *_packageInstallerHelper;
     IDEWelcomeWindowTransitionHelper *_transitionHelper;
     NSView *_currentContentView;
     id _continueButtonTitleProvider;
     id _installationCompleteButtonHandler;
+    NSArray *_appsThatNeedToBeQuitBeforeInstallCanProceed;
     id installationCompleteHandler;
+    NSArray *_packagesToInstall;
 }
 
 + (void)initialize;
+@property(readonly) NSArray *packagesToInstall; // @synthesize packagesToInstall=_packagesToInstall;
+@property(copy) NSArray *appsThatNeedToBeQuitBeforeInstallCanProceed; // @synthesize appsThatNeedToBeQuitBeforeInstallCanProceed=_appsThatNeedToBeQuitBeforeInstallCanProceed;
 @property(copy) id installationCompleteButtonHandler; // @synthesize installationCompleteButtonHandler=_installationCompleteButtonHandler;
 @property(copy) id installationCompleteHandler; // @synthesize installationCompleteHandler;
+- (void)cancelQuitAppsThatNeedToBeQuitBeforeInstallationStarts:(id)arg1;
+- (void)quitAppsThatNeedToBeQuitBeforeInstallationStarts:(id)arg1;
 - (void)continueAfterSuccessfulInstallation:(id)arg1;
+- (void)_doneWithQuitSheet;
+- (void)_checkAllAppsThatNeedToBeQuitArentRunning;
+- (void)_ensureAllAppsThatNeedToBeQuitArentRunning;
 - (void)startInstall:(id)arg1;
 - (void)quit:(id)arg1;
 - (BOOL)textView:(id)arg1 clickedOnLink:(id)arg2 atIndex:(unsigned long long)arg3;
@@ -19136,7 +20017,8 @@ typedef struct {
 - (void)_fadeInFailedInstallation;
 - (void)_fadeInSuccessfulInstallation;
 - (void)_fadeInInstallationProgress;
-@property(readonly) NSArray *packagesToInstall;
+- (id)packagesToDisplay;
+- (BOOL)backgroundDownloadInProgress;
 - (BOOL)needToInstallPackages;
 - (void)_checkForAlertAllApp;
 - (void)loadView;
@@ -19147,23 +20029,36 @@ typedef struct {
 @interface IDEPackageInstallerHelper : NSObject
 {
     NSArray *_packagesToInstall;
-    id <IDEPackageInstallerHelperDelegate> _delegate;
+    id <IDEPackageInstallerHelperDelegate> _delegate_dvtWeak;
     id _installationToken;
+    BOOL _backgroundDownloadInProgress;
+    BOOL _needToQuitApps;
 }
 
 + (void)initialize;
+@property(readonly) BOOL backgroundDownloadInProgress; // @synthesize backgroundDownloadInProgress=_backgroundDownloadInProgress;
 @property(readonly) NSArray *packagesToInstall; // @synthesize packagesToInstall=_packagesToInstall;
 - (id)_genericErrorMessage;
 - (id)_notEnoughSpaceErrorMessage;
 - (id)_allPackagesInfo;
 - (id)errorMessageForError:(id)arg1;
-- (void)installPackages;
+- (void)installPackagesWithAuthRef:(struct AuthorizationOpaqueRef *)arg1;
+- (id)_downloadablesToInstall;
+- (void)_updatePackageModificationTimeStampIfNeeded:(id)arg1;
 - (id)_packageURLsToInstall;
 - (id)_allPackagesInPackagesFolder;
 - (id)_determinePackagesToInstall;
+- (BOOL)_needToInstallMobileDevicePackage:(id)arg1;
+- (BOOL)_compareMobileDeviceFrameworkVersionOnDisk:(id)arg1;
+- (id)_getVersionOfMobileDeviceFramework:(id)arg1;
+- (BOOL)_needToCheckMobileDevicePackage:(id)arg1 timeStamp:(id *)arg2;
+- (id)_getUserDefaultKeyForFileName:(id)arg1;
+- (id)_getTimeStampForPath:(id)arg1;
 - (BOOL)_isInstrumentsSystemSuppportInstalled;
+@property(readonly) NSArray *appsThatNeedToBeQuitBeforeInstallCanProceed;
 - (BOOL)needToInstallPackages;
 - (id)initWithDelegate:(id)arg1;
+@property __weak id <IDEPackageInstallerHelperDelegate> delegate;
 
 @end
 
@@ -19172,12 +20067,28 @@ typedef struct {
     NSString *_displayName;
     NSString *_description;
     NSString *_path;
+    NSSet *_downloadables;
 }
 
+@property(readonly) NSSet *downloadables; // @synthesize downloadables=_downloadables;
 @property(readonly) NSString *path; // @synthesize path=_path;
 @property(readonly) NSString *description; // @synthesize description=_description;
 @property(readonly) NSString *displayName; // @synthesize displayName=_displayName;
 - (id)_initWithPath:(id)arg1 packageInfo:(id)arg2;
+
+@end
+
+@interface IDEFirstLaunchAppToQuit : NSObject
+{
+    NSString *_displayName;
+    NSRunningApplication *_runningApplication;
+}
+
+@property(readonly) NSRunningApplication *runningApplication; // @synthesize runningApplication=_runningApplication;
+@property(readonly) NSString *displayName; // @synthesize displayName=_displayName;
+@property(readonly) NSImage *icon;
+- (id)_initWithNSRunningApplication:(id)arg1 customDisplayName:(id)arg2;
+- (id)_initWithNSRunningApplication:(id)arg1;
 
 @end
 
@@ -19198,11 +20109,11 @@ typedef struct {
 {
 }
 
-+ (void)registerLaunchServicesItemsIfNecessary;
++ (void)registerLaunchServicesItemsIfNecessary:(BOOL)arg1;
 - (void)_registerPathWithLaunchServices:(id)arg1;
 - (id)_pathsToRegister;
 - (BOOL)_needsToRegisterLaunchServicesItems;
-- (void)_registerLaunchServicesItemsIfNecessary;
+- (void)_registerLaunchServicesItemsIfNecessary:(BOOL)arg1;
 
 @end
 
@@ -19236,7 +20147,7 @@ typedef struct {
 - (void)_showPackagesToInstallIfNecessary;
 - (void)_showLiceneseIfNecessary;
 - (BOOL)_firstLaunchExperienceNeeded;
-- (void)showFirstLaunchExperienceModallyIfNecessaryReplacingView:(id)arg1;
+- (BOOL)showFirstLaunchExperienceModallyIfNecessaryReplacingView:(id)arg1;
 - (id)initWithDefaultNib;
 
 @end
@@ -19245,6 +20156,7 @@ typedef struct {
 {
     IDERemoveOldXcodesHelper *_removeOldXcodesHelper;
     id _doneButtonHandler;
+    NSArrayController *_olderXcodesArrayController;
     NSBox *_oldXcodesBox;
     NSTextField *_unixDeveloperToolsLabel;
     NSButton *_doneRemovingXcodesButton;
@@ -19256,7 +20168,6 @@ typedef struct {
 - (BOOL)_shouldShowUnixDeveloperToolsFootNote;
 @property(readonly) BOOL shouldShowXcodesToRemove;
 - (void)_actuallyMoveOldXcodeToTrash:(id)arg1;
-- (void)_alertDidEnd:(id)arg1 returnCode:(long long)arg2 contextInfo:(id)arg3;
 - (void)_moveOldXcodeToTrash:(id)arg1;
 - (void)setDoneRemovingXcodesButtonTitle:(id)arg1;
 - (void)loadView;
@@ -19271,24 +20182,19 @@ typedef struct {
     NSOperationQueue *_queue;
 }
 
++ (id)xcodeURLs;
 + (void)initialize;
 @property(readonly) BOOL shouldShowUnixDeveloperToolsFootNote; // @synthesize shouldShowUnixDeveloperToolsFootNote=_shouldShowUnixDeveloperToolsFootNote;
 @property(readonly) NSArray *xcodesAvailableToRemove; // @synthesize xcodesAvailableToRemove=_xcodesAvailableToRemove;
+- (void)adjustDockIconForPath:(id)arg1;
 - (void)moveURLToTrash:(id)arg1 withCompletionBlock:(id)arg2;
 - (unsigned long long)reallyMoveURLToTrash:(id)arg1;
-- (struct __CFURL *)_getTrashFolderForURL:(id)arg1;
-- (unsigned long long)_communicateWithHelper;
-- (BOOL)readResultWithFD:(int)arg1;
-- (struct AuthorizationOpaqueRef *)_createAuthorization;
-- (int)_connectToSocket;
-- (void)_removeLaunchdJob:(struct AuthorizationOpaqueRef *)arg1 wait:(BOOL)arg2;
-- (BOOL)_submitLaunchdJob:(struct AuthorizationOpaqueRef *)arg1 forURL:(id)arg2 trashURL:(id)arg3 error:(id *)arg4;
+- (id)_getTrashFolderForURL:(id)arg1;
 - (BOOL)_determineShouldShowUnixDeveloperToolsFootNote;
 - (id)_determineXcodesAvailableForRemoval;
 - (BOOL)_isOnRootVolume:(id)arg1;
 - (id)_getRemoveableXcodeForBundle:(id)arg1 isXcodeInstaller:(BOOL)arg2;
 - (id)_getInstallerBundleIfItExists;
-- (struct __CFArray *)_getAppsAssociatedWithXcodeProjects;
 - (void)didShowXcodesToRemove;
 @property(readonly) BOOL shouldShowXcodesToRemove;
 - (BOOL)_haveNotYetOfferedXcodesToRemove;
@@ -19302,6 +20208,7 @@ typedef struct {
     NSString *_displayName;
     NSString *_description;
     NSString *_pathToMoveToTrash;
+    NSString *_appPath;
     NSString *_alertMessageText;
     NSString *_alertInformativeText;
     BOOL _hasBeenMovedToTrash;
@@ -19310,11 +20217,12 @@ typedef struct {
 @property BOOL hasBeenMovedToTrash; // @synthesize hasBeenMovedToTrash=_hasBeenMovedToTrash;
 @property(readonly) NSString *alertInformativeText; // @synthesize alertInformativeText=_alertInformativeText;
 @property(readonly) NSString *alertMessageText; // @synthesize alertMessageText=_alertMessageText;
+@property(readonly) NSString *appPath; // @synthesize appPath=_appPath;
 @property(readonly) NSString *pathToMoveToTrash; // @synthesize pathToMoveToTrash=_pathToMoveToTrash;
 @property(readonly) NSString *description; // @synthesize description=_description;
 @property(readonly) NSString *displayName; // @synthesize displayName=_displayName;
 @property(readonly) NSImage *icon; // @synthesize icon=_icon;
-- (id)_initWithIcon:(id)arg1 displayName:(id)arg2 pathToMoveToTrash:(id)arg3 isXcodeInstaller:(BOOL)arg4;
+- (id)_initWithIcon:(id)arg1 displayName:(id)arg2 pathToMoveToTrash:(id)arg3 appPath:(id)arg4 isXcodeInstaller:(BOOL)arg5;
 
 @end
 
@@ -19359,8 +20267,1169 @@ typedef struct {
 
 @end
 
-@interface IDEAlertEvent (Compatibility)
-- (id)keyBinding;
+@interface DockUtilities : NSObject
+{
+    void *_contents;
+    unsigned int _installerPort;
+    int _tid;
+    BOOL _transactionStarted;
+}
+
++ (id)sharedInstance;
+- (BOOL)modifyDockForPath:(id)arg1 operationType:(int)arg2 relativeTo:(id)arg3;
+- (BOOL)dockContainsIconForAppPath:(id)arg1;
+- (int)_itemIndexForPath:(id)arg1;
+- (void)_loadItems;
+- (BOOL)_endTransaction;
+- (BOOL)_startTransaction;
+- (id)_init;
+- (id)init;
+
+@end
+
+@interface IDETextIndexActivityReporter : IDEActivityReporter
+{
+    id _indexingStartedToken;
+    id _indexingProgressToken;
+    id _indexingFinishedToken;
+    IDEActivityReport *_report;
+}
+
++ (void)initialize;
+- (void)_setupSearchIndexObserving;
+- (id)initWithWorkspace:(id)arg1;
+
+@end
+
+@interface IDEInspectorContentView : DVTLayoutView_ML
+{
+    IDEInspectorLayoutGroup *layoutStack;
+    BOOL drawBackground;
+}
+
+@property(nonatomic) BOOL drawBackground; // @synthesize drawBackground;
+@property(readonly, nonatomic) IDEInspectorLayoutGroup *layoutStack; // @synthesize layoutStack;
+- (void)viewDidMoveToWindow;
+- (void)viewWillMoveToWindow:(id)arg1;
+- (void)drawRect:(struct CGRect)arg1;
+- (void)drawSectionBordersInRect:(struct CGRect)arg1;
+- (void)drawSectionBackgroundsInRect:(struct CGRect)arg1;
+- (void)didUninstallLayoutGroup:(id)arg1;
+- (void)didInstallLayoutGroup:(id)arg1;
+- (void)layoutBottomUp;
+- (void)layoutTopDown;
+- (BOOL)isFlipped;
+- (id)initWithFrame:(struct CGRect)arg1 layoutStack:(id)arg2;
+
+@end
+
+@interface IDEInspectorLayoutGroup : NSObject
+{
+    IDEInspectorContentView *contentView;
+    IDEInspectorLayoutGroup *parentGroup;
+    NSMutableOrderedSet *subgroups;
+    CDStruct_bf6d4a14 insetRelativeToParent;
+}
+
+@property CDStruct_bf6d4a14 insetRelativeToParent; // @synthesize insetRelativeToParent;
+@property(readonly, nonatomic) NSOrderedSet *subgroups; // @synthesize subgroups;
+@property(readonly, nonatomic) IDEInspectorContentView *contentView; // @synthesize contentView;
+- (void)inspectorContentViewDidMoveToWindow;
+- (void)inspectorContentViewWillMoveToWindow:(id)arg1;
+- (void)uninstallFromInspectorContentView;
+- (void)installIntoInspectorContentView:(id)arg1;
+- (double)layoutSubgroupsAndReturnHeightInInspectorContentView;
+- (struct CGRect)frameInInspectorContentView;
+- (void)removeSubgroup:(id)arg1;
+- (void)insertSubgroup:(id)arg1 atIndex:(long long)arg2;
+- (void)addSubgroup:(id)arg1;
+- (id)init;
+
+@end
+
+@interface IDEInspectorLayoutGroupWrapper : IDEInspectorLayoutGroup
+{
+    CDStruct_bf6d4a14 subgroupInset;
+}
+
+@property CDStruct_bf6d4a14 subgroupInset; // @synthesize subgroupInset;
+- (double)layoutSubgroupsAndReturnHeightInInspectorContentView;
+- (void)insertSubgroup:(id)arg1 atIndex:(long long)arg2;
+- (id)initWithSubgroupInset:(CDStruct_bf6d4a14)arg1;
+
+@end
+
+@interface IDEInspectorLayoutStack : IDEInspectorLayoutGroup
+{
+}
+
+- (double)layoutSubgroupsAndReturnHeightInInspectorContentView;
+
+@end
+
+@interface IDEInspectorLayoutViewWrapper : IDEInspectorLayoutGroup
+{
+    NSView *view;
+}
+
+- (void)insertSubgroup:(id)arg1 atIndex:(long long)arg2;
+- (void)uninstallFromInspectorContentView;
+- (void)installIntoInspectorContentView:(id)arg1;
+- (double)layoutSubgroupsAndReturnHeightInInspectorContentView;
+- (id)initWithView:(id)arg1;
+
+@end
+
+@interface IDEInspectorPropertyLayoutGroup : IDEInspectorLayoutGroup
+{
+    IDEInspectorProperty *leftProperty;
+    IDEInspectorProperty *rightProperty;
+    IDEInspectorLayoutViewWrapper *leftPropertyViewWrapper;
+    IDEInspectorLayoutViewWrapper *rightPropertyViewWrapper;
+    BOOL propertyViewsAreInstalled;
+}
+
+@property(readonly, nonatomic) IDEInspectorProperty *rightProperty; // @synthesize rightProperty;
+@property(readonly, nonatomic) IDEInspectorProperty *leftProperty; // @synthesize leftProperty;
+- (void)inspectorContentViewDidMoveToWindow;
+- (void)inspectorContentViewWillMoveToWindow:(id)arg1;
+- (void)uninstallFromInspectorContentView;
+- (void)installIntoInspectorContentView:(id)arg1;
+- (void)notifyPropertiesViewWillUninstallIfNecessary;
+- (void)notifyPropertiesViewDidInstallIfNecessary;
+- (void)enumerateProperties:(id)arg1;
+- (double)layoutSubgroupsAndReturnHeightInInspectorContentView;
+- (void)insertSubgroup:(id)arg1 atIndex:(long long)arg2;
+- (id)initWithLeftProperty:(id)arg1 andRightProperty:(id)arg2;
+
+@end
+
+@interface IDELogFileChangedView : NSView
+{
+    IDESourceControlNavigatorStatusCell *_statusCell;
+}
+
+- (void)drawRect:(struct CGRect)arg1;
+- (id)initWithFrame:(struct CGRect)arg1 treeItem:(id)arg2 logItem:(id)arg3 sourceTree:(id)arg4;
+
+@end
+
+@interface IDESourceControlLogDetailView : NSView
+{
+}
+
+- (BOOL)isFlipped;
+
+@end
+
+@interface IDESourceControlLogDetailViewController : NSViewController
+{
+    NSTextField *_commitDateField;
+    NSTextField *_revisionField;
+    NSButton *_diffRevisionButton;
+    NSImageView *_imageView;
+    NSButton *_filesDisclosureButton;
+    NSTextField *_filesChangedText;
+    NSScrollView *_detailScrollView;
+    NSTextField *_descriptionTextField;
+    NSView *_containerBorderedView;
+    NSView *_topBorderedView;
+    NSView *_filesBorderedView;
+    IDESourceControlNameTokenView *_nameTokenView;
+    NSButton *_allChangesButton;
+    NSProgressIndicator *_progressIndicator;
+    NSBox *_topBorder;
+    NSBox *_bottomBorder;
+    NSPopover *_popover;
+    NSMutableArray *_fileButtons;
+    IDESourceControlLogItem *_logItem;
+    NSString *_filePath;
+    IDESourceControlRepository *_filesChangedRepository;
+    id <IDESourceControlLogDetailDelegate> _delegate;
+    DVTStackView_ML *_filesView;
+    struct CGSize _originalContentSize;
+    IDESourceControlTreeItem *_currentFile;
+}
+
+@property(readonly) IDESourceControlLogItem *logItem; // @synthesize logItem=_logItem;
+- (void)cleanup;
+- (void)close:(id)arg1;
+- (void)loadView;
+- (void)_loadLogMessage;
+- (void)_loadingFailed;
+- (double)_maxPopoverHeight;
+- (void)_loadChangedFiles;
+- (id)displayDate;
+- (void)viewAllChanges:(id)arg1;
+- (void)showOrHideFiles:(id)arg1;
+- (void)compareToPreviousRevision:(id)arg1;
+- (id)initWithLogItem:(id)arg1 filePath:(id)arg2 repository:(id)arg3 delegate:(id)arg4 popover:(id)arg5;
+
+@end
+
+@interface IDEOpenQuicklyIndexMatchProvider : IDEOpenQuicklyMatchProvider
+{
+    IDEOpenQuicklyPattern *_previousPattern;
+    IDEOpenQuicklyPattern *_originalPattern;
+    NSArray *_originalMatches;
+    unsigned int _currentGeneration;
+    BOOL _idle;
+}
+
++ (struct dispatch_queue_s *)sharedIndexQueryQueue;
+@property(getter=isIdle) BOOL idle; // @synthesize idle=_idle;
+@property(retain) IDEOpenQuicklyPattern *originalPattern; // @synthesize originalPattern=_originalPattern;
+@property(retain) IDEOpenQuicklyPattern *previousPattern; // @synthesize previousPattern=_previousPattern;
+@property(copy) NSArray *originalMatches; // @synthesize originalMatches=_originalMatches;
+- (void)finishCalculatingMatches;
+- (void)startCalculatingMatches;
+- (void)contextDidChange;
+- (void)restartQuery;
+- (int)minimumQueryStringLength;
+- (id)matchesFromCollectedData:(id)arg1;
+- (id)collectDataForInput:(id)arg1 index:(id)arg2 currentGeneration:(unsigned int *)arg3 localGeneration:(unsigned int)arg4;
+- (id)initWithSearchContext:(id)arg1;
+
+@end
+
+@interface IDESourceControlCommitViewerViewController : IDEViewController <NSSplitViewDelegate, IDEReviewFilesViewControllerDelegate, NSLayoutManagerDelegate>
+{
+    DVTBorderedView *_reviewFilesBorderedView;
+    DVTBorderedView *_borderedView;
+    NSWindow *_previewSheet;
+    NSSplitView *_splitView;
+    NSTextView *_commitTextView;
+    IDEReviewFilesViewController *_reviewFilesViewController;
+    IDESourceControlTreeItem *_initialSelection;
+    IDESourceControlCommitViewerNavigatorDataSource *_navigatorDataSource;
+    IDENavigableItemCoordinator *_coordinator;
+    IDESourceControlCommitViewerNavigatorDataSource *_fileSystemDataSource;
+    IDESourceControlCommitViewerComparisonEditorDataSource *_comparisonEditorDataSource;
+    IDESourceControlRepository *_repository;
+    IDESourceControlLogItem *_logItem;
+    struct CGRect _commitMessageRect;
+    double _commitMessageSplitMaxHeight;
+    BOOL _initialSplitPositionHasHappened;
+    id <DVTObservingToken> _comparisonEditorObservingToken;
+    NSString *_startingRevision;
+}
+
++ (id)defaultViewNibName;
++ (void)runPreviewSheetForWindow:(id)arg1 viewingCommit:(id)arg2 onRepository:(id)arg3 withInitialSelection:(id)arg4 fromRevision:(id)arg5;
++ (void)runPreviewSheetForWindow:(id)arg1 viewingCommit:(id)arg2 onRepository:(id)arg3 withInitialSelection:(id)arg4;
+@property(retain) NSString *startingRevision; // @synthesize startingRevision=_startingRevision;
+@property(retain) IDESourceControlTreeItem *initialSelection; // @synthesize initialSelection=_initialSelection;
+@property(retain) IDESourceControlLogItem *logItem; // @synthesize logItem=_logItem;
+@property(retain) IDESourceControlRepository *repository; // @synthesize repository=_repository;
+- (BOOL)splitView:(id)arg1 shouldAdjustSizeOfSubview:(id)arg2;
+- (double)splitView:(id)arg1 constrainMinCoordinate:(double)arg2 ofSubviewAt:(long long)arg3;
+- (BOOL)splitView:(id)arg1 canCollapseSubview:(id)arg2;
+- (void)primitiveInvalidate;
+- (void)sheetDidEnd:(id)arg1 returnCode:(long long)arg2 contextInfo:(void *)arg3;
+- (void)ok:(id)arg1;
+- (void)willOpenDocumentLocation:(id)arg1 completionBlock:(id)arg2;
+- (void)lastRevisionOnRepository:(id)arg1 forAbsolutePath:(id)arg2 StartingWithRevision:(id)arg3 withCompletionBlock:(id)arg4;
+- (id)_temporaryFileLocationForRepository:(id)arg1 remoteAbsolutePath:(id)arg2 revisionNumber:(id)arg3 completionBlock:(id)arg4;
+- (void)_configureDataSources;
+- (void)setInitialSelection:(id)arg1 forNavigatorOutlineView:(id)arg2;
+- (id)treeItemFilterPredicate;
+- (void)layoutManager:(id)arg1 didCompleteLayoutForTextContainer:(id)arg2 atEnd:(BOOL)arg3;
+- (double)_positionOfSplitterWithCommitMessageRect:(struct CGRect)arg1;
+- (void)_runSheetForWindow:(id)arg1;
+
+@end
+
+@interface IDESourceControlCommitViewerNavigatorDataSource : NSObject <IDEReviewFilesDataSource>
+{
+    IDENavigatorDataCell *_cachedSourceTreeItemCell;
+    IDENavigatorDataCell *_cachedRepositoryContainerCell;
+    NSArray *_navigableItems;
+    IDESourceControlRepository *_repository;
+}
+
+@property(retain) IDESourceControlRepository *repository; // @synthesize repository=_repository;
+@property(retain) NSArray *navigableItems; // @synthesize navigableItems=_navigableItems;
+- (id)reviewFilesNavigator:(id)arg1 documentLocationForNavigableItem:(id)arg2;
+- (id)reviewFilesNavigator:(id)arg1 outlineView:(id)arg2 dataCellForNavigableItem:(id)arg3;
+- (id)repositoryContainerCell;
+- (id)sourceTreeItemCell;
+- (id)sourceControlCategoryStatusCellsWithRepresentedObject:(id)arg1;
+- (id)issueNavigableItems;
+- (id)flatNavigableItems;
+- (id)fileSystemNavigableItems;
+- (id)workspaceNavigableItems;
+
+@end
+
+@interface IDESourceControlCommitViewerComparisonEditorDataSource : NSObject <IDEComparisonEditorDataSource>
+{
+}
+
+- (id)documentForSecondaryDocumentLocation:(id)arg1 completionBlock:(id)arg2;
+- (id)documentForPrimaryDocumentLocation:(id)arg1 completionBlock:(id)arg2;
+- (void)_cachedDocumentForDocumentLocation:(id)arg1 completionBlock:(id)arg2;
+- (id)secondaryDocumentLocationForNavigableItem:(id)arg1;
+- (id)primaryDocumentLocationForNavigableItem:(id)arg1;
+- (id)navigableItemsForSecondaryDocumentLocation:(id)arg1 completionBlock:(id)arg2;
+- (id)navigableItemsForPrimaryDocumentLocation:(id)arg1 completionBlock:(id)arg2;
+
+@end
+
+@interface IDEComparisonEditorChangesStepperView : IDEEditorNumberStepperView
+{
+    DVTDiffSession *_diffSession;
+    IDEComparisonEditorTimelineNavBar *_timelineNavBar;
+    unsigned long long _indexOfSelectedDiff;
+}
+
++ (id)keyPathsForValuesAffectingCanSelectPrevious;
++ (id)keyPathsForValuesAffectingCanSelectNext;
++ (id)keyPathsForValuesAffectingIndexOfSelectedDiff;
+@property unsigned long long indexOfSelectedDiff; // @synthesize indexOfSelectedDiff=_indexOfSelectedDiff;
+@property __weak IDEComparisonEditorTimelineNavBar *timelineNavBar; // @synthesize timelineNavBar=_timelineNavBar;
+@property __weak DVTDiffSession *diffSession; // @synthesize diffSession=_diffSession;
+- (struct CGSize)centerViewSizeInHeight:(double)arg1;
+- (void)invalidateLayout;
+- (void)selectPrevious:(id)arg1;
+- (void)selectNext:(id)arg1;
+- (BOOL)canSelectPrevious;
+- (BOOL)canSelectNext;
+- (id)initWithFrame:(struct CGRect)arg1;
+
+@end
+
+@interface IDESourceControlInteractiveCommitController : IDESourceControlMergeController
+{
+}
+
++ (BOOL)hasToggledDifferences:(id)arg1;
+- (void)startInteractiveCommit;
+- (void)_validateMergeData:(id)arg1;
+- (void)revertChangesFromMergeData:(id)arg1 toItemAtFilePath:(id)arg2;
+- (void)applyChangesFromMergeData:(id)arg1 toItemAtFilePath:(id)arg2;
+
+@end
+
+@interface IDESourceControlMergeData : NSObject
+{
+    NSFileWrapper *_fileWrapper;
+    BOOL _dirty;
+}
+
+@property(getter=isDirty) BOOL dirty; // @synthesize dirty=_dirty;
+@property(retain) NSFileWrapper *fileWrapper; // @synthesize fileWrapper=_fileWrapper;
+
+@end
+
+@interface IDESourceControlMergeController : NSObject <DVTInvalidation_New>
+{
+    DVTFilePath *_mergeDataPath;
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
+}
+
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
++ (void)copyItemAtFilePath:(id)arg1 toFilePath:(id)arg2;
++ (void)moveItemAtFilePath:(id)arg1 toFilePath:(id)arg2;
++ (id)mergeDataDictionary:(id)arg1;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
+@property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
+- (void)primitiveInvalidate;
+- (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (id)pathToFileWrapper:(id)arg1 inMergeData:(id)arg2;
+- (void)removeMergeDataForFilePath:(id)arg1;
+- (void)setMergeData:(id)arg1 forFilePath:(id)arg2;
+- (id)mergeDataForFilePath:(id)arg1;
+@property(readonly) DVTFilePath *mergeDataPath;
+- (void)_validateMergeData:(id)arg1;
+
+@end
+
+@interface IDELaunchActionOptionViewController : IDEViewController
+{
+    IDEScheme *_scheme;
+}
+
++ (BOOL)availableForScheme:(id)arg1;
+@property(readonly) IDEScheme *scheme; // @synthesize scheme=_scheme;
+- (id)initWithScheme:(id)arg1;
+- (id)initUsingDefaultNib;
+
+@end
+
+@interface IDEOpenGLESOptionsController : IDELaunchActionOptionViewController
+{
+    id <DVTObservingToken> _frameCaptureModeObservingToken;
+    BOOL _enablePerformanceAnalysis;
+}
+
++ (BOOL)availableForScheme:(id)arg1;
+@property(nonatomic) BOOL enablePerformanceAnalysis; // @synthesize enablePerformanceAnalysis=_enablePerformanceAnalysis;
+- (void)viewWillUninstall;
+- (void)viewDidInstall;
+
+@end
+
+@interface IDEOpenResumeOptionController : IDELaunchActionOptionViewController
+{
+}
+
++ (BOOL)availableForScheme:(id)arg1;
+
+@end
+
+@interface IDEDocumentVersioningOptionsController : IDELaunchActionOptionViewController
+{
+}
+
++ (BOOL)availableForScheme:(id)arg1;
+
+@end
+
+@interface IDEWorkingDirectoryOptionsController : IDELaunchActionOptionViewController
+{
+}
+
++ (BOOL)availableForScheme:(id)arg1;
+
+@end
+
+@interface IDESimulateLocationMenuController : IDESchemeOptionMenuController
+{
+}
+
+- (id)uti;
+- (id)doNothingItemRepresentedObject;
+- (id)doNothingItemTitle;
+- (id)defaultItems;
+- (id)itemsForFilesInWorkspace;
+- (id)_locationScenarioWithFilePath:(id)arg1;
+- (id)menuTitle;
+- (id)init;
+
+@end
+
+@interface IDEAttirbutedStringControlParagraphStylePopoverInsetView : DVTLayoutView_ML
+{
+    CDStruct_bf6d4a14 _inset;
+    NSView *_contentView;
+    int _horizontalResizingMode;
+    int _verticalResizingMode;
+}
+
+@property int verticalResizingMode; // @synthesize verticalResizingMode=_verticalResizingMode;
+@property int horizontalResizingMode; // @synthesize horizontalResizingMode=_horizontalResizingMode;
+@property(nonatomic) NSView *contentView; // @synthesize contentView=_contentView;
+@property(nonatomic) CDStruct_bf6d4a14 inset; // @synthesize inset=_inset;
+- (void)layoutBottomUp;
+- (void)layoutTopDown;
+- (id)initWithFrame:(struct CGRect)arg1;
+
+@end
+
+@interface IDEAttributedStringControl : DVTLayoutView_ML <IDEGroupedSegmentedControlDelegate, IDEParagraphStylePopoverControllerDelegate, IDEAttributedStringControlTextViewDelegate>
+{
+    NSScrollView *_scrollView;
+    IDEAttributedStringControlTextView *_textView;
+    DVTFontTextField *_fontControl;
+    NSStepper *_fontControlStepper;
+    IDEGroupedSegmentedControl *_attributesStrip;
+    DVTSegmentColorWell *_foregroundColorOverlay;
+    DVTSegmentColorWell *_backgroundColorOverlay;
+    IDEGroupedSegmentedControlGroup *_alignmentGroup;
+    IDEGroupedSegmentedControlGroup *_colorGroup;
+    IDEGroupedSegmentedControlGroup *_moreGroup;
+    IDEGroupedSegmentedControlItem *_leftAlignmentItem;
+    IDEGroupedSegmentedControlItem *_centerAlignmentItem;
+    IDEGroupedSegmentedControlItem *_rightAlignmentItem;
+    IDEGroupedSegmentedControlItem *_justifiedAlignmentItem;
+    IDEGroupedSegmentedControlItem *_naturalAlignmentItem;
+    IDEGroupedSegmentedControlItem *_foregroundColorItem;
+    IDEGroupedSegmentedControlItem *_backgroundColorItem;
+    IDEGroupedSegmentedControlItem *_moreItem;
+    NSPopover *_paragraphStylePopover;
+    IDEAttributedStringControlParagraphStylePopoverController *_paragraphStylePopoverController;
+    long long numberOfEdits;
+    id _target;
+    SEL _action;
+}
+
+@property SEL action; // @synthesize action=_action;
+@property id target; // @synthesize target=_target;
+- (void)layoutBottomUp;
+- (void)layoutTopDown;
+- (struct CGRect)frameToPlaceView:(id)arg1 afterView:(id)arg2 withGap:(double)arg3;
+- (void)layoutScrollView;
+- (struct CGSize)textViewSizeForContainerSize:(struct CGSize)arg1;
+- (struct CGSize)updateContainerLayoutAndComputeBounds;
+- (struct CGSize)textContainerSize;
+- (double)textViewWidth;
+- (BOOL)isFlipped;
+- (void)textDidEndEditing:(id)arg1;
+- (void)textViewDidCommitEditing:(id)arg1;
+- (void)paragraphStylePopoverControllerDidChangeAttributes:(id)arg1;
+- (void)incrementFontSize:(id)arg1;
+- (void)fontWellUpdated:(id)arg1;
+- (void)changeBackgroundColor:(id)arg1;
+- (void)changeForegroundColor:(id)arg1;
+- (void)updateSelectedRangesWithValue:(id)arg1 forAttribute:(id)arg2;
+- (void)groupedSegmentedControl:(id)arg1 userClickedItem:(id)arg2 inGroup:(id)arg3;
+- (void)applyValueFromFontControl;
+- (void)commitUpdatedAttributedStringValueToModelIfNeeded;
+- (void)commitUpdatedAttributedStringValueToModel;
+- (void)pushFontValue:(id)arg1 toFontWell:(id)arg2;
+- (void)pushColorValue:(id)arg1 toColorWell:(id)arg2;
+- (void)textDidChange:(id)arg1;
+- (void)textViewDidChangeTypingAttributes:(id)arg1;
+- (void)textViewDidChangeSelection:(id)arg1;
+- (void)refreshAttributeControls;
+- (id)paragraphEditingProxiesForSelection;
+- (id)attributeValuesInSelectionForAttribute:(id)arg1;
+- (void)enumerateSelectedRangesForAttribute:(id)arg1 withBlock:(id)arg2;
+- (void)enumerateSelectedParagraphsWithBlock:(id)arg1;
+- (void)enumeratePargraphsInRange:(struct _NSRange)arg1 withBlock:(id)arg2;
+- (id)rangesToScanForAttributes;
+@property(copy) NSAttributedString *attributedStringValue;
+- (id)defaultTypingAttributes;
+@property(copy) NSString *placeholder;
+- (void)awakeFromNib;
+- (void)setupPargraphStylePopUp;
+- (void)setupAttributesStrip;
+- (void)setupColorWells;
+- (void)setupLayout;
+
+@end
+
+@interface IDEAttributedStringControlParagraphStyleEditingProxy : NSObject
+{
+    NSTextView *_textView;
+    long long _location;
+}
+
+@property(copy) NSNumber *headerLevel;
+@property(copy) NSNumber *tighteningFactorForTruncation;
+@property(copy) NSNumber *hyphenationFactor;
+@property(copy) NSNumber *defaultTabInterval;
+@property(copy) NSNumber *alignment;
+@property(copy) NSNumber *baseWritingDirection;
+@property(copy) NSNumber *lineBreakMode;
+@property(copy) NSNumber *firstLineHeadIndent;
+@property(copy) NSNumber *tailIndent;
+@property(copy) NSNumber *headIndent;
+@property(copy) NSNumber *paragraphSpacing;
+@property(copy) NSNumber *paragraphSpacingBefore;
+@property(copy) NSNumber *maximumLineHeight;
+@property(copy) NSNumber *minimumLineHeight;
+@property(copy) NSNumber *lineSpacing;
+@property(copy) NSNumber *lineHeightMultiple;
+- (void)setValue:(id)arg1 forParagraphStyleKey:(id)arg2;
+- (id)paragraphStyle;
+- (id)textStorage;
+- (id)initWithTextView:(id)arg1 andLocation:(long long)arg2;
+
+@end
+
+@interface IDEAttributedStringControlParagraphStylePopoverController : NSViewController <IDEBindableDeclarativeInspectorController>
+{
+    NSArrayController *_inspectedObjectsController;
+    NSArray *_inspectedObjects;
+    id <IDEParagraphStylePopoverControllerDelegate> _delegate;
+}
+
+@property id <IDEParagraphStylePopoverControllerDelegate> delegate; // @synthesize delegate=_delegate;
+- (void)valuesDidFinishChanging;
+- (void)loadView;
+- (void)reloadInspectorFromFileWhenKeyPathChanges:(id)arg1;
+- (id)inspectedObject;
+@property(copy) NSArray *inspectedObjects;
+- (id)bundle;
+- (id)init;
+
+@end
+
+@interface IDEAttributedStringControlTextView : NSTextView
+{
+    IDEAttributedStringControlTextViewFocusRingOverlay *_focusRingOverlay;
+    DVTFirstResponderDrawingStrategy *_firstResponderDrawingStrategy;
+    id <DVTObservingToken> _scrollViewFrameChangedToken;
+    NSString *_placeholder;
+}
+
+@property(copy, nonatomic) NSString *placeholder; // @synthesize placeholder=_placeholder;
+- (void)drawRect:(struct CGRect)arg1;
+- (id)effectiveAttributedPlaceholder;
+- (id)attributedPlaceholderAttributes;
+- (void)changeColor:(id)arg1;
+- (void)setShowsFirstResponder:(BOOL)arg1;
+- (BOOL)acceptsFirstMouse:(id)arg1;
+- (void)viewWillMoveToWindow:(id)arg1;
+- (void)insertNewline:(id)arg1;
+- (BOOL)resignFirstResponder;
+- (BOOL)becomeFirstResponder;
+- (void)viewDidMoveToWindow;
+- (void)scrollViewDidMove:(id)arg1;
+- (void)repositionOverlay;
+
+// Remaining properties
+@property id <IDEAttributedStringControlTextViewDelegate> delegate; // @dynamic delegate;
+
+@end
+
+@interface IDEAttributedStringScrollView : NSScrollView
+{
+}
+
+- (void)scrollWheel:(id)arg1;
+
+@end
+
+@interface IDEAttributedStringControlTextViewFocusRingOverlay : NSView
+{
+    BOOL _showsFocusRing;
+}
+
+@property(nonatomic) BOOL showsFocusRing; // @synthesize showsFocusRing=_showsFocusRing;
+- (id)hitTest:(struct CGPoint)arg1;
+- (void)drawRect:(struct CGRect)arg1;
+
+@end
+
+@interface IDEGroupedSegmentedControl : NSSegmentedControl
+{
+    id <IDEGroupedSegmentedControlDelegate> _delegate_dvtWeak;
+    NSArray *_groups;
+}
+
+@property(copy, nonatomic) NSArray *groups; // @synthesize groups=_groups;
+- (void)setFrameSize:(struct CGSize)arg1;
+- (void)resizeSegments;
+- (struct CGRect)frameForItem:(id)arg1;
+- (struct CGRect)frameForSegment:(long long)arg1;
+- (void)updateSegmentContent;
+- (void)enumerateSegments:(id)arg1;
+- (void)enumerateSegmentsInGroup:(id)arg1 usingBlock:(id)arg2;
+- (long long)separatorSegments;
+- (long long)itemSegments;
+- (void)segmentedControlAction:(id)arg1;
+- (void)selectItemWithRepresentedObject:(id)arg1 inGroup:(id)arg2;
+- (long long)segmentForItem:(id)arg1;
+- (id)itemForSegment:(long long)arg1;
+- (id)groupForSegment:(long long)arg1;
+@property __weak id <IDEGroupedSegmentedControlDelegate> delegate;
+- (void)awakeFromNib;
+
+@end
+
+@interface IDEGroupedSegmentedControlGroup : NSObject <NSCopying>
+{
+    unsigned long long _trackingMode;
+    NSArray *_items;
+    NSString *_identifier;
+}
+
+@property(readonly) NSString *identifier; // @synthesize identifier=_identifier;
+@property(readonly) NSArray *items; // @synthesize items=_items;
+@property(readonly) unsigned long long trackingMode; // @synthesize trackingMode=_trackingMode;
+- (BOOL)isEqual:(id)arg1;
+- (BOOL)isEqualToGroupedSegmentedControlGroup:(id)arg1;
+- (unsigned long long)hash;
+- (id)copyWithZone:(struct _NSZone *)arg1;
+- (id)initWithIdentifier:(id)arg1 items:(id)arg2 trackingMode:(unsigned long long)arg3;
+
+@end
+
+@interface IDEGroupedSegmentedControlItem : NSObject <NSCopying>
+{
+    NSString *_title;
+    NSView *_overlayView;
+    NSImage *_image;
+    id _representedObject;
+}
+
++ (id)itemWithRepresentedObject:(id)arg1 title:(id)arg2 overlayView:(id)arg3;
++ (id)itemWithRepresentedObject:(id)arg1 title:(id)arg2 image:(id)arg3;
+@property(readonly) id representedObject; // @synthesize representedObject=_representedObject;
+@property(readonly) NSImage *image; // @synthesize image=_image;
+@property(readonly) NSView *overlayView; // @synthesize overlayView=_overlayView;
+@property(readonly) NSString *title; // @synthesize title=_title;
+- (BOOL)isEqual:(id)arg1;
+- (BOOL)isEqualToGroupedSegmentedControlItem:(id)arg1;
+- (unsigned long long)hash;
+- (id)copyWithZone:(struct _NSZone *)arg1;
+- (id)initWithRepresentedObject:(id)arg1 title:(id)arg2 image:(id)arg3 overlayView:(id)arg4;
+
+@end
+
+@interface IDEInspectorAttributedStringProperty : IDEInspectorProperty
+{
+    IDEAttributedStringControl *attributedStringControl;
+    DVTDelayedInvocation *validator;
+}
+
+- (double)baseline;
+- (void)unbindAndTearDown;
+- (id)bindAndConfigure;
+- (void)awakeFromNib;
+- (void)userDidUpdateAttributedStringValue:(id)arg1;
+- (void)pullAttributedStringFromModel:(id)arg1;
+- (id)attributedStringValueKeyPath;
+
+@end
+
+@interface IDEWelcomeWindowAuthorizationHelper : NSObject
+{
+}
+
++ (BOOL)isAuthorized;
++ (struct AuthorizationOpaqueRef *)acquireAuthorization;
++ (void)releaseAuthorization;
++ (struct AuthorizationOpaqueRef *)_createAuthorization;
++ (void)initialize;
+
+@end
+
+@interface IDEProcessActionPopUpCell : NSPopUpButtonCell
+{
+    struct CGSize _cellSize;
+    BOOL _mouseEntered;
+    NSString *_toolTip;
+    BOOL _copying;
+}
+
+@property(copy) NSString *toolTip; // @synthesize toolTip=_toolTip;
+- (id)accessibilityAttributeValue:(id)arg1;
+- (id)copyWithZone:(struct _NSZone *)arg1;
+- (void)setMenu:(id)arg1;
+- (void)mouseExited:(id)arg1;
+- (void)mouseEntered:(id)arg1;
+- (void)addTrackingAreasForView:(id)arg1 inFrame:(struct CGRect)arg2 withUserInfo:(id)arg3 mouseLocation:(struct CGPoint)arg4;
+- (void)_updatePopUpButtonImageForSelectedMenuItem;
+- (void)selectItemAtIndex:(long long)arg1;
+- (BOOL)isHighlighted;
+- (struct CGSize)cellSize;
+- (id)initWithHeight:(double)arg1;
+
+@end
+
+@interface IDEProcessActionPopUpMenuItem : NSMenuItem
+{
+    NSImage *_popUpImage;
+}
+
+@property(readonly) NSImage *popUpImage; // @synthesize popUpImage=_popUpImage;
+- (id)copyWithZone:(struct _NSZone *)arg1;
+- (id)initWithPopUpImage:(id)arg1 menuItemImage:(id)arg2 action:(SEL)arg3;
+
+@end
+
+@interface IDESourceControlCommitToBranchWindowController : NSWindowController
+{
+    NSTableView *_tableView;
+    NSButton *_commitButton;
+    NSTextField *_progressField;
+    NSProgressIndicator *_progressIndicator;
+    IDESourceControlCommitWindowController *_commitWindowController;
+    BOOL _inProgress;
+    BOOL _canCommit;
+    NSWindow *_parentWindow;
+    NSArray *_workingTrees;
+    NSArray *_commitToBranchItems;
+    NSMutableDictionary *_dataCellDictionary;
+    NSString *_commitButtonTitle;
+}
+
++ (id)keyPathsForValuesAffectingCanCommit;
+@property(copy) NSString *commitButtonTitle; // @synthesize commitButtonTitle=_commitButtonTitle;
+@property(copy) NSMutableDictionary *dataCellDictionary; // @synthesize dataCellDictionary=_dataCellDictionary;
+@property(copy) NSArray *commitToBranchItems; // @synthesize commitToBranchItems=_commitToBranchItems;
+@property(retain) NSArray *workingTrees; // @synthesize workingTrees=_workingTrees;
+@property NSWindow *parentWindow; // @synthesize parentWindow=_parentWindow;
+@property(readonly) BOOL canCommit; // @synthesize canCommit=_canCommit;
+@property BOOL inProgress; // @synthesize inProgress=_inProgress;
+@property IDESourceControlCommitWindowController *commitWindowController; // @synthesize commitWindowController=_commitWindowController;
+- (void)tableView:(id)arg1 setObjectValue:(id)arg2 forTableColumn:(id)arg3 row:(long long)arg4;
+- (void)tableView:(id)arg1 willDisplayCell:(id)arg2 forTableColumn:(id)arg3 row:(long long)arg4;
+- (id)tableView:(id)arg1 dataCellForTableColumn:(id)arg2 row:(long long)arg3;
+- (id)tableView:(id)arg1 objectValueForTableColumn:(id)arg2 row:(long long)arg3;
+- (long long)numberOfRowsInTableView:(id)arg1;
+- (void)commitToBranchSheetDidEnd:(id)arg1 returnCode:(long long)arg2 contextInfo:(void *)arg3;
+- (void)cancel:(id)arg1;
+- (void)commit:(id)arg1;
+- (void)newBranch:(id)arg1;
+- (void)addBranch:(id)arg1 toPopupForItem:(id)arg2;
+- (void)setupPopupForItem:(id)arg1;
+- (void)setupItems;
+- (void)setupWorkingCopies;
+- (void)beginSheetForWindow:(id)arg1;
+- (id)branchesColumnIdentifier;
+- (id)workingCopiesColumnIdentifier;
+- (id)windowNibName;
+
+@end
+
+@interface IDESourceControlCommitToBranchItem : NSObject <DVTInvalidation>
+{
+    IDESourceControlRequest *_currentRequest;
+    DVTStackBacktrace *_invalidationBacktrace;
+    BOOL _isInvalidated;
+    IDESourceControlWorkingTree *_workingTree;
+    IDESourceControlBranch *_currentBranch;
+    IDESourceControlBranch *_selectedBranch;
+    NSError *_error;
+    NSMutableArray *_branches;
+}
+
+@property(retain) NSMutableArray *branches; // @synthesize branches=_branches;
+@property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
+@property(retain) NSError *error; // @synthesize error=_error;
+@property(retain) IDESourceControlBranch *selectedBranch; // @synthesize selectedBranch=_selectedBranch;
+@property(retain) IDESourceControlBranch *currentBranch; // @synthesize currentBranch=_currentBranch;
+@property(retain) IDESourceControlWorkingTree *workingTree; // @synthesize workingTree=_workingTree;
+- (void)fetchBranchesWithCompletionBlock:(id)arg1;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)invalidate;
+
+@end
+
+@interface IDESourceControlNewBranchWindowController : NSWindowController
+{
+    IDESourceControlCommitToBranchItem *_item;
+    NSWindow *_parentWindow;
+    id _completionBlock;
+    NSString *_name;
+    BOOL _inProgress;
+    BOOL _canCreate;
+}
+
++ (id)keyPathsForValuesAffectingCanCreate;
+@property BOOL inProgress; // @synthesize inProgress=_inProgress;
+@property(copy) NSString *name; // @synthesize name=_name;
+@property(copy) id completionBlock; // @synthesize completionBlock=_completionBlock;
+@property(retain) NSWindow *parentWindow; // @synthesize parentWindow=_parentWindow;
+@property(retain) IDESourceControlCommitToBranchItem *item; // @synthesize item=_item;
+- (void)createBranchSheetDidEnd:(id)arg1 returnCode:(long long)arg2 contextInfo:(void *)arg3;
+- (void)cancel:(id)arg1;
+- (void)create:(id)arg1;
+- (void)displayError:(id)arg1;
+@property(readonly) BOOL canCreate; // @synthesize canCreate=_canCreate;
+- (void)beginSheetForWindow:(id)arg1;
+- (id)windowNibName;
+
+@end
+
+@interface IDEVariablesViewQuickLookPopover : NSViewController <NSPopoverDelegate>
+{
+    id <IDEVariablesViewQuickLookProvider> _quickLookProvider;
+    id <DVTObservingToken> _quickLookProviderIsReadyObserver;
+    id <IDEDataValue> _dataValue;
+    NSResponder *_previousResponder;
+    NSPopover *_popover;
+    NSViewController *_defaultViewController;
+    NSImageView *_icon;
+    NSTextField *_nameLabel;
+    NSTextField *_typeLabel;
+    NSTextField *_valueLabel;
+    NSTextField *_summaryLabel;
+    NSViewController *_quickLookProviderViewController;
+    NSImageView *_quickLookViewIcon;
+    NSTextField *_quickLookViewTitle;
+    NSButton *_quickLookOpenWithEditorButton;
+    NSView *_quickLookViewContainer;
+    NSProgressIndicator *_progressIndicator;
+    NSTextField *_errorMessageLabel;
+}
+
+@property(readonly) NSPopover *popover; // @synthesize popover=_popover;
+@property id <IDEDataValue> dataValue; // @synthesize dataValue=_dataValue;
+- (void)popoverDidClose:(id)arg1;
+- (BOOL)popoverShouldClose:(id)arg1;
+- (void)popoverDidShow:(id)arg1;
+- (void)popoverWillShow:(id)arg1;
+- (void)_cancelLoadingOfCurrentQuickLookProviderIfNecessary;
+- (id)_createNonExistentFilePath;
+- (void)openWithEditor:(id)arg1;
+- (void)_setViewControllerWithoutAnimationAndWithoutChangingFirstResponder:(id)arg1;
+- (void)_useViewController:(id)arg1 forDataValue:(id)arg2;
+- (void)useDefaultQuickLookForDataValue:(id)arg1 usingIcon:(id)arg2;
+- (void)useQuickLookProvider:(id)arg1 forDataValue:(id)arg2 usingIcon:(id)arg3;
+- (id)init;
+
+@end
+
+@interface IDENoFirstResponderPopover : NSPopover
+{
+}
+
+- (BOOL)_validatePopoverWindowFirstResponder;
+
+@end
+
+@interface IDENavigatorTrayHeaderCell : IDENavigatorDataCell <IDENavigatorTrayHeaderCellProtocol>
+{
+    NSArray *trayItemCells;
+    NSIndexSet *selectedTrayItems;
+    BOOL internalHeaderIsSelected;
+}
+
+@property BOOL internalHeaderIsSelected; // @synthesize internalHeaderIsSelected;
+@property(copy) NSIndexSet *selectedTrayItems; // @synthesize selectedTrayItems;
+@property(copy) NSArray *trayItemCells; // @synthesize trayItemCells;
+- (void)_drawTrayItemCell:(id)arg1 withFrame:(struct CGRect)arg2 inView:(id)arg3;
+- (void)_drawInteriorTrayItemsWithFrame:(struct CGRect)arg1 controlView:(id)arg2 atPoint:(struct CGPoint)arg3;
+- (void)_drawInteriorHeaderBackgroundWithFrame:(struct CGRect)arg1 inView:(id)arg2 height:(double)arg3;
+- (void)_selectionChanged:(id)arg1;
+- (void)_configureDeselectionObserversOnView:(id)arg1;
+- (unsigned long long)indexOfTrayItemAtPoint:(struct CGPoint)arg1 inTrayCellRect:(struct CGRect)arg2;
+- (struct CGRect)trayRectAtIndex:(unsigned long long)arg1 inBounds:(struct CGRect)arg2;
+- (struct CGRect)visualHeaderRectInBounds:(struct CGRect)arg1;
+- (double)heightOfHeader;
+- (double)heightOfTrayItemCell;
+- (BOOL)hasTrayItems;
+- (void)dvt_handleMouseDown:(id)arg1 forCellRect:(struct CGRect)arg2 inView:(id)arg3;
+- (struct CGRect)dvt_frameOfOutlineCellForBounds:(struct CGRect)arg1 proposedFrame:(struct CGRect)arg2;
+- (void)drawInteriorWithFrame:(struct CGRect)arg1 inView:(id)arg2;
+- (id)statusCellsRectsForBounds:(struct CGRect)arg1;
+- (struct CGRect)statusRectForBounds:(struct CGRect)arg1;
+- (struct CGRect)imageRectForBounds:(struct CGRect)arg1;
+- (struct CGRect)titleRectForBounds:(struct CGRect)arg1;
+- (id)copyWithZone:(struct _NSZone *)arg1;
+
+@end
+
+@interface IDEMigrationTarget : NSObject
+{
+    id <IDEBlueprint> _blueprint;
+    NSMutableArray *_buildFiles;
+    NSImage *_iconImage;
+}
+
+@property(readonly) NSImage *iconImage; // @synthesize iconImage=_iconImage;
+@property(readonly) NSArray *buildFiles; // @synthesize buildFiles=_buildFiles;
+@property(readonly) id <IDEBlueprint> blueprint; // @synthesize blueprint=_blueprint;
+@property(readonly) BOOL buildsWithClang;
+@property(readonly) BOOL buildsValidArchtectures;
+@property(readonly) NSString *warningMessage;
+- (id)latestSDK;
+- (void)updateBuildSettings;
+
+@end
+
+@interface IDEXcodeSelectHelper : NSObject
+{
+    NSArray *_selectableXcodes;
+    IDEXcodeSelectableXcode *_selectedXcode;
+    BOOL _resettingValue;
+}
+
++ (id)keyPathsForValuesAffectingIsRunningXcodeTheSelectedXcode;
++ (void)initialize;
+@property IDEXcodeSelectableXcode *selectedXcode; // @synthesize selectedXcode=_selectedXcode;
+@property(readonly) NSArray *selectableXcodes; // @synthesize selectableXcodes=_selectableXcodes;
+- (BOOL)_switchXcodeSelectToXcodeAtBundlePath:(id)arg1;
+- (void)switchXcodeSelectToRunningXcode;
+- (BOOL)_shouldSwitchToCurrentlyRunningXcode;
+- (id)selectedXcodePath;
+- (id)_xcodeSelectPrintPathResult;
+@property(readonly) BOOL isRunningXcodeTheSelectedXcode;
+- (BOOL)switchXcodeSelectTo:(id)arg1;
+- (BOOL)_isXcode4_2OrEarlier:(id)arg1;
+- (id)_determineSelectedXcode;
+- (id)_createXcodeSelectableXcodeForURL:(id)arg1;
+- (id)_determineSelectableXcodes;
+- (id)init;
+
+@end
+
+@interface IDEXcodeSelectableXcode : NSObject
+{
+    NSImage *_icon;
+    NSString *_displayName;
+    NSString *_appPath;
+}
+
+@property(readonly) NSString *appPath; // @synthesize appPath=_appPath;
+@property(readonly) NSString *displayName; // @synthesize displayName=_displayName;
+@property(readonly) NSImage *icon; // @synthesize icon=_icon;
+- (id)_initWith:(id)arg1 displayName:(id)arg2 appPath:(id)arg3;
+
+@end
+
+@interface IDESourceControlRepositoryOperationWindowController : NSWindowController
+{
+    NSTextField *_progressField;
+    NSImageView *_statusImageView;
+    NSProgressIndicator *_progressIndicator;
+    NSArray *_workingTrees;
+    NSMutableArray *_operationInfos;
+    NSOperationQueue *_operationQueue;
+    id _continuationBlock;
+    int _requestType;
+    NSMutableDictionary *_tokenDictionary;
+    NSString *_messageText;
+    NSString *_infoText;
+    NSWindow *_parentWindow;
+    IDEWorkspace *_workspace;
+    BOOL _inProgress;
+    BOOL _disableFastForwards;
+    NSArray *_workingTreeItems;
+}
+
+@property(copy) NSArray *workingTreeItems; // @synthesize workingTreeItems=_workingTreeItems;
+@property BOOL disableFastForwards; // @synthesize disableFastForwards=_disableFastForwards;
+@property(copy) NSString *infoText; // @synthesize infoText=_infoText;
+@property(copy) NSString *messageText; // @synthesize messageText=_messageText;
+@property int requestType; // @synthesize requestType=_requestType;
+@property(copy) id continuationBlock; // @synthesize continuationBlock=_continuationBlock;
+@property(copy) NSArray *workingTrees; // @synthesize workingTrees=_workingTrees;
+@property(retain) IDEWorkspace *workspace; // @synthesize workspace=_workspace;
+- (void)cancel:(id)arg1;
+- (void)cancelSheet;
+- (void)runOperations;
+- (id)_operationalItemsForWorkingTree:(id)arg1;
+- (void)repositoryChooserSheetDidEnd:(id)arg1 returnCode:(long long)arg2 contextInfo:(void *)arg3;
+@property BOOL inProgress; // @synthesize inProgress=_inProgress;
+- (id)successImage;
+- (void)endSheet;
+- (void)alertDidEnd:(id)arg1 returnCode:(long long)arg2 contextInfo:(void *)arg3;
+- (void)displayError:(id)arg1;
+- (void)beginSheetForWindow:(id)arg1;
+- (id)windowNibName;
+
+@end
+
+@interface IDEMigrationTargetChooserStatePersistence : NSObject <NSKeyedUnarchiverDelegate>
+{
+    DVTFilePath *_stateFilePath;
+}
+
++ (void)initialize;
+@property(retain) DVTFilePath *stateFilePath; // @synthesize stateFilePath=_stateFilePath;
+- (id)loadStateData;
+- (void)saveStateData:(id)arg1;
+- (id)mergeStateData:(id)arg1;
+
+@end
+
+@interface IDEAlertsPrefsBehaviorTableCellView : NSTableCellView
+{
+    IDEAlertEvent *_alertEvent;
+    BOOL _active;
+}
+
++ (void)initialize;
+@property(nonatomic) BOOL active; // @synthesize active=_active;
+@property(retain, nonatomic) IDEAlertEvent *alertEvent; // @synthesize alertEvent=_alertEvent;
+- (void)beginEditingFromEvent:(id)arg1 inTableView:(id)arg2 column:(long long)arg3 row:(long long)arg4;
+@property(retain, nonatomic) NSString *title;
+
+@end
+
+@interface IDEAlertsPrefsCustomBehaviorTableCellView : IDEAlertsPrefsBehaviorTableCellView
+{
+    IDEKeyBindingField *_keyBindingField;
+}
+
+@property(retain, nonatomic) IDEKeyBindingField *keyBindingField; // @synthesize keyBindingField=_keyBindingField;
+- (void)beginEditingFromEvent:(id)arg1 inTableView:(id)arg2 column:(long long)arg3 row:(long long)arg4;
+- (void)controlTextDidEndEditing:(id)arg1;
+- (void)controlTextDidBeginEditing:(id)arg1;
+- (void)keyBindingFieldCellWillRemoveKeyboardShortcut:(id)arg1;
+- (void)keyBindingFieldCellDidAddKeyboardShortcut:(id)arg1;
+- (id)keyBindingFieldCell:(id)arg1 validatedKeyboardShortcut:(id)arg2;
+- (BOOL)keyBindingFieldCellAllowsMultipleKeyboardShortcut:(id)arg1;
+- (id)keyBindingString;
+- (id)keyBindingStringForKeyboardShortCut:(id)arg1;
+- (id)keyboardShortcut;
+- (id)customAlertEvent;
+- (void)setTitleFromEdit:(id)arg1;
+- (void)setAlertEvent:(id)arg1;
+- (void)tile;
+- (void)tileWithString:(id)arg1 editing:(BOOL)arg2;
+- (struct CGRect)titleRect;
+- (struct CGRect)keyboardShortcutRect;
+- (struct CGRect)keyboardShortcutRectForString:(id)arg1 editing:(BOOL)arg2;
+
+@end
+
+@interface IDEKeyBindingField : NSTextField
+{
+}
+
++ (Class)cellClass;
+- (void)drawRect:(struct CGRect)arg1;
+- (id)initWithFrame:(struct CGRect)arg1;
+- (id)initWithCoder:(id)arg1;
+- (void)_commonInit;
+
+@end
+
+@interface IDESourceControlOperationPanel : NSPanel
+{
+    NSImageView *_statusImageView;
+    NSTextField *_statusTextView;
+    NSProgressIndicator *_progressView;
+    int _state;
+    double _progress;
+    NSString *_statusText;
+    NSButton *_leftMostButton;
+}
+
+@property __weak NSButton *leftMostButton; // @synthesize leftMostButton=_leftMostButton;
+@property(retain) NSString *statusText; // @synthesize statusText=_statusText;
+@property double progress; // @synthesize progress=_progress;
+@property BOOL showDeterminateProgress;
+@property int statusState;
+- (void)orderWindow:(long long)arg1 relativeTo:(long long)arg2;
+- (id)initWithContentRect:(struct CGRect)arg1 styleMask:(unsigned long long)arg2 backing:(unsigned long long)arg3 defer:(BOOL)arg4 screen:(id)arg5;
+- (id)initWithContentRect:(struct CGRect)arg1 styleMask:(unsigned long long)arg2 backing:(unsigned long long)arg3 defer:(BOOL)arg4;
+- (id)initWithCoder:(id)arg1;
+- (void)addStatusComponents;
+
+@end
+
+@interface IDEAppStatistics : NSObject
+{
+}
+
++ (void)recordDocDownloadInteraction:(id)arg1;
++ (void)recordAppDidShutdown:(id)arg1;
++ (void)recordAppAboutToShutdown;
++ (void)scheduleAppReportWithStartTime:(double)arg1;
++ (void)recordAppUsedGPUDebugger;
++ (void)performAppReportWithStartupDuration:(double)arg1;
++ (id)_diskType;
++ (unsigned long long)memInUse;
++ (unsigned long long)_totalRam;
+
+@end
+
+@interface IDESchemeMenuDelegate : NSObject <NSMenuDelegate>
+{
+}
+
++ (id)_currentRunContextManager;
+- (void)menuNeedsUpdate:(id)arg1;
+- (id)_schemeMenuItems;
+- (void)_selectScheme:(id)arg1;
+
+@end
+
+@interface IDEDestinationMenuDelegate : NSObject <NSMenuDelegate>
+{
+}
+
++ (void)_openMoreSimulators:(id)arg1;
++ (void)addDownloadMoreSimulatorsIfNecessaryToMenu:(id)arg1 withRunContextManager:(id)arg2;
++ (id)_currentRunContextManager;
+- (void)menuNeedsUpdate:(id)arg1;
+- (id)_destinationMenuItemsWithRunContextManager:(id)arg1;
+- (void)_selectDestination:(id)arg1;
+
 @end
 
 @interface IDEAlert (IDEAlertUI)
@@ -19375,8 +21444,21 @@ typedef struct {
 @property(readonly) NSImage *displayImage;
 @end
 
+@interface NSCell (DVTOutlineViewCellDelegation)
+- (void)dvt_handleMouseDown:(id)arg1 forCellRect:(struct CGRect)arg2 inView:(id)arg3;
+- (struct CGRect)dvt_frameOfOutlineCellForBounds:(struct CGRect)arg1 proposedFrame:(struct CGRect)arg2;
+@end
+
 @interface NSObject (IDEModelObjectConformanceString)
 @property(readonly) NSString *navigableItem_conformanceString;
+@end
+
+@interface NSView (IDEViewControllerAutomaticInvalidation)
+- (id)ide_viewsToSearchForAutomaticControllerInvalidation;
+@end
+
+@interface DVTDisclosureView (IDEViewControllerAutomaticInvalidation)
+- (id)ide_viewsToSearchForAutomaticControllerInvalidation;
 @end
 
 @interface NSView (IBViewAdditions)
@@ -19410,12 +21492,13 @@ typedef struct {
 @end
 
 @interface IDEIndexSymbol (IDEKitExtensions)
-- (void)infoViewController:(id)arg1;
+- (void)infoViewControllerWithWidth:(double)arg1 context:(id)arg2 completionBlock:(id)arg3;
 - (BOOL)notRecommended;
 - (void)setPriority:(long long)arg1;
 - (long long)priority;
 - (id)icon;
 - (id)descriptionText;
+- (id)parentText;
 - (id)displayType;
 - (id)completionText;
 - (id)displayText;
@@ -19426,7 +21509,7 @@ typedef struct {
 @end
 
 @interface IDEIndexCompletionItem (IDEKitExtensions)
-- (void)infoViewController:(id)arg1;
+- (void)infoViewControllerWithWidth:(double)arg1 context:(id)arg2 completionBlock:(id)arg3;
 @property(readonly) NSImage *icon;
 @end
 
@@ -19494,14 +21577,23 @@ typedef struct {
 @end
 
 @interface NSURL (IDEKitClassAdditions)
+@property(readonly) NSImage *ide_fileIcon;
 @property(readonly) NSImage *fileIcon;
 - (BOOL)ide_isSameDocumentAsURL:(id)arg1;
 @end
 
+@interface DVTFilePath (IDEKitClassAdditions)
+@property(readonly) NSImage *ide_fileIcon;
+@end
+
+@interface NSString (IDEKitClassAdditions)
+- (id)ide_fileTypeIcon;
+@end
+
 @interface IDEContainerItem (IDEKit_StructureEditing) <IDEStructureEditingTarget>
 - (id)structureEditingRemoveSubitemsTargetForParentNavigableItem:(id)arg1;
-- (id)structureEditingGroupingTargetForProposedNavigableItem:(id)arg1 proposedChildIndex:(long long)arg2 actualNavigableItem:(id *)arg3 actualChildIndex:(long long *)arg4;
-- (id)structureEditingTargetForProposedNavigableItem:(id)arg1 proposedChildIndex:(long long)arg2 actualNavigableItem:(id *)arg3 actualChildIndex:(long long *)arg4;
+- (id)structureEditingGroupingTargetForProposedNavigableItem:(id)arg1 proposedChildIndex:(long long)arg2;
+- (id)structureEditingTargetForProposedNavigableItem:(id)arg1 proposedChildIndex:(long long)arg2;
 - (id)structureEditingDraggingSource;
 @end
 
@@ -19697,6 +21789,7 @@ typedef struct {
 @end
 
 @interface IDEFileReference (IDEKitFileReferenceSourceControlPropertyAdditions) <IDEInspectorMatching>
++ (id)keyPathsForValuesAffectingSourceControlInspectorRepositoryURLString;
 + (id)keyPathsForValuesAffectingNavigableItem_versionAndServerStatus;
 + (id)keyPathsForValuesAffectingNavigableItem_sourceControlCurrentRevision;
 + (id)keyPathsForValuesAffectingNavigableItem_sourceControlServerStatusFlag;
@@ -19733,6 +21826,11 @@ typedef struct {
 @property(readonly) DVTDocumentLocation *navigableItem_contentDocumentLocation;
 @property(readonly) NSImage *navigableItem_image;
 @property(readonly) NSString *navigableItem_name;
+@end
+
+@interface IDESourceControlDummyItem (IDESourceControlDummyItemNavigablePropertyAdditions)
++ (id)keyPathsForValuesAffectingNavigableItem_name;
+- (id)navigableItem_name;
 @end
 
 @interface IDERefactoring (IDERefactoringKitAdditions)
@@ -19887,39 +21985,6 @@ typedef struct {
 + (id)ide_assistantBackgroundImage;
 @end
 
-@interface CALayer (IDECALayerAdditions)
-- (BOOL)accessibilityShouldUseUniqueId;
-- (BOOL)accessibilitySupportsOverriddenAttributes;
-- (id)accessibilityFocusedUIElement;
-- (id)accessibilityHitTest:(struct CGPoint)arg1;
-- (void)accessibilityPerformAction:(id)arg1;
-- (id)accessibilityActionDescription:(id)arg1;
-- (id)accessibilityActionNames;
-- (void)accessibilitySetValue:(id)arg1 forAttribute:(id)arg2;
-- (BOOL)accessibilityIsAttributeSettable:(id)arg1;
-- (id)accessibilityAttributeValue:(id)arg1;
-- (id)accessibilityAttributeNames;
-- (BOOL)accessibilityIsIgnored;
-- (struct CGRect)convertRectToScreen:(struct CGRect)arg1;
-- (struct CGRect)convertRectFromScreen:(struct CGRect)arg1;
-- (struct CGRect)convertRect:(struct CGRect)arg1 toView:(id)arg2;
-- (struct CGRect)convertRect:(struct CGRect)arg1 fromView:(id)arg2;
-- (struct CGPoint)convertPointToScreen:(struct CGPoint)arg1;
-- (struct CGPoint)convertPointFromScreen:(struct CGPoint)arg1;
-- (struct CGPoint)convertPoint:(struct CGPoint)arg1 toView:(id)arg2;
-- (struct CGPoint)convertPoint:(struct CGPoint)arg1 fromView:(id)arg2;
-@property(readonly) NSArray *sublayersExcludingHiddenLayers;
-@property(readonly) NSView *view;
-@property(readonly) NSWindow *window;
-@property(readonly) CALayer *rootLayer;
-@end
-
-@interface CATextLayer (IDECALayerAdditions)
-- (id)accessibilityAttributeValue:(id)arg1;
-- (id)accessibilityAttributeNames;
-- (BOOL)accessibilityIsIgnored;
-@end
-
 @interface IDESourceControlTreeGroup (UILevelActions)
 - (void)checkoutAlertDidEnd:(id)arg1 returnCode:(long long)arg2 contextInfo:(void *)arg3;
 - (void)checkoutToURL:(id)arg1 attachingToWindow:(id)arg2;
@@ -19967,6 +22032,11 @@ typedef struct {
 - (id)exportTemporaryItemPreservingSCMInformationWithBranchName:(id)arg1 revisionIdentifier:(id)arg2 completionBlock:(id)arg3;
 @end
 
+@interface NSFileManager (IDEBinaryConflictResolution)
+- (BOOL)dvt_copyOrReplacePath:(id)arg1 withPath:(id)arg2 error:(id *)arg3;
+- (id)dvt_filesAndDirectoriesToDeleteFromDestination:(id)arg1 replacingWithSource:(id)arg2;
+@end
+
 @interface IDEDiagnosticActivityLogMessage (KitAdditions)
 + (id)keyPathsForValuesAffectingValid;
 - (id)exploredIssue;
@@ -19993,5 +22063,8 @@ typedef struct {
 @interface NSDocument (IDENSDocumentAdditions)
 - (void)ide_canCloseAsynchronouslyUsingBlock:(id)arg1;
 - (void)ideNSDocument:(id)arg1 shouldClose:(BOOL)arg2 contextInfo:(void *)arg3;
+@end
+
+@interface IDELocationScenario (SchemeOptions) <IDESchemeOptionMenuItem>
 @end
 

@@ -19,9 +19,9 @@ struct _NSRange {
 
 /*
  * File: /Applications/Xcode.app/Contents/PlugIns/DebuggerGDB.ideplugin/Contents/MacOS/DebuggerGDB
- * UUID: 6FF2CD1B-EF38-387B-9A98-B9F23A4120C4
+ * UUID: 28121CFC-64AE-3B5F-8FB3-33958B6B1566
  * Arch: Intel x86-64 (x86_64)
- *       Current version: 1185.0.0, Compatibility version: 1.0.0
+ *       Current version: 2083.0.0, Compatibility version: 1.0.0
  *       Minimum Mac OS X version: 10.7.0
  *
  *       Objective-C Garbage Collection: Required
@@ -83,6 +83,9 @@ struct _NSRange {
 - (Class)superclass;
 - (unsigned long long)hash;
 - (BOOL)isEqual:(id)arg1;
+
+@optional
+- (id)debugDescription;
 @end
 
 @protocol PBXGDB_ContainedDataValueSecondaryUpdating
@@ -106,6 +109,16 @@ struct _NSRange {
 
 @protocol PBXLSRestartExecutableRequest <NSObject>
 - (oneway void)requestRestartExecutable;
+@end
+
+@protocol __ARCLiteIndexedSubscripting__
+- (void)setObject:(id)arg1 atIndexedSubscript:(unsigned long long)arg2;
+- (id)objectAtIndexedSubscript:(unsigned long long)arg1;
+@end
+
+@protocol __ARCLiteKeyedSubscripting__
+- (void)setObject:(id)arg1 forKeyedSubscript:(id)arg2;
+- (id)objectForKeyedSubscript:(id)arg1;
 @end
 
 @interface PBXGDB_FetchMemoryForViewerSequence : PBXGDB_EvaluationSequence
@@ -300,7 +313,6 @@ struct _NSRange {
     NSString *_ttyDeviceName;
     IDEConsoleAdaptor *_inferiorConsoleAdaptor;
     NSMutableDictionary *_stringTable;
-    BOOL _loggingEnabled;
     PBXLSAddressRange *_unicharBufferAddressRange;
     NSMutableArray *_loadedInferiorPlugins;
     long long _lastLoadedPluginIndex;
@@ -505,7 +517,6 @@ struct _NSRange {
 - (void)logCommentString:(id)arg1 withTimeStamp:(BOOL)arg2;
 - (void)logStringToGDB:(id)arg1;
 - (void)logStringFromGDB:(id)arg1;
-- (void)_logWithPrefix:(id)arg1 string:(id)arg2 suffix:(id)arg3;
 - (BOOL)loggingEnabled;
 
 @end
@@ -535,6 +546,7 @@ struct _NSRange {
     unsigned long long _indexInParentArray;
 }
 
+- (void)setValidityStatus:(int)arg1;
 - (id)stringValue;
 - (id)initWithDebugger:(id)arg1 indexInParentArray:(unsigned long long)arg2;
 
@@ -646,6 +658,8 @@ struct _NSRange {
 {
     PBXGDB_SequenceController *_controller;
     Class _currentSafetyCheckClass;
+    BOOL _hasTimedOut;
+    BOOL _hasTurnedSchedulerLockingOff;
     BOOL _transient;
     BOOL _canPurgeTransientSequences;
 }
@@ -656,6 +670,7 @@ struct _NSRange {
 - (id)foundationDebugSession;
 - (long long)_safteyCheckThreadID;
 - (void)_didCheckSafety:(id)arg1;
+- (void)_cleanUpSchedulerState:(SEL)arg1;
 - (void)safetyCheckSucceeded;
 - (void)safetyCheckFailed;
 - (void)_verifySafetyCmd:(id)arg1;
@@ -1617,6 +1632,7 @@ struct _NSRange {
 - (void)setThreadIdContext:(long long)arg1;
 - (BOOL)waitsForOutput;
 - (id)GDBCommandStringForExecution;
+- (id)sequenceNumberPrependedCommandString:(id)arg1;
 - (void)willExecute;
 - (void)setMIController:(id)arg1;
 - (unsigned long long)sequenceNumber;
@@ -1878,6 +1894,7 @@ struct _NSRange {
 - (void)_resetStoppedState;
 - (void)didAttachToTarget;
 - (id)stoppedState;
+- (void)_extractHookResultsFromList:(id)arg1;
 - (void)continueFromImplicitInterrupt;
 - (void)postPendableCommand:(id)arg1;
 - (void)postCommand:(id)arg1;
@@ -3298,7 +3315,7 @@ struct _NSRange {
 - (void)setAllThreadsStateToStepping;
 - (void)processStarted;
 - (void)_setProcessIsRunning;
-- (BOOL)_performBreakpointActionIfPossible:(id)arg1 breakpoint:(id)arg2;
+- (BOOL)_performBreakpointActionIfPossible:(id)arg1 breakpoint:(id)arg2 context:(id)arg3;
 - (void)performActionsForBreakpoint:(id)arg1 startingAtAction:(id)arg2;
 - (void)_performActionsForBreakpoint:(id)arg1;
 - (void)gdbTargetStopped;
@@ -3384,6 +3401,7 @@ struct _NSRange {
 - (BOOL)handleErrorForMICommand:(id)arg1;
 - (void)gdbStoppedWithResults:(id)arg1 onCommand:(id)arg2;
 - (void)didFinish;
+- (void)dealloc;
 - (void)finalize;
 - (id)init;
 
@@ -3440,6 +3458,7 @@ struct _NSRange {
 }
 
 - (void)setStringValue:(id)arg1;
+- (void)dealloc;
 - (void)finalize;
 - (id)initWithDebugger:(id)arg1 parentVarObj:(id)arg2;
 
@@ -3728,7 +3747,9 @@ struct _NSRange {
     NSMutableArray *_globalVariables;
 }
 
-+ (id)systemSharedLibraryNameRegEx;
++ (id)systemUsrLibNameRegEx;
++ (id)systemLibraryPrivateFrameworksNameRegEx;
++ (id)systemLibraryFrameworksNameRegEx;
 + (id)nameFromPath:(id)arg1;
 + (id)stringForSymbolsLoadTime:(int)arg1;
 + (id)stringForSymbolsLevel:(int)arg1;
@@ -3991,6 +4012,7 @@ struct _NSRange {
 - (void)setStackFramesWithoutKVO:(id)arg1;
 - (void)requestUpdateStack;
 - (void)debuggerDidUpdateStack:(id)arg1;
+- (void)removeAllChildren;
 - (void)insertChild:(id)arg1 atIndex:(unsigned long long)arg2;
 - (void)debugger:(id)arg1 setThreadState:(int)arg2 status:(long long)arg3;
 - (void)processDidUpdateAndDoUpdate:(BOOL)arg1;
@@ -4232,6 +4254,7 @@ struct _NSRange {
     PBXLSDebuggerAdaptor<PBXLSRestartExecutableRequest> *_restartExecAdaptor;
     BOOL _readyForBreakpointSequences;
     NSMapTable *_breakpointsToTokens;
+    id <DVTObservingToken> _debugSessionStateObserverToken;
 }
 
 + (BOOL)_isExceptionBreakpoint:(id)arg1;
@@ -4355,7 +4378,6 @@ struct _NSRange {
     PBXGDB_Adaptor *_gdbAdaptor;
 }
 
-+ (id)logAspect;
 @property(readonly) IDEConsoleAdaptor *gdbConsoleAdaptor; // @synthesize gdbConsoleAdaptor=_gdbConsoleAdaptor;
 @property(readonly) NSTask *gdbTask; // @synthesize gdbTask=_gdbTask;
 @property(readonly) PBXLSDebuggingSession *PBXLSDebuggingSession; // @synthesize PBXLSDebuggingSession=_PBXLSDebuggingSession;
@@ -4686,6 +4708,7 @@ struct _NSRange {
 
 @property BOOL isSendingConsoleCommand; // @synthesize isSendingConsoleCommand=_isSendingConsoleCommand;
 @property(readonly) PBXLSProcess *PBXProcess; // @synthesize PBXProcess=_PBXProcess;
+- (id)readMemoryAtAddress:(unsigned long long)arg1 numberOfBytes:(unsigned long long)arg2 resultHandler:(id)arg3;
 - (void)rawMemoryDataForAddressExpression:(id)arg1 numberOfBytes:(unsigned long long)arg2 resultHandler:(id)arg3;
 - (void)updateThreads;
 - (void)setControlState:(int)arg1;
@@ -4716,6 +4739,7 @@ struct _NSRange {
 - (void)requestMovePCInStackFrame:(id)arg1 toLineNumber:(unsigned long long)arg2;
 - (void)loadDebugSymbolsForSharedLibrary:(id)arg1;
 - (BOOL)supportsPCAnnotationDragging;
+- (void)executeDebuggerCommand:(id)arg1 threadID:(unsigned long long)arg2 frameID:(unsigned long long)arg3;
 - (void)requestContinueToLocation:(id)arg1 inContext:(struct NSObject *)arg2;
 - (void)requestStepIntoCallSymbol:(id)arg1 atLocation:(id)arg2 inContext:(struct NSObject *)arg3;
 - (void)requestStepOverSuspendOtherThreads:(struct NSObject *)arg1;
@@ -4746,7 +4770,7 @@ struct _NSRange {
 - (void)observeValueForKeyPath:(id)arg1 ofObject:(id)arg2 change:(id)arg3 context:(void *)arg4;
 - (void)requestUnsuspend;
 - (void)requestSuspend;
-- (void)requestStackFrames:(unsigned long long)arg1 resultHandler:(id)arg2;
+- (void)requestStackFrames:(unsigned long long)arg1 resultQueue:(struct dispatch_queue_s *)arg2 resultHandler:(id)arg3;
 - (void)refreshStackFramesAndSetFirstFrame;
 - (BOOL)refreshStackFrames;
 - (void)updateStackFrames;
@@ -4779,7 +4803,7 @@ struct _NSRange {
 - (void)_requestStackBasedContainerNamed:(id)arg1 completionBlock:(id)arg2;
 - (id)_wrapPBXLSDataValues:(id)arg1;
 - (void)requestDataValueForExpression:(id)arg1 atBlockStartAddress:(id)arg2 onQueue:(struct dispatch_queue_s *)arg3 withResultBlock:(id)arg4;
-- (void)requestDataValueForSymbol:(id)arg1 atLocation:(id)arg2 onQueue:(struct dispatch_queue_s *)arg3 withResultBlock:(id)arg4;
+- (void)requestDataValueForSymbol:(id)arg1 symbolKind:(id)arg2 atLocation:(id)arg3 onQueue:(struct dispatch_queue_s *)arg4 withResultBlock:(id)arg5;
 - (void)_requestDataValueForExpression:(id)arg1 atLocation:(id)arg2 orBlockStartAddress:(id)arg3 onQueue:(struct dispatch_queue_s *)arg4 withResultBlock:(id)arg5;
 - (void)_watchChangeObject:(id)arg1 keyPath:(id)arg2 withChangeBlock:(id)arg3;
 - (void)updateExpressionValues;
@@ -4794,7 +4818,7 @@ struct _NSRange {
 {
     PBXLSDataValue *_pbxDataValue;
     DBGDataType *_staticType;
-    NSPointerArray *_childrenValuesProxy;
+    DVTPointerArray *_childrenValuesProxy;
     id _childLoadBlock;
     DBGGDBDataValue *_parent;
     DBGDataValueFormat *_format;
@@ -4822,7 +4846,7 @@ struct _NSRange {
 - (void)childrenRemoved;
 - (void)childrenInserted;
 - (void)childValidityStatusChanged:(int)arg1;
-- (unsigned long long)indexOfChildValueWithName:(id)arg1;
+- (void)watch;
 - (BOOL)childValuesCountValid;
 - (id)objectInChildrenProxyValuesAtIndex:(unsigned long long)arg1;
 - (unsigned long long)countOfChildrenProxyValues;
@@ -4843,7 +4867,6 @@ struct _NSRange {
 - (id)expressionPath;
 - (id)name;
 - (id)initWithPBXLSDataValue:(id)arg1 stackFrame:(id)arg2;
-- (id)copyWithZone:(struct _NSZone *)arg1;
 
 // Remaining properties
 @property(readonly) NSMutableArray *mutableChildValues; // @dynamic mutableChildValues;

@@ -22,9 +22,9 @@ typedef struct {
 
 /*
  * File: /Applications/Xcode.app/Contents/PlugIns/HexEditor.ideplugin/Contents/MacOS/HexEditor
- * UUID: 49836398-9579-3FBC-B861-C0795A6B125A
+ * UUID: 03AFB7FE-B540-39A3-866F-E8AE445C47EB
  * Arch: Intel x86-64 (x86_64)
- *       Current version: 1169.0.0, Compatibility version: 1.0.0
+ *       Current version: 2053.0.0, Compatibility version: 1.0.0
  *       Minimum Mac OS X version: 10.7.0
  *
  *       Objective-C Garbage Collection: Required
@@ -33,6 +33,7 @@ typedef struct {
 @protocol DVTFindBarFindable
 
 @optional
+- (struct _NSRange)selectedRangeForFindBar:(id)arg1;
 - (id)startingLocationForFindBar:(id)arg1 findingBackwards:(BOOL)arg2;
 - (void)dvtFindBar:(id)arg1 didUpdateCurrentResult:(id)arg2;
 - (void)dvtFindBar:(id)arg1 didUpdateResults:(id)arg2;
@@ -65,6 +66,19 @@ typedef struct {
 - (Class)superclass;
 - (unsigned long long)hash;
 - (BOOL)isEqual:(id)arg1;
+
+@optional
+- (id)debugDescription;
+@end
+
+@protocol __ARCLiteIndexedSubscripting__
+- (void)setObject:(id)arg1 atIndexedSubscript:(unsigned long long)arg2;
+- (id)objectAtIndexedSubscript:(unsigned long long)arg1;
+@end
+
+@protocol __ARCLiteKeyedSubscripting__
+- (void)setObject:(id)arg1 forKeyedSubscript:(id)arg2;
+- (id)objectForKeyedSubscript:(id)arg1;
 @end
 
 @interface IDEHexEditorDocument : IDEEditorDocument
@@ -140,9 +154,9 @@ typedef struct {
 - (void)_restorePreferences;
 - (id)_createLineCounterRepresenter;
 - (void)_registerClassSpecificDefaults;
-@property unsigned long long supportedMatchingOptions;
+- (unsigned long long)supportedMatchingOptions;
 - (void)_themeColorsUpdated;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)loadView;
 
 @end

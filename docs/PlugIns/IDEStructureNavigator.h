@@ -15,9 +15,9 @@ struct _NSRange {
 
 /*
  * File: /Applications/Xcode.app/Contents/PlugIns/IDEStructureNavigator.ideplugin/Contents/MacOS/IDEStructureNavigator
- * UUID: CFB17A9B-5035-3E9F-9639-4A5AE7B5E4DD
+ * UUID: 558FC76C-B0A0-3443-A6D2-3F70DB5BB3F9
  * Arch: Intel x86-64 (x86_64)
- *       Current version: 1171.0.0, Compatibility version: 1.0.0
+ *       Current version: 2053.0.0, Compatibility version: 1.0.0
  *       Minimum Mac OS X version: 10.7.0
  *
  *       Objective-C Garbage Collection: Required
@@ -31,6 +31,7 @@ struct _NSRange {
 @end
 
 @protocol IDEStructureEditing
+- (BOOL)allowRemovingContainerGroup;
 - (BOOL)structureEditSetName:(id)arg1 inContext:(id)arg2;
 - (BOOL)canStructureEditName;
 - (BOOL)structureEditRemoveSubitemsAtIndexes:(id)arg1 error:(id *)arg2;
@@ -46,12 +47,13 @@ struct _NSRange {
 
 @protocol IDEStructureEditingTarget
 - (id)structureEditingRemoveSubitemsTargetForParentNavigableItem:(id)arg1;
-- (id)structureEditingGroupingTargetForProposedNavigableItem:(id)arg1 proposedChildIndex:(long long)arg2 actualNavigableItem:(id *)arg3 actualChildIndex:(long long *)arg4;
-- (id)structureEditingTargetForProposedNavigableItem:(id)arg1 proposedChildIndex:(long long)arg2 actualNavigableItem:(id *)arg3 actualChildIndex:(long long *)arg4;
+- (id)structureEditingGroupingTargetForProposedNavigableItem:(id)arg1 proposedChildIndex:(long long)arg2;
+- (id)structureEditingTargetForProposedNavigableItem:(id)arg1 proposedChildIndex:(long long)arg2;
 - (id)structureEditingDraggingSource;
 @end
 
 @protocol IDETemplateSupportingNavigator <NSObject>
+- (id)defaultDestinationGroupForTemplateInstantiationWithDestinationIndex:(long long *)arg1;
 - (void)addTemplateInstantiatedItems:(id)arg1 primaryItem:(id)arg2;
 - (void)setupTemplateContext:(id)arg1;
 @end
@@ -76,6 +78,9 @@ struct _NSRange {
 - (Class)superclass;
 - (unsigned long long)hash;
 - (BOOL)isEqual:(id)arg1;
+
+@optional
+- (id)debugDescription;
 @end
 
 @protocol NSOpenSavePanelDelegate <NSObject>
@@ -87,6 +92,16 @@ struct _NSRange {
 - (void)panel:(id)arg1 didChangeToDirectoryURL:(id)arg2;
 - (BOOL)panel:(id)arg1 validateURL:(id)arg2 error:(id *)arg3;
 - (BOOL)panel:(id)arg1 shouldEnableURL:(id)arg2;
+@end
+
+@protocol __ARCLiteIndexedSubscripting__
+- (void)setObject:(id)arg1 atIndexedSubscript:(unsigned long long)arg2;
+- (id)objectAtIndexedSubscript:(unsigned long long)arg1;
+@end
+
+@protocol __ARCLiteKeyedSubscripting__
+- (void)setObject:(id)arg1 forKeyedSubscript:(id)arg2;
+- (id)objectForKeyedSubscript:(id)arg1;
 @end
 
 @interface IDESupportStructureEditingValueTransformer : NSValueTransformer
@@ -174,6 +189,7 @@ struct _NSRange {
 - (id)filterButtonAccessibilityDescription;
 - (id)filterButtonToolTip;
 - (id)filterButtonMenu;
+- (void)filterButton_addFiles:(id)arg1;
 - (void)fiterButton_newProject:(id)arg1;
 - (void)filterButton_newFile:(id)arg1;
 - (void)setFilterPredicate:(id)arg1;
@@ -183,12 +199,13 @@ struct _NSRange {
 - (void)triggerFilteringForDocumentURLs:(id)arg1;
 - (void)updateFilterPredicate;
 - (void)clearFilterPredicate;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)viewWillUninstall;
 - (void)viewDidInstall;
 - (id)domainIdentifier;
 - (void)loadView;
 - (BOOL)validateUserInterfaceItem:(id)arg1;
+- (void)contextMenu_showFileInspector:(id)arg1;
 - (void)contextMenu_delete:(id)arg1;
 - (void)delete:(id)arg1;
 - (void)contextMenu_newProject:(id)arg1;
@@ -209,7 +226,11 @@ struct _NSRange {
 - (void)addTemplateInstantiatedItems:(id)arg1 primaryItem:(id)arg2;
 - (void)expandInstantiatedTemplateItem:(id)arg1;
 - (void)setupTemplateContext:(id)arg1;
+- (id)defaultDestinationGroupForTemplateInstantiationWithDestinationIndex:(long long *)arg1;
 - (void)_setupTemplateContext:(id)arg1 useContextualMenuSelection:(BOOL)arg2;
+- (id)_destinationGroupForSelectedItem:(id)arg1 destinationIndex:(long long *)arg2;
+- (BOOL)shouldOpenNavigableItem:(id)arg1 eventType:(unsigned long long)arg2;
+- (void)_toggleExpandedStateOf:(id)arg1;
 - (id)openSpecifierForNavigableItem:(id)arg1 error:(id *)arg2;
 - (BOOL)_testOrAddFiles:(BOOL)arg1 useContextualMenuSelection:(BOOL)arg2;
 - (BOOL)_testOrSort:(BOOL)arg1 byNameOrByType:(BOOL)arg2 useContextualMenuSelection:(BOOL)arg3;

@@ -30,9 +30,9 @@ struct _NSRange {
 
 /*
  * File: /Applications/Xcode.app/Contents/PlugIns/DebuggerUI.ideplugin/Contents/MacOS/DebuggerUI
- * UUID: D399F888-1705-3139-AD9B-A61C2A4DC504
+ * UUID: E6446D48-F088-3C35-B828-1BB92FACF116
  * Arch: Intel x86-64 (x86_64)
- *       Current version: 1185.0.0, Compatibility version: 1.0.0
+ *       Current version: 2083.0.0, Compatibility version: 1.0.0
  *       Minimum Mac OS X version: 10.7.0
  *
  *       Objective-C Garbage Collection: Required
@@ -44,9 +44,17 @@ struct _NSRange {
 @property(readonly) NSView *initialFirstResponder;
 @end
 
+@protocol DBGNSImageProvider <NSObject>
+@property(readonly) NSImage *image;
+@property(readonly) BOOL hasImageBeenRetrieved;
+- (void)cancel;
+- (id)initWithDataValue:(id)arg1 options:(id)arg2;
+@end
+
 @protocol DVTCompletingTextViewDelegate <NSTextViewDelegate>
 
 @optional
+- (void)setupTextViewContextMenuWithMenu:(id)arg1;
 - (BOOL)completingTextViewHandleCancel:(id)arg1;
 - (unsigned long long)textView:(id)arg1 lineEndingForWritingSelectionToPasteboard:(id)arg2 type:(id)arg3;
 - (unsigned long long)textView:(id)arg1 lineEndingForReadingSelectionFromPasteboard:(id)arg2 type:(id)arg3;
@@ -58,6 +66,7 @@ struct _NSRange {
 @protocol DVTFindBarFindable
 
 @optional
+- (struct _NSRange)selectedRangeForFindBar:(id)arg1;
 - (id)startingLocationForFindBar:(id)arg1 findingBackwards:(BOOL)arg2;
 - (void)dvtFindBar:(id)arg1 didUpdateCurrentResult:(id)arg2;
 - (void)dvtFindBar:(id)arg1 didUpdateResults:(id)arg2;
@@ -88,6 +97,7 @@ struct _NSRange {
 - (struct CGRect)expressionFrameForExpression:(id)arg1;
 
 @optional
+@property(readonly, nonatomic) NSString *selectedText;
 @property(readonly) DVTSourceExpression *quickHelpExpression;
 - (void)unregisterMouseOverExpressionObserver:(id)arg1;
 - (void)registerMouseOverExpressionObserver:(id)arg1;
@@ -133,6 +143,13 @@ struct _NSRange {
 - (void)addRowRequestedByRow:(id)arg1;
 @end
 
+@protocol IDECommandHandler <NSObject, NSUserInterfaceValidations>
+@end
+
+@protocol IDECommandHandlerVendor <NSObject>
++ (id)handlerForAction:(SEL)arg1 withSelectionSource:(id)arg2;
+@end
+
 @protocol IDEDebugNavigableContentDelegate <NSObject>
 @property(readonly) NSString *associatedProcessUUID;
 - (id)representedObjectsToReveal;
@@ -150,6 +167,8 @@ struct _NSRange {
 - (id)initWithProcess:(id)arg1 debugNavigator:(id)arg2;
 
 @optional
+- (void)commitStateToDictionary:(id)arg1;
+- (void)revertStateWithDictionary:(id)arg1;
 - (id)minCompressionButtonTooltip;
 - (id)compressionSliderTooltip;
 - (id)maxCompressionButtonTooltip;
@@ -165,10 +184,10 @@ struct _NSRange {
 - (void)handleUserDirectDeleteRepresentedObject:(id)arg1;
 - (void)updateForNewCompressionValue:(id)arg1;
 - (void)updateForNewShowOnlyInterestingContent:(id)arg1;
-- (void)updateForNewThreadOrQueueMode:(id)arg1;
 - (BOOL)shouldExpandItemAsResultOfOptionClick:(id)arg1 clickedItem:(id)arg2;
 - (BOOL)isGroupHeaderForRepresentedObject:(id)arg1 item:(id)arg2;
 - (double)heightOfRowForRepresentedObject:(id)arg1;
+- (void)configureMenuForProcessHeaderActionPopUpCell:(id)arg1;
 - (id)controllerForQueryingDescendantItem;
 @end
 
@@ -207,6 +226,7 @@ struct _NSRange {
 - (void)symbolsForExpression:(id)arg1 inQueue:(struct dispatch_queue_s *)arg2 completionBlock:(id)arg3;
 
 @optional
+- (BOOL)isLocationInFunctionOrMethodBody:(id)arg1;
 - (id)importStringInExpression:(id)arg1;
 @end
 
@@ -221,12 +241,27 @@ struct _NSRange {
 - (void)providerWasInstalledForVariablesView:(id)arg1;
 
 @optional
+@property(readonly) BOOL loadingNewVariablesInBackground;
+- (id)quickLookProviderForDataValue:(id)arg1;
+- (void)newRootFromChildrenWasInstalled;
+- (void)nodeWasDoubleClicked:(id)arg1 row:(long long)arg2 column:(long long)arg3;
 - (id)scopePopUpTitleForScopeItem:(long long)arg1;
 @end
 
 @protocol IDEVariablesViewContextMenuDelegate <NSObject>
 - (void)provideHelpMenuItem:(id)arg1;
 - (void)providePrimaryMenuItems:(id)arg1;
+@end
+
+@protocol IDEVariablesViewQuickLookProvider <NSObject>
+@property(readonly) NSView *quickLookView;
+@property(readonly) int loadedState;
+- (void)cancelLoading;
+- (id)initWithDataValue:(id)arg1 options:(id)arg2;
+
+@optional
+@property(readonly) NSString *externalApplicationName;
+- (void)writeAtomicallyToTemporaryFile:(id)arg1;
 @end
 
 @protocol NSControlTextEditingDelegate <NSObject>
@@ -274,6 +309,9 @@ struct _NSRange {
 - (Class)superclass;
 - (unsigned long long)hash;
 - (BOOL)isEqual:(id)arg1;
+
+@optional
+- (id)debugDescription;
 @end
 
 @protocol NSOutlineViewDelegate <NSControlTextEditingDelegate>
@@ -399,6 +437,7 @@ struct _NSRange {
 - (void)textView:(id)arg1 doubleClickedOnCell:(id)arg2 inRect:(struct CGRect)arg3;
 - (void)textView:(id)arg1 clickedOnCell:(id)arg2 inRect:(struct CGRect)arg3;
 - (BOOL)textView:(id)arg1 clickedOnLink:(id)arg2;
+- (id)textView:(id)arg1 willShowSharingServicePicker:(id)arg2 forItems:(id)arg3;
 - (id)textView:(id)arg1 URLForContentsOfTextAttachment:(id)arg2 atIndex:(unsigned long long)arg3;
 - (id)textView:(id)arg1 didCheckTextInRange:(struct _NSRange)arg2 types:(unsigned long long)arg3 options:(id)arg4 results:(id)arg5 orthography:(id)arg6 wordCount:(long long)arg7;
 - (id)textView:(id)arg1 willCheckTextInRange:(struct _NSRange)arg2 options:(id)arg3 types:(unsigned long long *)arg4;
@@ -422,6 +461,10 @@ struct _NSRange {
 - (BOOL)textView:(id)arg1 clickedOnLink:(id)arg2 atIndex:(unsigned long long)arg3;
 @end
 
+@protocol NSUserInterfaceValidations
+- (BOOL)validateUserInterfaceItem:(id)arg1;
+@end
+
 @protocol XCDataTipSource
 - (BOOL)outlineHoverView:(id)arg1 itemWillExpandLater:(id)arg2;
 - (BOOL)outlineViewShouldIgnoreMouseEvents:(id)arg1;
@@ -440,16 +483,28 @@ struct _NSRange {
 - (void)configureOutlineHoverView:(id)arg1;
 @end
 
+@protocol __ARCLiteIndexedSubscripting__
+- (void)setObject:(id)arg1 atIndexedSubscript:(unsigned long long)arg2;
+- (id)objectAtIndexedSubscript:(unsigned long long)arg1;
+@end
+
+@protocol __ARCLiteKeyedSubscripting__
+- (void)setObject:(id)arg1 forKeyedSubscript:(id)arg2;
+- (id)objectForKeyedSubscript:(id)arg1;
+@end
+
 @interface DBGThreadsStacksContentDelegate : NSObject <IDEDebugNavigableContentDelegate>
 {
     DBGDebugSession *_debugSession;
     NSString *_associatedProcessUUID;
     IDEDebugNavigator *_debugNavigator;
     IDENavigatorOutlineView *_outlineView;
+    IDENavigatorDataCell *_processHeaderCell;
     IDENavigatorDataCell *_queueHeaderCell;
     IDENavigatorDataCell *_threadHeaderCell;
     IDENavigatorDataCell *_memoryDataGroupHeaderCell;
     DBGNavigatorCompressedDataCell *_compressedCell;
+    int _threadOrQueueMode;
     NSMenuItem *_threadMenuItem;
     DBGThread *_currentThreadForFutureSelection;
     DBGStackFrame *_currentStackFrameForFutureSelection;
@@ -462,10 +517,17 @@ struct _NSRange {
 }
 
 + (id)keyPathsForValuesAffectingProcessNavigableItem;
++ (void)configureStateSavingObjectPersistenceByName:(id)arg1;
++ (void)initialize;
 @property(readonly) IDEDebugNavigator *debugNavigator; // @synthesize debugNavigator=_debugNavigator;
 @property(readonly) NSString *associatedProcessUUID; // @synthesize associatedProcessUUID=_associatedProcessUUID;
 @property(retain) DBGDebugSession *debugSession; // @synthesize debugSession=_debugSession;
-- (void)_threadContextuallyClicked;
+- (void)setStoredThreadOrQueueMode:(id)arg1;
+- (id)storedThreadOrQueueMode;
+- (void)commitStateToDictionary:(id)arg1;
+- (void)revertStateWithDictionary:(id)arg1;
+- (void)_suspendContexMenuSelectedItems;
+- (void)_resumeContexMenuSelectedItems;
 - (id)minCompressionButtonTooltip;
 - (id)compressionSliderTooltip;
 - (id)maxCompressionButtonTooltip;
@@ -480,7 +542,7 @@ struct _NSRange {
 - (void)_appendDisplayStringForCopiedOrDraggedStackFrame:(id)arg1 toString:(id)arg2;
 - (void)updateForNewCompressionValue:(id)arg1;
 - (void)updateForNewShowOnlyInterestingContent:(id)arg1;
-- (void)updateForNewThreadOrQueueMode:(id)arg1;
+- (void)_updateForNewThreadOrQueueMode:(id)arg1;
 - (void)_shouldHideThreads:(id)arg1 processItem:(id)arg2;
 - (id)expandableItemsForProcessItem:(id)arg1;
 - (id)tokenForExpandedRepresentedObject:(id)arg1;
@@ -492,12 +554,13 @@ struct _NSRange {
 - (void)openSelectedRepresentedObject:(id)arg1 withEventType:(unsigned long long)arg2;
 - (BOOL)shouldSelectItemForRepresentedObject:(id)arg1 withPrevious:(id)arg2 next:(id)arg3;
 - (double)heightOfRowForRepresentedObject:(id)arg1;
+- (void)configureMenuForProcessHeaderActionPopUpCell:(id)arg1;
 - (id)controllerForQueryingDescendantItem;
 - (id)dataCellForRepresentedObject:(id)arg1;
 - (id)_compressedCell;
-- (id)memoryDataGroupHeaderCell;
-- (id)threadHeaderCell;
-- (id)queueHeaderCell;
+- (id)_memoryDataGroupHeaderCell;
+- (id)_threadHeaderCell;
+- (id)_queueHeaderCell;
 - (void)willDisplayCell:(id)arg1 forRepresentedObject:(id)arg2 item:(id)arg3;
 - (void)_handleThreadsChange;
 - (void)debugNavigatorViewWillUninstall;
@@ -519,12 +582,15 @@ struct _NSRange {
 @interface DBGInstructionPointerAnnotationProvider : DVTAnnotationProvider
 {
     IDEAnnotationContext *_context;
-    NSMapTable *_annotationForLocation;
+    DVTMapTable *_annotationForLocation;
     NSMutableSet *_nonSelectedPCAnnotations;
+    id <DVTObservingToken> _ipLocationObserver;
+    id <DVTObservingToken> _ipLocationForDisasObserver;
 }
 
 + (id)annotationProviderForContext:(id)arg1 error:(id *)arg2;
 @property(retain) IDEAnnotationContext *context; // @synthesize context=_context;
+- (void)providerWillUninstall;
 - (BOOL)_doesURLResolveToContextURL:(id)arg1;
 - (BOOL)_shouldCreateAnnotationForLocation:(id)arg1;
 - (void)_removeAnnotationForLocation:(id)arg1;
@@ -580,12 +646,12 @@ struct _NSRange {
 
 + (id)descendantItemForRepresentedObject:(id)arg1 inRootNavigableItem:(id)arg2;
 + (id)_descendantItemForRepresentedObject:(id)arg1 inRootNavigableItem:(id)arg2;
-+ (id)logAspect;
 @property(readonly) DBGDataTipController *dataTipController; // @synthesize dataTipController=_dataTipController;
-@property(readonly) id <IDEDebugSession> debugSession; // @synthesize debugSession=_debugSession;
+- (id)debugSession;
+- (void)_userWantsRerunFromConsole:(id)arg1;
+- (void)_userWantsQuitFromConsole:(id)arg1;
 - (void)requestPermissionForPoOfDataValue:(id)arg1;
-- (void)_showAlertForError:(id)arg1;
-- (void)requestPONotification:(id)arg1;
+- (void)_requestPONotification:(id)arg1;
 - (void)openMemoryData:(id)arg1 withEventType:(unsigned long long)arg2;
 - (void)openMemoryBrowser;
 - (void)mouseExitedSidebarLineArea;
@@ -593,6 +659,7 @@ struct _NSRange {
 - (void)setSelectedNavigableItemFromUserInterface:(id)arg1;
 @property(readonly) BOOL showDisassemblyWhenDebugging;
 - (void)_handleShowDisassemblyWhenDebuggingChanged;
+- (BOOL)_shouldIgnoreNotification;
 - (void)_handleDebugSessionStateChanged;
 - (void)_handleFinishedRunPausesAlert;
 - (void)_handleWatchpointHit:(id)arg1;
@@ -619,11 +686,13 @@ struct _NSRange {
     DVTSourceExpression *_currentMousedOverExpression;
     DBGFloatingControlWindow *_dataTipWindow;
     XCDataTipTable *_dataTipViewController;
-    NSWindow *_window;
+    NSWindow *_window_dvtWeak;
     BOOL _dataTipFromSidebar;
     BOOL _inMouseoverExpressionChanged;
     id _mouseMonitor;
     DVTSourceExpression *_pendingExpression;
+    id <DVTObservingToken> _mouseOverExpressionObserver;
+    id <DVTObservingToken> _expressionValidObserver;
 }
 
 + (BOOL)mouseOverDataTipContext;
@@ -631,8 +700,7 @@ struct _NSRange {
 + (BOOL)mouseOverDataTipInWindow:(id)arg1 includeBuffer:(BOOL)arg2;
 + (BOOL)_mouseOverDataTipInWindow:(id)arg1 includeBuffer:(BOOL)arg2 mouseLocation:(struct CGPoint)arg3;
 + (BOOL)mouseOverWindow:(id)arg1;
-+ (void)getInfoForAction:(int)arg1 image:(id *)arg2 selector:(SEL *)arg3;
-+ (id)logAspect;
++ (id)getInfoForAction:(SEL)arg1 image:(int)arg2;
 @property(retain) DVTSourceExpression *pendingExpression; // @synthesize pendingExpression=_pendingExpression;
 @property(retain) DVTSourceExpression *currentMousedOverExpression; // @synthesize currentMousedOverExpression=_currentMousedOverExpression;
 @property(retain, nonatomic) id <IDESourceExpressionSource> expressionSource; // @synthesize expressionSource=_expressionSource;
@@ -654,8 +722,9 @@ struct _NSRange {
 - (void)mouseOverSidebarAtLocation:(id)arg1 withinBlockAtRange:(struct _NSRange)arg2 withScreenFrame:(struct CGRect)arg3;
 - (void)revealConsoleArea;
 @property(readonly) BOOL showingDataTip;
-- (void)observeValueForKeyPath:(id)arg1 ofObject:(id)arg2 change:(id)arg3 context:(void *)arg4;
+- (void)_removeObserververs;
 - (id)initWithDebugSession:(id)arg1 workspaceTabController:(id)arg2;
+@property __weak NSWindow *window;
 
 @end
 
@@ -715,6 +784,7 @@ struct _NSRange {
 - (void)drawRect:(struct CGRect)arg1;
 - (void)setLineDash:(double *)arg1 count:(long long)arg2 phase:(double)arg3;
 - (void)setColor:(id)arg1;
+- (void)finalize;
 - (void)dealloc;
 
 @end
@@ -746,13 +816,13 @@ struct _NSRange {
     DBGDataValue *_editedDV;
     NSImage *_spyglassImage;
     XCOutlineHoverView *_viewToExpand;
-    id _itemToExpand;
+    id _itemToExpand_dvtWeak;
     NSMenu *_contextualMenu;
-    id _pendingDVPathForViewAsMemory;
-    id _pendingDVPathForOpenInWindow;
-    id _pendingDVPathForCreateAsWatchpoint;
-    id _clickedItemNotRetained;
-    id _owningController;
+    id _pendingDVPathForViewAsMemory_dvtWeak;
+    id _pendingDVPathForOpenInWindow_dvtWeak;
+    id _pendingDVPathForCreateAsWatchpoint_dvtWeak;
+    id _clickedItemNotRetained_dvtWeak;
+    DBGDataTipController *_owningController_dvtWeak;
     NSMutableDictionary *_sortingCaches;
     int _sortType;
 }
@@ -834,9 +904,14 @@ struct _NSRange {
 - (void)setNameColumnTitle:(id)arg1;
 - (id)columnForIdentifier:(id)arg1;
 - (void)configureOutlineHoverView:(id)arg1;
-@property(retain) DBGDataTipController *owningController;
 - (id)variablesView;
 - (id)_sortedChildren:(id)arg1 ofItem:(id)arg2;
+@property __weak DBGDataTipController *owningController;
+@property __weak id clickedItemNotRetained;
+@property __weak id pendingDVPathForCreateAsWatchpoint;
+@property __weak id pendingDVPathForOpenInWindow;
+@property __weak id pendingDVPathForViewAsMemory;
+@property __weak id itemToExpand;
 
 @end
 
@@ -931,8 +1006,8 @@ struct _NSRange {
 @interface DBGVariablesViewContentProvider : NSObject <IDEVariablesViewContextMenuDelegate, IDEVariablesViewContentProvider>
 {
     IDEVariablesView *_variablesView;
-    NSPopover *_currentPopover;
     BOOL _requestedAutos;
+    BOOL _loadingNewVariablesInBackground;
     NSArray *_arguments;
     NSArray *_locals;
     NSArray *_fileStatics;
@@ -940,7 +1015,7 @@ struct _NSRange {
     NSMutableArray *_expressions;
     NSMutableDictionary *_variablesAskedForByNameToDataValue;
     NSMutableSet *_varialbesBeingAskedForByName;
-    NSSet *_autosSymbols;
+    NSOrderedSet *_autosSymbols;
     BOOL _showsLocals;
     BOOL _showsArguments;
     BOOL _showsFileStatics;
@@ -948,6 +1023,9 @@ struct _NSRange {
     BOOL _showsCustomExpressions;
     DBGDebugSession *_debugSession;
     id <DVTObservingToken> _debugSessionObserverToken;
+    id <DVTObservingToken> _framePointerObserverToken;
+    id <DVTObservingToken> _returnValueObserverToken;
+    id <DVTObservingToken> _returnValueIsValidObserverToken;
     id <DVTObservingToken> _argumentsObserverToken;
     id <DVTObservingToken> _localsObserverToken;
     id <DVTObservingToken> _fileStaticsObserverToken;
@@ -956,7 +1034,6 @@ struct _NSRange {
 }
 
 + (id)_sortComparator;
-+ (id)keyPathsForValuesAffectingCurrentStackFrame;
 @property(retain) NSArray *registers; // @synthesize registers=_registers;
 @property(retain) NSArray *fileStatics; // @synthesize fileStatics=_fileStatics;
 @property(retain) NSArray *locals; // @synthesize locals=_locals;
@@ -966,9 +1043,14 @@ struct _NSRange {
 @property(nonatomic) BOOL showsFileStatics; // @synthesize showsFileStatics=_showsFileStatics;
 @property(nonatomic) BOOL showsArguments; // @synthesize showsArguments=_showsArguments;
 @property(nonatomic) BOOL showsLocals; // @synthesize showsLocals=_showsLocals;
+@property BOOL loadingNewVariablesInBackground; // @synthesize loadingNewVariablesInBackground=_loadingNewVariablesInBackground;
 @property(retain) DBGDebugSession *debugSession; // @synthesize debugSession=_debugSession;
 - (void)provideHelpMenuItem:(id)arg1;
 - (void)providePrimaryMenuItems:(id)arg1;
+- (id)_createOptionsDictionaryFromOptionsElement:(id)arg1;
+- (id)quickLookProviderForDataValue:(id)arg1;
+- (void)newRootFromChildrenWasInstalled;
+- (void)nodeWasDoubleClicked:(id)arg1 row:(long long)arg2 column:(long long)arg3;
 - (id)scopePopUpTitleForScopeItem:(long long)arg1;
 - (void)_handleSelectedScopeChange;
 - (id)contextNameForNode:(id)arg1;
@@ -977,6 +1059,7 @@ struct _NSRange {
 - (void)invalidate;
 - (void)provideScopeChoices:(id)arg1;
 - (void)providerWasInstalledForVariablesView:(id)arg1;
+- (void)_resetVariablesObservation;
 - (void)_updateDueToVisibilityChange:(id)arg1;
 @property(readonly) id nodeSortComparator;
 @property(readonly) id <IDEVariablesViewContextMenuDelegate> contextMenuDelegate;
@@ -991,21 +1074,27 @@ struct _NSRange {
 - (void)_addViewValueAsMenuToMenu:(id)arg1 selectedVariables:(id)arg2;
 - (void)_addCopyMenuItemToMenu:(id)arg1 selectedVariables:(id)arg2;
 - (void)_addPrintDescriptionMenuItemToMenu:(id)arg1 selectedVariable:(id)arg2;
+- (void)_addOrEditExpressionAtRow:(long long)arg1;
+- (void)_editSummaryFormatAtRow:(long long)arg1;
 - (BOOL)_expressionIsForAllStackFrames:(id)arg1;
+- (void)_unpersistExpressionString:(id)arg1;
+- (void)_persistExpressionString:(id)arg1 forAllStackFrames:(BOOL)arg2;
 - (void)_deleteExpressionNode:(id)arg1;
-- (id)_addExpression:(id)arg1 forAllStackFrames:(BOOL)arg2;
+- (id)_addExpressionNode:(id)arg1 forAllStackFrames:(BOOL)arg2;
+- (id)_addExpressionNodeToBackingArray:(id)arg1;
 - (id)_customExpressions;
 - (unsigned long long)_convertCurrentStackFramesLineNumberToEditorDocumentLineNumber:(id)arg1;
 - (id)_locationToUseForAutoSymbolsRequestInEditorDocument:(id)arg1;
 - (BOOL)_updateAutoValues;
+- (void)_addReturnValueNodeIfNecessary:(id)arg1;
 - (void)_updateFilteredList;
-- (id)_wrapOrFetchDataValueWithName:(id)arg1 locationToFetchRelativeTo:(id)arg2 asNodeType:(unsigned long long)arg3;
-- (id)_wrapDataValueWithName:(id)arg1 fromList:(id)arg2 asNodeType:(unsigned long long)arg3;
-- (id)_wrapSelfOrThisDataValue;
+- (id)_wrapOrFetchDataValueWithName:(id)arg1 symbolKind:(id)arg2 asNodeType:(unsigned long long)arg3;
+- (id)_wrapDataValueWithName:(id)arg1 fromListOfDataValues:(id)arg2 asNodeType:(unsigned long long)arg3;
 - (id)_createVariableNodesFromDataValues:(id)arg1 type:(unsigned long long)arg2;
-- (id)_createNodeFromIndexSymbol:(id)arg1 selfOrThisDataValue:(id)arg2;
+- (id)_createNodeFromIndexSymbol:(id)arg1;
 - (id)_manualVariablesList;
 - (id)_autoVariablesList;
+- (void)_filteredListNeedsUpdatingImmediatley;
 - (void)_filteredListNeedsUpdating;
 @property(readonly) NSString *contextNameForCurrentStackFrame;
 @property(readonly) NSString *globalContextName;
@@ -1016,11 +1105,11 @@ struct _NSRange {
 - (void)editValue:(id)arg1;
 - (void)watchVariable:(id)arg1;
 - (void)deleteExpressions:(id)arg1;
-- (void)_showPopover:(id)arg1 attachedToRow:(long long)arg2;
 - (void)addOrEditExpression:(id)arg1;
 - (void)editSummaryFormat:(id)arg1;
 - (void)viewValueAsCustomType:(id)arg1;
 - (void)printDescription:(id)arg1;
+- (void)_updateArrayValueForKey:(id)arg1 fromArray:(id)arg2;
 @property(readonly) DBGStackFrame *currentStackFrame;
 - (void)_handleCurrentStackFrameFramePointerChanged;
 
@@ -1092,8 +1181,9 @@ struct _NSRange {
 - (id)_attributedStringForLoadingExpression;
 - (id)_attributedStringForEnterExpression;
 - (id)calculateFullAttributedString;
-- (id)_attributedFormattedSummaryForDataValue:(id)arg1;
-- (id)calculateSummaryAttributedString;
+- (id)_expressionMessageAttributedStringForString:(id)arg1;
+- (id)_equalsSignAttributedString;
+@property(readonly) NSColor *expressionMessageTextColor;
 
 @end
 
@@ -1156,7 +1246,7 @@ struct _NSRange {
 
 + (void)configureStateSavingObjectPersistenceByName:(id)arg1;
 @property(readonly) IDEConsoleTextView *textView; // @synthesize textView=_textView;
-- (id)textView:(id)arg1 menu:(id)arg2 forEvent:(id)arg3 atIndex:(unsigned long long)arg4;
+- (void)setupTextViewContextMenuWithMenu:(id)arg1;
 - (id)startingLocationForFindBar:(id)arg1 findingBackwards:(BOOL)arg2;
 - (void)dvtFindBar:(id)arg1 didUpdateCurrentResult:(id)arg2;
 - (id)findStringMatchingDescriptor:(id)arg1 backwards:(BOOL)arg2 from:(id)arg3 to:(id)arg4;
@@ -1164,12 +1254,9 @@ struct _NSRange {
 - (void)commitStateToDictionary:(id)arg1;
 - (void)_handleConsoleItemsChanged:(id)arg1;
 - (void)_documentDidUpdate;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (BOOL)canBecomeMainViewController;
 - (void)loadView;
-
-// Remaining properties
-@property unsigned long long supportedMatchingOptions;
 
 @end
 
@@ -1220,9 +1307,9 @@ struct _NSRange {
     IDEWorkspace *_workspace;
     id <DVTObservingToken> _launchSessionsStateObserverToken;
     id <DVTObservingToken> _launchSessionsConsoleAdaptorsObserverToken;
-    NSMapTable *_terminationTokenForConsoleAdaptorTable;
-    NSMapTable *_logSectionForLaunchSessionTable;
-    NSMapTable *_consoleAdaptorsForLaunchSessionTable;
+    DVTMapTable *_terminationTokenForConsoleAdaptorTable;
+    DVTMapTable *_logSectionForLaunchSessionTable;
+    DVTMapTable *_consoleAdaptorsForLaunchSessionTable;
     IDELogStore *_logStore;
 }
 
@@ -1238,7 +1325,8 @@ struct _NSRange {
 - (void)_handleConsoleAdaptorsChanged:(id)arg1;
 - (void)_handleLaunchSessionStateChanged:(id)arg1;
 - (void)_handleLaunchSessionsChanged:(id)arg1;
-- (void)invalidate;
+- (void)primitiveInvalidate;
+- (BOOL)interestedInSchemeCommand:(int)arg1;
 - (id)logRecords;
 - (id)initWithDomainItem:(id)arg1;
 
@@ -1297,9 +1385,11 @@ struct _NSRange {
 {
     IDEAnnotationContext *_context;
     IDEWorkspaceWindowController *_workspaceWindowController;
+    NSMutableArray *_observationTokens;
 }
 
 + (id)annotationProviderForContext:(id)arg1 error:(id *)arg2;
+@property(retain, nonatomic) NSMutableArray *observationTokens; // @synthesize observationTokens=_observationTokens;
 @property(readonly) IDEAnnotationContext *context; // @synthesize context=_context;
 - (void)_revealInBreakpointNavigator:(id)arg1;
 - (void)_deleteBreakpoint:(id)arg1;
@@ -1313,7 +1403,9 @@ struct _NSRange {
 - (void)didClickAnnotation:(id)arg1 inTextSidebarView:(id)arg2 event:(id)arg3;
 - (void)didDeleteOrReplaceParagraphForAnnotation:(id)arg1;
 - (void)didMoveAnnotation:(id)arg1;
+- (unsigned long long)annotation:(id)arg1 willMoveToParagraphNumber:(unsigned long long)arg2;
 - (void)didRemoveAnnotation:(id)arg1;
+- (void)providerWillUninstall;
 - (id)_documentURL;
 - (void)_removeBreakpointWithAnnotation:(id)arg1;
 - (void)_removeAnnotationForBreakpoint:(id)arg1;
@@ -1321,7 +1413,6 @@ struct _NSRange {
 - (void)_addAnnotationForFileBreakpoint:(id)arg1;
 - (void)_addAnnotationForBreakpoint:(id)arg1;
 - (void)_handleBreakpointsChanged:(id)arg1;
-- (void)observeValueForKeyPath:(id)arg1 ofObject:(id)arg2 change:(id)arg3 context:(void *)arg4;
 - (id)initWithContext:(id)arg1;
 - (id)init;
 
@@ -1422,20 +1513,23 @@ struct _NSRange {
 @interface DBGVariableExpressionNode : IDEVariablesViewNode
 {
     NSString *_expression;
-    id _loadBlock;
+    DBGStackFrame *_stackFrame;
     BOOL _loading;
     BOOL _requestedLoad;
+    BOOL _filteredChildrenWereRequestedWhileDataValueWasNil;
 }
 
 + (id)keyPathsForValuesAffectingExpressionIsEmpty;
 @property BOOL loading; // @synthesize loading=_loading;
+@property(retain, nonatomic) NSString *expression; // @synthesize expression=_expression;
 - (long long)compare:(id)arg1;
+- (void)_evaluateExpression;
 - (id)dataValue;
 @property(readonly) BOOL expressionIsEmpty;
-@property(readonly) NSString *expression;
+- (id)filteredChildren;
 - (id)name;
 - (id)copyWithZone:(struct _NSZone *)arg1;
-- (id)initWithExpression:(id)arg1 withLoadBlock:(id)arg2;
+- (id)initWithExpression:(id)arg1 stackFrame:(id)arg2;
 
 @end
 
@@ -1456,7 +1550,7 @@ struct _NSRange {
 }
 
 + (id)expressionEditor:(id)arg1 subStringToSelect:(id)arg2 showInAllStackFrames:(BOOL)arg3;
-@property NSPopover *popover; // @synthesize popover=_popover;
+@property(retain) NSPopover *popover; // @synthesize popover=_popover;
 @property(copy) id doneButtonHandler; // @synthesize doneButtonHandler=_doneButtonHandler;
 @property BOOL showInAllStackFrames; // @synthesize showInAllStackFrames=_showInAllStackFrames;
 @property(copy) NSString *subStringToSelect; // @synthesize subStringToSelect=_subStringToSelect;
@@ -1526,9 +1620,10 @@ struct _NSRange {
     id <DVTObservingToken> _breakpointListToken;
     id <DVTObservingToken> _breakpointsActivatedToken;
     id <DVTObservingToken> _selectedObjectsListToken;
-    NSMapTable *_breakpointsToTokens;
-    NSMapTable *_breakpointsToShouldBeEnabledTokens;
+    DVTMapTable *_breakpointsToTokens;
+    DVTMapTable *_breakpointsToShouldBeEnabledTokens;
     NSArray *_draggedItems;
+    NSPasteboard *_draggedPasteboard;
 }
 
 + (void)configureStateSavingObjectPersistenceByName:(id)arg1;
@@ -1538,7 +1633,7 @@ struct _NSRange {
 - (void)_setCollapsedItemsFromNameTree:(id)arg1;
 - (void)commitStateToDictionary:(id)arg1;
 - (void)revertStateWithDictionary:(id)arg1;
-- (void)stateChanged;
+- (void)_stateChanged;
 - (void)deleteSelectedItems:(id)arg1;
 - (void)createSymbolicBreakpoint:(id)arg1;
 - (void)createExceptionBreakpoint:(id)arg1;
@@ -1546,7 +1641,7 @@ struct _NSRange {
 - (void)_selectBreakpointAndShowBreakpointEditor:(id)arg1;
 - (BOOL)_navigableItemRepresentsEditableBreakpoint:(id)arg1;
 - (id)openSpecifierForNavigableItem:(id)arg1 error:(id *)arg2;
-- (BOOL)shouldOpenNavigableItem:(id)arg1;
+- (BOOL)shouldOpenNavigableItem:(id)arg1 eventType:(unsigned long long)arg2;
 - (void)_addMenuItemToMenu:(id)arg1 forBucket:(id)arg2;
 - (void)_addMoveMenuToMenu:(id)arg1 rightClickedItems:(id)arg2 plural:(BOOL)arg3;
 - (void)_addDeleteMenuItemToMenu:(id)arg1 plural:(BOOL)arg2;
@@ -1581,6 +1676,7 @@ struct _NSRange {
 - (id)_nonWatchpointItems:(id)arg1;
 - (void)_moveBreakpointsForNavigableItems:(id)arg1 toBucket:(id)arg2;
 - (void)_moveRightClickedBreakpointsToBucket:(id)arg1;
+- (void)_clearDraggedItems;
 - (void)_selectItemNearDeletedItemIndex:(long long)arg1 parentItem:(id)arg2;
 - (long long)_smallestRowIndexOfNavigableItemInArray:(id)arg1;
 - (void)_deleteBreakpointsForNavigableItems:(id)arg1;
@@ -1610,7 +1706,7 @@ struct _NSRange {
 - (id)_breakpointsForNavigableItem:(id)arg1;
 - (id)_breakpointManager;
 - (void)setRootNavigableItem:(id)arg1;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)viewWillUninstall;
 - (void)viewDidInstall;
 - (void)_buildGlassBar;
@@ -1734,7 +1830,7 @@ struct _NSRange {
     NSView *_conditionAndIgnoreCountView;
     DVTStackView_AppKitAutolayout *_stackView;
     DVTStackView_AppKitAutolayout *_actionsStackView;
-    NSButton *_clickToAddAnActionButton;
+    NSView *_addActionButtonView;
     NSPopover *_popover;
 }
 
@@ -1742,16 +1838,17 @@ struct _NSRange {
 + (void)hideCurrentEditor;
 + (void)showEditorForBreakpoint:(id)arg1 relativeToRect:(struct CGRect)arg2 ofView:(id)arg3;
 @property(readonly) IDEBreakpoint *breakpoint; // @synthesize breakpoint=_breakpoint;
-@property NSPopover *popover; // @synthesize popover=_popover;
+@property(retain) NSPopover *popover; // @synthesize popover=_popover;
 - (void)_handleActionChanged:(id)arg1;
 - (void)observeValueForKeyPath:(id)arg1 ofObject:(id)arg2 change:(id)arg3 context:(void *)arg4;
+- (void)popoverDidClose:(id)arg1;
 - (BOOL)popoverShouldClose:(id)arg1;
-- (void)popoverDidShow:(id)arg1;
 - (void)popoverWillShow:(id)arg1;
 @property(readonly) NSString *ignoreCountPostText;
 - (void)removeRowRequestedByRow:(id)arg1;
 - (void)addRowRequestedByRow:(id)arg1;
 @property(readonly) NSView *initialFirstResponder;
+- (void)cancelOperation:(id)arg1;
 - (void)addFirstAction:(id)arg1;
 - (id)_addBreakpointActionRowToStackViewForAction:(id)arg1 atIndex:(unsigned long long)arg2;
 - (id)_addBreakpointActionRowToStackViewBelow:(id)arg1;
@@ -1799,15 +1896,15 @@ struct _NSRange {
     IDEBreakpointBucket *_bucket;
     DVTFilePath *_filePath;
     NSString *_displayName;
-    NSImage *_displayImage;
     NSArray *_breakpoints;
     NSMutableArray *_mutableBreakpoints;
+    NSImage *_displayImage;
 }
 
 + (void)initialize;
+@property(copy) NSImage *displayImage; // @synthesize displayImage=_displayImage;
 @property(retain) IDEBreakpointBucket *bucket; // @synthesize bucket=_bucket;
 @property(copy) DVTFilePath *filePath; // @synthesize filePath=_filePath;
-@property(copy) NSImage *displayImage; // @synthesize displayImage=_displayImage;
 @property(copy) NSString *displayName; // @synthesize displayName=_displayName;
 - (id)ideModelObjectTypeIdentifier;
 - (unsigned long long)hash;
@@ -1896,8 +1993,8 @@ struct _NSRange {
 
 @interface DBGAttachToProcessActivityReporter : IDEActivityReporter
 {
-    NSMapTable *_launchSessionsToTokens;
-    NSMapTable *_reportForLaunchSessionTable;
+    DVTMapTable *_launchSessionsToTokens;
+    DVTMapTable *_reportForLaunchSessionTable;
 }
 
 + (id)_titleForDebugSession:(id)arg1;
@@ -1946,7 +2043,7 @@ struct _NSRange {
     id <DVTObservingToken> _instructionPointerObserver;
 }
 
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)_updateGeniusResults;
 
 @end
@@ -1982,7 +2079,7 @@ struct _NSRange {
 - (void)_createCurrentStackFrameObserver:(id)arg1;
 - (void)generateContentForURL:(id)arg1 waitingBlock:(id)arg2 completionBlock:(void)arg3;
 @property(readonly) NSURL *temporaryFileURL;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 
 @end
 
@@ -1990,7 +2087,7 @@ struct _NSRange {
 {
     IDEWorkspace *_workspace;
     NSMutableArray *_processWrappers;
-    NSMapTable *_launchSessionsProcessToObserverTokens;
+    DVTMapTable *_launchSessionsProcessToObserverTokens;
     id <DVTObservingToken> _launchSessionObserver;
 }
 
@@ -2027,38 +2124,36 @@ struct _NSRange {
 
 @end
 
-@interface DBGUnitTestLogProvider : DBGConsoleLogProvider <IDEOCUnitTestOutputParserDelegate>
+@interface DBGUnitTestLogProvider : IDELogProvider
 {
-    BOOL _isRunningUnitTests;
-    BOOL _isUnitTestSession;
-    NSMutableArray *_recorders;
-    NSString *_savedPartialContent;
-    IDETypeIdentifier *unitTestLogSectionDomainType;
-    IDEActivityLogSection *log;
-    IDEActivityLogUnitTestSection *logSection;
-    IDEOCUnitTestOutputParser *outputParser;
+    id <DVTObservingToken> _launchSessionsStateObserverToken;
+    id <DVTObservingToken> _launchSessionsConsoleAdaptorsObserverToken;
+    DVTMapTable *_terminationTokenForConsoleAdaptorTable;
+    DVTMapTable *_logSectionForLaunchSessionTable;
+    DVTMapTable *_consoleAdaptorsForLaunchSessionTable;
+    DVTMapTable *_activityLogSectionForLaunchSessionTable;
+    DVTMapTable *_parserStateForLaunchSessionTable;
+    IDELogStore *_logStore;
 }
 
++ (id)keyPathsForValuesAffectingLogRecords;
 + (id)_logStorePrefix;
-- (void)processConsoleText:(id)arg1;
-- (void)appendAndPropagateUpText:(id)arg1 startingWithRecorder:(id)arg2;
-- (void)testCaseDidProducePerformanceOutput:(id)arg1 rawOutput:(id)arg2;
-- (void)testCaseDidFailForTestClass:(id)arg1 method:(id)arg2 withMessage:(id)arg3 file:(id)arg4 line:(long long)arg5 rawOutput:(id)arg6;
-- (void)testCaseDidFinishForTestClass:(id)arg1 method:(id)arg2 withStatus:(id)arg3 duration:(double)arg4 rawOutput:(id)arg5;
-- (void)testCaseDidStartForTestClass:(id)arg1 method:(id)arg2 rawOutput:(id)arg3;
-- (void)testSuiteDidFinish:(id)arg1;
-- (void)testSuite:(id)arg1 willFinishAt:(id)arg2 rawOutput:(id)arg3;
-- (void)testSuite:(id)arg1 didStartAt:(id)arg2 rawOutput:(id)arg3;
-- (void)recorderWillFinish:(unsigned long long)arg1;
-- (void)testDidOutput:(id)arg1;
-- (void)testSuiteDidFinish:(long long)arg1 withFailures:(long long)arg2 unexpected:(long long)arg3 testDuration:(double)arg4 totalDuration:(double)arg5 rawOutput:(id)arg6;
-- (void)finishUnfinishedRecorder:(id)arg1;
-- (id)parentSection;
-- (id)currentSection;
-- (id)currentRecorder;
+- (void)processConsoleText:(id)arg1 onLaunchSession:(id)arg2;
+- (id)_parserStateForLaunchSession:(id)arg1;
+@property(readonly) IDEWorkspace *workspace;
+- (id)domainIdentifier;
+- (id)ideModelObjectTypeIdentifier;
 - (void)_handleConsoleItemAdded:(id)arg1;
 - (void)_handleConsoleAdaptorOutputTerminated:(id)arg1;
+- (void)_handleConsoleAdaptorRemoved:(id)arg1;
+- (void)_removeConsoleAdaptor:(id)arg1;
+- (void)_handleConsoleAdaptorAdded:(id)arg1;
+- (void)_handleConsoleAdaptorsChanged:(id)arg1 forLaunchSession:(id)arg2;
 - (void)_handleLaunchSessionStateChanged:(id)arg1;
+- (void)_handleLaunchSessionsChanged:(id)arg1;
+- (void)primitiveInvalidate;
+- (id)logRecords;
+- (BOOL)interestedInSchemeCommand:(int)arg1;
 - (id)initWithDomainItem:(id)arg1;
 
 @end
@@ -2099,6 +2194,214 @@ struct _NSRange {
 
 @end
 
+@interface DBGUnitTestParserPerSessionState : NSObject <IDEOCUnitTestOutputParserDelegate>
+{
+    IDEOCUnitTestOutputParser *_outputParser;
+    NSString *_savedPartialContent;
+    NSMutableArray *_recorders;
+    IDEActivityLogSectionRecorder *_sectionRecorder;
+}
+
+@property(retain, nonatomic) IDEActivityLogSectionRecorder *sectionRecorder; // @synthesize sectionRecorder=_sectionRecorder;
+@property(retain) NSMutableArray *recorders; // @synthesize recorders=_recorders;
+@property(copy) NSString *savedPartialContent; // @synthesize savedPartialContent=_savedPartialContent;
+@property(retain) IDEOCUnitTestOutputParser *outputParser; // @synthesize outputParser=_outputParser;
+- (void)appendAndPropagateUpText:(id)arg1 startingWithRecorder:(id)arg2;
+- (void)testCaseDidProducePerformanceOutput:(id)arg1 rawOutput:(id)arg2;
+- (void)testCaseDidFailForTestClass:(id)arg1 method:(id)arg2 withMessage:(id)arg3 file:(id)arg4 line:(long long)arg5 rawOutput:(id)arg6;
+- (void)testCaseDidFinishForTestClass:(id)arg1 method:(id)arg2 withStatus:(id)arg3 duration:(double)arg4 rawOutput:(id)arg5;
+- (void)testCaseDidStartForTestClass:(id)arg1 method:(id)arg2 rawOutput:(id)arg3;
+- (void)testSuiteDidFinish:(id)arg1;
+- (void)testSuite:(id)arg1 willFinishAt:(id)arg2 rawOutput:(id)arg3;
+- (void)testSuite:(id)arg1 didStartAt:(id)arg2 rawOutput:(id)arg3;
+- (void)recorderWillFinish:(unsigned long long)arg1;
+- (void)testDidOutput:(id)arg1;
+- (void)testSuiteDidFinish:(long long)arg1 withFailures:(long long)arg2 unexpected:(long long)arg3 testDuration:(double)arg4 totalDuration:(double)arg5 rawOutput:(id)arg6;
+- (void)finishUnfinishedRecorder:(id)arg1;
+- (void)handleOutputTerminated;
+- (id)effectiveRecorderForTestOutput;
+- (id)currentRecorder;
+- (void)popRecorder;
+- (void)pushRecorder:(id)arg1;
+
+@end
+
+@interface DBGDebugMenuController : NSObject <IDECommandHandler, IDECommandHandlerVendor>
+{
+    DBGTimerGroup *_startTimerGroup;
+    DBGTimerGroup *_endTimerGroup;
+    int _userSetShouldSupressStopDialog;
+}
+
++ (id)handlerForAction:(SEL)arg1 withSelectionSource:(id)arg2;
+- (void)debugSessionStressTest:(id)arg1;
+- (void)scheduleRunCommandsInTabController:(id)arg1 sender:(id)arg2;
+- (void)cancelScheduledRunCommands;
+- (void)willScheduleRunCommands;
+- (BOOL)shouldCancelScheduledRunCommands;
+- (id)tabControllerForCurrentWorkspaceDocument;
+- (BOOL)validateUserInterfaceItem:(id)arg1;
+
+@end
+
+@interface DBGTimerGroup : NSObject
+{
+    struct dispatch_semaphore_s *_outstandingTimersSemaphore;
+    struct dispatch_queue_s *_semaphoreQueue;
+    NSMutableArray *_outstandingTimerTokens;
+    BOOL _locked;
+}
+
+- (void)setCleanupBlock:(id)arg1;
+- (void)scheduleTimerWithTimeInterval:(double)arg1 handler:(id)arg2;
+- (void)invalidate;
+- (id)init;
+
+@end
+
+@interface DBGImageQuickLookProvider : NSViewController <IDEVariablesViewQuickLookProvider>
+{
+    int _loadedState;
+    id <DBGNSImageProvider> _nsImageProvider;
+    id <DVTObservingToken> _nsImageProviderObserver;
+    NSImageView *_imageView;
+    NSLayoutConstraint *_imageWidth;
+    NSLayoutConstraint *_imageHeight;
+}
+
+@property int loadedState; // @synthesize loadedState=_loadedState;
+- (void)writeAtomicallyToTemporaryFile:(id)arg1;
+@property(readonly) NSString *externalApplicationName;
+- (void)cancelLoading;
+@property(readonly) NSView *quickLookView;
+- (void)_updateImage:(id)arg1;
+- (void)loadView;
+- (id)initWithDataValue:(id)arg1 options:(id)arg2;
+
+@end
+
+@interface DBGNSStringQuickLookProvider : NSViewController <IDEVariablesViewQuickLookProvider>
+{
+    int _loadedState;
+    id <IDEDataValue> _dataValue;
+    DBGNSDataForDataValueProvider *_nsDataForDataValueProvider;
+    id <DVTObservingToken> _nsDataForDataValueProviderObserver;
+    NSTextView *_textView;
+}
+
+@property int loadedState; // @synthesize loadedState=_loadedState;
+- (void)writeAtomicallyToTemporaryFile:(id)arg1;
+@property(readonly) NSString *externalApplicationName;
+- (void)cancelLoading;
+@property(readonly) NSView *quickLookView;
+- (void)_updateTextViewFromData;
+- (void)loadView;
+- (id)initWithDataValue:(id)arg1 options:(id)arg2;
+
+@end
+
+@interface DBGNSDataForDataValueProvider : NSObject
+{
+    DBGDataValue *_dataValue;
+    NSString *_expressionResultingInNSData;
+    BOOL _hasDataBeenRetrieved;
+    NSData *_data;
+    BOOL _wasCancelled;
+    id <DVTCancellable> _cancellableMemoryReadToken;
+}
+
+@property(readonly) NSData *data; // @synthesize data=_data;
+@property(readonly) BOOL hasDataBeenRetrieved; // @synthesize hasDataBeenRetrieved=_hasDataBeenRetrieved;
+- (void)_dataWasFetched:(id)arg1;
+- (void)_failedToGetData;
+- (void)_readArchivedData:(id)arg1;
+- (void)_startRetrieval;
+- (void)cancel;
+@property(readonly) NSString *blockStartAddress;
+- (id)initWithDataValue:(id)arg1 expressionResultingInNSData:(id)arg2;
+- (id)initWithArchivableDataValue:(id)arg1;
+
+@end
+
+@interface DBGNSImageProviderForvImage_Buffer : NSObject <DBGNSImageProvider>
+{
+    DBGDataValue *_dataValue;
+    BOOL _hasImageBeenRetrieved;
+    NSImage *_image;
+    BOOL _wasCancelled;
+    unsigned long long _width;
+    unsigned long long _height;
+    unsigned long long _rowBytes;
+    DBGNSDataForDataValueProvider *_nsDataForDataValueProvider;
+    id <DVTObservingToken> _nsDataForDataValueProviderObserver;
+}
+
+@property(readonly) BOOL hasImageBeenRetrieved; // @synthesize hasImageBeenRetrieved=_hasImageBeenRetrieved;
+@property(readonly) NSImage *image; // @synthesize image=_image;
+- (void)_imageWasFetched:(id)arg1;
+- (void)_failedToGetData;
+- (void)_fetchUnsignedLongStructField:(id)arg1 completionHandler:(id)arg2;
+- (void)_retrieveData;
+- (void)_startRetrieval;
+- (void)cancel;
+- (id)blockStartAddress;
+- (id)initWithDataValue:(id)arg1 options:(id)arg2;
+
+@end
+
+@interface DBGNSImageProviderForNSDataExpression : NSObject <DBGNSImageProvider>
+{
+    DBGDataValue *_dataValue;
+    NSString *_rawImageDataProductionExpression;
+    BOOL _hasImageBeenRetrieved;
+    NSImage *_image;
+    BOOL _wasCancelled;
+    DBGNSDataForDataValueProvider *_nsDataForDataValueProvider;
+    id <DVTObservingToken> _nsDataForDataValueProviderObserver;
+}
+
+@property(readonly) BOOL hasImageBeenRetrieved; // @synthesize hasImageBeenRetrieved=_hasImageBeenRetrieved;
+@property(readonly) NSImage *image; // @synthesize image=_image;
+- (void)_imageWasFetched:(id)arg1;
+- (void)_failedToGetData;
+- (void)_startRetrieval;
+- (void)cancel;
+- (id)initWithDataValue:(id)arg1 options:(id)arg2;
+
+@end
+
+@interface DBGNSImageProviderForCGImage : NSObject <DBGNSImageProvider>
+{
+    DBGDataValue *_dataValue;
+    BOOL _hasImageBeenRetrieved;
+    NSImage *_image;
+    BOOL _wasCancelled;
+    unsigned long long _width;
+    unsigned long long _height;
+    unsigned long long _bitsPerComponent;
+    unsigned long long _bitsPerPixel;
+    unsigned long long _bytesPerRow;
+    NSString *_colorSpaceName;
+    unsigned int _bitmapInfo;
+    int _renderingIntent;
+    DBGNSDataForDataValueProvider *_nsDataForDataValueProvider;
+    id <DVTObservingToken> _nsDataForDataValueProviderObserver;
+}
+
+@property(readonly) BOOL hasImageBeenRetrieved; // @synthesize hasImageBeenRetrieved=_hasImageBeenRetrieved;
+@property(readonly) NSImage *image; // @synthesize image=_image;
+- (void)_imageWasFetched:(id)arg1;
+- (void)_failedToGetData;
+- (void)_fetchColorSpaceName:(id)arg1;
+- (void)_fetchValueFromCGFunction:(id)arg1 completionHandler:(id)arg2;
+- (void)_retrieveData;
+- (void)_startRetrieval;
+- (void)cancel;
+- (id)blockStartAddress;
+- (id)initWithDataValue:(id)arg1 options:(id)arg2;
+
+@end
+
 @interface DBGDebugSession (DBGDebugSessionNavigableItemPropertySupport)
 @property(readonly) NSArray *navigableProcesses;
 @end
@@ -2114,7 +2417,6 @@ struct _NSRange {
 
 @interface DBGStackFrame (DBGStackFrameNavigableItemPropertySupport)
 + (id)keyPathsForValuesAffectingNavigableItem_name;
-+ (id)stringInGrayColorFromString:(id)arg1;
 - (BOOL)isGroupHeader:(id)arg1;
 @property(readonly) NSImage *navigableItem_image;
 - (id)_createImageFromFilePath:(id)arg1 withRed:(float)arg2 green:(float)arg3 blue:(float)arg4 alpha:(float)arg5;
@@ -2177,9 +2479,5 @@ struct _NSRange {
 
 @interface DBGProcess (DBGProcessAdditions)
 @property(readonly) NSImage *image;
-@end
-
-@interface NSArray (UnitTestAdditions)
-- (id)penultimateObject;
 @end
 

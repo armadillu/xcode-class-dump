@@ -8,9 +8,9 @@
 
 /*
  * File: /Applications/Xcode.app/Contents/PlugIns/Xcode3Core.ideplugin/Contents/MacOS/Xcode3Core
- * UUID: E8F5EA69-BDD5-3198-B362-1F0987853C5F
+ * UUID: C1151F2D-9AB9-3009-9608-7CCEC81772D8
  * Arch: Intel x86-64 (x86_64)
- *       Current version: 1197.0.0, Compatibility version: 1.0.0
+ *       Current version: 2108.0.0, Compatibility version: 1.0.0
  *       Minimum Mac OS X version: 10.7.0
  *
  *       Objective-C Garbage Collection: Required
@@ -64,6 +64,9 @@
 - (Class)superclass;
 - (unsigned long long)hash;
 - (BOOL)isEqual:(id)arg1;
+
+@optional
+- (id)debugDescription;
 @end
 
 @protocol Xcode3ProjectCreationErrorHandling <NSObject>
@@ -74,6 +77,16 @@
 - (BOOL)shouldOpenProjectReadOnlyAtPath:(id)arg1;
 - (void)unableToOpenProjectAtPath:(id)arg1 reason:(id)arg2;
 - (BOOL)shouldOpenProjectOfMismatchingVersion:(unsigned long long)arg1 atPath:(id)arg2;
+@end
+
+@protocol __ARCLiteIndexedSubscripting__
+- (void)setObject:(id)arg1 atIndexedSubscript:(unsigned long long)arg2;
+- (id)objectAtIndexedSubscript:(unsigned long long)arg1;
+@end
+
+@protocol __ARCLiteKeyedSubscripting__
+- (void)setObject:(id)arg1 forKeyedSubscript:(id)arg2;
+- (id)objectForKeyedSubscript:(id)arg1;
 @end
 
 @interface Xcode3Core : NSObject
@@ -177,7 +190,7 @@
     NSString *_schemeName;
     NSString *_xcconfigPathFromOption;
     NSString *_xcconfigPathFromEnvVar;
-    NSString *_binaryNameToFind;
+    NSString *_nameOfFileToFind;
     NSMutableArray *_buildActions;
     Xcode3Project *_project;
     NSMutableArray *_targets;
@@ -190,6 +203,7 @@
     NSString *_baseSdkName;
     BOOL _parallelizeTargets;
     NSNumber *_maxConcurrency;
+    BOOL _dontActuallyRunCommands;
     NSMutableDictionary *_synthesizedProperties;
     NSMutableDictionary *_propertiesFromCommandLine;
     NSDictionary *_propertiesFromXcconfigOption;
@@ -197,12 +211,15 @@
     NSMutableDictionary *_userDefaults;
     NSOperationQueue *_buildToolQueue;
     id _containerDidOpenContainerNotificationObserver;
+    NSMutableArray *_toolchainNames;
 }
 
 + (id)sharedCommandLineBuildTool;
 + (id)workspaceFilesInDirectory:(id)arg1;
 + (id)knownWorkspaceWrapperExtensions;
 + (id)timingLogAspect;
+@property(retain) NSMutableArray *toolchainNames; // @synthesize toolchainNames=_toolchainNames;
+@property BOOL dontActuallyRunCommands; // @synthesize dontActuallyRunCommands=_dontActuallyRunCommands;
 @property(retain) NSOperationQueue *buildToolQueue; // @synthesize buildToolQueue=_buildToolQueue;
 @property(retain) NSMutableDictionary *userDefaults; // @synthesize userDefaults=_userDefaults;
 @property(retain) NSDictionary *propertiesFromXcconfigEnvVar; // @synthesize propertiesFromXcconfigEnvVar=_propertiesFromXcconfigEnvVar;
@@ -221,7 +238,7 @@
 @property(retain) NSMutableArray *targets; // @synthesize targets=_targets;
 @property(retain) Xcode3Project *project; // @synthesize project=_project;
 @property(retain) NSMutableArray *buildActions; // @synthesize buildActions=_buildActions;
-@property(copy) NSString *binaryNameToFind; // @synthesize binaryNameToFind=_binaryNameToFind;
+@property(copy) NSString *nameOfFileToFind; // @synthesize nameOfFileToFind=_nameOfFileToFind;
 @property(copy) NSString *xcconfigPathFromEnvVar; // @synthesize xcconfigPathFromEnvVar=_xcconfigPathFromEnvVar;
 @property(copy) NSString *xcconfigPathFromOption; // @synthesize xcconfigPathFromOption=_xcconfigPathFromOption;
 @property(copy) NSString *schemeName; // @synthesize schemeName=_schemeName;
@@ -242,9 +259,11 @@
 - (void)_printVerboseInfoForSDK:(id)arg1 keysToEmit:(id)arg2;
 - (void)_printShortSDKListAndExit;
 - (void)_enumerateAllPlatformsAlphabeticallyWithBlock:(id)arg1;
-- (void)_printPathToBinaryAndExit;
+- (void)_printPathToLibraryAndExit;
+- (void)_printPathToExecutableAndExit;
 - (void)_printContainerInformationAndExit;
 - (void)_printVersionInfoAndExit;
+- (void)_showBuildSettings;
 - (void)_build;
 - (void)unableToOpenProjectAtPath:(id)arg1 reason:(id)arg2;
 - (void)_workspace:(id)arg1 failedToResolveContainerForProjectFile:(id)arg2;
@@ -253,6 +272,8 @@
 - (void)_parseOptions;
 - (void)_printErrorString:(id)arg1 andFailWithCode:(long long)arg2;
 - (void)_printWarningString:(id)arg1;
+- (unsigned long long)_projectLoadingTimeout;
+- (unsigned long long)_schemeLoadingTimeout;
 - (id)overridingProperties;
 - (id)init;
 
@@ -271,6 +292,7 @@
 - (BOOL)isTTY;
 - (unsigned long long)promptForAgreement;
 - (void)printLicense;
+- (id)launchTaskAndReturnOutputForTaskPath:(id)arg1 taskArguments:(id)arg2;
 - (BOOL)displayLicenseHasAgreed:(BOOL)arg1;
 - (const char *)getLicensePath;
 - (id)initWithXcodeBundle:(id)arg1;

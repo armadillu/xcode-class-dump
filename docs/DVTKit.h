@@ -106,9 +106,9 @@ typedef struct {
 
 /*
  * File: /Applications/Xcode.app/Contents/SharedFrameworks/DVTKit.framework/Versions/A/DVTKit
- * UUID: 9BB834DC-BA77-3933-B7E5-5CFA69FADA1E
+ * UUID: 8B0C30FF-D260-392C-84BF-7DA36CC775DA
  * Arch: Intel x86-64 (x86_64)
- *       Current version: 1174.0.0, Compatibility version: 1.0.0
+ *       Current version: 2076.0.0, Compatibility version: 1.0.0
  *       Minimum Mac OS X version: 10.7.0
  *
  *       Objective-C Garbage Collection: Required
@@ -119,7 +119,7 @@ typedef struct {
 - (void)didInsertAnnotations:(id)arg1;
 @end
 
-@protocol DVTCancellableToken <NSObject>
+@protocol DVTCancellable <NSObject>
 @property(readonly, getter=isCancelled) BOOL cancelled;
 - (void)cancel;
 @end
@@ -148,12 +148,18 @@ typedef struct {
 @protocol DVTCompletingTextViewDelegate <NSTextViewDelegate>
 
 @optional
+- (void)setupTextViewContextMenuWithMenu:(id)arg1;
 - (BOOL)completingTextViewHandleCancel:(id)arg1;
 - (unsigned long long)textView:(id)arg1 lineEndingForWritingSelectionToPasteboard:(id)arg2 type:(id)arg3;
 - (unsigned long long)textView:(id)arg1 lineEndingForReadingSelectionFromPasteboard:(id)arg2 type:(id)arg3;
 - (void)textView:(id)arg1 layoutManager:(id)arg2 didLayoutGlyphsUpToCharacterIndex:(unsigned long long)arg3;
 - (id)completingTextView:(id)arg1 documentLocationForWordStartLocation:(unsigned long long)arg2;
 - (void)completingTextView:(id)arg1 willPassContextToStrategies:(id)arg2 atWordStartLocation:(unsigned long long)arg3;
+@end
+
+@protocol DVTControllerContentViewViewControllerAdditions
+- (void)_willUninstallContentView:(id)arg1;
+- (void)_didInstallContentView:(id)arg1;
 @end
 
 @protocol DVTDelayedMenuButtonDelegate <NSObject>
@@ -192,6 +198,30 @@ typedef struct {
 - (void)filteringSearchView:(id)arg1 makeSearchFieldKey:(id)arg2;
 @end
 
+@protocol DVTFindPatternField <NSObject>
+@property id <DVTFindPatternManager> findPatternManager;
+- (id)menuForFindPatternAttachment:(id)arg1;
+- (id)plainTextValue;
+- (void)setFindPatternPropertyList:(id)arg1;
+- (id)findPatternPropertyList;
+- (BOOL)hasFindPattern;
+- (id)replacementExpression;
+- (id)regularExpression;
+- (id)findPatternArray;
+- (void)setFindPatternArray:(id)arg1;
+- (void)insertNewFindPattern:(id)arg1;
+- (BOOL)removeFindPattern:(id)arg1;
+@end
+
+@protocol DVTFindPatternManager <NSObject>
+- (id)replaceFieldForField:(id)arg1;
+- (id)findFieldForField:(id)arg1;
+
+@optional
+- (BOOL)supportsPatterns;
+- (void)findPatternField:(id)arg1 findPatternDoubleClicked:(id)arg2;
+@end
+
 @protocol DVTFontTextFieldDataSource <NSObject>
 - (BOOL)fontTextField:(id)arg1 value:(id)arg2 isEqualToValue:(id)arg3;
 - (id)fontTextField:(id)arg1 displaySizeForValue:(id)arg2;
@@ -220,14 +250,30 @@ typedef struct {
 - (id)validateFontValue:(id)arg1;
 @end
 
+@protocol DVTGradientStyleButton <NSObject>
+@property int borderSides;
+@property int gradientStyle;
+@end
+
 @protocol DVTInvalidation <NSObject>
 @property(readonly) DVTStackBacktrace *invalidationBacktrace;
 @property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (void)invalidate;
 @end
 
+@protocol DVTInvalidation_New <DVTInvalidation>
+@property(retain) DVTStackBacktrace *creationBacktrace;
+- (void)primitiveInvalidate;
+@end
+
 @protocol DVTIssueDisplayingView <NSObject>
 @property(copy) NSDictionary *issueInfoDictionary;
+@end
+
+@protocol DVTLayoutManagerDelegate <NSLayoutManagerDelegate>
+
+@optional
+- (id)layoutManager:(id)arg1 shouldUseTextBackgroundColor:(id)arg2 rectArray:(struct CGRect *)arg3 count:(unsigned long long)arg4 forCharacterRange:(struct _NSRange)arg5;
 @end
 
 @protocol DVTMorphingDragImageDropTarget <NSObject>
@@ -241,7 +287,7 @@ typedef struct {
 - (long long)nodeTypeForTokenizableItem:(id)arg1;
 @end
 
-@protocol DVTObservingToken <DVTCancellableToken>
+@protocol DVTObservingToken <DVTCancellable>
 @end
 
 @protocol DVTPlistOutlineViewDelegate <NSOutlineViewDelegate>
@@ -342,7 +388,7 @@ typedef struct {
 - (id)string;
 
 @optional
-- (void)scheduleLazyInvalidationForRange:(struct _NSRange)arg1;
+- (void)scheduleLazyInvalidationForRange:(struct _NSRange)arg1 displayOnly:(BOOL)arg2;
 - (id)stringForItem:(id)arg1;
 - (id)language;
 @end
@@ -373,10 +419,8 @@ typedef struct {
 
 @optional
 - (id)textViewWillReturnPrintJobTitle:(id)arg1;
-- (id)cursorForAltTemporaryLink;
 - (void)textViewDidScroll:(id)arg1;
 - (void)setupGutterContextMenuWithMenu:(id)arg1;
-- (void)setupTextViewContextMenuWithMenu:(id)arg1;
 - (void)tokenizableItemsForItemAtRealRange:(struct _NSRange)arg1 completionBlock:(id)arg2;
 - (void)textViewDidFinishAnimatingScroll:(id)arg1;
 - (void)textViewDidLoadAnnotationProviders:(id)arg1;
@@ -454,18 +498,23 @@ typedef struct {
 - (void)completionsChangedForDataSource:(id)arg1;
 @end
 
-@protocol DVTTextCompletionItem
+@protocol DVTTextCompletionItem <NSObject>
 @property(readonly) BOOL notRecommended;
-@property long long priority;
+@property double priority;
 @property(readonly) NSImage *icon;
 @property(readonly) NSAttributedString *descriptionText;
+@property(readonly) NSString *parentText;
 @property(readonly) NSString *completionText;
 @property(readonly) NSString *displayType;
 @property(readonly) NSString *displayText;
 @property(readonly) NSString *name;
 
 @optional
-- (void)infoViewController:(id)arg1;
+@property(readonly) NSImage *highlightedStatusIcon;
+@property(readonly) NSImage *statusIcon;
+@property(readonly) NSArray *additionalCompletions;
+@property(readonly) int completionItemStyle;
+- (void)infoViewControllerWithWidth:(double)arg1 context:(id)arg2 completionBlock:(id)arg3;
 @end
 
 @protocol DVTTextFindable <NSObject>
@@ -479,7 +528,12 @@ typedef struct {
 - (BOOL)replaceFindResults:(id)arg1 withString:(id)arg2 withError:(id *)arg3;
 
 @optional
+- (BOOL)replaceFindResults:(id)arg1 inSelection:(struct _NSRange)arg2 withString:(id)arg3 withError:(id *)arg4;
 - (BOOL)replaceTextWithContentsOfURL:(id)arg1 error:(id *)arg2;
+@end
+
+@protocol DVTTextlikeFindDescriptor <NSObject>
+@property(readonly) int matchStyle;
 @end
 
 @protocol DVTWindowActivationStateObserver <NSObject>
@@ -575,6 +629,9 @@ typedef struct {
 - (Class)superclass;
 - (unsigned long long)hash;
 - (BOOL)isEqual:(id)arg1;
+
+@optional
+- (id)debugDescription;
 @end
 
 @protocol NSOutlineViewDataSource <NSObject>
@@ -646,6 +703,9 @@ typedef struct {
 - (struct CGPoint)mouseLocationInContentAreaForScrollerImpPair:(id)arg1;
 - (BOOL)inLiveResizeForScrollerImpPair:(id)arg1;
 - (struct CGRect)contentAreaRectForScrollerImpPair:(id)arg1;
+
+@optional
+- (BOOL)scrollerImpPair:(id)arg1 isContentPointVisible:(struct CGPoint)arg2;
 @end
 
 @protocol NSSplitViewDelegate <NSObject>
@@ -752,6 +812,7 @@ typedef struct {
 - (void)textView:(id)arg1 doubleClickedOnCell:(id)arg2 inRect:(struct CGRect)arg3;
 - (void)textView:(id)arg1 clickedOnCell:(id)arg2 inRect:(struct CGRect)arg3;
 - (BOOL)textView:(id)arg1 clickedOnLink:(id)arg2;
+- (id)textView:(id)arg1 willShowSharingServicePicker:(id)arg2 forItems:(id)arg3;
 - (id)textView:(id)arg1 URLForContentsOfTextAttachment:(id)arg2 atIndex:(unsigned long long)arg3;
 - (id)textView:(id)arg1 didCheckTextInRange:(struct _NSRange)arg2 types:(unsigned long long)arg3 options:(id)arg4 results:(id)arg5 orthography:(id)arg6 wordCount:(long long)arg7;
 - (id)textView:(id)arg1 willCheckTextInRange:(struct _NSRange)arg2 options:(id)arg3 types:(unsigned long long *)arg4;
@@ -794,6 +855,7 @@ typedef struct {
 - (void)windowWillStartLiveResize:(id)arg1;
 - (void)windowDidEndSheet:(id)arg1;
 - (void)windowWillBeginSheet:(id)arg1;
+- (void)windowDidChangeBackingProperties:(id)arg1;
 - (void)windowDidChangeScreenProfile:(id)arg1;
 - (void)windowDidChangeScreen:(id)arg1;
 - (void)windowDidUpdate:(id)arg1;
@@ -862,6 +924,16 @@ typedef struct {
 @optional
 @property(readonly) id previewItemDisplayState;
 @property(readonly) NSString *previewItemTitle;
+@end
+
+@protocol __ARCLiteIndexedSubscripting__
+- (void)setObject:(id)arg1 atIndexedSubscript:(unsigned long long)arg2;
+- (id)objectAtIndexedSubscript:(unsigned long long)arg1;
+@end
+
+@protocol __ARCLiteKeyedSubscripting__
+- (void)setObject:(id)arg1 forKeyedSubscript:(id)arg2;
+- (id)objectForKeyedSubscript:(id)arg1;
 @end
 
 @interface DVTTextCompletionListIconCell : NSImageCell
@@ -967,19 +1039,18 @@ typedef struct {
 
 @interface DVTBindingInfo : NSObject
 {
-    id _observedObject;
+    id _observedObject_dvtWeak;
     NSString *_observedKeyPath;
     NSDictionary *_bindingOptions;
-    NSDictionary *_infoDictionary;
     NSString *_modelKeyPath;
 }
 
 @property(readonly) NSDictionary *bindingOptions; // @synthesize bindingOptions=_bindingOptions;
 @property(readonly) NSString *observedKeyPath; // @synthesize observedKeyPath=_observedKeyPath;
-@property(readonly) id observedObject; // @synthesize observedObject=_observedObject;
 - (id)_modelKeyPath;
 - (id)_infoDictionary;
 - (id)initWithObservedObject:(id)arg1 observedKeyPath:(id)arg2 bindingOptions:(id)arg3;
+@property __weak id observedObject;
 
 @end
 
@@ -996,7 +1067,7 @@ typedef struct {
 
 @interface DVTBindingHelper : NSObject
 {
-    id _owner;
+    id _owner_dvtWeak;
     NSMutableDictionary *_bindingInfo;
     NSString *_ignoredBinding;
 }
@@ -1004,6 +1075,9 @@ typedef struct {
 + (id)dvtValueTransformerFromOptions:(id)arg1;
 + (BOOL)isRunningInInterfaceBuilder;
 + (void)setIsRunningInInterfaceBuilder;
++ (void)initialize;
+- (void)rebind:(id)arg1;
+- (id)unbindForKeyPathsBeginningWithPrefix:(id)arg1;
 - (void)didEndEditingForBinding:(id)arg1;
 - (void)willBeginEditingForBinding:(id)arg1;
 - (BOOL)validateValue:(id *)arg1 forBinding:(id)arg2 error:(id *)arg3;
@@ -1021,7 +1095,10 @@ typedef struct {
 - (struct objc_method *)_methodForUpdateFromBinding:(id)arg1;
 - (id)description;
 - (void)unbindAll;
+- (void)dealloc;
 - (id)initWithOwner:(id)arg1;
+- (void)setOwner:(id)arg1;
+- (id)owner;
 
 @end
 
@@ -1045,7 +1122,7 @@ typedef struct {
     DVTExtension *_controllerExtension;
     DVTViewController *_installedViewController;
     id _forwardedBindingInfo;
-    id <DVTReplacementViewDelegate> _delegate;
+    id <DVTReplacementViewDelegate> _delegate_dvtWeak;
     int _horizontalContentViewResizingMode;
     int _verticalContentViewResizingMode;
     struct {
@@ -1065,7 +1142,6 @@ typedef struct {
 @property(nonatomic) Class controllerClass; // @synthesize controllerClass=_controllerClass;
 @property(nonatomic) int verticalContentViewResizingMode; // @synthesize verticalContentViewResizingMode=_verticalContentViewResizingMode;
 @property(nonatomic) int horizontalContentViewResizingMode; // @synthesize horizontalContentViewResizingMode=_horizontalContentViewResizingMode;
-@property(retain, nonatomic) id <DVTReplacementViewDelegate> delegate; // @synthesize delegate=_delegate;
 - (void)discardEditing;
 - (BOOL)commitEditingForAction:(int)arg1 errors:(id)arg2;
 - (void)updateBoundControllerExtensionIdentifier;
@@ -1097,23 +1173,18 @@ typedef struct {
 - (void)awakeFromNib;
 - (void)encodeWithCoder:(id)arg1;
 - (id)initWithCoder:(id)arg1;
+@property(nonatomic) __weak id <DVTReplacementViewDelegate> delegate;
 - (id)accessibilityAttributeValue:(id)arg1;
 - (BOOL)accessibilityIsIgnored;
 
 @end
 
-@interface DVTTextCompletionScrollView : DVTHUDScrollView
-{
-}
-
-- (id)initWithFrame:(struct CGRect)arg1;
-
-@end
-
-@interface DVTViewController : NSViewController <DVTEditor>
+@interface DVTViewController : NSViewController <DVTControllerContentViewViewControllerAdditions, DVTEditor>
 {
     DVTExtension *_representedExtension;
     BOOL _isViewLoaded;
+    BOOL _viewDidInstallWasSuccessfullyPropagated;
+    BOOL _viewWillUninstallWasSuccessfullyPropagated;
 }
 
 + (id)defaultViewNibBundle;
@@ -1121,6 +1192,8 @@ typedef struct {
 @property(retain, nonatomic) DVTExtension *representedExtension; // @synthesize representedExtension=_representedExtension;
 @property BOOL isViewLoaded; // @synthesize isViewLoaded=_isViewLoaded;
 - (BOOL)commitEditingForAction:(int)arg1 errors:(id)arg2;
+- (void)_willUninstallContentView:(id)arg1;
+- (void)_didInstallContentView:(id)arg1;
 - (void)viewWillUninstall;
 - (void)viewDidInstall;
 - (void)loadView;
@@ -1136,11 +1209,30 @@ typedef struct {
 
 @end
 
+@interface DVTInvalidatableViewController : DVTViewController <DVTInvalidation_New>
+{
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
+}
+
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
+@property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
+- (void)primitiveInvalidate;
+- (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
+
+@end
+
 @interface DVTControllerContentView : DVTLayoutView_ML
 {
     struct CGSize _minContentFrameSize;
     struct CGSize _maxContentFrameSize;
-    DVTViewController *_viewController;
+    DVTViewController *_viewController_dvtWeak;
     NSWindow *_kvoWindow;
     int _horizontalAlignmentWhenClipping;
     int _horizontalAlignmentWhenPadding;
@@ -1165,7 +1257,6 @@ typedef struct {
 @property(nonatomic) int verticalAlignmentWhenPadding; // @synthesize verticalAlignmentWhenPadding=_verticalAlignmentWhenPadding;
 @property(nonatomic) int horizontalAlignmentWhenPadding; // @synthesize horizontalAlignmentWhenPadding=_horizontalAlignmentWhenPadding;
 @property(nonatomic) struct CGSize maximumContentViewFrameSize; // @synthesize maximumContentViewFrameSize=_maxContentFrameSize;
-@property(retain, nonatomic) DVTViewController *viewController; // @synthesize viewController=_viewController;
 - (BOOL)performKeyEquivalent:(id)arg1;
 - (void)_invalidateLayoutBecauseOfSubviewFrameChange:(id)arg1;
 - (void)willRemoveSubview:(id)arg1;
@@ -1185,6 +1276,7 @@ typedef struct {
 - (void)layoutBottomUp;
 - (void)layoutTopDown;
 - (void)setNextResponder:(id)arg1;
+@property(retain, nonatomic) DVTViewController *viewController;
 - (void)_checkKvoWindow;
 @property(readonly) NSWindow *kvoWindow;
 - (id)initWithFrame:(struct CGRect)arg1;
@@ -1193,11 +1285,12 @@ typedef struct {
 
 @end
 
-@interface DVTComparisonSplitView : NSSplitView
+@interface DVTComparisonSplitView : NSSplitView <NSMenuDelegate>
 {
     NSIndexSet *_depressedDiffDescriptorIndexes;
     NSTrackingArea *_trackingArea;
     struct CGRect *_switchRectArray;
+    struct CGRect *_menuRectArray;
     DVTPointerArray *_swoops;
     NSArray *_diffDescriptors;
     NSIndexSet *_modifiedDiffDescriptorIndexes;
@@ -1206,6 +1299,7 @@ typedef struct {
     NSIndexSet *_selectedDiffDescriptorIndexes;
     NSIndexSet *_toggledDiffDescriptorIndexes;
     int _style;
+    NSMenu *_diffMenu;
     BOOL _depressed;
     BOOL _selected;
     BOOL _selecting;
@@ -1214,8 +1308,14 @@ typedef struct {
     BOOL _isBinaryComparison;
     BOOL _isSettingSelectedIndexBinding;
     BOOL _isSplitterMovable;
+    BOOL _hasFocus;
+    id <DVTObservingToken> _firstResponderToken;
+    BOOL _enableDiffToggles;
 }
 
++ (id)diffButtonMenuImage;
++ (id)diffButtonCheckImage;
++ (id)diffButtonUncheckImage;
 + (id)unsetImage;
 + (id)neitherArrowImage;
 + (id)rightLeftArrowImage;
@@ -1228,13 +1328,16 @@ typedef struct {
 + (id)splitterSelectedImage;
 + (double)defaultSplitterWidthForStyle:(int)arg1;
 + (void)initialize;
+@property(retain) NSMenu *diffMenu; // @synthesize diffMenu=_diffMenu;
+@property BOOL hasFocus; // @synthesize hasFocus=_hasFocus;
+@property BOOL enableDiffToggles; // @synthesize enableDiffToggles=_enableDiffToggles;
 @property BOOL isSplitterMovable; // @synthesize isSplitterMovable=_isSplitterMovable;
 @property(retain) NSArray *diffDescriptors; // @synthesize diffDescriptors=_diffDescriptors;
 @property BOOL depressed; // @synthesize depressed=_depressed;
 - (void)viewFrameDidChange:(id)arg1;
 - (void)layoutManagerDidCompleteLayoutForTextContainer:(id)arg1;
 - (void)_validateCurrentSelectedIndex;
-- (void)_offsetCurrentSelectedIndexBy:(long long)arg1;
+- (void)offsetCurrentSelectedIndexBy:(long long)arg1;
 - (void)updateTrackingAreas;
 - (void)mouseExited:(id)arg1;
 - (void)mouseEntered:(id)arg1;
@@ -1260,16 +1363,23 @@ typedef struct {
 - (id)dvtExtraBindings;
 - (void)resetCursorRects;
 - (BOOL)acceptsFirstResponder;
+- (void)scrollWheel:(id)arg1;
 - (void)keyDown:(id)arg1;
 - (void)mouseUp:(id)arg1;
+- (void)_toggleDiffDescriptorAtIndex:(unsigned long long)arg1;
 - (id)_getNextResizeEventInvalidatingLiveResizeCacheIfNecessary:(id)arg1;
 - (void)mouseDragged:(id)arg1;
+- (void)menuDidClose:(id)arg1;
 - (void)mouseDown:(id)arg1;
 - (void)setFrame:(struct CGRect)arg1;
 - (void)_setSelectedDescriptorMergeDirection:(int)arg1;
 - (unsigned long long)_hitTestSwoopLocation:(struct CGPoint)arg1;
+- (unsigned long long)_hitTestMenuLocation:(struct CGPoint)arg1;
 - (unsigned long long)_hitTestLocation:(struct CGPoint)arg1;
+- (void)removeFromSuperview;
+- (void)viewDidMoveToWindow;
 - (struct CGRect)_firstDividerFrame;
+- (void)finalize;
 - (void)_dvtcomparisonsplitview_commonInit;
 - (id)initWithCoder:(id)arg1;
 - (id)initWithFrame:(struct CGRect)arg1;
@@ -1323,13 +1433,15 @@ typedef struct {
 + (void)_doRecursivelyLayoutSubviewsOfView:(id)arg1 populatingSetWithLaidOutViews:(id)arg2 completionCallBackHandlers:(id)arg3;
 + (void)scheduleWindowForLayout:(id)arg1;
 + (id)alreadyLaidOutViewsForCurrentDisplayPassOfWindow:(id)arg1;
-+ (id)validatorForWindow:(id)arg1;
 @property(getter=isLayoutNeeded) BOOL layoutNeeded; // @synthesize layoutNeeded=_layoutNeeded;
 - (BOOL)wantsDefaultClipping;
 - (void)stopInvalidatingLayoutWithChangesToKeyPath:(id)arg1 ofObject:(id)arg2;
 - (void)invalidateLayoutWithChangesToKeyPath:(id)arg1 ofObject:(id)arg2;
 - (void)_autoLayoutViewViewFrameDidChange:(id)arg1;
+- (void)_autoLayoutViewViewBoundsDidChange:(id)arg1;
+- (void)stopInvalidatingLayoutWithBoundsChangesToView:(id)arg1;
 - (void)stopInvalidatingLayoutWithFrameChangesToView:(id)arg1;
+- (void)invalidateLayoutWithBoundsChangesToView:(id)arg1;
 - (void)invalidateLayoutWithFrameChangesToView:(id)arg1;
 - (void)setFrameSize:(struct CGSize)arg1;
 - (void)didCompleteLayout;
@@ -1346,10 +1458,11 @@ typedef struct {
 - (id)initWithCoder:(id)arg1;
 - (id)initWithFrame:(struct CGRect)arg1;
 - (void)_DVTLayoutView_MLSharedInit;
+- (void)dealloc;
 
 @end
 
-@interface DVTLayoutView_MLObservanceKey : NSObject
+@interface DVTLayoutView_MLObservanceKey : NSObject <NSCopying>
 {
     id object;
     NSString *keyPath;
@@ -1398,7 +1511,7 @@ typedef struct {
 
 @end
 
-@interface DVTDiffSession : NSObject <DVTInvalidation>
+@interface DVTDiffSession : NSObject <DVTInvalidation_New>
 {
     DVTDiffContext *_diffContext;
     id <DVTObservingToken> _diffContextObservingToken;
@@ -1406,8 +1519,10 @@ typedef struct {
     NSIndexSet *_commonDescriptorIndexes;
     NSIndexSet *_modifiedDescriptorIndexes;
     NSString *_diffString;
-    DVTStackBacktrace *_invalidationBacktrace;
     unsigned long long _selectedDiffDescriptorIndex;
+    NSMutableIndexSet *_toggledDiffDescriptorIndexes;
+    NSMutableArray *_lastToggledDiffDescriptors;
+    unsigned long long _lastNumberOfModifiedDescriptors;
     unsigned long long _timestamp;
     id <DVTDiffSessionDelegate> _delegate;
     NSUndoManager *_undoManager;
@@ -1422,20 +1537,38 @@ typedef struct {
     DVTDiffDataSource *_modifiedDataSource;
     DVTDiffDataSource *_originalDataSource;
     int _needsUpdate;
-    BOOL _isInvalidated;
     BOOL _inMergeEdit;
     BOOL _isBinaryConflictResolution;
+    BOOL _isCalculatingInitialDiffs;
+    BOOL _enableDiffToggles;
+    BOOL _diffDescriptorsShouldAppearAsDisabled;
+    BOOL _diffDescriptorsShouldAppearAsInactive;
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
 + (void)setUsesPatienceDiffingAlgorithm:(BOOL)arg1;
 + (BOOL)usesPatienceDiffingAlgorithm;
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
 + (id)binaryConflictDetectionForOriginalDataSource:(id)arg1 modifiedDataSource:(id)arg2 ancestorDataSource:(id)arg3;
++ (BOOL)hasToggledDiffDescriptorsInMergeState:(id)arg1;
++ (BOOL)isMultiDiffSelectionMergeState:(id)arg1;
 + (int)binaryConflictMergeDirection:(id)arg1;
 + (BOOL)isBinaryConflictResolutionMergeState:(id)arg1;
 + (void)_validateRestoredState:(id)arg1;
 + (id)keyPathsForValuesAffectingSelectedMergeDescriptor;
 + (id)keyPathsForValuesAffectingIsThreeWayDiff;
 + (id)logAspect;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
+@property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
+@property BOOL diffDescriptorsShouldAppearAsInactive; // @synthesize diffDescriptorsShouldAppearAsInactive=_diffDescriptorsShouldAppearAsInactive;
+@property BOOL diffDescriptorsShouldAppearAsUnfocused; // @synthesize diffDescriptorsShouldAppearAsUnfocused=_diffDescriptorsShouldAppearAsDisabled;
+@property BOOL enableDiffToggles; // @synthesize enableDiffToggles=_enableDiffToggles;
+@property(retain, nonatomic) NSIndexSet *toggledDiffDescriptorIndexes; // @synthesize toggledDiffDescriptorIndexes=_toggledDiffDescriptorIndexes;
+@property BOOL isCalculatingInitialDiffs; // @synthesize isCalculatingInitialDiffs=_isCalculatingInitialDiffs;
 @property BOOL isBinaryConflictResolution; // @synthesize isBinaryConflictResolution=_isBinaryConflictResolution;
 @property(retain) NSData *mergeTextDigest; // @synthesize mergeTextDigest=_mergeTextDigest;
 @property(readonly) DVTDiffDataSource *originalDataSource; // @synthesize originalDataSource=_originalDataSource;
@@ -1447,7 +1580,6 @@ typedef struct {
 @property(retain) id <DVTDiffSessionDelegate> delegate; // @synthesize delegate=_delegate;
 @property unsigned long long timestamp; // @synthesize timestamp=_timestamp;
 @property(retain) NSString *diffString; // @synthesize diffString=_diffString;
-@property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 @property unsigned long long selectedDiffDescriptorIndex; // @synthesize selectedDiffDescriptorIndex=_selectedDiffDescriptorIndex;
 @property(retain) NSIndexSet *modifiedDescriptorIndexes; // @synthesize modifiedDescriptorIndexes=_modifiedDescriptorIndexes;
 @property(retain) NSIndexSet *commonDescriptorIndexes; // @synthesize commonDescriptorIndexes=_commonDescriptorIndexes;
@@ -1455,26 +1587,33 @@ typedef struct {
 @property(retain) DVTDiffContext *diffContext; // @synthesize diffContext=_diffContext;
 - (void)_incrementTimestamp;
 - (void)refresh;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 @property(readonly) BOOL mergeIsDirty;
 @property(readonly) NSDictionary *restoredState; // @dynamic restoredState;
 @property(retain) NSArray *mergeDescriptors; // @synthesize mergeDescriptors=_mergeDescriptors;
 @property(readonly) DVTDiffDescriptor *selectedMergeDescriptor;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
 @property(readonly) BOOL isThreeWayDiff;
 - (void)_rebuildSubdescriptors;
-- (void)_loadDataSourcesWithOriginalDataSource:(id)arg1 modifiedDataSource:(id)arg2 ancestorDataSource:(id)arg3;
+- (void)_loadDataSourcesWithOriginalDataSource:(id)arg1 modifiedDataSource:(id)arg2 ancestorDataSource:(id)arg3 restoringState:(BOOL)arg4;
+- (void)_fixToggledDiffDescriptorIndexes;
+- (long long)compareDiffDescriptors:(id)arg1 rightDescriptor:(id)arg2;
+- (void)removeToggledDiffDescriptorIndex:(unsigned long long)arg1;
+- (void)addToggledDiffDescriptorIndex:(unsigned long long)arg1;
+- (void)revertDiffDescriptorIndex:(unsigned long long)arg1 withPrimaryTextStorage:(id)arg2 undoManager:(id)arg3;
 - (void)_updateMergeDocumentForChangedDescriptor:(id)arg1;
 - (id)_buildMergeStringAndDescriptors:(id *)arg1 withMergeTextDigest:(id *)arg2;
-- (void)_handleMergeEdit;
 - (void)_scrapeDiffResults;
 - (void)_oneShotDiffAndScrapeResults;
 - (void)_updateConflictCount;
 - (void)_loadPreviousMergeSession:(id)arg1;
 - (void)_setupBinaryMergeSession;
 - (void)_switchDiffingEngine;
+@property BOOL ignoreWhitespace;
 - (id)initWithOriginalDataSource:(id)arg1 modifiedDataSource:(id)arg2 ancestorDataSource:(id)arg3 undoManager:(id)arg4 mergeTextStorage:(id)arg5 mergeState:(id)arg6;
-- (id)initWithOriginalDataSource:(id)arg1 modifiedDataSource:(id)arg2 ancestorDataSource:(id)arg3;
+- (id)initWithOriginalDataSource:(id)arg1 modifiedDataSource:(id)arg2 ancestorDataSource:(id)arg3 mergeState:(id)arg4;
 - (id)initWithBinaryConflictResolutionMergeState:(id)arg1;
 - (id)initWithOriginalBinaryDataSource:(id)arg1 modifiedBinaryDataSource:(id)arg2 ancestorBinaryDataSource:(id)arg3;
 
@@ -1619,6 +1758,8 @@ typedef struct {
 - (id)_attributedStringWithString:(id)arg1 font:(id)arg2 foregroundColor:(id)arg3;
 - (struct CGSize)cellSize;
 - (struct CGRect)statusRectForBounds:(struct CGRect)arg1;
+- (id)statusCellsRectsForBounds:(struct CGRect)arg1;
+- (struct CGRect)_statusCellsRectsForBounds:(struct CGRect)arg1 rects:(id)arg2;
 - (struct CGRect)progressIndicatorRectForBounds:(struct CGRect)arg1;
 - (struct CGRect)subtitleRectForBounds:(struct CGRect)arg1;
 - (struct CGRect)titleRectForBounds:(struct CGRect)arg1;
@@ -1630,6 +1771,8 @@ typedef struct {
 - (struct CGRect)expansionFrameWithFrame:(struct CGRect)arg1 inView:(id)arg2;
 - (struct CGRect)_textFrameForSelectingOrEditingWithFrame:(struct CGRect)arg1 inView:(id)arg2;
 - (struct CGRect)_layoutFrameForCellFrame:(struct CGRect)arg1;
+- (void)mouseEntered:(id)arg1;
+- (void)mouseExited:(id)arg1;
 - (BOOL)trackMouse:(id)arg1 inRect:(struct CGRect)arg2 ofView:(id)arg3 untilMouseUp:(BOOL)arg4;
 - (unsigned long long)hitTestForEvent:(id)arg1 inRect:(struct CGRect)arg2 ofView:(id)arg3;
 - (void)selectWithFrame:(struct CGRect)arg1 inView:(id)arg2 editor:(id)arg3 delegate:(id)arg4 start:(long long)arg5 length:(long long)arg6;
@@ -1649,6 +1792,7 @@ typedef struct {
 - (id)bindingHelper;
 - (id)dvtExtraBindings;
 - (id)copyWithZone:(struct _NSZone *)arg1;
+- (void)dealloc;
 - (id)initWithCoder:(id)arg1;
 - (id)initImageCell:(id)arg1;
 - (id)initTextCell:(id)arg1;
@@ -1774,7 +1918,9 @@ typedef struct {
 @property(readonly) NSGradient *buttonSeparatorGradient;
 @property(readonly) NSGradient *pathSeparatorHighlightGradient;
 @property(readonly) NSGradient *pathSeparatorGradient;
+@property(readonly) NSImage *ideProjectIcon;
 @property(readonly) NSImage *filterFieldImage;
+@property(readonly) NSImage *toolbarButtonViewRevisionImage;
 @property(readonly) NSImage *toolbarButtonSwitchBranchImage;
 @property(readonly) NSImage *toolbarButtonScreenshotImage;
 @property(readonly) NSImage *toolbarButtonRestoreSnapshotImage;
@@ -1797,7 +1943,6 @@ typedef struct {
 @property(readonly) NSImage *roundDeleteButton;
 @property(readonly) NSImage *roundAddButton;
 @property(readonly) NSImage *smallPullDownArrow;
-@property(readonly) NSImage *pullDownArrow;
 @property(readonly) NSImage *statusClearImage;
 @property(readonly) NSImage *statusIndeterminateImage;
 @property(readonly) NSImage *statusUnavailableImage;
@@ -1822,8 +1967,6 @@ typedef struct {
 @property(readonly) NSImage *smallDarkCheckmarkImage;
 @property(readonly) NSImage *grayActionMenuImage;
 @property(readonly) NSImage *splitGrabberImage;
-@property(readonly) NSImage *placeholderImage;
-@property(readonly) NSImage *empty16by16Image;
 @property(readonly) double splitViewDividerSnappingTolerance;
 @property(readonly) NSColor *infoHeaderDescriptionColor;
 @property(readonly) NSColor *infoHeaderBigTitleColor;
@@ -1882,6 +2025,7 @@ typedef struct {
 @property(readonly) NSGradient *activityViewPopUpBottomBarGradientClicked;
 @property(readonly) NSGradient *activityViewPopUpBottomBarGradient;
 @property(readonly) struct CGColor *activityViewPopUpBackgroundColor;
+@property(readonly) struct CGColor *activityViewPopUpLineCGColor;
 @property(readonly) struct CGColor *activityViewPopUpBorderCGColor;
 @property(readonly) NSColor *activityViewPopUpBorderColor;
 @property(readonly) struct CGColor *activityViewProgressIndicatorDiagonalsColorPopUpStyle;
@@ -1892,7 +2036,6 @@ typedef struct {
 @property(readonly) NSColor *activityViewProgressIndicatorInnerShadowColorMainStyle;
 @property(readonly) NSColor *activityViewProgressIndicatorBackgroundFillColor;
 @property(readonly) NSGradient *activityViewProgressIndicatorDeterminateBarGradientPopUpStyle;
-@property(readonly) NSGradient *activityViewProgressIndicatorDeterminateBarGradientMainStyle;
 @property(readonly) struct CGColor *activityViewProgressIndicatorDeterminateBarShadowColor;
 @property(readonly) struct CGColor *activityViewProgressIndicatorFrameColorPopUp;
 @property(readonly) NSColor *activityViewScrollingTextFieldTextShadowColorInactive;
@@ -1924,10 +2067,7 @@ typedef struct {
 @property(readonly) NSGradient *pressedTabBackgroundGradient;
 @property(readonly) NSGradient *selectedTabBackgroundGradient;
 @property(readonly) NSGradient *tabBackgroundGradient;
-@property(readonly) NSFont *noContentMarkerSecondaryFont;
 @property(readonly) NSFont *noContentMarkerFont;
-@property(readonly) NSColor *noContentMarkerShadowColor;
-@property(readonly) NSColor *noContentMarkerBackgroundColor;
 @property(readonly) NSColor *findHiddenCharacterColor;
 @property(readonly) NSColor *findUnderlineColor4;
 @property(readonly) NSColor *findUnderlineColor3;
@@ -1938,14 +2078,58 @@ typedef struct {
 @property(readonly) NSGradient *findBackgroundGradient2;
 @property(readonly) NSGradient *findBackgroundGradient1;
 @property(readonly) double scmBlameAgeHue;
+@property(readonly) NSColor *versionsDiffInactiveStrokeColor2;
+@property(readonly) NSColor *versionsDiffInactiveStrokeColor1;
+@property(readonly) NSColor *versionsDiffUnfocusedStrokeColor2;
+@property(readonly) NSColor *versionsDiffUnfocusedStrokeColor1;
+@property(readonly) NSColor *versionsDiffInactiveHighlightColor2;
+@property(readonly) NSColor *versionsDiffInactiveHighlightColor1;
+@property(readonly) NSColor *versionsDiffUnfocusedHighlightColor2;
+@property(readonly) NSColor *versionsDiffUnfocusedHighlightColor1;
+@property(readonly) NSColor *versionsDiffInactiveDisabledStrokeColor2;
+@property(readonly) NSColor *versionsDiffInactiveDisabledStrokeColor1;
+@property(readonly) NSColor *versionsDiffUnfocusedDisabledStrokeColor2;
+@property(readonly) NSColor *versionsDiffUnfocusedDisabledStrokeColor1;
+@property(readonly) NSColor *versionsDiffInactiveDisabledHighlightColor2;
+@property(readonly) NSColor *versionsDiffInactiveDisabledHighlightColor1;
+@property(readonly) NSColor *versionsDiffUnfocusedDisabledHighlightColor2;
+@property(readonly) NSColor *versionsDiffUnfocusedDisabledHighlightColor1;
+@property(readonly) NSColor *versionsConflictDiffInactiveStrokeColor2;
+@property(readonly) NSColor *versionsConflictDiffUnfocusedStrokeColor2;
 @property(readonly) NSColor *versionsConflictDiffStrokeColor2;
+@property(readonly) NSColor *versionsConflictDiffInactiveHighlightColor2;
+@property(readonly) NSColor *versionsConflictDiffUnfocusedHighlightColor2;
 @property(readonly) NSColor *versionsConflictDiffHighlightColor2;
+@property(readonly) NSColor *versionsConflictDiffInactiveStrokeColor1;
+@property(readonly) NSColor *versionsConflictDiffUnfocusedStrokeColor1;
 @property(readonly) NSColor *versionsConflictDiffStrokeColor1;
+@property(readonly) NSColor *versionsConflictDiffInactiveHighlightColor1;
+@property(readonly) NSColor *versionsConflictDiffUnfocusedHighlightColor1;
 @property(readonly) NSColor *versionsConflictDiffHighlightColor1;
+@property(readonly) NSColor *versionsDiffDisabledStrokeColor2;
+@property(readonly) NSColor *versionsDiffDisabledHighlightColor2;
+@property(readonly) NSColor *versionsDiffDisabledStrokeColor1;
+@property(readonly) NSColor *versionsDiffDisabledHighlightColor1;
 @property(readonly) NSColor *versionsDiffStrokeColor2;
 @property(readonly) NSColor *versionsDiffHighlightColor2;
 @property(readonly) NSColor *versionsDiffStrokeColor1;
 @property(readonly) NSColor *versionsDiffHighlightColor1;
+@property(readonly) NSColor *diffButtonDisabledInactiveStroke;
+@property(readonly) NSColor *diffButtonDisabledUnfocusedStroke;
+@property(readonly) NSColor *diffButtonDisabledDepressedStroke;
+@property(readonly) NSColor *diffButtonDisabledStroke;
+@property(readonly) NSColor *diffButtonEnabledInactiveStroke;
+@property(readonly) NSColor *diffButtonEnabledUnfocusedStroke;
+@property(readonly) NSColor *diffButtonEnabledDepressedStroke;
+@property(readonly) NSColor *diffButtonEnabledStroke;
+@property(readonly) NSGradient *diffButtonDisabledInactiveGradient;
+@property(readonly) NSGradient *diffButtonDisabledUnfocusedGradient;
+@property(readonly) NSGradient *diffButtonDisabledDepressedGradient;
+@property(readonly) NSGradient *diffButtonDisabledGradient;
+@property(readonly) NSGradient *diffButtonEnabledInactiveGradient;
+@property(readonly) NSGradient *diffButtonEnabledUnfocusedGradient;
+@property(readonly) NSGradient *diffButtonEnabledDepressedGradient;
+@property(readonly) NSGradient *diffButtonEnabledGradient;
 @property(readonly) NSColor *scmBlameAnnotationLineColor;
 @property(readonly) NSColor *inspectorDisabledSliverLabelColor;
 @property(readonly) NSColor *inspectorSliverLabelColor;
@@ -2264,6 +2448,7 @@ typedef struct {
 - (void)setAllBordersToColor:(id)arg1;
 - (void)setShadowSide:(int)arg1;
 - (void)_setBorderSides:(int)arg1;
+- (void)dealloc;
 - (void)encodeWithCoder:(id)arg1;
 - (id)initWithCoder:(id)arg1;
 - (id)initWithFrame:(struct CGRect)arg1;
@@ -2279,12 +2464,6 @@ typedef struct {
 - (unsigned long long)hitTestForEvent:(id)arg1 inRect:(struct CGRect)arg2 ofView:(id)arg3;
 - (struct CGRect)drawTitle:(id)arg1 withFrame:(struct CGRect)arg2 inView:(id)arg3;
 - (void)_calculateRectsForTitleImage:(struct CGRect *)arg1 titleText:(struct CGRect *)arg2 padding:(double *)arg3 forBounds:(struct CGRect)arg4;
-
-@end
-
-@interface __DVTNSImageAdditionsClass : NSObject
-{
-}
 
 @end
 
@@ -2668,7 +2847,6 @@ typedef struct {
     struct CGRect _stackingFrame;
     NSMutableArray *_fadeInAnimations;
     NSString *_toolTip;
-    long long _toolTipTag;
     NSTextField *userRenameTabField;
     NSText *editor;
     NSImage *_tabDragImage;
@@ -2785,9 +2963,11 @@ typedef struct {
 - (BOOL)resignFirstResponder;
 - (BOOL)becomeFirstResponder;
 - (void)stopEditingTabName;
+- (BOOL)control:(id)arg1 textView:(id)arg2 doCommandBySelector:(SEL)arg3;
 - (void)controlTextDidBeginEditing:(id)arg1;
 - (void)controlTextDidChange:(id)arg1;
 - (void)controlTextDidEndEditing:(id)arg1;
+- (void)_stopEditingAndUninstallEditor;
 - (void)mouseDown:(id)arg1;
 - (id)description;
 
@@ -2879,9 +3059,6 @@ typedef struct {
     NSWindow *windowUnderMouse;
     id <DVTMorphingDragImageDropTarget> targetUnderMouse;
     NSString *runLoopMode;
-    long long _draggingFormation;
-    long long _numberOfValidItemsForDrop;
-    BOOL _animatesToDestination;
     BOOL dragDone;
     BOOL _targetAcceptsDrag;
     BOOL mouseOverSystemWindow;
@@ -2919,10 +3096,12 @@ typedef struct {
 @interface DVTRolloverImageButton : DVTRolloverTrackingButton
 {
     NSImage *_rolloverImage;
+    NSImage *_alternateRolloverImage;
 }
 
-- (BOOL)accessibilityIsIgnored;
 - (void)drawRect:(struct CGRect)arg1;
+- (id)alternateRolloverImage;
+- (void)setAlternateRolloverImage:(id)arg1;
 - (id)rolloverImage;
 - (void)setRolloverImage:(id)arg1;
 - (void)awakeFromNib;
@@ -2936,7 +3115,6 @@ typedef struct {
     DVTTabBarView *_tabBarView;
     DVTTabButton *_button;
     NSString *_searchFieldText;
-    NSString *_urlFromScript;
     DVTViewController<DVTTabbedWindowTabContentControlling> *_tabContentController;
     BOOL _isEditingTabName;
     BOOL _firedOpenEvent;
@@ -3001,7 +3179,7 @@ typedef struct {
 
 @interface _DVTMainViewControllerMonitor : NSObject
 {
-    NSWindow *_window;
+    NSWindow *_window_dvtWeak;
     id _windowWillCloseObserver;
     id _windowDidUpdateObserver;
     id <DVTObservingToken> _firstResponderObservingToken;
@@ -3010,6 +3188,7 @@ typedef struct {
 
 @property(retain) DVTViewController *mainViewController; // @synthesize mainViewController=_mainViewController;
 - (id)initWithWindow:(id)arg1;
+@property __weak NSWindow *window;
 
 @end
 
@@ -3025,7 +3204,7 @@ typedef struct {
 {
     DVTMapTable *_activationStateObservers;
     long long _nextKey;
-    NSWindow *_window;
+    NSWindow *_window_dvtWeak;
 }
 
 - (void)windowDidResignMain:(id)arg1;
@@ -3036,6 +3215,7 @@ typedef struct {
 - (id)registerActivationStateObserver:(id)arg1;
 - (void)dealloc;
 - (id)initWithWindow:(id)arg1;
+@property __weak NSWindow *window;
 
 @end
 
@@ -3084,11 +3264,11 @@ typedef struct {
 
 @end
 
-@interface DVTFindBar : DVTViewController <DVTScopeBarContentController, DVTInvalidation>
+@interface DVTFindBar : DVTInvalidatableViewController <DVTFindPatternManager, DVTScopeBarContentController>
 {
     NSPopUpButton *_finderModePopUpButton;
-    DVTSearchField *_findStringField;
-    NSTextField *_replaceStringField;
+    DVTSearchField<DVTFindPatternField> *_findStringField;
+    DVTFindPatternTextField<DVTFindPatternField> *_replaceStringField;
     NSSegmentedControl *_segmentedControl;
     NSView *_stackView;
     DVTFindBarBorderedView *_findModeView;
@@ -3108,24 +3288,24 @@ typedef struct {
     NSObject<DVTFindBarHostable> *_delegate;
     id _findObject;
     double _preferredViewHeight;
-    NSString *_findString;
-    NSString *_replaceString;
+    NSAttributedString *_findAttributedString;
+    NSAttributedString *_replaceAttributedString;
     NSString *_statusString;
     NSString *_pendingStatusString;
-    DVTStackBacktrace *_invalidationBacktrace;
     unsigned long long _finderMode;
     struct _DVTFindBarFlags _fbflags;
     BOOL _findInProgress;
     BOOL _canReplace;
     BOOL _hasResults;
     BOOL _showsOptions;
-    BOOL _isInvalidated;
     id <DVTObservingToken> _findStateFindStringObsT;
     id <DVTObservingToken> _findStateReplaceStringObsT;
 }
 
++ (id)keyPathsForValuesAffectingReplaceString;
++ (id)keyPathsForValuesAffectingFindRegularExpression;
++ (id)keyPathsForValuesAffectingFindString;
 + (void)initialize;
-@property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 @property(nonatomic) BOOL showsOptions; // @synthesize showsOptions=_showsOptions;
 @property double preferredViewHeight; // @synthesize preferredViewHeight=_preferredViewHeight;
 @property BOOL hasResults; // @synthesize hasResults=_hasResults;
@@ -3133,29 +3313,37 @@ typedef struct {
 @property BOOL findInProgress; // @synthesize findInProgress=_findInProgress;
 @property(nonatomic) unsigned long long finderMode; // @synthesize finderMode=_finderMode;
 @property(copy, nonatomic) NSString *statusString; // @synthesize statusString=_statusString;
-@property(copy) NSString *replaceString; // @synthesize replaceString=_replaceString;
-@property(copy, nonatomic) NSString *findString; // @synthesize findString=_findString;
+@property(copy, nonatomic) NSAttributedString *replaceAttributedString; // @synthesize replaceAttributedString=_replaceAttributedString;
+@property(copy, nonatomic) NSAttributedString *findAttributedString; // @synthesize findAttributedString=_findAttributedString;
 @property(retain, nonatomic) id findObject; // @synthesize findObject=_findObject;
 @property(retain) NSObject<DVTFindBarHostable> *delegate; // @synthesize delegate=_delegate;
 - (void)layoutControls;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (BOOL)control:(id)arg1 textView:(id)arg2 doCommandBySelector:(SEL)arg3;
 - (void)didPressDismissOnScopeBar:(id)arg1;
 - (void)controlTextDidEndEditing:(id)arg1;
 - (void)_endedEditing:(id)arg1;
 - (void)findBarLostFocus;
 - (void)controlTextDidChange:(id)arg1;
+- (void)findPatternField:(id)arg1 findPatternDoubleClicked:(id)arg2;
+- (BOOL)hasFindPattern;
+- (id)replaceFieldForField:(id)arg1;
+- (id)findFieldForField:(id)arg1;
+- (id)_replaceField;
+- (id)_findField;
+- (BOOL)supportsPatterns;
 - (id)_recentsMenu;
 - (void)_toggleFindOptions:(id)arg1;
 - (void)_clearRecents;
 - (void)_restoreFindHistory:(id)arg1;
+- (void)_replaceAllInSelectionButtonAction:(id)arg1;
 - (void)_replaceAllButtonAction:(id)arg1;
 - (void)_replaceAndFindButtonAction:(id)arg1;
 - (void)_replaceButtonAction:(id)arg1;
 - (void)_segmentedControlAction:(id)arg1;
 - (void)_replaceStringFieldAction:(id)arg1;
 - (void)_findStringFieldAction:(id)arg1;
+- (void)_insertFindPattern:(id)arg1;
 - (void)_optionsChanged:(id)arg1;
 - (BOOL)supportsCaseInsensitiveMatch;
 - (BOOL)supportsTextMatchStyle:(int)arg1;
@@ -3169,6 +3357,7 @@ typedef struct {
 - (double)invalidationDelayInterval;
 - (void)_updateAfterInvalidate:(id)arg1;
 - (void)changeFinderMode:(id)arg1;
+- (void)replaceAllInSelection:(id)arg1;
 - (void)replaceAll:(id)arg1;
 - (void)replaceAndFindPrevious:(id)arg1;
 - (void)replaceAndFindNext:(id)arg1;
@@ -3187,11 +3376,17 @@ typedef struct {
 @property BOOL ignoreNextInvalidate;
 @property BOOL findResultsValid;
 - (double)_stackHeight;
-- (void)setFindStringAndUpdate:(id)arg1;
-- (void)setFindString:(id)arg1 andUpdate:(BOOL)arg2;
+@property(readonly, nonatomic) NSString *replaceExpression;
+@property(copy) NSString *replaceString;
+@property(readonly, nonatomic) NSString *findRegularExpression;
+@property(copy, nonatomic) NSString *findString;
+- (void)setFindAttributedStringAndUpdate:(id)arg1;
+- (void)setFindAttributedString:(id)arg1 andUpdate:(BOOL)arg2;
+- (void)sanitizeStrings;
 - (BOOL)validateUserInterfaceItem:(id)arg1;
-- (void)_updateSharedFindStateReplaceString:(id)arg1;
-- (void)_updateSharedFindStateFindString:(id)arg1;
+- (void)_updateSharedFindStateReplaceAttributedString:(id)arg1;
+- (void)_updateSharedFindStateFindAttributedString:(id)arg1;
+- (void)windowDidUpdate:(id)arg1;
 - (void)viewWillUninstall;
 - (void)viewDidInstall;
 - (void)loadView;
@@ -3362,7 +3557,7 @@ typedef struct {
     DVTTextFold *_topLevelFold;
     NSMutableArray *_annotations;
     DVTPointerArray *_lastDeletedAnnotations;
-    NSMapTable *_messageBubblesForAnnotations;
+    DVTMapTable *_messageBubblesForAnnotations;
     NSMutableSet *_accessoryAnnotations;
     NSArray *_sortedAccessoryAnnotations;
     struct _NSRange _visibleRange;
@@ -3438,7 +3633,7 @@ typedef struct {
 - (void)realStorageDidFixAttributesInRange:(struct _NSRange)arg1;
 - (void)_copyRealStorageAttributesInRange:(struct _NSRange)arg1;
 - (void)realStorageDidReplaceCharactersInRange:(struct _NSRange)arg1 withString:(id)arg2 changeInLength:(long long)arg3;
-- (void)realStorageDidUpdateLineRange:(struct _NSRange)arg1 changeInLength:(long long)arg2 entireFirstLineReplaced:(BOOL)arg3;
+- (void)realStorageDidUpdateLineRange:(struct _NSRange)arg1 changeInLength:(long long)arg2 replacedCharacterRangeEndsOnLineTerminator:(BOOL)arg3 entireFirstLineReplaced:(BOOL)arg4;
 - (void)realStorageWillReplaceCharactersInRange:(struct _NSRange)arg1 withString:(id)arg2 changeInLength:(long long)arg3;
 - (double)advancementForSpace;
 - (void)fontSetChanged;
@@ -3502,6 +3697,7 @@ typedef struct {
 - (id)importLandmarkItems;
 - (id)commonSourceModelItemAtRange:(struct _NSRange)arg1;
 - (id)sourceModelItemAtCharacterIndex:(unsigned long long)arg1;
+- (id)sourceModelItemAtCharacterIndex:(unsigned long long)arg1 affinity:(unsigned long long)arg2;
 - (id)sourceModel;
 - (struct _NSRange)lineRangeForLineRange:(struct _NSRange)arg1 fromTimestamp:(double)arg2 toTimestamp:(double)arg3;
 - (struct _NSRange)characterRangeForCharacterRange:(struct _NSRange)arg1 fromTimestamp:(double)arg2 toTimestamp:(double)arg3;
@@ -3542,7 +3738,9 @@ typedef struct {
 - (struct _NSRange)rangeForCharacterRange:(struct _NSRange)arg1 withContextLines:(long long)arg2 proposedHeight:(double *)arg3 contentLines:(unsigned long long *)arg4 totalLines:(unsigned long long *)arg5;
 - (void)drawUnderlineForGlyphRange:(struct _NSRange)arg1 underlineType:(long long)arg2 baselineOffset:(double)arg3 lineFragmentRect:(struct CGRect)arg4 lineFragmentGlyphRange:(struct _NSRange)arg5 containerOrigin:(struct CGPoint)arg6;
 - (void)drawBackgroundForGlyphRange:(struct _NSRange)arg1 atPoint:(struct CGPoint)arg2;
+- (void)fillBackgroundRectArray:(struct CGRect *)arg1 count:(unsigned long long)arg2 forCharacterRange:(struct _NSRange)arg3 color:(id)arg4;
 - (void)invalidateDisplayForCharacterRange:(struct _NSRange)arg1;
+- (void)_invalidateLayoutForMessageBubblesInCharacterRange:(struct _NSRange)arg1;
 - (unsigned long long)layoutOptions;
 - (void)addTemporaryAttribute:(id)arg1 value:(id)arg2 forCharacterRange:(struct _NSRange)arg3;
 - (void)removeTemporaryAttribute:(id)arg1 forCharacterRange:(struct _NSRange)arg2;
@@ -3772,9 +3970,9 @@ typedef struct {
     DVTSourceModel *_sourceModel;
     NSTimer *_sourceModelUpdater;
     DVTSourceLandmarkItem *_topSourceLandmark;
+    DVTSourceLandmarkItem *_rootImportLandmark;
     NSTimer *_landmarksCacheTimer;
     struct _NSRange _rangeNeedingInvalidation;
-    NSTimer *_invalidationTimer;
     double _lastEditTimestamp;
     NSMutableArray *_foldingTextStorages;
     double _advancementForSpace;
@@ -3803,9 +4001,14 @@ typedef struct {
         unsigned int batchEditMayContainTokens:1;
         unsigned int batchEditMayContainLinks:1;
         unsigned int batchEditMayContainAttachments:1;
+        unsigned int lazyInvalidationInvalidatesDisplayOnly:1;
+        unsigned int processingLazyInvalidation:1;
     } _tsflags;
+    _LazyInvalidationHelper *_lazyInvalidationHelper;
 }
 
++ (BOOL)usesScreenFonts;
++ (id)logAspect;
 + (id)_sourceLandmarksLogAspect;
 + (void)initialize;
 @property(readonly) NSArray *foldingTextStorages; // @synthesize foldingTextStorages=_foldingTextStorages;
@@ -3848,12 +4051,14 @@ typedef struct {
 - (id)topSourceLandmark;
 - (BOOL)hasPendingSourceLandmarkInvalidation;
 - (void)_invalidateSourceLandmarks:(id)arg1;
-- (void)_addLandmarkItemsFromItem:(id)arg1 toParent:(id)arg2 matchingType:(id)arg3;
+- (void)_addLandmarkItemsFromItem:(id)arg1 toParent:(id)arg2 matchingType:(id)arg3 altParent:(void)arg4 matchingAltType:(id)arg5 visitChildren:(id)arg6;
+- (id)landmarkItemNameForSourceModelItem:(id)arg1 nameRange:(struct _NSRange *)arg2;
 - (id)colorAtCharacterIndex:(unsigned long long)arg1 inTextView:(id)arg2 effectiveRange:(struct _NSRange *)arg3;
 - (long long)nodeTypeAtCharacterIndex:(unsigned long long)arg1 inTextView:(id)arg2 effectiveRange:(struct _NSRange *)arg3;
 - (void)_themeColorsChanged:(id)arg1;
 - (id)commonSourceModelItemAtRange:(struct _NSRange)arg1;
 - (id)sourceModelItemAtCharacterIndex:(unsigned long long)arg1;
+- (id)sourceModelItemAtCharacterIndex:(unsigned long long)arg1 affinity:(unsigned long long)arg2;
 - (id)sourceModelWithoutParsing;
 - (id)sourceModel;
 - (id)realSourceBufferProvider;
@@ -3896,8 +4101,9 @@ typedef struct {
 - (id)string;
 - (void)processEditing;
 - (void)_updateSourceModel:(id)arg1;
-- (void)scheduleLazyInvalidationForRange:(struct _NSRange)arg1;
+- (void)scheduleLazyInvalidationForRange:(struct _NSRange)arg1 displayOnly:(BOOL)arg2;
 - (void)_invalidateCallback:(id)arg1;
+@property BOOL processingLazyInvalidation;
 - (void)_dumpChangeHistory;
 - (void)clearChangeHistory;
 - (BOOL)isAnnotationAdjustmentEnabled;
@@ -3909,6 +4115,7 @@ typedef struct {
 - (void)doingBatchEdit:(BOOL)arg1;
 - (struct _NSRange)lineRangeForLineRange:(struct _NSRange)arg1 fromTimestamp:(double)arg2 toTimestamp:(double)arg3;
 - (struct _NSRange)characterRangeForCharacterRange:(struct _NSRange)arg1 fromTimestamp:(double)arg2 toTimestamp:(double)arg3;
+- (id)_debugInfoForChangeIndex:(unsigned long long)arg1 toChangeIndex:(unsigned long long)arg2;
 - (unsigned long long)changeIndexForTimestamp:(double)arg1;
 - (struct _NSRange)lineRangeForLineRange:(struct _NSRange)arg1 fromChangeIndex:(unsigned long long)arg2 toChangeIndex:(unsigned long long)arg3;
 - (struct _NSRange)characterRangeForCharacterRange:(struct _NSRange)arg1 fromChangeIndex:(unsigned long long)arg2 toChangeIndex:(unsigned long long)arg3;
@@ -3935,12 +4142,23 @@ typedef struct {
 - (void)setUsesTabs:(BOOL)arg1;
 - (BOOL)usesTabs;
 - (void)setOwnedMutableAttributedString:(id)arg1;
+- (void)dealloc;
 - (void)finalize;
 - (id)initWithOwnedMutableAttributedString:(id)arg1;
 - (id)initWithAttributedString:(id)arg1;
 - (id)initWithString:(id)arg1 attributes:(id)arg2;
 - (id)initWithString:(id)arg1;
 - (id)init;
+
+@end
+
+@interface _LazyInvalidationHelper : NSObject
+{
+    DVTTextStorage *_textStorage;
+}
+
+@property(nonatomic) __weak DVTTextStorage *textStorage; // @synthesize textStorage=_textStorage;
+- (void)_invalidateCallback:(id)arg1;
 
 @end
 
@@ -4001,6 +4219,11 @@ typedef struct {
     DVTHashTable *_visibleViewAnnotations;
     NSView *_staticVisualizationView;
     int _findResultStyle;
+    DVTMutableRangeArray *_typeOverCompletionRanges;
+    DVTMutableRangeArray *_typeOverCompletionOpenRanges;
+    NSString *_pendingTypeOverCompletion;
+    struct _NSRange _pendingTypeOverCompletionOpenRange;
+    BOOL _didChangeText;
     struct {
         unsigned int dDidFinishAnimatingScroll:1;
         unsigned int dDidScroll:1;
@@ -4009,7 +4232,7 @@ typedef struct {
         unsigned int temporaryLinkIsAlternate:1;
         unsigned int updatingInsertionPoint:1;
         unsigned int wasPostsFrameChangedNotifications:1;
-        unsigned int reserved:1;
+        unsigned int doingDidChangeSelection:1;
     } _sFlags;
     BOOL _isDoingBatchEdit;
     BOOL _allowsCodeFolding;
@@ -4113,6 +4336,7 @@ typedef struct {
 - (void)textStorage:(id)arg1 didEditRange:(struct _NSRange)arg2 changeInLength:(long long)arg3;
 - (void)textStorage:(id)arg1 willEditRange:(struct _NSRange)arg2 changeInLength:(long long)arg3;
 - (void)textStorageDidChangeLineNumbers:(id)arg1;
+- (unsigned long long)_indexOfTokenizedEditingRange:(struct _NSRange)arg1;
 - (void)updateTokenizedEditingRanges;
 - (void)_scheduleAutoHighlightTokenTimerIfNeeded;
 - (void)_autoHighlightTokenWithTimer:(id)arg1;
@@ -4134,7 +4358,16 @@ typedef struct {
 - (void)addStaticVisualizationView:(id)arg1;
 - (void)removeVisualization:(id)arg1 fadeOut:(BOOL)arg2 completionBlock:(id)arg3;
 - (void)addVisualization:(id)arg1 fadeIn:(BOOL)arg2 completionBlock:(id)arg3;
+- (void)adjustTypeOverCompletionForSelectionChange:(struct _NSRange)arg1;
+- (void)removeInvalidTypeOverCompletion;
+- (void)removeTypeOverCompletionIfAppropriateForEditedRange:(struct _NSRange)arg1 changeInLength:(long long)arg2;
+- (void)adjustTypeOverCompletionForEditedRange:(struct _NSRange)arg1 changeInLength:(long long)arg2;
+- (void)addTypeOverCompletionForRange:(struct _NSRange)arg1 openRange:(struct _NSRange)arg2;
+- (struct _NSRange)lastTypeOverCompletionRange;
+- (struct _NSRange)typeOverCompletionToSkipOverAtLocation:(unsigned long long)arg1 withInsertionText:(id)arg2;
+- (struct _NSRange)typeOverCompletionRangeFollowingLocation:(unsigned long long)arg1;
 - (void)didInsertCompletionTextAtRange:(struct _NSRange)arg1;
+- (struct _NSRange)_suggestedOpenRangeForTypeOverRange:(struct _NSRange)arg1;
 - (BOOL)shouldAutoCompleteAtLocation:(unsigned long long)arg1;
 - (BOOL)shouldSuppressTextCompletion;
 - (id)contextForCompletionStrategiesAtWordStartLocation:(unsigned long long)arg1;
@@ -4160,6 +4393,8 @@ typedef struct {
 - (BOOL)handleInsertTab;
 - (BOOL)handleSelectPreviousPlaceholder;
 - (BOOL)handleSelectNextPlaceholder;
+- (BOOL)isCandidateTypeOverString:(id)arg1;
+- (id)autoCloseStringForString:(id)arg1;
 - (void)insertText:(id)arg1;
 - (void)setFoldsFromString:(id)arg1;
 - (id)foldString;
@@ -4168,6 +4403,7 @@ typedef struct {
 - (long long)_currentLineNumber;
 - (struct _NSRange)rangeOfCenterLine;
 - (void)doingBatchEdit:(BOOL)arg1;
+- (void)quickLookWithEvent:(id)arg1;
 - (void)rightMouseDown:(id)arg1;
 - (void)rightMouseUp:(id)arg1;
 - (void)mouseDragged:(id)arg1;
@@ -4224,6 +4460,11 @@ typedef struct {
 - (void)drawRect:(struct CGRect)arg1;
 - (unsigned long long)foldedCharacterIndexForPoint:(struct CGPoint)arg1;
 - (void)setSelectedRanges:(id)arg1 affinity:(unsigned long long)arg2 stillSelecting:(BOOL)arg3;
+- (void)_delayedTrimTrailingWhitespaceForLine:(id)arg1;
+- (void)trimTrailingWhitespaceOnLine:(unsigned long long)arg1;
+- (void)trimTrailingWhitespaceOnLine:(unsigned long long)arg1 trimWhitespaceOnlyLine:(BOOL)arg2;
+- (void)trimTrailingWhitespaceOnLineFromCharacterIndex:(unsigned long long)arg1 trimWhitespaceOnlyLine:(BOOL)arg2;
+- (BOOL)shouldTrimTrailingWhitespace;
 - (void)setSelectedRange:(struct _NSRange)arg1;
 - (void)contextMenu_toggleMessageBubbleShown:(id)arg1;
 - (void)toggleMessageBubbleShown:(id)arg1;
@@ -4252,11 +4493,11 @@ typedef struct {
 - (void)setTextStorage:(id)arg1 keepOldLayout:(BOOL)arg2;
 - (id)textStorage;
 @property(retain) id <DVTSourceTextViewDelegate> delegate; // @dynamic delegate;
+- (void)primitiveInvalidate;
 - (id)initWithCoder:(id)arg1;
 - (id)initWithFrame:(struct CGRect)arg1 textContainer:(id)arg2;
 - (id)init;
 - (void)_commonInitDVTSourceTextView;
-- (BOOL)_removeMenusNotInWhiteList:(id)arg1 fromMenu:(id)arg2;
 - (id)menuForEvent:(id)arg1;
 - (double)fmc_maxY;
 - (double)fmc_startOfLine:(long long)arg1;
@@ -4354,6 +4595,7 @@ typedef struct {
 }
 
 + (void)drawLineHighlightForAnnotations:(id)arg1 highlightRanges:(BOOL)arg2 textView:(id)arg3 getParaRectBlock:(id)arg4;
++ (id)logAspect;
 + (void)initialize;
 @property(retain) id <DVTTextAnnotationDelegate> delegate; // @synthesize delegate=_delegate;
 @property BOOL lazyInvalidation; // @synthesize lazyInvalidation=_lazyInvalidation;
@@ -4461,6 +4703,7 @@ typedef struct {
     NSColor *_borderBottomColor;
     NSColor *_highlightColor;
     NSGradient *_overlayGradient;
+    NSGradient *_overlayTintedGradient;
     NSColor *_messageBubbleBorderColor;
     NSGradient *_messageBubbleGradient;
     NSColor *_caretColor;
@@ -4468,8 +4711,9 @@ typedef struct {
     NSColor *_textColor;
 }
 
++ (id)defaultOverlayTintedGlassGradient;
 + (id)defaultOverlayGlassGradient;
-+ (id)diffTextAnnotationThemeSelected:(BOOL)arg1 conflict:(BOOL)arg2;
++ (id)diffTextAnnotationThemeSelected:(BOOL)arg1 conflict:(BOOL)arg2 disabled:(BOOL)arg3 focused:(BOOL)arg4 inactive:(BOOL)arg5;
 + (id)grayGlassTextAnnotationThemeForVariant:(int)arg1;
 + (id)blueGlassTextAnnotationThemeForVariant:(int)arg1;
 + (id)greenGlassTextAnnotationThemeForVariant:(int)arg1;
@@ -4484,12 +4728,13 @@ typedef struct {
 @property(readonly) NSColor *caretColor; // @synthesize caretColor=_caretColor;
 @property(readonly) NSColor *messageBubbleBorderColor; // @synthesize messageBubbleBorderColor=_messageBubbleBorderColor;
 @property(readonly) NSGradient *messageBubbleGradient; // @synthesize messageBubbleGradient=_messageBubbleGradient;
+@property(readonly) NSGradient *overlayTintedGradient; // @synthesize overlayTintedGradient=_overlayTintedGradient;
 @property(readonly) NSGradient *overlayGradient; // @synthesize overlayGradient=_overlayGradient;
 @property(readonly) NSColor *highlightColor; // @synthesize highlightColor=_highlightColor;
 @property(readonly) NSColor *borderBottomColor; // @synthesize borderBottomColor=_borderBottomColor;
 @property(readonly) NSColor *borderTopColor; // @synthesize borderTopColor=_borderTopColor;
 - (id)_calculateTextColor;
-- (id)initWithHighlightColor:(id)arg1 borderTopColor:(id)arg2 borderBottomColor:(id)arg3 overlayGradient:(id)arg4 messageBubbleBorderColor:(id)arg5 messageBubbleGradient:(id)arg6 caretColor:(id)arg7 highlightedRangeBorderColor:(id)arg8;
+- (id)initWithHighlightColor:(id)arg1 borderTopColor:(id)arg2 borderBottomColor:(id)arg3 overlayGradient:(id)arg4 overlayTintedGradient:(id)arg5 messageBubbleBorderColor:(id)arg6 messageBubbleGradient:(id)arg7 caretColor:(id)arg8 highlightedRangeBorderColor:(id)arg9;
 
 @end
 
@@ -4599,6 +4844,7 @@ typedef struct {
     NSIndexSet *_draggedRows;
     NSEvent *_event;
     id _progressIndicatorsByItem;
+    BOOL _showAlternatingRowBackgroundColorsWithContents;
 }
 
 @property int emptyContentStringStyle; // @synthesize emptyContentStringStyle=_emptyContentStringStyle;
@@ -4624,7 +4870,7 @@ typedef struct {
 
 @end
 
-@interface DVTSourceLandmarkItem : NSObject <DVTInvalidation>
+@interface DVTSourceLandmarkItem : NSObject
 {
     DVTSourceLandmarkItem *_parent;
     NSMutableArray *_children;
@@ -4635,21 +4881,22 @@ typedef struct {
     long long _nestingLevel;
     long long _indentLevel;
     double _timestamp;
-    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_pendingUpdateBacktrace;
+    id <DVTSourceLandmarkItemDelegate> _delegate;
+    DVTSourceModelItem *_sourceModelItem;
 }
 
 + (int)sourceLandmarkItemTypeForNodeType:(long long)arg1;
-@property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 @property long long indentLevel; // @synthesize indentLevel=_indentLevel;
 @property long long nestingLevel; // @synthesize nestingLevel=_nestingLevel;
 @property(readonly) double timestamp; // @synthesize timestamp=_timestamp;
-@property struct _NSRange nameRange; // @synthesize nameRange=_nameRange;
+@property(nonatomic) struct _NSRange nameRange; // @synthesize nameRange=_nameRange;
 @property(nonatomic) struct _NSRange range; // @synthesize range=_range;
 @property(readonly) int type; // @synthesize type=_type;
-@property(copy) NSString *name; // @synthesize name=_name;
-@property(retain) DVTSourceLandmarkItem *parent; // @synthesize parent=_parent;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
-- (void)invalidate;
+@property(copy, nonatomic) NSString *name; // @synthesize name=_name;
+@property __weak DVTSourceLandmarkItem *parent; // @synthesize parent=_parent;
+@property(readonly) BOOL needsUpdate;
+- (void)markForUpdate;
 - (long long)compareWithLandmarkItem:(id)arg1;
 - (BOOL)isDeclaration;
 - (void)removeChildAtIndex:(long long)arg1;
@@ -4662,24 +4909,32 @@ typedef struct {
 - (BOOL)isEqual:(id)arg1;
 - (unsigned long long)hash;
 - (id)description;
+- (void)_evaluateNameAndRange;
+- (id)initWithSourceModelItem:(id)arg1 type:(int)arg2 delegate:(id)arg3;
 - (id)initWithName:(id)arg1 type:(int)arg2;
 
 @end
 
 @interface DVTSharedFindState : NSObject
 {
-    NSString *_findString;
-    NSString *_replaceString;
+    NSAttributedString *_findAttributedString;
+    NSAttributedString *_replaceAttributedString;
 }
 
++ (id)keyPathsForValuesAffectingReplaceString;
++ (id)keyPathsForValuesAffectingFindString;
 + (id)sharedFindState;
 + (void)_setFindPasteboardStringValue:(id)arg1;
 + (id)_findPasteboardStringValue;
++ (void)_setFindPasteboardAttributedStringValue:(id)arg1;
++ (id)_findPasteboardAttributedStringValue;
 @property(copy) NSString *replaceString;
+@property(copy, nonatomic) NSAttributedString *replaceAttributedString;
+@property(copy) NSAttributedString *findAttributedString;
 @property(copy) NSString *findString;
 - (void)_applicationDidBecomeActive:(id)arg1;
 - (void)dealloc;
-- (id)initWithFindString:(id)arg1;
+- (id)initWithFindAttributedString:(id)arg1;
 
 @end
 
@@ -4710,7 +4965,7 @@ typedef struct {
 }
 
 @property(copy) DVTDocumentLocation *_findAnchor; // @synthesize _findAnchor;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (id)_finder;
 - (void)_tellDelegateAboutFoundResults:(id)arg1;
 - (void)_tellDelegateAboutCurrentResult:(id)arg1;
@@ -4726,7 +4981,9 @@ typedef struct {
 @property(retain, nonatomic) id findObject;
 - (void)findBarLostFocus;
 - (void)performFindHighlightingFirstResult:(BOOL)arg1 informDelegate:(BOOL)arg2;
+- (void)replaceAllInSelection:(id)arg1;
 - (void)replaceAll:(id)arg1;
+- (void)_replaceAllInSelection:(BOOL)arg1;
 - (void)replaceAndFindPrevious:(id)arg1;
 - (void)replaceAndFindNext:(id)arg1;
 - (void)replace:(id)arg1;
@@ -4910,8 +5167,19 @@ typedef struct {
 - (struct _NSRange)lineRangeForCharacterRange:(struct _NSRange)arg1;
 - (struct _NSRange)characterRangeForLineRange:(struct _NSRange)arg1;
 - (id)init;
+- (BOOL)_isExpressionItemLikeFunction:(id)arg1;
+- (BOOL)_isExpressionItemLikelyTarget:(id)arg1;
+- (BOOL)_isItemExpression:(id)arg1;
+- (unsigned long long)_reverseParseExpressionFromIndex:(unsigned long long)arg1 ofParent:(id)arg2;
+- (unsigned long long)_startLocationForObjCMethodCallAtLocation:(unsigned long long)arg1 withArgs:(char *)arg2;
 - (unsigned long long)locationForOpeningBracketForClosingBracket:(unsigned long long)arg1 withArgs:(char *)arg2;
+- (BOOL)isAtFirstArgumentInMethodCallAtLocation:(unsigned long long)arg1 inCall:(char *)arg2;
+- (BOOL)_isTextEmptyInBetweenItem:(id)arg1 prevItem:(id)arg2;
+- (id)_textInBetweenItem:(id)arg1 prevItem:(id)arg2;
 - (id)_parenLikeItemAtLocation:(unsigned long long)arg1;
+- (BOOL)_isItemParenExpression:(id)arg1;
+- (BOOL)_isItemBlockExpression:(id)arg1;
+- (BOOL)_isItemBracketLikeExpression:(id)arg1;
 - (BOOL)_isItemBracketExpression:(id)arg1;
 - (BOOL)indentAtBeginningOfLineForCharacterRange:(struct _NSRange)arg1 undoManager:(id)arg2;
 - (BOOL)isAtBOL:(struct _NSRange)arg1;
@@ -4923,6 +5191,8 @@ typedef struct {
 - (id)getTextForLineSansBlanks:(long long)arg1;
 @property(readonly, getter=isIndentable) BOOL indentable;
 - (long long)getIndentForLine:(long long)arg1;
+- (long long)_getIndentForObjectLiteral:(id)arg1 atLocation:(unsigned long long)arg2;
+- (BOOL)_isInvalidObjectLiteralItem:(id)arg1;
 - (unsigned long long)firstColonAfterItem:(id)arg1 inRange:(struct _NSRange)arg2;
 - (long long)columnForPositionConvertingTabs:(unsigned long long)arg1;
 
@@ -5048,7 +5318,6 @@ typedef struct {
 }
 
 + (struct CGSize)maximumThumbnailSize;
-+ (id)libraryImage;
 + (id)defaultViewNibBundle;
 + (id)defaultViewNibName;
 @property(readonly) DVTLibrary *library; // @synthesize library=_library;
@@ -5216,8 +5485,6 @@ typedef struct {
 @property BOOL identifiesAssetsPerGroup;
 - (id)assetScrollView;
 - (id)assetTileViewForceSynchronizedContent:(BOOL)arg1;
-- (void)finalize;
-- (void)dealloc;
 - (void)loadView;
 - (void)setRepresentedExtension:(id)arg1;
 - (id)initWithNibName:(id)arg1 bundle:(id)arg2;
@@ -5297,10 +5564,6 @@ typedef struct {
     id _groupComparator;
 }
 
-+ (id)regularGroupImage;
-+ (id)smartGroupImage;
-+ (id)everythingGroupImage;
-+ (id)librarySourceGroupImage;
 @property(copy, nonatomic) id groupComparator; // @synthesize groupComparator=_groupComparator;
 @property(copy, nonatomic) NSArray *detailControllerIdentifiers; // @synthesize detailControllerIdentifiers=_detailControllerIdentifiers;
 @property(readonly) DVTAbstractLibraryGroup *everythingGroup; // @synthesize everythingGroup=_everythingGroup;
@@ -5343,7 +5606,7 @@ typedef struct {
 {
     NSArray *_detailControllerIdentifiers;
     NSAttributedString *_fullDescription;
-    NSHashTable *_knownGroups;
+    DVTHashTable *_knownGroups;
     DVTExtension *_extension;
     id _representedObject;
     NSDate *_lastUsedDate;
@@ -5662,16 +5925,22 @@ typedef struct {
     NSView *_view;
     BOOL _viewIsFirstResponder;
     BOOL _windowIsKey;
+    BOOL _appIsActive;
     id <DVTObservingToken> _windowActivationObservation;
+    id <DVTObservingToken> _appActivationObservation;
+    id <DVTObservingToken> _appDeactivationObservation;
 }
 
 - (void)viewWillMoveToWindow:(id)arg1;
 - (void)window:(id)arg1 didChangeActivationState:(long long)arg2;
+- (void)appActivationChanged:(id)arg1;
 - (void)resignedFirstResponder;
 - (void)becameFirstResponder;
 - (BOOL)viewSouldDrawLikeFirstResponder;
 - (void)setWindowIsKey:(BOOL)arg1;
 - (void)setViewIsFirstResponder:(BOOL)arg1;
+- (void)setAppIsActive:(BOOL)arg1;
+- (void)pushShowsFirstResponder;
 - (void)dispose;
 - (void)finishObservingWindow:(id)arg1;
 - (void)beginObservingWindow:(id)arg1;
@@ -5720,7 +5989,6 @@ typedef struct {
     NSArray *_groupCounts;
     NSArray *_groups;
     DVTGroupedAssetHighlightView *_overlayView;
-    NSEvent *_activeMouseDown;
     BOOL _dragInsertAfterInitialTarget;
     BOOL _dropOnGroup;
     BOOL _showingHeaders;
@@ -5809,20 +6077,6 @@ typedef struct {
 
 @end
 
-@interface DVTFocusableScrollView : NSScrollView
-{
-    BOOL _drawsFocusRing;
-}
-
-@property(nonatomic) BOOL drawsFocusRing; // @synthesize drawsFocusRing=_drawsFocusRing;
-- (void)setFrameOrigin:(struct CGPoint)arg1;
-- (void)setFrameSize:(struct CGSize)arg1;
-- (void)drawRect:(struct CGRect)arg1;
-- (void)viewWillDraw;
-- (void)setNilValueForKey:(id)arg1;
-
-@end
-
 @interface DVTAssetAndGroupSet : NSObject
 {
     DVTLibraryAssetView *_view;
@@ -5867,7 +6121,7 @@ typedef struct {
 @property(copy, nonatomic) NSString *title; // @synthesize title=_title;
 @property(retain, nonatomic) NSImage *image; // @synthesize image=_image;
 @property long long style; // @synthesize style=_style;
-@property(retain) id delegate; // @synthesize delegate=_delegate;
+@property __weak id delegate; // @synthesize delegate=_delegate;
 - (BOOL)accessibilityIsAttributeSettable:(id)arg1;
 - (id)accessibilityAttributeNames;
 - (id)accessibilityAttributeValue:(id)arg1;
@@ -5913,7 +6167,6 @@ typedef struct {
     NSView *_editingView;
     NSView *_helpButton;
     NSImage *_image;
-    BOOL _sizingToFit;
     BOOL _pressed;
 }
 
@@ -5978,24 +6231,33 @@ typedef struct {
 
 @end
 
-@interface DVTTextCompletionController : NSObject
+@interface DVTTextCompletionController : NSObject <DVTInvalidation_New>
 {
     DVTCompletingTextView *_textView;
     DVTTextCompletionSession *_currentSession;
     NSString *_lastDismissingTextViewAction;
     NSString *_lastDismissingAppAction;
     id <DVTObservingToken> _appActionsMonitor;
+    id _eventMonitor;
     BOOL _autoCompletionEnabled;
     BOOL _sessionInProgress;
     BOOL _registeredScrollListener;
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
 + (id)performanceLogAspect;
 + (id)completionUILogAspect;
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
 @property(retain) DVTTextCompletionSession *currentSession; // @synthesize currentSession=_currentSession;
 @property(readonly) BOOL sessionInProgress; // @synthesize sessionInProgress=_sessionInProgress;
 @property(getter=isAutoCompletionEnabled) BOOL autoCompletionEnabled; // @synthesize autoCompletionEnabled=_autoCompletionEnabled;
 @property(readonly) DVTCompletingTextView *textView; // @synthesize textView=_textView;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
+@property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 - (id)debugStateString;
 - (BOOL)showInfoPanelForSelectedCompletion;
 - (id)attributesForCompletionAtCharacterIndex:(unsigned long long)arg1 effectiveRange:(struct _NSRange *)arg2;
@@ -6022,8 +6284,12 @@ typedef struct {
 - (BOOL)showCompletionsAtCursorLocation;
 - (void)setSessionInProgress:(BOOL)arg1;
 @property(readonly, getter=isShowingCompletions) BOOL showingCompletions;
+- (void)primitiveInvalidate;
 - (id)initWithTextView:(id)arg1;
 - (id)init;
+- (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 
 @end
 
@@ -6036,18 +6302,18 @@ typedef struct {
 @interface DVTTextCompletionDataSource : NSObject
 {
     DVTSourceCodeLanguage *_language;
-    id <DVTTextCompletionDataSourceDelegate> _delegate;
+    id <DVTTextCompletionDataSourceDelegate> _delegate_dvtWeak;
     NSMutableArray *_strategies;
     NSMutableSet *_strategyObservers;
     NSOperationQueue *_completionsGeneratorQueue;
 }
 
 @property(retain, nonatomic) DVTSourceCodeLanguage *language; // @synthesize language=_language;
-@property __weak id <DVTTextCompletionDataSourceDelegate> delegate; // @synthesize delegate=_delegate;
 @property(readonly) NSArray *strategies;
 - (void)generateCompletionsForDocumentLocation:(id)arg1 context:(id)arg2 completionBlock:(id)arg3;
 - (id)initWithLanguage:(id)arg1;
 - (id)init;
+@property __weak id <DVTTextCompletionDataSourceDelegate> delegate;
 
 @end
 
@@ -6065,51 +6331,53 @@ typedef struct {
 
 @end
 
-@interface DVTTextCompletionListWindowController : NSWindowController <NSTableViewDataSource, NSTableViewDelegate, NSAnimationDelegate>
+@interface DVTTextCompletionListWindowController : NSWindowController <DVTInvalidation_New, NSTableViewDataSource, NSTableViewDelegate, NSAnimationDelegate>
 {
     NSTextField *_messagesField;
     DVTTextCompletionTableView *_completionsTableView;
     NSTableColumn *_iconColumn;
     NSTableColumn *_typeColumn;
     NSTableColumn *_titleColumn;
-    NSTableColumn *_helpIconColumn;
-    NSTableColumn *_rightPaddingColumn;
-    DVTTextCompletionScrollView *_completionsScrollView;
+    NSScrollView *_completionsScrollView;
+    DVTBorderedView *_quickHelpView;
+    NSView *_divider;
     DVTTextCompletionSession *_session;
     struct CGRect _referenceFrameInView;
     DVTTextCompletionWindowResizeAnimation *_resizeAnimation;
+    NSViewAnimation *_fadeOutAnimation;
     id <DVTObservingToken> _sessionCompletionsObserver;
     id <DVTObservingToken> _sessionSelectionObserver;
     NSDictionary *_selectedTitleCellAttributes;
     NSDictionary *_selectedTypeCellAttributes;
-    NSTrackingArea *_trackingAreaForInfoButton;
-    long long _mouseOverRowIndex;
-    DVTTextCompletionInfoContentViewController *_infoViewController;
     DVTViewController<DVTInvalidation> *_infoContentViewController;
-    DVTTextCompletionInfoWindowController *_infoWindowController;
     int _hideReason;
     BOOL _showingWindow;
     BOOL _shouldIgnoreSelectionChange;
+    BOOL _quickHelpOnTop;
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
+@property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 @property(nonatomic) int hideReason; // @synthesize hideReason=_hideReason;
 @property(readonly) DVTTextCompletionSession *session; // @synthesize session=_session;
 @property(readonly) BOOL showingWindow; // @synthesize showingWindow=_showingWindow;
-@property(readonly) DVTTextCompletionScrollView *completionsScrollView; // @synthesize completionsScrollView=_completionsScrollView;
+@property(readonly) NSScrollView *completionsScrollView; // @synthesize completionsScrollView=_completionsScrollView;
 @property(readonly) NSString *debugStateString;
-- (void)animationDidEnd:(id)arg1;
 - (id)tableView:(id)arg1 toolTipForCell:(id)arg2 rect:(struct CGRect *)arg3 tableColumn:(id)arg4 row:(long long)arg5 mouseLocation:(struct CGPoint)arg6;
 - (void)tableView:(id)arg1 willDisplayCell:(id)arg2 forTableColumn:(id)arg3 row:(long long)arg4;
-- (void)_prepareInfoButtonCell:(id)arg1 atRow:(unsigned long long)arg2 inColumn:(unsigned long long)arg3;
 - (void)tableViewSelectionDidChange:(id)arg1;
 - (id)tableView:(id)arg1 objectValueForTableColumn:(id)arg2 row:(long long)arg3;
 - (long long)numberOfRowsInTableView:(id)arg1;
-- (void)_clickCompletionInfoButton:(id)arg1;
 - (void)_updateInfoNewSelection;
 - (BOOL)showInfoForSelectedCompletionItem;
 - (id)_selectedCompletionItem;
-- (void)showInfoWindowForCompletionItem:(id)arg1 atFrame:(struct CGRect)arg2;
-- (void)_cleanUpInfoWindow:(id)arg1;
+- (void)showInfoPaneForCompletionItem:(id)arg1;
 - (void)close;
 - (void)_loadColorsFromCurrentTheme;
 - (void)_themeColorsChanged:(id)arg1;
@@ -6117,18 +6385,22 @@ typedef struct {
 - (id)_notRecommendedAttributes;
 - (id)_usefulPrefixAttributes;
 - (id)_messageTextAttributes;
-- (struct CGRect)_preferredWindowFrameForTextFrame:(struct CGRect)arg1 columnsWidth:(double *)arg2 titleColumnX:(double)arg3 scrollbarWidth:(double *)arg4;
+- (struct CGRect)_preferredWindowFrameForTextFrame:(struct CGRect)arg1 columnsWidth:(double *)arg2 titleColumnX:(double)arg3;
 - (void)_getTitleColumnWidth:(double *)arg1 typeColumnWidth:(double *)arg2;
 - (void)_updateSelectedRow;
-- (void)_updateCurrentDisplayStateScrollerWasVisible:(BOOL)arg1;
+- (void)_updateCurrentDisplayState;
+- (void)_updateCurrentDisplayStateForQuickHelp;
 - (void)_startDelayedAnimation;
 - (void)_doubleClickOnRow:(id)arg1;
+- (void)animationDidEnd:(id)arg1;
+- (void)animationDidStop:(id)arg1;
 - (void)hideWindowWithReason:(int)arg1;
+- (void)_hideWindow;
 - (void)showWindowForTextFrame:(struct CGRect)arg1 explicitAnimation:(BOOL)arg2;
-- (void)mouseExited:(id)arg1;
-- (void)mouseMoved:(id)arg1;
-- (void)_addTrackingAreaForInfoButton;
-- (void)_removeTrackingAreaForInfoButton;
+- (void)primitiveInvalidate;
+- (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (void)windowDidLoad;
 - (id)initWithSession:(id)arg1;
 - (id)window;
@@ -6154,13 +6426,20 @@ typedef struct {
 
 @end
 
-@interface DVTCompletingTextView : NSTextView <NSLayoutManagerDelegate>
+@interface DVTCompletingTextView : NSTextView <DVTInvalidation_New, DVTLayoutManagerDelegate>
 {
     DVTTextCompletionController *_completionController;
     DVTTextCompletionDataSource *_completionsDataSource;
+    NSColor *_secondarySelectedTextBackgroundColor;
     unsigned long long _accessoryAnnotationWidth;
     unsigned long long _modifierFlagsAtLastSingleMouseDown;
     BOOL _tabSelectsNextPlaceholder;
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
+    BOOL _isInvalidated;
 }
 
 + (id)_selectorsNeedingIncreaseDecreaseCalls;
@@ -6172,8 +6451,13 @@ typedef struct {
 + (id)identifierChars;
 + (id)_identifierCharsForImportStatements;
 + (BOOL)appSupportsActionMonitoring;
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
+@property(copy, nonatomic) NSColor *secondarySelectedTextBackgroundColor; // @synthesize secondarySelectedTextBackgroundColor=_secondarySelectedTextBackgroundColor;
 @property BOOL tabSelectsNextPlaceholder; // @synthesize tabSelectsNextPlaceholder=_tabSelectsNextPlaceholder;
 @property(readonly) DVTTextCompletionController *completionController; // @synthesize completionController=_completionController;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
+@property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 @property unsigned long long modifierFlagsAtLastSingleMouseDown; // @synthesize modifierFlagsAtLastSingleMouseDown=_modifierFlagsAtLastSingleMouseDown;
 @property unsigned long long accessoryAnnotationWidth; // @synthesize accessoryAnnotationWidth=_accessoryAnnotationWidth;
 - (void)setBackgroundColor:(id)arg1;
@@ -6239,6 +6523,7 @@ typedef struct {
 - (BOOL)shouldChangeTextInRange:(struct _NSRange)arg1 replacementString:(id)arg2;
 - (void)insertText:(id)arg1 replacementRange:(struct _NSRange)arg2;
 - (void)doCommandBySelector:(SEL)arg1;
+- (id)layoutManager:(id)arg1 shouldUseTextBackgroundColor:(id)arg2 rectArray:(struct CGRect *)arg3 count:(unsigned long long)arg4 forCharacterRange:(struct _NSRange)arg5;
 - (id)layoutManager:(id)arg1 shouldUseTemporaryAttributes:(id)arg2 forDrawingToScreen:(BOOL)arg3 atCharacterIndex:(unsigned long long)arg4 effectiveRange:(struct _NSRange *)arg5;
 - (void)showMatchingBraceAtLocation:(id)arg1;
 - (void)autoHighlightMatchingBracketAtLocationIfNecessary:(unsigned long long)arg1;
@@ -6262,6 +6547,11 @@ typedef struct {
 - (id)initWithCoder:(id)arg1;
 - (id)initWithFrame:(struct CGRect)arg1 textContainer:(id)arg2;
 - (void)_dvtCommonInit;
+- (BOOL)removeMenusNotInWhiteList:(id)arg1 fromMenu:(id)arg2 removeSeparators:(BOOL)arg3;
+- (void)primitiveInvalidate;
+- (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (id)cell;
 - (id)selectedCell;
 - (struct CGRect)_accessibilityBoundsOfChild:(id)arg1;
@@ -6340,6 +6630,7 @@ typedef struct {
 }
 
 + (id)priorityComparator;
+- (id)additionalCompletionItemsForDocumentLocation:(id)arg1 context:(id)arg2;
 - (id)completionItemsForDocumentLocation:(id)arg1 context:(id)arg2 areDefinitive:(char *)arg3;
 - (void)prepareForDocumentLocation:(id)arg1 context:(id)arg2;
 
@@ -6359,6 +6650,7 @@ typedef struct {
 - (void)getObjects:(id *)arg1 range:(struct _NSRange)arg2;
 - (id)objectAtIndex:(unsigned long long)arg1;
 - (unsigned long long)count;
+- (void)dealloc;
 - (void)finalize;
 - (id)initWithArray:(id)arg1 array:(id)arg2 context:(void *)arg3 mergeDuplicates:(BOOL)arg4 comparator:(id)arg5;
 - (id)initWithArray:(id)arg1 array:(id)arg2 context:(void *)arg3 comparator:(id)arg4;
@@ -6632,13 +6924,23 @@ typedef struct {
 
 @end
 
+@interface _MV_BezierPathLayoutManager : NSLayoutManager
+{
+    NSBezierPath *_bezierPath;
+}
+
+- (void)showCGGlyphs:(const unsigned short *)arg1 positions:(const struct CGPoint *)arg2 count:(unsigned long long)arg3 font:(id)arg4 matrix:(id)arg5 attributes:(id)arg6 inContext:(id)arg7;
+- (id)initWithBezierPath:(id)arg1;
+
+@end
+
 @interface _DVTLozengeTextFieldCell : NSTextFieldCell
 {
     NSImage *_cachedImage;
     NSString *_cachedStringValue;
 }
 
-+ (id)_lozengeImageWithSize:(struct CGSize)arg1 backgroundColor:(id)arg2 attributedTitle:(id)arg3;
++ (id)_lozengeImageWithSize:(struct CGSize)arg1 attributedTitle:(id)arg2;
 - (struct CGSize)cellSize;
 - (void)drawWithFrame:(struct CGRect)arg1 inView:(id)arg2;
 - (id)_cachedImageWithFrame:(struct CGRect)arg1 inView:(id)arg2;
@@ -6677,22 +6979,29 @@ typedef struct {
     NSString *_name;
     NSString *_localizedName;
     NSImage *_icon;
-    long long _priority;
+    double _priority;
 }
 
 @property(retain) NSImage *icon; // @synthesize icon=_icon;
-@property long long priority; // @synthesize priority=_priority;
+@property double priority; // @synthesize priority=_priority;
 @property(copy) NSString *localizedName; // @synthesize localizedName=_localizedName;
 @property(copy) NSString *name; // @synthesize name=_name;
 @property(readonly) BOOL notRecommended;
 @property(readonly) NSAttributedString *descriptionText;
 @property(readonly) NSString *completionText;
+@property(readonly) NSString *parentText;
 @property(readonly) NSString *displayType;
 @property(readonly) NSString *displayText;
 - (unsigned long long)hash;
 - (BOOL)isEqual:(id)arg1;
 - (id)description;
 - (id)initWithName:(id)arg1;
+
+// Remaining properties
+@property(readonly) NSArray *additionalCompletions;
+@property(readonly) int completionItemStyle;
+@property(readonly) NSImage *highlightedStatusIcon;
+@property(readonly) NSImage *statusIcon;
 
 @end
 
@@ -6939,15 +7248,20 @@ typedef struct {
 
 @end
 
-@interface DVTPlistModel : NSObject <DVTTextFindable, DVTTextReplacable, DVTInvalidation>
+@interface DVTPlistModel : NSObject <DVTTextFindable, DVTTextReplacable, DVTInvalidation_New>
 {
     NSDocument<DVTPlistDocumentProtocol> *_document;
     DVTPlistNode *_plist;
     DVTPlistStructureDefinition *_structureDefinition;
     BOOL _isInvalidated;
+    BOOL _isInvalidating;
     DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 @property(readonly) NSDocument<DVTPlistDocumentProtocol> *document; // @synthesize document=_document;
 - (unsigned long long)replaceAllResults:(id)arg1 inNode:(id)arg2 withString:(id)arg3;
@@ -6986,8 +7300,10 @@ typedef struct {
 - (id)xmlPropertyListForNode:(id)arg1;
 - (id)asciiPropertyListForNode:(id)arg1;
 - (BOOL)isValidASCIIPropertyList;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (id)initWithDocument:(id)arg1;
 
 // Remaining properties
@@ -7001,7 +7317,7 @@ typedef struct {
 }
 
 + (id)plistfromPropertyList:(id)arg1 withParent:(id)arg2;
-@property(retain) DVTPlistNode *parent; // @synthesize parent=_parent;
+@property __weak DVTPlistNode *parent; // @synthesize parent=_parent;
 - (id)findStringMatchingDescriptor:(id)arg1 backwards:(BOOL)arg2 startingAt:(id)arg3 document:(id)arg4;
 - (id)stringForSearch;
 - (id)keyPath;
@@ -7341,6 +7657,7 @@ typedef struct {
     DVTPlistOutlineView *outlineView;
     NSTableHeaderView *headerView;
     NSPopUpButtonCell *_classPopUpCell;
+    NSPopUpButtonCell *_rootClassPopUpCell;
     DVTPlistDataFormatter *_dataFormatter;
     NSDateFormatter *_dateFormatter;
     DVTNonLossyASCIIFormatter *_nonLossyASCIIFormatter;
@@ -7349,6 +7666,7 @@ typedef struct {
     NSButtonCell *_checkBoxCell;
     NSDictionary *_statusButtonCells;
     DVTPlistTextFieldCell *_textCell;
+    DVTPlistTextFieldCell *_rootCell;
     NSArray *_foundLocations;
     DVTPlistSelection *_currentFoundLocation;
     DVTPlistNode *_selectedNode;
@@ -7367,10 +7685,11 @@ typedef struct {
     BOOL _editingError;
     BOOL _duplicateKeySheetIsActive;
     BOOL _restoringState;
+    id <DVTPlistViewControllerDelegate> _delegate;
 }
 
+@property __weak id <DVTPlistViewControllerDelegate> delegate; // @synthesize delegate=_delegate;
 @property(retain) DVTPlistNode *selectedNode; // @synthesize selectedNode=_selectedNode;
-- (void)invalidate;
 - (BOOL)validateUserInterfaceItem:(id)arg1;
 - (id)createPlistTypeMenuWithTitle:(id)arg1;
 - (BOOL)outlineView:(id)arg1 acceptDrop:(id)arg2 item:(id)arg3 childIndex:(long long)arg4;
@@ -7449,7 +7768,7 @@ typedef struct {
 - (id)draggedItems;
 - (id)outlineView;
 - (id)scrollView;
-@property NSDocument<DVTPlistDocumentProtocol> *document;
+@property(retain) NSDocument<DVTPlistDocumentProtocol> *document;
 - (void)loadView;
 - (id)statusButtonCells;
 - (id)init;
@@ -7464,12 +7783,16 @@ typedef struct {
     NSString *currentString;
     NSXMLParser *parser;
     BOOL interestedInCharacters;
+    NSString *_errorFoundByDelegate;
 }
 
 - (void)parser:(id)arg1 foundCharacters:(id)arg2;
 - (void)parser:(id)arg1 didEndElement:(id)arg2 namespaceURI:(id)arg3 qualifiedName:(id)arg4;
 - (void)parser:(id)arg1 didStartElement:(id)arg2 namespaceURI:(id)arg3 qualifiedName:(id)arg4 attributes:(id)arg5;
 - (void)addToParent:(id)arg1;
+- (id)errorFoundByDelegate;
+- (void)parser:(id)arg1 parseErrorOccurred:(id)arg2;
+- (void)parseError:(id)arg1;
 - (id)error;
 - (id)parse;
 - (id)initWithData:(id)arg1;
@@ -7492,8 +7815,10 @@ typedef struct {
 {
     DVTPlistModel *_model;
     DVTPlistSelection *_selection;
+    BOOL _pointsBackwards;
 }
 
+@property BOOL pointsBackwards; // @synthesize pointsBackwards=_pointsBackwards;
 @property(readonly) DVTPlistModel *model; // @synthesize model=_model;
 @property(readonly) DVTPlistSelection *selection; // @synthesize selection=_selection;
 - (long long)compare:(id)arg1;
@@ -7538,46 +7863,64 @@ typedef struct {
 
 @end
 
-@interface DVTDelayedValidator : NSObject
+@interface DVTDelayedInvocation : NSObject <DVTInvalidation_New>
 {
-    id _validateBlock;
+    id _block;
     NSArray *_runLoopModes;
     NSNumber *_priority;
     NSNumber *_delay;
     NSString *_terminationDisablingReason;
-    NSRunLoop *_debugInvalidationRunLoop;
-    DVTStackBacktrace *_debugInvalidationBacktrace;
+    NSRunLoop *_schedulingRunLoop;
+    DVTStackBacktrace *_schedulingBacktrace;
+    unsigned long long _bugNumber;
     struct {
-        unsigned int scheduledValidation:1;
-        unsigned int validatesWhenAppTerminates:1;
+        unsigned int scheduledInvocation:1;
+        unsigned int invokesIfNeededWhenAppTerminates:1;
         unsigned int disablesSuddenTermination:1;
         unsigned int disablesAutomaticTermination:1;
         unsigned int didDisableSuddenTermination:1;
         unsigned int didDisableAutomaticTermination:1;
-        unsigned int validating:1;
+        unsigned int invoking:1;
+        unsigned int isInvalidated:1;
         unsigned int _reserved:1;
     } _flags;
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
+    BOOL _shouldInvokeIfNeededWhenAppTerminates;
 }
 
-+ (id)delayedValidatorWithTerminationDisablingReason:(id)arg1 withBlock:(id)arg2;
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
++ (id)delayedInvocationWithTerminationDisablingReason:(id)arg1 withBlock:(id)arg2;
+@property BOOL shouldInvokeIfNeededWhenAppTerminates; // @synthesize shouldInvokeIfNeededWhenAppTerminates=_shouldInvokeIfNeededWhenAppTerminates;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
+@property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 @property(copy) NSString *terminationDisablingReason; // @synthesize terminationDisablingReason=_terminationDisablingReason;
 @property(copy, nonatomic) NSArray *runLoopModes; // @synthesize runLoopModes=_runLoopModes;
 @property(copy, nonatomic) NSNumber *delay; // @synthesize delay=_delay;
 @property(copy, nonatomic) NSNumber *priority; // @synthesize priority=_priority;
 - (void)appWillTerminate:(id)arg1;
-- (void)forceValidation;
-- (void)cancelValidation;
-- (void)invalidate;
-- (void)validateIfNeeded;
-- (void)unscheduleValidation;
-- (void)doValidation:(id)arg1;
+- (void)invoke;
+- (void)cancelScheduledInvocation;
+- (void)scheduleInvocation;
+- (void)invokeIfNeeded;
+- (void)unscheduleInvocation;
+- (void)runBlock:(id)arg1;
 @property BOOL disablesAutomaticTermination;
 @property BOOL disablesSuddenTermination;
-@property BOOL validatesWhenAppTerminates;
-@property(readonly, getter=isValid) BOOL valid;
+- (BOOL)invokesIfNeededWhenAppTerminates;
+- (void)setinvokesIfNeededWhenAppTerminates:(BOOL)arg1;
+@property(readonly) BOOL isInvoking;
+@property(readonly) BOOL hasScheduledInvocation;
 - (void)setAutomaticTerminationBlocked:(BOOL)arg1;
 - (void)setSuddenTerminationBlocked:(BOOL)arg1;
-- (void)finalize;
+- (void)primitiveInvalidate;
+- (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)_debugTemporary_disableInvalidationAssertionWithBugNumber:(unsigned long long)arg1;
 - (id)initWithBlock:(id)arg1;
 - (id)initWithTarget:(id)arg1 selector:(SEL)arg2;
 
@@ -7589,7 +7932,7 @@ typedef struct {
 
 @end
 
-@interface DVTDynamicTableRowView : DVTBorderedView <DVTDynamicTableRowViewSupport>
+@interface DVTDynamicTableRowView : DVTBorderedView <DVTDynamicTableRowViewSupport, DVTInvalidation_New>
 {
     DVTComparisonSplitView *_splitView;
     NSView *_leftContentView;
@@ -7598,10 +7941,18 @@ typedef struct {
     id _populationBlock;
     struct dispatch_queue_s *_popQ;
     BOOL _removed;
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
 + (id)dynamicTableRowViewUsingSplitViewStyle:(int)arg1;
 + (id)keyPathsForValuesAffectingSelected;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
+@property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 @property(getter=isRemoved) BOOL removed; // @synthesize removed=_removed;
 @property struct dispatch_queue_s *popQ; // @synthesize popQ=_popQ;
 @property(copy) id populationBlock; // @synthesize populationBlock=_populationBlock;
@@ -7609,14 +7960,19 @@ typedef struct {
 @property(retain) NSView *rightContentView; // @synthesize rightContentView=_rightContentView;
 @property(retain) NSView *leftContentView; // @synthesize leftContentView=_leftContentView;
 @property(retain) DVTComparisonSplitView *splitView; // @synthesize splitView=_splitView;
+- (void)dealloc;
 - (void)finalize;
 - (void)populateLeftContentSubview:(id)arg1 rightContentSubview:(id)arg2 withAnimation:(BOOL)arg3;
 - (void)viewWillMoveToSuperview:(id)arg1;
 - (void)showPlaceholderWithPopulationBlock:(id)arg1 usingQueue:(void)arg2;
+- (void)primitiveInvalidate;
+- (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 
 @end
 
-@interface DVTGradientImageButton : NSButton
+@interface DVTGradientImageButton : NSButton <DVTGradientStyleButton>
 {
 }
 
@@ -7700,6 +8056,7 @@ typedef struct {
     id _fontAndColorThemeObserver;
     BOOL _recursing;
     BOOL _computingTotalScrollSize;
+    BOOL _isRevertingState;
 }
 
 + (id)logAspect;
@@ -7736,6 +8093,8 @@ typedef struct {
 - (void)rescindObservations;
 - (void)setupObservations;
 - (void)_doSetupObservations;
+- (BOOL)didRevertState;
+- (void)willStartStateRestoration;
 - (id)scrollView:(id)arg1 pointInVisibleScroller:(struct CGPoint)arg2;
 - (void)scrollViewDidEndLiveResize:(id)arg1;
 - (void)scrollViewWillStartLiveResize:(id)arg1;
@@ -7803,10 +8162,16 @@ typedef struct {
     DVTDiffDescriptor *_diffDescriptor;
     id <DVTObservingToken> _observingToken;
     id <DVTObservingToken> _selectionToken;
+    id <DVTObservingToken> _disabledToken;
+    id <DVTObservingToken> _diffDescriptorsShouldAppearAsUnfocusedToken;
+    id <DVTObservingToken> _diffDescriptorsShouldAppearAsInactive;
     DVTMapTable *_diffDescriptorToAnnotation;
 }
 
 + (id)annotationProviderForContext:(id)arg1 error:(id *)arg2;
+@property(retain) id <DVTObservingToken> diffDescriptorsShouldAppearAsInactiveToken; // @synthesize diffDescriptorsShouldAppearAsInactiveToken=_diffDescriptorsShouldAppearAsInactive;
+@property(retain) id <DVTObservingToken> diffDescriptorsShouldAppearAsUnfocusedToken; // @synthesize diffDescriptorsShouldAppearAsUnfocusedToken=_diffDescriptorsShouldAppearAsUnfocusedToken;
+@property(retain) id <DVTObservingToken> disabledToken; // @synthesize disabledToken=_disabledToken;
 @property(retain) id <DVTObservingToken> selectionToken; // @synthesize selectionToken=_selectionToken;
 @property(retain) id <DVTObservingToken> observingToken; // @synthesize observingToken=_observingToken;
 @property __weak DVTDiffDescriptor *diffDescriptor; // @synthesize diffDescriptor=_diffDescriptor;
@@ -7933,6 +8298,7 @@ typedef struct {
 - (struct CGRect)_layoutFrameForCellFrame:(struct CGRect)arg1;
 - (id)dvtExtraBindings;
 - (id)copyWithZone:(struct _NSZone *)arg1;
+- (void)dealloc;
 - (id)initWithCoder:(id)arg1;
 - (id)initImageCell:(id)arg1;
 - (id)initTextCell:(id)arg1;
@@ -7983,6 +8349,7 @@ typedef struct {
 @property(readonly) DVTSourceTextView *sourceTextView; // @synthesize sourceTextView=_sourceTextView;
 - (void)sizeToFitSuggestedSize:(struct CGSize)arg1 forAsset:(id)arg2;
 - (void)refreshWithAsset:(id)arg1;
+- (void)viewWillUninstall;
 - (void)viewDidInstall;
 - (void)setDelegate:(id)arg1;
 
@@ -8084,12 +8451,29 @@ typedef struct {
     int _dataSourceType;
     BOOL _representsMissingLines;
     BOOL _selected;
+    BOOL _disabled;
+    BOOL _focused;
+    BOOL _inactive;
     BOOL _builtHighlightedRanges;
 }
 
++ (id)unselectedConflictDiffInactiveTextAnnotationTheme;
++ (id)selectedConflictDiffInactiveTextAnnotationTheme;
++ (id)unselectedConflictDiffUnfocusedTextAnnotationTheme;
++ (id)selectedConflictDiffUnfocusedTextAnnotationTheme;
 + (id)unselectedConflictDiffTextAnnotationTheme;
 + (id)selectedConflictDiffTextAnnotationTheme;
++ (id)unselectedDiffInactiveDisabledTextAnnotationTheme;
++ (id)unselectedDiffUnfocusedDisabledTextAnnotationTheme;
++ (id)unselectedDiffDisabledTextAnnotationTheme;
++ (id)selectedDiffInactiveDisabledTextAnnotationTheme;
++ (id)selectedDiffUnfocusedDisabledTextAnnotationTheme;
++ (id)selectedDiffDisabledTextAnnotationTheme;
++ (id)unselectedDiffInactiveTextAnnotationTheme;
++ (id)unselectedDiffUnfocusedTextAnnotationTheme;
 + (id)unselectedDiffTextAnnotationTheme;
++ (id)selectedDiffInactiveTextAnnotationTheme;
++ (id)selectedDiffUnfocusedTextAnnotationTheme;
 + (id)selectedDiffTextAnnotationTheme;
 @property int dataSourceType; // @synthesize dataSourceType=_dataSourceType;
 @property BOOL builtHighlightedRanges; // @synthesize builtHighlightedRanges=_builtHighlightedRanges;
@@ -8098,8 +8482,12 @@ typedef struct {
 - (void)drawHighlightedRangesInRect:(struct CGRect)arg1 textView:(id)arg2;
 - (void)annotationWillDrawInTextView:(id)arg1;
 - (void)drawLineHighlightInRect:(struct CGRect)arg1 textView:(id)arg2;
+- (void)adjustParagraphIndexBy:(long long)arg1 lengthBy:(long long)arg2;
 - (id)description;
 @property(readonly) BOOL conflict;
+@property BOOL inactive;
+@property BOOL focused;
+@property BOOL disabled;
 @property BOOL selected;
 @property(retain) DVTDiffDescriptor *diffDescriptor;
 - (BOOL)hideCarets;
@@ -8156,6 +8544,7 @@ typedef struct {
 - (struct CGRect)titleRectForBounds:(struct CGRect)arg1;
 - (id)dvtExtraBindings;
 - (id)copyWithZone:(struct _NSZone *)arg1;
+- (void)dealloc;
 - (id)initWithCoder:(id)arg1;
 - (id)initImageCell:(id)arg1;
 - (id)initTextCell:(id)arg1;
@@ -8168,7 +8557,7 @@ typedef struct {
     DVTLibraryDetailEditorController *_currentEditorViewController;
     id <DVTLibraryDetailPopUpContentControllerDelegate> _delegate;
     DVTLibraryDetailPopUpController *_popUpController;
-    DVTDelayedValidator *_replacementViewValidator;
+    DVTDelayedInvocation *_replacementViewInvocation;
     DVTChoice *_selectedDetailControllerChoice;
     DVTLibraryController *_libraryController;
     DVTLibraryAsset *_assetDetailViewAsset;
@@ -8208,6 +8597,7 @@ typedef struct {
 @property(readonly) DVTLibraryAsset *assetDetailViewAsset;
 - (void)setAssetDetailViewAsset:(id)arg1;
 - (void)observeValueForKeyPath:(id)arg1 ofObject:(id)arg2 change:(id)arg3 context:(void *)arg4;
+- (void)viewWillUninstall;
 - (void)viewDidInstall;
 - (id)selectedAsset;
 @property BOOL canEditSelectedAsset;
@@ -8252,7 +8642,7 @@ typedef struct {
 {
     id _doneButtonClickHandlerBlock;
     DVTHUDPopUpContentViewController *_viewController;
-    DVTDelayedValidator *_layoutValidator;
+    DVTDelayedInvocation *_layoutInvocation;
     struct CGSize _lastLayoutContentSize;
     DVTHUDPopUpView *_popupView;
     NSButton *_doneButton;
@@ -8282,6 +8672,7 @@ typedef struct {
 - (void)_contentViewFrameChangedNotification:(id)arg1;
 - (void)clickedDoneButton:(id)arg1;
 - (void)close:(id)arg1;
+- (void)close;
 - (BOOL)windowShouldClose:(id)arg1;
 - (void)fadeOutAndCloseWindow;
 - (void)closeWindowAndEnd;
@@ -8338,7 +8729,7 @@ typedef struct {
 
 @end
 
-@interface DVTGradientImagePopUpButton : NSPopUpButton
+@interface DVTGradientImagePopUpButton : NSPopUpButton <DVTGradientStyleButton>
 {
 }
 
@@ -8381,6 +8772,7 @@ typedef struct {
     NSColor *_sourceTextSidebarNumbersColor;
     NSColor *_sourceTextFoldbarBackgroundColor;
     NSColor *_sourceTextSelectionColor;
+    NSColor *_sourceTextSecondarySelectionColor;
     NSColor *_sourceTextInsertionPointColor;
     NSColor *_sourceTextInvisiblesColor;
     NSColor *_sourceTextBlockDimBackgroundColor;
@@ -8390,6 +8782,7 @@ typedef struct {
     NSColor *_sourceTextTokenizedBackgroundSelectedColor;
     NSColor *_consoleTextBackgroundColor;
     NSColor *_consoleTextSelectionColor;
+    NSColor *_consoleTextSecondarySelectionColor;
     NSColor *_consoleTextInsertionPointColor;
     NSColor *_consoleDebuggerPromptTextColor;
     NSColor *_consoleDebuggerInputTextColor;
@@ -8414,6 +8807,8 @@ typedef struct {
 }
 
 + (id)_defaultSourceCodeFont;
++ (id)keyPathsForValuesAffectingConsoleTextSecondarySelectionColor;
++ (id)keyPathsForValuesAffectingSourceTextSecondarySelectionColor;
 + (id)titleForNewPreferenceSetFromTemplate;
 + (id)preferenceSetsListHeader;
 + (id)preferenceSetsFileExtension;
@@ -8476,6 +8871,7 @@ typedef struct {
 @property(readonly) NSColor *consoleDebuggerInputTextColor;
 @property(readonly) NSColor *consoleDebuggerPromptTextColor;
 @property(readonly) NSColor *consoleTextInsertionPointColor;
+@property(readonly) NSColor *consoleTextSecondarySelectionColor;
 @property(readonly) NSColor *consoleTextSelectionColor;
 @property(readonly) NSColor *consoleTextBackgroundColor;
 @property(readonly) NSColor *sourceTextTokenizedBackgroundSelectedColor;
@@ -8487,6 +8883,7 @@ typedef struct {
 @property(readonly) NSColor *sourceTextBlockDimBackgroundColor;
 @property(readonly) NSColor *sourceTextInvisiblesColor;
 @property(readonly) NSColor *sourceTextInsertionPointColor;
+@property(readonly) NSColor *sourceTextSecondarySelectionColor;
 @property(readonly) NSColor *sourceTextSelectionColor;
 @property(readonly) NSColor *sourceTextFoldbarBackgroundColor;
 @property(readonly) NSColor *sourceTextSidebarNumbersColor;
@@ -8515,7 +8912,7 @@ typedef struct {
     NSMutableArray *_availablePreferenceSets;
     id <DVTPreferenceSet> _currentPreferenceSet;
     DVTMapTable *_preferenceSetObserverTokens;
-    DVTDelayedValidator *_autosavePreferenceSetsValidator;
+    DVTDelayedInvocation *_autosavePreferenceSetsInvocation;
 }
 
 + (void)initialize;
@@ -8579,12 +8976,8 @@ typedef struct {
     NSURL *_previewItemURL;
 }
 
-@property(readonly) NSURL *previewItemURL;
+- (id)previewItemURL;
 - (id)initWithPreviewItemURL:(id)arg1;
-
-// Remaining properties
-@property(readonly) id previewItemDisplayState;
-@property(readonly) NSString *previewItemTitle;
 
 @end
 
@@ -8726,7 +9119,7 @@ typedef struct {
 - (void)_sendChangeNotificiation;
 - (void)setOptionsFromFindDescriptor:(id)arg1;
 - (id)descriptionForDescriptor:(id)arg1;
-- (id)findDescriptorForString:(id)arg1 error:(id *)arg2;
+- (id)findDescriptorForAttributedString:(id)arg1 error:(id *)arg2;
 - (void)loadView;
 - (id)initWithSupportForRegex:(BOOL)arg1 andSupportForWordMatching:(BOOL)arg2 supportsCaseInsensitiveMatching:(BOOL)arg3;
 
@@ -8739,6 +9132,7 @@ typedef struct {
     NSProgressIndicator *_progressIndicator;
     long long _progress;
     BOOL _hidesProgress;
+    BOOL _showsMatchingBrace;
 }
 
 + (void)initialize;
@@ -8746,6 +9140,10 @@ typedef struct {
 @property(nonatomic) BOOL hidesProgress; // @synthesize hidesProgress=_hidesProgress;
 @property(readonly) NSProgressIndicator *progressIndicator; // @synthesize progressIndicator=_progressIndicator;
 @property(copy, nonatomic) id searchMenuBlock; // @synthesize searchMenuBlock=_searchMenuBlock;
+- (void)mouseDown:(id)arg1;
+- (BOOL)needsPanelToBecomeKey;
+- (BOOL)_mouseDownEventIsInSearchButton:(id)arg1;
+@property BOOL showsMatchingBrace;
 - (void)mouseExited:(id)arg1;
 - (void)mouseEntered:(id)arg1;
 @property long long progress;
@@ -8771,8 +9169,10 @@ typedef struct {
 {
     NSProgressIndicator *_progressIndicator;
     BOOL _showsProgress;
+    NSTextView *_fieldEditor;
 }
 
+@property(retain) NSTextView *fieldEditor; // @synthesize fieldEditor=_fieldEditor;
 @property BOOL showsProgress; // @synthesize showsProgress=_showsProgress;
 @property(retain) NSProgressIndicator *progressIndicator; // @synthesize progressIndicator=_progressIndicator;
 - (struct CGRect)searchButtonRectForBounds:(struct CGRect)arg1;
@@ -8866,10 +9266,11 @@ typedef struct {
 @interface DVTDelayedMenuButtonCell : NSButtonCell
 {
     NSMenuItem *_currentMenuItem;
-    struct CGPoint _previousMousePoint;
     NSMenu *_trampolineMenu;
     id <DVTDelayedMenuButtonDelegate> _delegate;
     NSImage *_inactiveImage;
+    NSImage *_disabledImage;
+    NSImage *_disabledInactiveImage;
     NSImage *_arrowImage;
     struct CGSize _originalArrowSize;
     BOOL _ignoredAction;
@@ -8880,6 +9281,8 @@ typedef struct {
 
 @property(copy, nonatomic) NSImage *arrowImage; // @synthesize arrowImage=_arrowImage;
 @property BOOL senderOfButtonActionIsButton; // @synthesize senderOfButtonActionIsButton=_senderOfButtonActionIsButton;
+@property(copy, nonatomic) NSImage *disabledInactiveImage; // @synthesize disabledInactiveImage=_disabledInactiveImage;
+@property(copy, nonatomic) NSImage *disabledImage; // @synthesize disabledImage=_disabledImage;
 @property(copy, nonatomic) NSImage *inactiveImage; // @synthesize inactiveImage=_inactiveImage;
 @property(retain, nonatomic) id <DVTDelayedMenuButtonDelegate> delegate; // @synthesize delegate=_delegate;
 @property(copy) NSImage *pressedImage;
@@ -9090,7 +9493,7 @@ typedef struct {
 
 @end
 
-@interface DVTTextCompletionSession : NSObject <DVTTextCompletionDataSourceDelegate, DVTInvalidation>
+@interface DVTTextCompletionSession : NSObject <DVTTextCompletionDataSourceDelegate, DVTInvalidation_New>
 {
     DVTCompletingTextView *_textView;
     DVTTextCompletionListWindowController *_listWindowController;
@@ -9104,7 +9507,6 @@ typedef struct {
     NSArray *_filteredCompletionsPriority;
     NSString *_usefulPrefix;
     long long _selectedCompletionIndex;
-    DVTStackBacktrace *_invalidationBacktrace;
     DVTPerformanceMetric *_currentMetric;
     int _pendingRequestState;
     BOOL _generatingCompletions;
@@ -9114,12 +9516,20 @@ typedef struct {
     BOOL _autoCompleteTimerExpired;
     BOOL _shownExplicitly;
     BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
+    NSDictionary *_currentCompletionContext;
 }
 
++ (BOOL)automaticallyNotifiesObserversOfValue;
 + (void)_adjustPrioritiesForRecentlyUsedItems:(id)arg1;
 + (void)_addToRecentCompletions:(id)arg1;
++ (void)initialize;
 + (id)keyPathsForValuesAffectingReadyToShowCompletions;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
+@property(readonly, nonatomic) NSDictionary *currentCompletionContext; // @synthesize currentCompletionContext=_currentCompletionContext;
 @property BOOL autoCompleteTimerExpired; // @synthesize autoCompleteTimerExpired=_autoCompleteTimerExpired;
 @property(nonatomic) long long selectedCompletionIndex; // @synthesize selectedCompletionIndex=_selectedCompletionIndex;
 @property(copy) NSString *usefulPrefix; // @synthesize usefulPrefix=_usefulPrefix;
@@ -9131,8 +9541,10 @@ typedef struct {
 @property(readonly) DVTTextCompletionListWindowController *listWindowController; // @synthesize listWindowController=_listWindowController;
 @property(readonly) DVTCompletingTextView *textView; // @synthesize textView=_textView;
 @property(readonly) NSString *debugStateString;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (BOOL)showInfoPanelForSelectedCompletion;
 - (struct _NSRange)replacementRangeForSuggestedRange:(struct _NSRange)arg1;
 - (id)_prefixForCurrentLocation;
@@ -9141,8 +9553,9 @@ typedef struct {
 - (long long)_indexOfItem:(id)arg1 inAlphabeticalList:(id)arg2 mustBeThere:(BOOL)arg3;
 - (id)_commonPrefixForItems:(id)arg1;
 - (id)_usefulPartialCompletionPrefixForItems:(id)arg1 selectedIndex:(unsigned long long)arg2 filteringPrefix:(id)arg3;
-- (void)_setFilteringPrefix:(id)arg1;
+- (void)_setFilteringPrefix:(id)arg1 forceFilter:(BOOL)arg2;
 - (void)_ensureCompletionsUpToDate;
+- (void)_endCodeCompletionStatistic:(double)arg1;
 - (id)attributesForCompletionAtCharacterIndex:(unsigned long long)arg1 effectiveRange:(struct _NSRange *)arg2;
 - (BOOL)_gotUsefulCompletionsToShowInList:(id)arg1;
 - (BOOL)_shouldSetCursorLocation:(unsigned long long)arg1;
@@ -9188,7 +9601,7 @@ typedef struct {
 {
     DVTTextCompletionSession *_session;
     id <DVTObservingToken> _sessionSelectionObserver;
-    id <DVTTextCompletionItem> _previousSelectedItem;
+    id <DVTTextCompletionItem> _previousSelectedItem_dvtWeak;
     DVTMapTable *_previewTextPerItem;
     NSString *_replacedUserPrefix;
     struct _NSRange _previewRange;
@@ -9218,6 +9631,7 @@ typedef struct {
 - (void)showInlinePreview;
 - (id)initWithSession:(id)arg1;
 @property(readonly, getter=isShowingInlinePreview) BOOL showingInlinePreview;
+@property __weak id <DVTTextCompletionItem> previousSelectedItem;
 
 @end
 
@@ -9226,6 +9640,9 @@ typedef struct {
     NSButtonCell *_buttonCell;
     NSImage *_iconImage;
     NSImage *_alternateIconImage;
+    NSImage *_inactiveIconImage;
+    NSImage *_disabledIconImage;
+    NSImage *_disabledInactiveIconImage;
     struct CGSize _iconSize;
     double _widthRatio;
     NSImage *_arrowImage;
@@ -9249,6 +9666,9 @@ typedef struct {
 - (BOOL)_shouldShowMenuImmediately:(id)arg1;
 - (BOOL)_shouldShowMenu;
 - (void)setControlSize:(unsigned long long)arg1;
+@property(copy) NSImage *disabledInactiveIconImage;
+@property(copy) NSImage *disabledIconImage;
+@property(copy) NSImage *inactiveIconImage;
 @property(copy) NSImage *alternateIconImage;
 @property(copy) NSImage *iconImage; // @synthesize iconImage=_iconImage;
 - (void)highlight:(BOOL)arg1 withFrame:(struct CGRect)arg2 inView:(id)arg3;
@@ -9277,6 +9697,8 @@ typedef struct {
 - (void)errorPresentationDidCompleteWithResultCode:(long long)arg1 context:(void *)arg2;
 - (BOOL)sendAction:(SEL)arg1 to:(id)arg2 from:(id)arg3;
 - (id)addActionMonitorWithHandlerBlock:(id)arg1;
+- (void)_enableMainThreadLatencyCheckerWithMilliSecondsThreshholdBeforeSPOD:(unsigned long long)arg1 milliSecondsThreshholdBeforeUNSPOD:(unsigned long long)arg2 milliSecondsBetweenPings:(unsigned long long)arg3;
+- (void)_really_enableMainThreadLatencyCheckerWithMilliSecondsThreshholdBeforeSPOD:(unsigned long long)arg1 milliSecondsThreshholdBeforeUNSPOD:(unsigned long long)arg2 milliSecondsBetweenPings:(unsigned long long)arg3;
 
 @end
 
@@ -9286,7 +9708,7 @@ typedef struct {
 }
 
 @property(readonly) id handlerBlock; // @synthesize handlerBlock=_handlerBlock;
-@property(readonly, getter=isCancelled) BOOL cancelled;
+- (BOOL)isCancelled;
 - (void)cancel;
 - (id)initWithHandlerBlock:(id)arg1;
 
@@ -9299,21 +9721,6 @@ typedef struct {
     void *outerContext;
     NSError *error;
 }
-
-@end
-
-@interface DVTTextCompletionInfoWindowController : DVTHUDPopUpController
-{
-}
-
-@end
-
-@interface DVTTextCompletionInfoContentViewController : DVTHUDPopUpContentViewController
-{
-}
-
-+ (id)defaultViewNibName;
-- (CDStruct_bf6d4a14)contentInset;
 
 @end
 
@@ -9397,7 +9804,6 @@ typedef struct {
 + (void)setCellClass:(Class)arg1;
 + (Class)cellClass;
 - (void)bind:(id)arg1 toObject:(id)arg2 withKeyPath:(id)arg3 options:(id)arg4;
-- (id)currentEditor;
 - (void)textDidEndEditing:(id)arg1;
 - (BOOL)resignFirstResponder;
 @property double pointSize;
@@ -9476,71 +9882,19 @@ typedef struct {
 
 @end
 
-@interface DVTColorPickerPopUpButton : NSView <DVTWindowActivationStateObserver, NSCoding, NSMenuDelegate>
+@interface DVTColorPickerPopUpButton : DVTAbstractColorPicker
 {
-    id target;
-    SEL action;
-    NSMenu *colorsMenu;
     struct CGRect popUpButtonArrowsRect;
     struct CGRect colorWellViewRect;
     struct CGRect colorLabelRect;
     struct CGRect swatchRect;
     struct CGRect colorLabelTitleRect;
-    NSColor *color;
     NSDictionary *imageStateDictionary;
-    DVTMutableOrderedDictionary *suggestedColors;
-    NSColor *defaultColor;
-    BOOL supportsNilColor;
-    id colorValueBindingController;
-    NSString *colorValueBindingKeyPath;
-    id <DVTObservingToken> colorListBindingObservation;
-    id <DVTObservingToken> colorValueBindingObservation;
-    id <DVTObservingToken> supportsNilColorBindingObservation;
-    unsigned long long controlSize;
-    int defaultColorMode;
-    id <DVTObservingToken> windowActivationObservation;
-    BOOL highlighted;
-    BOOL active;
-    BOOL enabled;
 }
 
 + (id)imageStateDictionaryForControlSize:(unsigned long long)arg1;
-@property(readonly, getter=isActive) BOOL active; // @synthesize active;
-@property(nonatomic, getter=isEnabled) BOOL enabled; // @synthesize enabled;
-@property BOOL supportsNilColor; // @synthesize supportsNilColor;
-@property(retain) DVTMutableOrderedDictionary *suggestedColors; // @synthesize suggestedColors;
-@property SEL action; // @synthesize action;
-@property(retain) id target; // @synthesize target;
-- (void)unbind:(id)arg1;
-- (void)bind:(id)arg1 toObject:(id)arg2 withKeyPath:(id)arg3 options:(id)arg4;
-- (void)observedColorValueDidChangeToValue:(id)arg1;
-- (void)displayColorPanel:(id)arg1;
-- (void)takeDrawnColorFrom:(id)arg1;
-- (void)takeDrawnColorFromPopUpMenu:(id)arg1;
-- (void)sendAction;
-- (void)beginColorDragForEvent:(id)arg1;
-- (id)imageForDraggedColor:(id)arg1;
-- (id)colorForDragging;
-- (BOOL)performDragOperation:(id)arg1;
-- (unsigned long long)draggingEntered:(id)arg1;
-- (void)colorPanelColorChanged:(id)arg1;
-- (void)colorPanelWillClose:(id)arg1;
-- (void)window:(id)arg1 didChangeActivationState:(long long)arg2;
-- (void)colorPickerDidBecomeActive:(id)arg1;
-- (void)colorChosenFromColorChooser:(id)arg1;
-- (void)moveUp:(id)arg1;
-- (void)moveDown:(id)arg1;
-- (void)performClick:(id)arg1;
 - (void)mouseDown:(id)arg1;
 - (BOOL)isMouseEventInColorWellRect:(id)arg1;
-- (void)displayColorPanel;
-- (BOOL)canBecomeKeyView;
-- (BOOL)becomeFirstResponder;
-- (BOOL)resignFirstResponder;
-- (BOOL)acceptsFirstResponder;
-- (BOOL)acceptsFirstMouse:(id)arg1;
-- (void)viewWillMoveToWindow:(id)arg1;
-- (void)showColorsMenu;
 - (void)drawRect:(struct CGRect)arg1;
 - (void)drawColorLabel;
 - (void)drawColorWell;
@@ -9550,15 +9904,11 @@ typedef struct {
 - (id)effectiveAttributedTitle;
 - (id)attributedTitleForTitle:(id)arg1;
 - (id)titleAttributes;
+- (double)swatchHeight;
 - (id)effectiveImageForControlPart:(int)arg1;
 - (id)effectivePopUpButtonArrowsRightCapImage;
-- (id)effectiveSwatchFillColor;
-- (void)putControlInMixedState;
-- (id)multipleValueColor;
-- (void)populateColorsMenu;
-- (id)menuItemImageForColor:(id)arg1 withSize:(struct CGSize)arg2;
-- (id)effectiveStrokeColor;
 - (id)effectiveTextColor;
+- (struct CGPoint)popUpMenuLocation;
 - (double)horizontalMenuOffset;
 - (double)verticalMenuOffset;
 - (void)sizeRectsForDrawing;
@@ -9568,35 +9918,11 @@ typedef struct {
 - (double)widthForPopUpButton;
 - (CDStruct_bf6d4a14)shadowInset;
 - (BOOL)isShowingTitle;
-- (BOOL)isShowingDefaultColor;
-- (BOOL)isShowingMixedColor;
-- (BOOL)isShowingNamedColor;
-- (BOOL)supportsDefaultColor;
 - (struct CGRect)insetRectForSwatchRect:(struct CGRect)arg1;
 - (struct CGRect)swatchRectForColorWellRect:(struct CGRect)arg1;
-- (double)noColorStrokeWidth;
-- (id)titleFont;
-- (void)setSuggestedColorsUsingColorList:(id)arg1;
-@property(retain) NSColor *color; // @dynamic color;
-- (BOOL)onActiveWindow;
-@property(retain) NSColor *defaultColor; // @synthesize defaultColor;
-@property int defaultColorMode; // @dynamic defaultColorMode;
-@property unsigned long long controlSize; // @synthesize controlSize;
-- (void)setHighlighted:(BOOL)arg1;
-- (void)setActive:(BOOL)arg1;
+- (void)setControlSize:(unsigned long long)arg1;
 - (id)imageStateDictionary;
 - (void)invalidateImageStateDictionary;
-- (id)nameForColor:(id)arg1;
-- (BOOL)containsColor:(id)arg1;
-- (void)removeColorWithName:(id)arg1;
-- (id)allColorNames;
-- (id)colorWithName:(id)arg1;
-- (void)addColor:(id)arg1 withName:(id)arg2;
-- (void)encodeWithCoder:(id)arg1;
-- (id)initWithCoder:(id)arg1;
-- (id)initWithFrame:(struct CGRect)arg1 colorList:(id)arg2 defaultColor:(id)arg3 defaultColorMode:(int)arg4;
-- (id)initWithFrame:(struct CGRect)arg1;
-- (void)commonInit;
 
 @end
 
@@ -9676,19 +10002,10 @@ typedef struct {
 
 @end
 
-@interface DVTTextCompletionListHelpButtonCell : NSButtonCell
-{
-}
-
-- (id)highlightColorWithFrame:(struct CGRect)arg1 inView:(id)arg2;
-- (void)awakeFromNib;
-
-@end
-
 @interface DVTImageAndTextLayer : CALayer
 {
     double _imageToTextSpacing;
-    CATextLayer *_textLayer;
+    DVTTextLayer *_textLayer;
     CALayer *_imageLayer;
     struct CGSize _imageSize;
 }
@@ -9721,6 +10038,12 @@ typedef struct {
 - (void)_buildDiffDescriptors;
 - (id)_diffDescriptorsByAddingUnmodified:(id)arg1;
 - (id)_diffContextForComparing:(id)arg1 with:(id)arg2;
+- (void)setIgnoresCommon:(BOOL)arg1;
+- (void)setIgnoresLineEnds:(BOOL)arg1;
+- (void)setIgnoresTrailingSpaces:(BOOL)arg1;
+- (void)setIgnoresSpacesInRuns:(BOOL)arg1;
+- (void)setIgnoresLeadingSpaces:(BOOL)arg1;
+- (void)setIgnoresCase:(BOOL)arg1;
 - (id)ancestorDataSource;
 - (void)setAncestorDataSource:(id)arg1;
 - (BOOL)_setAncestorDataSource:(id)arg1;
@@ -9779,27 +10102,35 @@ typedef struct {
 
 - (void)fire:(id)arg1;
 - (void)cancel;
-@property(readonly, getter=isCancelled) BOOL cancelled;
+- (BOOL)isCancelled;
 - (id)initWithTimeInterval:(double)arg1 repeats:(BOOL)arg2 handler:(id)arg3;
 
 @end
 
 @interface DVTColoredSpinner : NSView
 {
-    NSColor *_color;
     NSTimer *_timer;
     unsigned long long _animationStep;
-    NSMutableArray *_images;
+    NSArray *_images;
+    DVTDelayedInvocation *_goalStateInvocation;
+    BOOL _goalState;
+    NSDate *lastAnimationStartTime;
+    NSColor *_color;
     BOOL _displaysWhenStopped;
+    id <DVTColoredSpinnerDelegate> _delegate;
 }
 
 + (void)initialize;
+@property(nonatomic) __weak id <DVTColoredSpinnerDelegate> delegate; // @synthesize delegate=_delegate;
+@property BOOL displaysWhenStopped; // @synthesize displaysWhenStopped=_displaysWhenStopped;
+@property(copy, nonatomic) NSColor *color; // @synthesize color=_color;
 - (void)drawRect:(struct CGRect)arg1;
-- (void)_generateImages;
+- (BOOL)imagesAreValid;
 - (void)_timerStep:(id)arg1;
 @property(getter=isAnimating) BOOL animating;
-@property BOOL displaysWhenStopped;
-@property(copy) NSColor *color;
+- (void)validateGoalState:(id)arg1;
+- (void)setAnimating:(BOOL)arg1 delayBeforeStarting:(double)arg2 minimumTimeOn:(double)arg3;
+- (id)goalStateInvocation;
 - (id)dvtExtraBindings;
 
 @end
@@ -9917,6 +10248,7 @@ typedef struct {
 {
     id _dvtDelegate;
     DVTFilteringMenuSearchView *_newSearchView;
+    BOOL _initiallyShowsSearch;
     struct {
         unsigned int _delegateRespondsToFilterItemsInMenuForSearchString:1;
         unsigned int _delegateRespondsToMenuHasKeyEquivalentForEventTargetAction:1;
@@ -9930,6 +10262,7 @@ typedef struct {
     } _dvtFilteringMenuFlags;
 }
 
+@property(readonly) BOOL initiallyShowsSearch; // @synthesize initiallyShowsSearch=_initiallyShowsSearch;
 - (void)controlTextDidChange:(id)arg1;
 - (BOOL)control:(id)arg1 textView:(id)arg2 doCommandBySelector:(SEL)arg3;
 - (void)menuNeedsUpdate:(id)arg1;
@@ -9944,10 +10277,13 @@ typedef struct {
 - (void)performSearchWithString:(id)arg1 inMenu:(id)arg2;
 - (BOOL)searchFieldShouldTakeFocus:(id)arg1;
 - (void)setUpSearchFieldInMenu:(id)arg1 withString:(id)arg2;
+- (BOOL)_isSearchScrolledOutOfView:(id)arg1;
+- (void)_selectSearchItem:(id)arg1;
 - (id)_newSearchMenuItem;
 - (id)dvt_delegate;
 - (id)delegate;
 - (void)setDelegate:(id)arg1;
+- (id)initWithTitle:(id)arg1 initiallyShowsSearch:(BOOL)arg2;
 - (id)initWithTitle:(id)arg1;
 
 @end
@@ -10033,6 +10369,7 @@ typedef struct {
 @property(nonatomic) double delay; // @synthesize delay=_delay;
 - (void)cancelValidation;
 - (void)invalidate;
+- (void)dealloc;
 - (void)finalize;
 - (id)initWithBlock:(id)arg1;
 - (id)initWithTarget:(id)arg1 selector:(SEL)arg2;
@@ -10061,7 +10398,7 @@ typedef struct {
 
 @end
 
-@interface DVTClickableTextLayer : CATextLayer <DVTClickableLayer>
+@interface DVTClickableTextLayer : DVTTextLayer <DVTClickableLayer>
 {
     id _clickHandlerBlock;
     BOOL _disableClickHandler;
@@ -10232,7 +10569,7 @@ typedef struct {
 
 @interface DVTHelperApplication : NSObject
 {
-    NSURL *_bundleURL;
+    DVTFilePath *_bundlePath;
     NSString *_bundleIdentifier;
     NSString *_localizedName;
     NSRunningApplication *_runningApplication;
@@ -10244,14 +10581,464 @@ typedef struct {
 + (id)helperApplicationWithIdentifier:(id)arg1;
 + (void)initialize;
 @property(readonly) NSString *localizedName; // @synthesize localizedName=_localizedName;
-@property(readonly) NSURL *bundleURL; // @synthesize bundleURL=_bundleURL;
+@property(copy) DVTFilePath *bundlePath; // @synthesize bundlePath=_bundlePath;
 - (BOOL)launchAndActivateHelperApplication:(id *)arg1;
 @property(readonly) NSRunningApplication *runningApplication;
-- (id)initWithBundleURL:(id)arg1;
+- (id)initWithBundlePath:(id)arg1;
+@property(readonly) NSURL *bundleURL;
+
+@end
+
+@interface DVTSearchFieldTextEditor : NSTextView
+{
+}
+
+- (void)_didChangeSelection:(id)arg1;
+- (void)showMatchingBraceAtLocation:(id)arg1;
+- (void)autoHighlightMatchingBracketAtLocationIfNecessary:(unsigned long long)arg1;
+- (BOOL)respondsToSelector:(SEL)arg1;
+- (id)initWithFrame:(struct CGRect)arg1 textContainer:(id)arg2;
+
+@end
+
+@interface DVTFindPattern : NSObject <NSCoding, NSCopying>
+{
+    NSString *regularExpression;
+    NSString *tokenString;
+    NSString *displayString;
+    NSString *replacementString;
+    NSString *uniqueID;
+    BOOL allowsBackreferences;
+    BOOL isNegation;
+    int groupID;
+    int captureGroupID;
+    int repeatedPatternID;
+}
+
++ (id)placeholderFindPattern;
++ (unsigned long long)readingOptionsForType:(id)arg1 pasteboard:(id)arg2;
++ (id)readableTypesForPasteboard:(id)arg1;
+@property(copy) NSString *replacementString; // @synthesize replacementString;
+@property int repeatedPatternID; // @synthesize repeatedPatternID;
+@property(readonly) NSString *uniqueID; // @synthesize uniqueID;
+@property int captureGroupID; // @synthesize captureGroupID;
+@property BOOL isNegation; // @synthesize isNegation;
+@property BOOL allowsBackreferences; // @synthesize allowsBackreferences;
+@property int groupID; // @synthesize groupID;
+@property(copy) NSString *tokenString; // @synthesize tokenString;
+@property(copy) NSString *regularExpression; // @synthesize regularExpression;
+@property(copy) NSString *displayString; // @synthesize displayString;
+- (id)backreferenceExpression;
+- (id)replaceExpression;
+- (id)copyWithZone:(struct _NSZone *)arg1;
+- (id)initWithPropertyListRepresentation:(id)arg1;
+- (id)propertyListRepresentation;
+- (id)writableTypesForPasteboard:(id)arg1;
+- (id)initWithCoder:(id)arg1;
+- (void)encodeWithCoder:(id)arg1;
+- (void)generateNewUniqueID;
+- (void)_setUniqueID:(id)arg1;
+- (id)description;
+
+@end
+
+@interface DVTFindPatternAttachment : NSTextAttachment
+{
+}
+
+- (id)description;
+
+@end
+
+@interface DVTFindPatternAttachmentCell : NSTextAttachmentCell
+{
+    struct {
+        unsigned int _selected:1;
+        unsigned int _reserved:31;
+    } _tacFlags;
+    DVTFindPattern *_findPattern;
+    NSTextField<DVTFindPatternField> *_field;
+    NSColor *_DVTFindPatternForegroundColor;
+    NSColor *_DVTFindPatternBackgroundColor;
+    NSColor *_DVTFindPatternSelectedBackgroundColor;
+    NSColor *_DVTFindPatternRolloverForegroundColor;
+    NSColor *_DVTFindPatternRolloverBackgroundColor;
+    int cachedGroupID;
+}
+
+@property NSTextField<DVTFindPatternField> *field; // @synthesize field=_field;
+- (void)drawWithFrame:(struct CGRect)arg1 inView:(id)arg2 characterIndex:(unsigned long long)arg3 layoutManager:(id)arg4;
+- (void)drawWithFrame:(struct CGRect)arg1 inView:(id)arg2;
+- (void)drawInteriorWithFrame:(struct CGRect)arg1 inView:(id)arg2;
+- (void)drawTokenWithFrame:(struct CGRect)arg1 inView:(id)arg2;
+- (struct CGRect)pullDownRectForBounds:(struct CGRect)arg1;
+- (struct CGPoint)cellBaselineOffset;
+- (struct CGRect)cellFrameForTextContainer:(id)arg1 proposedLineFragment:(struct CGRect)arg2 glyphPosition:(struct CGPoint)arg3 characterIndex:(unsigned long long)arg4;
+- (struct CGRect)titleRectForBounds:(struct CGRect)arg1;
+- (struct CGRect)drawingRectForBounds:(struct CGRect)arg1;
+- (struct CGSize)cellSize;
+- (struct CGSize)cellSizeForBounds:(struct CGRect)arg1;
+- (id)pullDownImage;
+- (id)menu;
+- (BOOL)_hasMenu;
+- (id)textColor;
+- (id)tokenBackgroundColor;
+- (id)tokenForegroundColor;
+- (long long)interiorBackgroundStyle;
+- (void)observeValueForKeyPath:(id)arg1 ofObject:(id)arg2 change:(id)arg3 context:(void *)arg4;
+@property(retain) DVTFindPattern *findPattern;
+- (id)_attributedString;
+- (void)_setGroupID:(int)arg1;
+- (id)description;
+- (void)dealloc;
+- (id)init;
+- (id)initTextCell:(id)arg1;
+
+@end
+
+@interface DVTFindPatternFieldEditor : DVTSearchFieldTextEditor
+{
+}
+
++ (id)findPatternFieldEditorForWindow:(id)arg1;
+- (BOOL)readSelectionFromPasteboard:(id)arg1 type:(id)arg2;
+- (BOOL)writeSelectionToPasteboard:(id)arg1 type:(id)arg2;
+- (id)readablePasteboardTypes;
+- (id)writablePasteboardTypes;
+- (id)acceptableDragTypes;
+- (BOOL)usesFontPanel;
+- (void)setUsesFontPanel:(BOOL)arg1;
+- (BOOL)respondsToSelector:(SEL)arg1;
+- (id)initWithFrame:(struct CGRect)arg1;
+
+@end
+
+@interface DVTFindPatternComboBox : NSComboBox <DVTFindPatternField>
+{
+    id <DVTFindPatternManager> findPatternManager;
+    DVTFindPatternAttachmentCell *selectedAttachment;
+}
+
+@property id <DVTFindPatternManager> findPatternManager; // @synthesize findPatternManager;
+- (void)_selectedFindPattern:(id)arg1;
+- (id)menuForFindPatternAttachment:(id)arg1;
+- (id)_uniquePatterns;
+- (id)replacementExpression;
+- (id)regularExpression;
+- (id)findPatternArray;
+- (BOOL)hasFindPattern;
+- (id)textView:(id)arg1 shouldChangeTypingAttributes:(id)arg2 toAttributes:(id)arg3;
+- (void)textDidChange:(id)arg1;
+- (void)textView:(id)arg1 doubleClickedOnCell:(id)arg2 inRect:(struct CGRect)arg3 atIndex:(unsigned long long)arg4;
+- (void)textView:(id)arg1 clickedOnCell:(id)arg2 inRect:(struct CGRect)arg3 atIndex:(unsigned long long)arg4;
+- (BOOL)removeFindPattern:(id)arg1;
+- (id)_rangesOfFindPattern:(id)arg1;
+- (void)setFindPatternPropertyList:(id)arg1;
+- (id)findPatternPropertyList;
+- (id)plainTextValue;
+- (void)setFindPatternArray:(id)arg1;
+- (void)setAttributedStringValue:(id)arg1;
+- (void)_uniqueFindPatternsInAttributedStringAttachments:(id)arg1;
+- (void)setStringValue:(id)arg1;
+- (void)_updateFindPatternsWithNewPatterns:(id)arg1;
+- (void)_updateReplacePatternsWithNewPatterns:(id)arg1;
+- (void)_invalidateLayout;
+- (void)_insertFindPattern:(id)arg1;
+- (void)insertNewFindPattern:(id)arg1;
+- (void)_insertFindPatternAttachment:(id)arg1;
+- (id)_findPatternAttachmentForFindPattern:(id)arg1;
+- (BOOL)performKeyEquivalent:(id)arg1;
+- (BOOL)_eventIsInsertPatternKeyEquivalent:(id)arg1;
+- (id)_fieldEditor;
+- (BOOL)_isFindField;
+- (id)replaceField;
+- (id)findField;
+
+@end
+
+@interface DVTFindPatternTextField : NSTextField <DVTFindPatternField>
+{
+    id <DVTFindPatternManager> findPatternManager;
+    DVTFindPatternAttachmentCell *selectedAttachment;
+}
+
+@property id <DVTFindPatternManager> findPatternManager; // @synthesize findPatternManager;
+- (void)_selectedFindPattern:(id)arg1;
+- (id)menuForFindPatternAttachment:(id)arg1;
+- (id)_uniquePatterns;
+- (id)replacementExpression;
+- (id)regularExpression;
+- (id)findPatternArray;
+- (BOOL)hasFindPattern;
+- (id)textView:(id)arg1 shouldChangeTypingAttributes:(id)arg2 toAttributes:(id)arg3;
+- (void)textDidChange:(id)arg1;
+- (void)textView:(id)arg1 doubleClickedOnCell:(id)arg2 inRect:(struct CGRect)arg3 atIndex:(unsigned long long)arg4;
+- (void)textView:(id)arg1 clickedOnCell:(id)arg2 inRect:(struct CGRect)arg3 atIndex:(unsigned long long)arg4;
+- (BOOL)removeFindPattern:(id)arg1;
+- (id)_rangesOfFindPattern:(id)arg1;
+- (void)setFindPatternPropertyList:(id)arg1;
+- (id)findPatternPropertyList;
+- (id)plainTextValue;
+- (void)setFindPatternArray:(id)arg1;
+- (void)setAttributedStringValue:(id)arg1;
+- (void)_uniqueFindPatternsInAttributedStringAttachments:(id)arg1;
+- (void)setStringValue:(id)arg1;
+- (void)_updateFindPatternsWithNewPatterns:(id)arg1;
+- (void)_updateReplacePatternsWithNewPatterns:(id)arg1;
+- (void)_invalidateLayout;
+- (void)_insertFindPattern:(id)arg1;
+- (void)insertNewFindPattern:(id)arg1;
+- (void)_insertFindPatternAttachment:(id)arg1;
+- (id)_findPatternAttachmentForFindPattern:(id)arg1;
+- (BOOL)performKeyEquivalent:(id)arg1;
+- (BOOL)_eventIsInsertPatternKeyEquivalent:(id)arg1;
+- (id)_fieldEditor;
+- (BOOL)_isFindField;
+- (id)replaceField;
+- (id)findField;
+
+@end
+
+@interface DVTFindPatternSearchField : DVTSearchField <DVTFindPatternField>
+{
+    id <DVTFindPatternManager> findPatternManager;
+    DVTFindPatternAttachmentCell *selectedAttachment;
+}
+
+@property id <DVTFindPatternManager> findPatternManager; // @synthesize findPatternManager;
+- (void)_selectedFindPattern:(id)arg1;
+- (id)menuForFindPatternAttachment:(id)arg1;
+- (id)_uniquePatterns;
+- (id)replacementExpression;
+- (id)regularExpression;
+- (id)findPatternArray;
+- (BOOL)hasFindPattern;
+- (id)textView:(id)arg1 shouldChangeTypingAttributes:(id)arg2 toAttributes:(id)arg3;
+- (void)textDidChange:(id)arg1;
+- (void)textView:(id)arg1 doubleClickedOnCell:(id)arg2 inRect:(struct CGRect)arg3 atIndex:(unsigned long long)arg4;
+- (void)textView:(id)arg1 clickedOnCell:(id)arg2 inRect:(struct CGRect)arg3 atIndex:(unsigned long long)arg4;
+- (BOOL)removeFindPattern:(id)arg1;
+- (id)_rangesOfFindPattern:(id)arg1;
+- (void)setFindPatternPropertyList:(id)arg1;
+- (id)findPatternPropertyList;
+- (id)plainTextValue;
+- (void)setFindPatternArray:(id)arg1;
+- (void)setAttributedStringValue:(id)arg1;
+- (void)_uniqueFindPatternsInAttributedStringAttachments:(id)arg1;
+- (void)setStringValue:(id)arg1;
+- (void)_updateFindPatternsWithNewPatterns:(id)arg1;
+- (void)_updateReplacePatternsWithNewPatterns:(id)arg1;
+- (void)_invalidateLayout;
+- (void)_insertFindPattern:(id)arg1;
+- (void)insertNewFindPattern:(id)arg1;
+- (void)_insertFindPatternAttachment:(id)arg1;
+- (id)_findPatternAttachmentForFindPattern:(id)arg1;
+- (BOOL)performKeyEquivalent:(id)arg1;
+- (BOOL)_eventIsInsertPatternKeyEquivalent:(id)arg1;
+- (id)_fieldEditor;
+- (BOOL)_isFindField;
+- (id)replaceField;
+- (id)findField;
+
+@end
+
+@interface DVTFindPatternDescriptor : DVTFindRegularExpressionDescriptor <DVTTextlikeFindDescriptor>
+{
+    NSAttributedString *_findAttributedString;
+    int _matchStyle;
+}
+
++ (id)keyPathsForValuesAffectingDisplayAttributedString;
+@property(readonly) NSAttributedString *findAttributedString; // @synthesize findAttributedString=_findAttributedString;
+@property(readonly) int matchStyle; // @synthesize matchStyle=_matchStyle;
+- (id)displayAttributedString;
+- (BOOL)isEqual:(id)arg1;
+- (unsigned long long)hash;
+- (id)initWithAttributedString:(id)arg1 ignoreCase:(BOOL)arg2 matchStyle:(int)arg3;
+- (void)encodeWithCoder:(id)arg1;
+- (id)initWithCoder:(id)arg1;
+- (id)copyWithZone:(struct _NSZone *)arg1;
+
+@end
+
+@interface DVTAbstractColorPicker : NSView <DVTWindowActivationStateObserver, NSMenuDelegate>
+{
+    NSMenu *_colorsMenu;
+    id _colorValueBindingController;
+    NSString *_colorValueBindingKeyPath;
+    id <DVTObservingToken> _colorListBindingObservation;
+    id <DVTObservingToken> _colorValueBindingObservation;
+    id <DVTObservingToken> _supportsNilColorBindingObservation;
+    id <DVTObservingToken> _windowActivationObservation;
+    BOOL _enabled;
+    DVTMutableOrderedDictionary *_suggestedColors;
+    unsigned long long _controlSize;
+    NSColor *_color;
+    SEL _action;
+    id _target;
+    NSColor *_defaultColor;
+    int _defaultColorMode;
+    BOOL _highlighted;
+    BOOL _supportsNilColor;
+    BOOL _active;
+}
+
+@property(nonatomic, getter=isActive) BOOL active; // @synthesize active=_active;
+@property BOOL supportsNilColor; // @synthesize supportsNilColor=_supportsNilColor;
+@property(nonatomic, getter=isHighlighted) BOOL highlighted; // @synthesize highlighted=_highlighted;
+@property(nonatomic) int defaultColorMode; // @synthesize defaultColorMode=_defaultColorMode;
+@property(retain, nonatomic) NSColor *defaultColor; // @synthesize defaultColor=_defaultColor;
+@property(retain) id target; // @synthesize target=_target;
+@property SEL action; // @synthesize action=_action;
+@property(retain, nonatomic) NSColor *color; // @synthesize color=_color;
+@property(nonatomic) unsigned long long controlSize; // @synthesize controlSize=_controlSize;
+@property(retain) DVTMutableOrderedDictionary *suggestedColors; // @synthesize suggestedColors=_suggestedColors;
+@property(nonatomic, getter=isEnabled) BOOL enabled; // @synthesize enabled=_enabled;
+- (void)unbind:(id)arg1;
+- (void)bind:(id)arg1 toObject:(id)arg2 withKeyPath:(id)arg3 options:(id)arg4;
+- (void)observedColorValueDidChangeToValue:(id)arg1;
+- (void)displayColorPanel:(id)arg1;
+- (void)takeDrawnColorFrom:(id)arg1;
+- (void)takeDrawnColorFromPopUpMenu:(id)arg1;
+- (void)sendAction;
+- (void)beginColorDragForEvent:(id)arg1;
+- (id)imageForDraggedColor:(id)arg1;
+- (BOOL)performDragOperation:(id)arg1;
+- (unsigned long long)draggingEntered:(id)arg1;
+- (void)colorPanelColorChanged:(id)arg1;
+- (void)colorPanelWillClose:(id)arg1;
+- (void)window:(id)arg1 didChangeActivationState:(long long)arg2;
+- (void)colorPickerDidBecomeActive:(id)arg1;
+- (void)colorChosenFromColorChooser:(id)arg1;
+- (void)moveUp:(id)arg1;
+- (void)moveDown:(id)arg1;
+- (void)performClick:(id)arg1;
+- (void)displayColorPanel;
+- (BOOL)canBecomeKeyView;
+- (BOOL)becomeFirstResponder;
+- (BOOL)resignFirstResponder;
+- (BOOL)acceptsFirstResponder;
+- (BOOL)acceptsFirstMouse:(id)arg1;
+- (void)viewWillMoveToWindow:(id)arg1;
+- (void)showColorsMenu;
+- (double)minimumPopUpMenuWidth;
+- (struct CGPoint)popUpMenuLocation;
+- (id)effectiveSwatchFillColor;
+- (id)multipleValueColor;
+- (void)putIntoMixedState;
+- (void)populateColorsMenu;
+- (double)swatchHeight;
+- (id)swatchImageForColor:(id)arg1 withSize:(struct CGSize)arg2;
+- (id)effectiveSwatchBorderColor;
+- (id)effectiveTextColor;
+- (BOOL)isShowingTitle;
+- (BOOL)isShowingDefaultColor;
+- (BOOL)isShowingMixedColor;
+- (BOOL)isShowingNamedColor;
+- (BOOL)supportsDefaultColor;
+- (double)noColorStrokeWidth;
+- (id)titleFont;
+- (void)setSuggestedColorsUsingColorList:(id)arg1;
+- (BOOL)isOnActiveWindow;
+- (id)nameForColor:(id)arg1;
+- (BOOL)containsColor:(id)arg1;
+- (void)encodeWithCoder:(id)arg1;
+- (id)initWithCoder:(id)arg1;
+- (id)initWithFrame:(struct CGRect)arg1 colorList:(id)arg2 defaultColor:(id)arg3 defaultColorMode:(int)arg4;
+- (id)initWithFrame:(struct CGRect)arg1;
+- (void)commonInit;
+
+@end
+
+@interface DVTSegmentColorWell : DVTAbstractColorPicker
+{
+    NSImage *_icon;
+}
+
+@property(copy, nonatomic) NSImage *icon; // @synthesize icon=_icon;
+- (void)drawRect:(struct CGRect)arg1;
+- (struct CGRect)swatchRect;
+- (double)swatchHeight;
+- (void)mouseDown:(id)arg1;
+- (id)effectiveBorderColor;
+- (id)effectiveDarkColor;
+- (id)effectiveLightColor;
+
+@end
+
+@interface DVTSharedLayerDelegate : NSObject
+{
+}
+
++ (id)sharedInstance;
+- (BOOL)layer:(id)arg1 shouldInheritContentsScale:(double)arg2 fromWindow:(id)arg3;
+
+@end
+
+@interface __DVTThemeNSImageAdditionsClass : NSObject
+{
+}
+
+@end
+
+@interface DVTTextLayer : CATextLayer
+{
+}
+
+- (void)drawInContext:(struct CGContext *)arg1;
+
+@end
+
+@interface DVTIconSetComponent : NSObject
+{
+    BOOL _faultedImage;
+    id _image;
+    struct CGSize _size;
+    long long _scale;
+    NSURL *_fileURL;
+}
+
+@property(readonly) NSURL *fileURL; // @synthesize fileURL=_fileURL;
+@property(readonly) long long scale; // @synthesize scale=_scale;
+@property(readonly) struct CGSize size; // @synthesize size=_size;
+- (id)image;
+@property(readonly) struct CGImage *cgImage;
+- (id)description;
+- (long long)compare:(id)arg1;
+@property(readonly) NSString *fileName;
+- (id)initWithFileURL:(id)arg1 size:(struct CGSize)arg2 scale:(long long)arg3;
+
+@end
+
+@interface DVTIconSet : NSObject
+{
+    NSArray *_components;
+}
+
++ (id)generateThumbnailFromURL:(id)arg1 targetSize:(struct CGSize)arg2 error:(id *)arg3;
++ (id)generateImageFromURL:(id)arg1 error:(id *)arg2;
+@property(readonly) NSArray *components; // @synthesize components=_components;
+- (id)description;
+- (id)generateImageReturningError:(id *)arg1;
+- (id)initWithURL:(id)arg1 error:(id *)arg2;
+
+@end
+
+@interface DVTInvalidDataIndicatorView : NSView
+{
+    NSString *_alertInformativeText;
+    NSString *_alertMessage;
+}
+
+@property(copy) NSString *alertMessage; // @synthesize alertMessage=_alertMessage;
+@property(copy) NSString *alertInformativeText; // @synthesize alertInformativeText=_alertInformativeText;
+- (void)drawRect:(struct CGRect)arg1;
+- (void)mouseUp:(id)arg1;
 
 @end
 
 @interface NSObject (DVTBindingHelperAccess)
+- (void)dvt_clearBindingHelper;
 @property(readonly) DVTBindingHelper *bindingHelper;
 @end
 
@@ -10262,23 +11049,22 @@ typedef struct {
 - (id)dvtExtraBindings;
 @end
 
+@interface NSBezierPath (DVTComparisonBezierPathAdditions)
++ (id)dvtComparison_bezierPathWithRect:(struct CGRect)arg1 cornerRadius:(double)arg2;
+@end
+
 @interface NSTreeNode (DVTTreeNodeUtilities)
 - (id)dvt_representedObjectLineage;
 @end
 
 @interface NSImage (DVTNSImageAdditions)
 + (id)dvt_imageWithSize:(struct CGSize)arg1 scaleFactors:(id)arg2 flipped:(BOOL)arg3 fromCommands:(id)arg4;
++ (id)dvt_imageWithSize:(struct CGSize)arg1 flipped:(BOOL)arg2 forRenderingIntoContext:(id)arg3 fromCommands:(id)arg4;
++ (id)dvt_imageWithSize:(struct CGSize)arg1 scaleFactors:(id)arg2 flipped:(BOOL)arg3 forRenderingIntoContext:(id)arg4 fromCommands:(id)arg5;
 + (id)dvt_imageWithSize:(struct CGSize)arg1 fromCommands:(id)arg2;
 + (id)dvt_imageWithSize:(struct CGSize)arg1 flipped:(BOOL)arg2 fromCommands:(id)arg3;
 + (id)dvt_imageWithPDFDrawingWithSize:(struct CGSize)arg1 andCommands:(id)arg2;
-+ (id)dvt_fixItErrorIcon;
-+ (id)dvt_fixItWarningIcon;
-+ (id)dvt_successIcon;
-+ (id)dvt_issueIcon;
-+ (id)dvt_warningIcon;
-+ (id)dvt_errorIcon;
-+ (id)dvt_questionMarkIcon;
-+ (id)dvt_unknownFSObjectIcon;
++ (id)dvt_imageForApplicationBundleIdentifier:(id)arg1;
 + (BOOL)dvt_isTemplateName:(id)arg1;
 + (id)dvt_imageNamed:(id)arg1 inBundleForExtension:(id)arg2;
 + (id)dvt_imageNamed:(id)arg1 inBundleForClass:(Class)arg2;
@@ -10368,7 +11154,9 @@ typedef struct {
 + (id)dvt_visibleWindowsFromFrontToBack;
 - (id)dvt_registerActivationStateObserver:(id)arg1;
 - (id)dvt_windowActivationNotifier;
+- (void)dvt_centerOnMainWindowScreen;
 - (void)dvt_centerOnMainMenuScreen;
+- (void)_dvt_centerOnScreen:(id)arg1;
 @property(retain) NSString *dvt_frameAsString;
 @property(readonly) BOOL dvt_inFullScreenMode;
 @end
@@ -10495,6 +11283,11 @@ typedef struct {
 - (struct CGRect)dvt_transformRect:(struct CGRect)arg1;
 @end
 
+@interface NSBezierPath (MailAdditions)
++ (id)mv_bezierPathWithAttributedString:(id)arg1 size:(struct CGSize)arg2;
+- (void)fillWithInnerShadow:(id)arg1;
+@end
+
 @interface NSView (DVTNSViewAdditions)
 - (void)dvt_viewDidEndLiveAnimation;
 - (void)dvt_viewWillBeginLiveAnimation;
@@ -10591,7 +11384,7 @@ typedef struct {
 @end
 
 @interface NSString (DVTSizeAdditions)
-- (struct CGSize)dvt_sizeWithAttributes:(id)arg1 constrainedToWidth:(double)arg2;
+- (struct CGSize)dvt_sizeWithAttributes:(id)arg1 maxWidth:(double)arg2;
 @end
 
 @interface NSParagraphStyle (DVTNSParagraphStyleAdditions)
@@ -10610,11 +11403,46 @@ typedef struct {
 @end
 
 @interface CALayer (DVTCALayerAdditions)
+- (BOOL)accessibilityShouldUseUniqueId;
+- (BOOL)accessibilitySupportsOverriddenAttributes;
+- (id)accessibilityFocusedUIElement;
+- (id)accessibilityHitTest:(struct CGPoint)arg1;
+- (void)accessibilityPerformAction:(id)arg1;
+- (id)accessibilityActionDescription:(id)arg1;
+- (id)accessibilityActionNames;
+- (void)accessibilitySetValue:(id)arg1 forAttribute:(id)arg2;
+- (BOOL)accessibilityIsAttributeSettable:(id)arg1;
+- (id)accessibilityAttributeValue:(id)arg1;
+- (id)accessibilityAttributeNames;
+- (BOOL)accessibilityIsIgnored;
+- (void)addSublayerAndUpdateContentsScale:(id)arg1;
+- (void)recursivelyUpdateScaleFactor;
+- (void)recursivelyUpdateContentsScale:(double)arg1 fromWindow:(id)arg2;
 - (void)dvt_setPositionAndMakePixelAligned:(struct CGPoint)arg1;
+- (struct CGRect)convertRectToScreen:(struct CGRect)arg1;
+- (struct CGRect)convertRectFromScreen:(struct CGRect)arg1;
+- (struct CGRect)convertRect:(struct CGRect)arg1 toView:(id)arg2;
+- (struct CGRect)convertRect:(struct CGRect)arg1 fromView:(id)arg2;
+- (struct CGPoint)convertPointToScreen:(struct CGPoint)arg1;
+- (struct CGPoint)convertPointFromScreen:(struct CGPoint)arg1;
+- (struct CGPoint)convertPoint:(struct CGPoint)arg1 toView:(id)arg2;
+- (struct CGPoint)convertPoint:(struct CGPoint)arg1 fromView:(id)arg2;
+@property(readonly) NSArray *sublayersExcludingHiddenLayers;
+@property(readonly) NSView *view;
+@property(readonly) NSWindow *window;
+@property(readonly) CALayer *rootLayer;
+@end
+
+@interface CATextLayer (DVTCALayerAdditions)
+- (id)accessibilityAttributeValue:(id)arg1;
+- (id)accessibilityAttributeNames;
+- (BOOL)accessibilityIsIgnored;
 @end
 
 @interface NSScreen (DVTNSScreenAdditions)
++ (double)dvt_maximumBackingScaleFactor;
 + (id)dvt_backingScaleFactors;
++ (id)dvt_commonScaleFactors;
 + (struct CGPoint)dvt_coreGraphicsScreenPointForAppKitScreenPoint:(struct CGPoint)arg1;
 + (id)dvt_screenContainingPoint:(struct CGPoint)arg1;
 - (struct CGRect)dvt_visibleFrame;
@@ -10655,5 +11483,101 @@ typedef struct {
 
 @interface CATransaction (DVTCATransactionAdditions)
 + (void)dvt_preserveTransactionPropertyStateDuring:(id)arg1;
+@end
+
+@interface NSSegmentedControl (DVTNSSegmentedControlAdditions)
+- (void)dvt_setAccessibilityDescription:(id)arg1 forSegment:(unsigned long long)arg2;
+@end
+
+@interface NSATSTypesetter (DVTARCAdditions)
+- (BOOL)dvt_requiresWeakIntercession;
+@end
+
+@interface NSColorSpace (DVTARCAdditions)
+- (BOOL)dvt_requiresWeakIntercession;
+@end
+
+@interface NSFont (DVTARCAdditions)
+- (BOOL)dvt_requiresWeakIntercession;
+@end
+
+@interface NSFontManager (DVTARCAdditions)
+- (BOOL)dvt_requiresWeakIntercession;
+@end
+
+@interface NSFontPanel (DVTARCAdditions)
+- (BOOL)dvt_requiresWeakIntercession;
+@end
+
+@interface NSImage (DVTARCAdditions)
+- (BOOL)dvt_requiresWeakIntercession;
+@end
+
+@interface NSParagraphStyle (DVTARCAdditions)
+- (BOOL)dvt_requiresWeakIntercession;
+@end
+
+@interface NSTableCellView (DVTARCAdditions)
+- (BOOL)dvt_requiresWeakIntercession;
+@end
+
+@interface NSTextView (DVTARCAdditions)
+- (BOOL)dvt_requiresWeakIntercession;
+@end
+
+@interface NSViewController (DVTARCAdditions)
+- (BOOL)dvt_requiresWeakIntercession;
+@end
+
+@interface NSWindow (DVTARCAdditions)
+- (BOOL)dvt_requiresWeakIntercession;
+@end
+
+@interface NSWindowController (DVTARCAdditions)
+- (BOOL)dvt_requiresWeakIntercession;
+@end
+
+@interface NSAttributedString (FindPatternAdditions)
++ (id)dvt_attributedStringFromPasteboardPropertyList:(id)arg1 inField:(id)arg2;
+- (id)dvt_stringByDeletingPatterns;
+- (id)dvt_replacementExpression;
+- (id)dvt_regularExpressionWithRange:(struct _NSRange)arg1 escapingStrings:(BOOL)arg2 usingBackreferences:(BOOL)arg3;
+- (id)dvt_regularExpression;
+- (id)dvt_findPatternArrayWithRange:(struct _NSRange)arg1 includingStrings:(BOOL)arg2;
+- (id)dvt_findPatternArray;
+- (BOOL)dvt_hasValidFindPattern;
+- (BOOL)dvt_hasFindPattern;
+- (id)dvt_pasteboardPropertyListFromRange:(struct _NSRange)arg1;
+@end
+
+@interface NSMutableAttributedString (FindPatternAdditions)
++ (id)dvt_mutableAttributedStringFromPatternArray:(id)arg1 inField:(id)arg2 excludingPatterns:(BOOL)arg3;
+- (void)dvt_replaceFindPatternAttachmentsWithAttributes:(id)arg1 negationAttributes:(id)arg2;
+- (void)dvt_setFindPatternAttachmentFont:(id)arg1;
+@end
+
+@interface NSImage (DVTThemeAdditions)
++ (id)dvt_tabIcon;
++ (id)dvt_issuesIcon;
++ (id)dvt_groupEveryingIcon;
++ (id)dvt_groupDefaultAssetIcon;
++ (id)dvt_groupLibrarySourceIcon;
++ (id)dvt_navPluginIcon;
++ (id)dvt_navToolIcon;
++ (id)dvt_navApplicationIcon;
++ (id)dvt_navFrameworkIcon;
++ (id)dvt_navGroupIcon;
++ (id)dvt_fixItErrorIcon;
++ (id)dvt_fixItWarningIcon;
++ (id)dvt_successIcon;
++ (id)dvt_issueIcon;
++ (id)dvt_warningIcon16x16;
++ (id)dvt_warningIcon12x12;
++ (id)dvt_warningIcon11x11;
++ (id)dvt_warningIcon;
++ (id)dvt_errorIconSmall;
++ (id)dvt_errorIcon;
++ (id)dvt_questionMarkIcon;
++ (id)dvt_unknownFSObjectIcon;
 @end
 

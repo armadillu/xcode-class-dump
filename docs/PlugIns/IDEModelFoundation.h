@@ -8,9 +8,9 @@
 
 /*
  * File: /Applications/Xcode.app/Contents/PlugIns/IDEModelFoundation.ideplugin/Contents/MacOS/IDEModelFoundation
- * UUID: 18183A83-06B1-329D-80FF-4CDF05125E32
+ * UUID: BB56A192-925E-3A1C-BC16-BB5B502A033B
  * Arch: Intel x86-64 (x86_64)
- *       Current version: 1171.0.0, Compatibility version: 1.0.0
+ *       Current version: 2057.0.0, Compatibility version: 1.0.0
  *       Minimum Mac OS X version: 10.7.0
  *
  *       Objective-C Garbage Collection: Required
@@ -64,6 +64,9 @@
 - (Class)superclass;
 - (unsigned long long)hash;
 - (BOOL)isEqual:(id)arg1;
+
+@optional
+- (id)debugDescription;
 @end
 
 @protocol XDErrorWarningCallback <NSObject>
@@ -375,6 +378,16 @@
 - (void)visit:(id)arg1;
 @end
 
+@protocol __ARCLiteIndexedSubscripting__
+- (void)setObject:(id)arg1 atIndexedSubscript:(unsigned long long)arg2;
+- (id)objectAtIndexedSubscript:(unsigned long long)arg1;
+@end
+
+@protocol __ARCLiteKeyedSubscripting__
+- (void)setObject:(id)arg1 forKeyedSubscript:(id)arg2;
+- (id)objectForKeyedSubscript:(id)arg1;
+@end
+
 @interface XDGenericErrorCallback : NSObject <XDErrorWarningCallback>
 {
     NSDictionary *_compilerFlags;
@@ -567,8 +580,6 @@
 + (id)keyPathsForValuesAffectingSortedEntityFetchedProperties;
 + (id)keyPathsForValuesAffectingSortedEntityAttributes;
 + (id)sharedGenericRecordClass;
-+ (id)syncUserInfoKeys;
-+ (id)keyPathsForValuesAffectingValueForKey:(id)arg1;
 - (id)propertyDifferencesRelativeToEntity:(id)arg1 versionHashDiffsOnly:(BOOL)arg2;
 - (id)undoManager;
 - (id)code_uniquedRelationshipDependencyNames;
@@ -1800,27 +1811,16 @@
     CDMModel *model;
     CDMEntity *entity;
     NSNumber *uniqueID;
-    BOOL syncable;
-    BOOL isSyncIdentityProperty;
-    BOOL excludeFromDataChangeAlert;
-    unsigned long long preferredClientType;
-    unsigned long long preferredRecord;
 }
 
 + (id)keyPathsForValuesAffectingInspectedOptional;
-+ (id)keyPathsForValuesAffectingInspectedSyncable;
-@property unsigned long long preferredRecord; // @synthesize preferredRecord;
-@property unsigned long long preferredClientType; // @synthesize preferredClientType;
-@property BOOL excludeFromDataChangeAlert; // @synthesize excludeFromDataChangeAlert;
-@property BOOL isSyncIdentityProperty; // @synthesize isSyncIdentityProperty;
-@property BOOL syncable; // @synthesize syncable;
 @property(copy) NSNumber *uniqueID; // @synthesize uniqueID;
 @property(copy, nonatomic) NSString *versionHashModifier; // @synthesize versionHashModifier;
 @property(copy, nonatomic) NSString *name; // @synthesize name;
 @property(nonatomic) BOOL transient; // @synthesize transient;
 @property(nonatomic) BOOL optional; // @synthesize optional;
 @property(retain, nonatomic) CDMEntity *entity; // @synthesize entity;
-@property(retain) CDMModel *model; // @synthesize model;
+@property __weak CDMModel *model; // @synthesize model;
 @property(retain, nonatomic) id sharedKey; // @synthesize sharedKey;
 @property(copy, nonatomic) NSDictionary *userInfoDictionary; // @synthesize userInfoDictionary;
 @property(nonatomic) BOOL storedInTruthFile; // @synthesize storedInTruthFile;
@@ -1831,6 +1831,7 @@
 @property(readonly) BOOL optionalFlagEnabled; // @synthesize optionalFlagEnabled;
 - (id)stringRepresentation;
 - (id)userInfoXMLElementTree;
+- (id)syncKeys;
 - (id)xmlElementAttributesByType;
 - (id)secondaryXMLElementAttributes;
 - (id)primaryXMLElementAttributes;
@@ -1844,19 +1845,15 @@
 - (BOOL)isEqual:(id)arg1;
 - (unsigned long long)hash;
 - (void)cascadeChangesToLegacyProperty:(id)arg1;
+- (id)userInfoDictionaryForExternalUse;
+- (BOOL)syncable;
 - (id)initWithLegacyProperty:(id)arg1 belongingToEntity:(id)arg2 inModel:(id)arg3;
 - (void)updateSyncingSupportForEntity:(id)arg1;
 - (id)init;
 - (void)commonInit;
-- (void)setPreferredRecordString:(id)arg1;
-@property(readonly) NSString *preferredRecordString;
-- (void)setPreferredClientTypeString:(id)arg1;
-@property(readonly) NSString *preferredClientTypeString;
 - (void)setInspectedOptional:(BOOL)arg1;
 - (BOOL)inspectedOptional;
 - (void)didChangeValueForKey:(id)arg1;
-- (void)setInspectedSyncable:(BOOL)arg1;
-- (BOOL)inspectedSyncable;
 - (id)humanReadableNameForInspectorKeyPath:(id)arg1;
 - (id)code_capitalizedPropertyName;
 - (id)code_propertyName;
@@ -1960,35 +1957,23 @@
     CDMInheritanceRelationship *inheritanceRelationship;
     CDMInheritanceRelationship *oldInheritanceRelationship;
     NSMutableArray *compoundIndexes;
-    BOOL syncable;
-    BOOL excludeFromDataChangeAlert;
-    NSString *syncName;
-    NSString *dataClassName;
-    NSString *parentRelationshipName;
 }
 
-+ (id)keyPathsForValuesAffectingDisplayedSyncName;
 + (id)dictionaryOfPropertyPLists:(id)arg1;
 + (id)keyPathsForValuesAffectingInspectedCompoundIndexes;
 + (id)keyPathsForValuesAffectingRelationshipsIncludingInheritance;
 + (id)keyPathsForValuesAffectingAllProperties;
-+ (id)keyPathsForValuesAffectingInspectedSyncable;
 + (id)keyPathsForValuesAffectingSortedFetchedProperties;
 + (id)keyPathsForValuesAffectingSortedRelationships;
 + (id)keyPathsForValuesAffectingSortedAttributes;
 + (id)keyPathsForValuesAffectingAllRelationshipsIncludingInheritance;
 + (id)keyPathsForValuesAffectingAllAttributesIncludingInheritance;
 + (id)keyPathsForValuesAffectingAllPropertiesIncludingInheritance;
-@property(copy) NSString *parentRelationshipName; // @synthesize parentRelationshipName;
-@property(copy, nonatomic) NSString *dataClassName; // @synthesize dataClassName;
-@property(copy) NSString *syncName; // @synthesize syncName;
-@property BOOL excludeFromDataChangeAlert; // @synthesize excludeFromDataChangeAlert;
-@property BOOL syncable; // @synthesize syncable;
 @property(copy) NSArray *compoundIndexes; // @synthesize compoundIndexes;
 @property(retain) CDMInheritanceRelationship *oldInheritanceRelationship; // @synthesize oldInheritanceRelationship;
 @property(retain) CDMInheritanceRelationship *inheritanceRelationship; // @synthesize inheritanceRelationship;
 @property(copy) NSNumber *uniqueID; // @synthesize uniqueID;
-@property(retain) CDMModel *model; // @synthesize model;
+@property __weak CDMModel *model; // @synthesize model;
 @property(copy, nonatomic) NSString *versionHashModifier; // @synthesize versionHashModifier;
 @property(copy, nonatomic) NSString *elementID; // @synthesize elementID;
 @property(copy, nonatomic) NSDictionary *userInfoDictionary; // @synthesize userInfoDictionary;
@@ -2002,10 +1987,9 @@
 - (id)xmlElementDescription;
 - (id)compoundIndexesXMLElementTree;
 - (id)userInfoXMLElementTree;
+- (id)syncKeys;
 - (id)initWithXMLElementDescription:(id)arg1 belongingToModel:(id)arg2;
 - (id)xmlElementAttributes;
-@property(readonly) NSString *defaultSyncName;
-@property(readonly) NSString *displayedSyncName;
 - (id)navigableItem_name;
 - (void)generateErrorsAndWarningsWithCallback:(id)arg1 forDocumentAtURL:(id)arg2;
 - (void)fillInStateWithDictionary:(id)arg1 entityNameMapTable:(id)arg2;
@@ -2017,8 +2001,9 @@
 - (id)addKeysToDictionary:(id)arg1;
 - (id)undoManager;
 - (void)cascadeChangesToLegacyEntity:(id)arg1;
+- (id)userInfoDictionaryForExternalUse;
+- (BOOL)syncable;
 - (id)initWithLegacyEntitysAttributes:(id)arg1 belongingToModel:(id)arg2;
-- (void)updateSyncingSupport;
 - (id)initWithName:(id)arg1 belongingToModel:(id)arg2;
 - (void)commonInit;
 - (id)descendants;
@@ -2050,8 +2035,6 @@
 - (id)entityPropertyForName:(id)arg1;
 - (id)possibleParentEntities;
 - (id)owningConfigurations;
-- (void)setInspectedSyncable:(BOOL)arg1;
-- (BOOL)inspectedSyncable;
 - (id)humanReadableNameForInspectorKeyPath:(id)arg1;
 - (id)sortedFetchedProperties;
 - (id)sortedRelationships;
@@ -2277,12 +2260,13 @@
 + (id)keyPathsForValuesAffectingRootsOfEntityTree;
 @property(copy) NSArray *rootsOfEntityTree; // @synthesize rootsOfEntityTree;
 @property(retain) CDMConfiguration *defaultConfiguration; // @synthesize defaultConfiguration;
-@property(retain) IDEDataModelDocument *document; // @synthesize document;
+@property __weak IDEDataModelDocument *document; // @synthesize document;
 @property(copy, nonatomic) NSString *name; // @synthesize name;
 @property(copy, nonatomic) NSString *modelVersionIdentifier; // @synthesize modelVersionIdentifier;
 @property(copy, nonatomic) NSArray *configurations; // @synthesize configurations;
 @property(copy, nonatomic) NSArray *fetchRequests; // @synthesize fetchRequests;
 @property(copy, nonatomic) NSArray *entities; // @synthesize entities;
+- (id)stringRepresentationForTextIndex;
 - (id)stringRepresentation;
 - (id)xmlDescription;
 - (id)initWithXMLElementDescription:(id)arg1;
@@ -2323,7 +2307,7 @@
 
 + (id)configurationFromPasteboradPlist:(id)arg1 model:(id)arg2;
 @property(copy) NSNumber *uniqueID; // @synthesize uniqueID;
-@property(retain) CDMModel *model; // @synthesize model;
+@property __weak CDMModel *model; // @synthesize model;
 - (id)stringRepresentation;
 - (id)xmlElementDescription;
 - (id)xmlElementAttributes;
@@ -2358,7 +2342,7 @@
 
 @property(copy) NSNumber *uniqueID; // @synthesize uniqueID;
 @property(retain) CDMEntity *entity; // @synthesize entity;
-@property(retain) CDMModel *model; // @synthesize model;
+@property __weak CDMModel *model; // @synthesize model;
 @property(retain) CDMEntity *parentEntity; // @synthesize parentEntity;
 - (id)name;
 - (id)init;

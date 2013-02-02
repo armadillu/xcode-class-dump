@@ -8,15 +8,25 @@
 
 /*
  * File: /Applications/Xcode.app/Contents/PlugIns/DebuggerGDBService.ideplugin/Contents/MacOS/DebuggerGDBService
- * UUID: 7B0B2C6F-BF43-3099-AC0E-70ADA53C84AA
+ * UUID: B378BB64-5DF4-39C2-AB4D-E8406492208E
  * Arch: Intel x86-64 (x86_64)
- *       Current version: 1185.0.0, Compatibility version: 1.0.0
+ *       Current version: 2083.0.0, Compatibility version: 1.0.0
  *       Minimum Mac OS X version: 10.7.0
  *
  *       Objective-C Garbage Collection: Required
  *       Run path: @loader_path/../../../
  *               = /Applications/Xcode.app/Contents/PlugIns
  */
+
+@protocol __ARCLiteIndexedSubscripting__
+- (void)setObject:(id)arg1 atIndexedSubscript:(unsigned long long)arg2;
+- (id)objectAtIndexedSubscript:(unsigned long long)arg1;
+@end
+
+@protocol __ARCLiteKeyedSubscripting__
+- (void)setObject:(id)arg1 forKeyedSubscript:(id)arg2;
+- (id)objectForKeyedSubscript:(id)arg1;
+@end
 
 @interface DBGGDBDebugLocalService : IDERunDeviceService
 {
@@ -28,7 +38,7 @@
 
 @end
 
-@interface DBGDBRunLocalService : IDERunDeviceService
+@interface DBGGDBRunLocalService : IDERunDeviceService
 {
 }
 

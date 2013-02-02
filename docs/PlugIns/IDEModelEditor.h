@@ -228,9 +228,9 @@ struct _XDTableViewFlags {
 
 /*
  * File: /Applications/Xcode.app/Contents/PlugIns/IDEModelEditor.ideplugin/Contents/MacOS/IDEModelEditor
- * UUID: 42B88E03-6648-3CEA-9A90-F62F2FF8FED1
+ * UUID: BE1EED7B-76EF-30D2-A085-C46575C16BA2
  * Arch: Intel x86-64 (x86_64)
- *       Current version: 1171.0.0, Compatibility version: 1.0.0
+ *       Current version: 2057.0.0, Compatibility version: 1.0.0
  *       Minimum Mac OS X version: 10.7.0
  *
  *       Objective-C Garbage Collection: Required
@@ -251,9 +251,21 @@ struct _XDTableViewFlags {
 @protocol DVTFindBarFindable
 
 @optional
+- (struct _NSRange)selectedRangeForFindBar:(id)arg1;
 - (id)startingLocationForFindBar:(id)arg1 findingBackwards:(BOOL)arg2;
 - (void)dvtFindBar:(id)arg1 didUpdateCurrentResult:(id)arg2;
 - (void)dvtFindBar:(id)arg1 didUpdateResults:(id)arg2;
+@end
+
+@protocol DVTInvalidation <NSObject>
+@property(readonly) DVTStackBacktrace *invalidationBacktrace;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)invalidate;
+@end
+
+@protocol DVTInvalidation_New <DVTInvalidation>
+@property(retain) DVTStackBacktrace *creationBacktrace;
+- (void)primitiveInvalidate;
 @end
 
 @protocol DVTOutlineViewDelegate <NSOutlineViewDelegate>
@@ -288,6 +300,7 @@ struct _XDTableViewFlags {
 - (BOOL)replaceFindResults:(id)arg1 withString:(id)arg2 withError:(id *)arg3;
 
 @optional
+- (BOOL)replaceFindResults:(id)arg1 inSelection:(struct _NSRange)arg2 withString:(id)arg3 withError:(id *)arg4;
 - (BOOL)replaceTextWithContentsOfURL:(id)arg1 error:(id *)arg2;
 @end
 
@@ -502,6 +515,9 @@ struct _XDTableViewFlags {
 - (Class)superclass;
 - (unsigned long long)hash;
 - (BOOL)isEqual:(id)arg1;
+
+@optional
+- (id)debugDescription;
 @end
 
 @protocol NSOpenSavePanelDelegate <NSObject>
@@ -643,6 +659,7 @@ struct _XDTableViewFlags {
 - (void)textView:(id)arg1 doubleClickedOnCell:(id)arg2 inRect:(struct CGRect)arg3;
 - (void)textView:(id)arg1 clickedOnCell:(id)arg2 inRect:(struct CGRect)arg3;
 - (BOOL)textView:(id)arg1 clickedOnLink:(id)arg2;
+- (id)textView:(id)arg1 willShowSharingServicePicker:(id)arg2 forItems:(id)arg3;
 - (id)textView:(id)arg1 URLForContentsOfTextAttachment:(id)arg2 atIndex:(unsigned long long)arg3;
 - (id)textView:(id)arg1 didCheckTextInRange:(struct _NSRange)arg2 types:(unsigned long long)arg3 options:(id)arg4 results:(id)arg5 orthography:(id)arg6 wordCount:(long long)arg7;
 - (id)textView:(id)arg1 willCheckTextInRange:(struct _NSRange)arg2 options:(id)arg3 types:(unsigned long long *)arg4;
@@ -681,6 +698,7 @@ struct _XDTableViewFlags {
 - (void)windowWillStartLiveResize:(id)arg1;
 - (void)windowDidEndSheet:(id)arg1;
 - (void)windowWillBeginSheet:(id)arg1;
+- (void)windowDidChangeBackingProperties:(id)arg1;
 - (void)windowDidChangeScreenProfile:(id)arg1;
 - (void)windowDidChangeScreen:(id)arg1;
 - (void)windowDidUpdate:(id)arg1;
@@ -745,6 +763,16 @@ struct _XDTableViewFlags {
 - (void)tableView:(id)arg1 didScrollWheel:(id)arg2;
 @end
 
+@protocol __ARCLiteIndexedSubscripting__
+- (void)setObject:(id)arg1 atIndexedSubscript:(unsigned long long)arg2;
+- (id)objectAtIndexedSubscript:(unsigned long long)arg1;
+@end
+
+@protocol __ARCLiteKeyedSubscripting__
+- (void)setObject:(id)arg1 forKeyedSubscript:(id)arg2;
+- (id)objectForKeyedSubscript:(id)arg1;
+@end
+
 @interface IDEDMHighlightImageAndTextCell : DVTImageAndTextCell
 {
     struct _NSRange _titleHighlightRange;
@@ -805,6 +833,7 @@ struct _XDTableViewFlags {
 @property(readonly) NSArray *selectedProperties;
 @property(readonly) NSArray *selectedEntities;
 - (void)selectedPropertiesChanged;
+- (void)primitiveInvalidate;
 - (void)loadView;
 @property(readonly) IDEDataModelEditor *rootEditor;
 - (id)_propertiesControllerForModelObject:(id)arg1;
@@ -842,6 +871,7 @@ struct _XDTableViewFlags {
 - (BOOL)allowsViewType:(int)arg1;
 - (id)nibName;
 - (id)identifier;
+- (void)primitiveInvalidate;
 - (void)loadView;
 - (void)takeFocus;
 @property(readonly) IDEDataModelEditor *rootEditor;
@@ -859,7 +889,7 @@ struct _XDTableViewFlags {
     XDTableView *tableView;
     DVTMapTable *_tableColumnsByIdentifier;
     NSIndexSet *_selectedInnerEntityIndexes;
-    id _findObservationToken;
+    id <DVTObservingToken> _findObservationToken;
 }
 
 + (id)keyPathsForValuesAffectingSelectedConfigurationIndexes;
@@ -892,25 +922,19 @@ struct _XDTableViewFlags {
 - (void)revertStateWithDictionary:(id)arg1;
 - (void)setTableViewState:(id)arg1;
 - (id)tableViewState;
+- (void)primitiveInvalidate;
 - (void)loadView;
 - (void)takeFocus;
 - (BOOL)shouldDrawBorderBelowHeaderForCapsuleView:(id)arg1;
-@property(readonly) NSString *titleForDisplay;
-@property(readonly) BOOL canRename;
+- (id)titleForDisplay;
+- (BOOL)canRename;
 - (BOOL)canDelete;
-@property BOOL canAddItems;
-@property BOOL canRemoveItems;
+- (BOOL)canAddItems;
+- (BOOL)canRemoveItems;
 - (id)nibBundle;
 - (void)delete:(id)arg1;
 - (id)identifier;
 - (id)nibName;
-
-// Remaining properties
-@property(readonly) BOOL canRemove;
-@property(readonly) BOOL canUndisclose;
-@property(readonly) BOOL disclosedByDefault;
-@property(readonly) NSString *footerLabel;
-@property(readonly) NSImage *icon;
 
 @end
 
@@ -920,6 +944,14 @@ struct _XDTableViewFlags {
     XDDiagramView *diagramView;
     XDLineGraphic *_diagramToolNewLineGraphic;
     id <DVTObservingToken> _entitiesChangedToken;
+    id <DVTObservingToken> _entityStateChangedToken;
+    id <DVTObservingToken> _propertyStateChangedToken;
+    id <DVTObservingToken> _relationshipDestinationChangedToken;
+    id <DVTObservingToken> _relationshipCardinalityChangedToken;
+    id <DVTObservingToken> _entityParentChangedToken;
+    id <DVTObservingToken> _diagramViewSelectionChangedToken;
+    id <DVTObservingToken> _didUndoChangeToken;
+    id <DVTObservingToken> _didRedoChangeToken;
     NSString *_lastGraphLayouterIdentifier;
     BOOL _hasDoneInitialLayout;
 }
@@ -957,7 +989,7 @@ struct _XDTableViewFlags {
 @property(readonly) NSArray *selection;
 - (void)loadView;
 - (void)dealloc;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)awakeFromNib;
 - (void)takeFocus;
 - (id)diagramView;
@@ -1019,6 +1051,7 @@ struct _XDTableViewFlags {
     DVTVersion *_macOSDeploymentVersion;
     DVTToolsVersion *_documentToolsVersion;
     DVTVersion *_documentVersion;
+    id <DVTObservingToken> _documentDidSaveToken;
     BOOL _supportsMacOSDeployment;
     BOOL _supportsIOSDeployment;
 }
@@ -1064,13 +1097,11 @@ struct _XDTableViewFlags {
 - (void)setDocumentToolsVersionWithPackageTypeCheck:(id)arg1;
 - (BOOL)isPackageDifferentForDocumentToolsVersion:(id)arg1;
 - (void)editorDocumentWillClose;
+- (id)displayName;
 - (id)objectSpecifier;
 - (id)newScriptingObjectOfClass:(Class)arg1 forValueForKey:(id)arg2 withContentsValue:(id)arg3 properties:(id)arg4;
 - (id)sdefSupport_entities;
 - (void)setDisplayName:(id)arg1;
-
-// Remaining properties
-@property unsigned long long supportedMatchingOptions;
 
 @end
 
@@ -1198,6 +1229,7 @@ struct _XDTableViewFlags {
 - (id)_viewControllerForModelObject:(id)arg1;
 - (id)allSubViewControllers;
 - (id)allTabViewControllers;
+- (void)primitiveInvalidate;
 - (void)loadView;
 - (id)identifier;
 - (Class)documentLocationClass;
@@ -1228,7 +1260,7 @@ struct _XDTableViewFlags {
 @interface IDEDataModelEditorSourceListController : IDEDMEditorSourceListController <IDEDataModelEditorController>
 {
     IDENavigatorStatusCell *_sourceListStatusBadgeCell;
-    id _findObservationToken;
+    id <DVTObservingToken> _findObservationToken;
     id <DVTObservingToken> _entityObservationToken;
     id <DVTObservingToken> _fetchRequestObservationToken;
     id <DVTObservingToken> _configurationObservationToken;
@@ -1254,6 +1286,7 @@ struct _XDTableViewFlags {
 - (BOOL)outlineView:(id)arg1 shouldEditTableColumn:(id)arg2 item:(id)arg3;
 - (void)outlineView:(id)arg1 willDisplayCell:(id)arg2 forTableColumn:(id)arg3 item:(id)arg4;
 - (BOOL)outlineView:(id)arg1 shouldShowOutlineCellForItem:(id)arg2;
+- (void)primitiveInvalidate;
 - (void)loadView;
 - (void)setupSourceListAndCells;
 - (id)identifier;
@@ -1292,12 +1325,12 @@ struct _XDTableViewFlags {
 + (id)keyPathsForValuesAffectingModel;
 - (void)discardEditing;
 - (BOOL)commitEditingForAction:(int)arg1 errors:(id)arg2;
-- (void)_makeAllEditorsPerformSelector:(SEL)arg1;
 - (void)selectModelObjects:(id)arg1;
 @property(readonly) NSArray *selection;
 - (void)setViewType:(int)arg1;
 - (BOOL)allowsViewType:(int)arg1;
 - (id)model;
+- (void)primitiveInvalidate;
 - (void)loadView;
 - (void)editNameForModelObject:(id)arg1;
 - (void)paste:(id)arg1;
@@ -1349,9 +1382,11 @@ struct _XDTableViewFlags {
     NSPredicateEditor *predicateEditor;
     double fixedHeight;
     NSArrayController *_entityController;
+    id <DVTObservingToken> _ruleEditorRowsChangedToken;
 }
 
 @property(retain) NSArrayController *entityController; // @synthesize entityController=_entityController;
+- (void)primitiveInvalidate;
 - (void)loadView;
 - (void)ruleEditorRowsDidChange:(id)arg1;
 - (void)setRepresentedObject:(id)arg1;
@@ -1400,8 +1435,7 @@ struct _XDTableViewFlags {
 - (long long)numberOfObjectsInCapsuleListView:(id)arg1;
 - (void)observeValueForKeyPath:(id)arg1 ofObject:(id)arg2 change:(id)arg3 context:(void *)arg4;
 - (void)reload;
-- (void)invalidate;
-- (void)_invalidateControllers;
+- (void)primitiveInvalidate;
 - (id)selectedRequests;
 - (id)identifier;
 - (id)nibBundle;
@@ -1437,7 +1471,6 @@ struct _XDTableViewFlags {
 + (id)dataSourceVersion;
 - (BOOL)generateDataForJob:(id)arg1;
 - (void)_indexEntity:(id)arg1 forFile:(id)arg2 index:(id)arg3;
-- (id)loadModelForURL:(id)arg1 error:(id *)arg2;
 
 @end
 
@@ -1454,7 +1487,7 @@ struct _XDTableViewFlags {
     DVTMapTable *_tableColumnsByIdentifier;
     BOOL _tableViewWasFirstResponder;
     id <DVTObservingToken> _modelObservationToken;
-    id _findObservationToken;
+    id <DVTObservingToken> _findObservationToken;
     NSArray *_previousSelectedProperties;
 }
 
@@ -1491,10 +1524,10 @@ struct _XDTableViewFlags {
 - (id)tableView:(id)arg1 columnForTableColumnIdentifier:(id)arg2;
 - (id)tableView:(id)arg1 menuTitleForTableColumnIdentifier:(id)arg2;
 - (BOOL)shouldDrawBorderBelowHeaderForCapsuleView:(id)arg1;
-@property(readonly) NSString *titleForDisplay;
-@property(readonly) BOOL canRename;
+- (id)titleForDisplay;
+- (BOOL)canRename;
 - (BOOL)canDelete;
-@property BOOL canRemoveItems;
+- (BOOL)canRemoveItems;
 - (Class)targetedEditorClass;
 - (id)nameColumnIdentifier;
 @property(readonly) NSArray *selectedEntities;
@@ -1508,17 +1541,10 @@ struct _XDTableViewFlags {
 - (void)propertySelectionChanged;
 - (void)entitySelectionChanged;
 - (id)model;
+- (void)primitiveInvalidate;
 - (void)loadView;
 - (id)nibName;
 - (void)_setupCellsAndColumns;
-
-// Remaining properties
-@property BOOL canAddItems;
-@property(readonly) BOOL canRemove;
-@property(readonly) BOOL canUndisclose;
-@property(readonly) BOOL disclosedByDefault;
-@property(readonly) NSString *footerLabel;
-@property(readonly) NSImage *icon;
 
 @end
 
@@ -1630,7 +1656,7 @@ struct _XDTableViewFlags {
 + (id)keyPathsForValuesAffectingCurrentSelectedItems;
 + (id)keyPathsForValuesAffectingCurrentSelectedDocumentLocations;
 @property(retain) IDEDMEditorController *currentActiveController; // @synthesize currentActiveController=_currentActiveController;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)selectPreviousContentSibling:(id)arg1;
 - (void)selectNextContentSibling:(id)arg1;
 - (void)selectContentChild:(id)arg1;
@@ -1646,7 +1672,6 @@ struct _XDTableViewFlags {
 - (void)setStateToken:(id)arg1;
 @property(readonly) NSString *identifier;
 @property(readonly) NSArray *allSubViewControllers;
-- (void)makeAllViewControllersPerformSelector:(SEL)arg1;
 - (void)subViewDidBecomeFirstResponder:(id)arg1;
 @property(readonly) id <IDEDMModelRootObject> modelRoot;
 - (void)selectModelObjects:(id)arg1 focus:(BOOL)arg2;
@@ -1662,7 +1687,7 @@ struct _XDTableViewFlags {
 
 @end
 
-@interface IDEDMSourceListSection : NSObject <IDEDMArrayControllerDelegate>
+@interface IDEDMSourceListSection : NSObject <IDEDMArrayControllerDelegate, DVTInvalidation_New>
 {
     NSString *_name;
     id _modelRoot;
@@ -1673,14 +1698,22 @@ struct _XDTableViewFlags {
     id <DVTObservingToken> _hiddenItemsObservationToken;
     NSString *_treeControllerChildrenKeyPath;
     IDEDMArrayController *_arrayController;
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
 @property(retain) NSArray *sectionItemsToHide; // @synthesize sectionItemsToHide=_sectionItemsToHide;
 @property(retain, nonatomic) NSString *treeControllerChildrenKeyPath; // @synthesize treeControllerChildrenKeyPath=_treeControllerChildrenKeyPath;
 @property(readonly) NSString *identifier; // @synthesize identifier=_identifier;
 @property(retain) NSString *keyPath; // @synthesize keyPath=_keyPath;
 @property(retain) id modelRoot; // @synthesize modelRoot=_modelRoot;
 @property(readonly) NSString *name; // @synthesize name=_name;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
+@property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 - (id)valueForUndefinedKey:(id)arg1;
 - (id)representativeIcon;
 @property(readonly) NSArray *sectionItems;
@@ -1688,8 +1721,12 @@ struct _XDTableViewFlags {
 - (void)arrayControllerDidRearrangeObjects:(id)arg1;
 - (void)arrayControllerWillRearrangeObjects:(id)arg1;
 @property(retain) NSArray *sortDescriptors;
+- (void)primitiveInvalidate;
 - (id)initWithName:(id)arg1 modelRoot:(id)arg2 keyPath:(id)arg3 identifier:(id)arg4;
 - (void)_notifyChangeWithDictionary:(id)arg1;
+- (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 
 @end
 
@@ -1706,6 +1743,7 @@ struct _XDTableViewFlags {
 - (void)removeUserInfoKey:(id)arg1;
 - (void)addUserInfoKey:(id)arg1;
 - (void)numberOfUserInfoKeysChanged:(id)arg1;
+- (void)primitiveInvalidate;
 - (void)loadView;
 - (void)tableView:(id)arg1 didScrollWheel:(id)arg2;
 - (void)_resize;
@@ -1807,11 +1845,11 @@ struct _XDTableViewFlags {
 - (id)capsuleListView:(id)arg1 viewControllerForRow:(long long)arg2;
 - (id)allSubViewControllers;
 - (id)capsuleViewControllers;
+- (void)primitiveInvalidate;
 - (void)loadView;
 - (void)reloadDataModels;
 - (void)updateMappings;
 - (id)identifier;
-- (struct CGSize)minimumContentViewSize;
 - (Class)documentLocationClass;
 - (id)modelRoot;
 @property(readonly) XDDevMappingModel *mappingModel;
@@ -1898,23 +1936,15 @@ struct _XDTableViewFlags {
 @property(readonly) NSArray *allEntityMappings;
 - (void)selectPropertyMappings:(id)arg1;
 - (BOOL)shouldDrawBorderBelowHeaderForCapsuleView:(id)arg1;
-@property(readonly) BOOL canRename;
+- (BOOL)canRename;
 - (BOOL)canDelete;
 - (id)nibBundle;
-@property(readonly) NSString *titleForDisplay;
+- (id)titleForDisplay;
 - (id)identifier;
 - (id)nibName;
+- (void)primitiveInvalidate;
 - (void)loadView;
 - (void)_setupCellsAndColumns;
-
-// Remaining properties
-@property BOOL canAddItems;
-@property(readonly) BOOL canRemove;
-@property BOOL canRemoveItems;
-@property(readonly) BOOL canUndisclose;
-@property(readonly) BOOL disclosedByDefault;
-@property(readonly) NSString *footerLabel;
-@property(readonly) NSImage *icon;
 
 @end
 
@@ -1982,6 +2012,7 @@ struct _XDTableViewFlags {
 - (void)commitStateToDictionary:(id)arg1;
 - (void)revertStateWithDictionary:(id)arg1;
 - (void)selectedDocumentLocationsChanged;
+- (void)primitiveInvalidate;
 - (id)initWithNibName:(id)arg1 bundle:(id)arg2 document:(id)arg3;
 
 @end
@@ -2645,6 +2676,10 @@ struct _XDTableViewFlags {
     long long _toolTipTrackingRectTag;
     long long _pasteboardChangeCount;
     long long _pasteCascadeNumber;
+    id <DVTObservingToken> _appBecameActiveToken;
+    id <DVTObservingToken> _appBecameInactiveToken;
+    id <DVTObservingToken> _currentToolChangedToken;
+    id <DVTObservingToken> _viewFrameChangedToken;
     id _reserved;
 }
 
@@ -2946,6 +2981,7 @@ struct _XDTableViewFlags {
 @interface XDDiagramZoomPopUpButton : NSPopUpButton
 {
     XDDiagramView *_diagramView;
+    id <DVTObservingToken> _zoomFactorChangedToken;
 }
 
 + (void)initialize;
@@ -3819,6 +3855,7 @@ struct _XDTableViewFlags {
 @interface XDSelectionTool : XDDiagramTool
 {
     XDGraphic *_mouseOverGraphic;
+    id <DVTObservingToken> _graphicRemovedToken;
     struct CGRect _rubberbandRect;
 }
 
@@ -4035,28 +4072,6 @@ struct _XDTableViewFlags {
 
 @end
 
-@interface IDEDataModelEntitySyncInspectorController : IDEDataModelInspectorController <IDEInspectorAccessibilitySupport>
-{
-}
-
-+ (id)keyPathsForValuesAffectingParentRelationship;
-+ (id)keyPathsForValuesAffectingPossibleParentRelationships;
-+ (id)keyPathsForValuesAffectingProposedDataClassNames;
-@property(retain) CDMRelationship *parentRelationship;
-@property(readonly) NSArray *possibleParentRelationships;
-@property(readonly) NSArray *proposedDataClassNames;
-- (id)activeEntities;
-@property(readonly) BOOL entityParentRelationshipsPopupNotEmpty;
-- (id)humanReadableNameForInspectorKeyPath:(id)arg1;
-
-@end
-
-@interface IDEDataModelPropertySyncInspectorController : IDEInspectorViewController
-{
-}
-
-@end
-
 @interface IDEDMArrayController : NSArrayController
 {
     id <IDEDMArrayControllerDelegate> _delegate;
@@ -4083,7 +4098,7 @@ struct _XDTableViewFlags {
     IDEDMSubViewControllerStateManager *_subViewControllerStateManager;
 }
 
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)endEditingForFirstResponder;
 - (void)takeFocus;
 - (void)setStateToken:(id)arg1;
@@ -4095,15 +4110,28 @@ struct _XDTableViewFlags {
 
 @end
 
-@interface IDEDMSubViewControllerStateManager : NSObject
+@interface IDEDMSubViewControllerStateManager : NSObject <DVTInvalidation_New>
 {
     DVTStateToken *_token;
+    NSMutableArray *_stateIdentifiers;
     IDEDMEditorController *_parent;
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
 @property(readonly) DVTStateToken *token; // @synthesize token=_token;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
+@property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
+- (void)primitiveInvalidate;
 - (id)initWithToken:(id)arg1 parent:(id)arg2;
 - (void)_setupStateToken;
+- (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 
 @end
 
@@ -4145,6 +4173,7 @@ struct _XDTableViewFlags {
 - (BOOL)outlineView:(id)arg1 shouldShowOutlineCellForItem:(id)arg2;
 - (BOOL)outlineView:(id)arg1 isGroupItem:(id)arg2;
 - (void)modelChanged;
+- (void)primitiveInvalidate;
 - (void)loadView;
 - (void)_setupBorderedView;
 - (void)_childrenKeyPathChanged;
@@ -4214,6 +4243,7 @@ struct _XDTableViewFlags {
     id <DVTObservingToken> kvoMatchesToken;
     id <DVTObservingToken> kvoDocumentsToken;
     id <DVTObservingToken> kvoConfigurationToken;
+    id <DVTObservingToken> documentChangeToken;
 }
 
 + (int)providerType;
@@ -4229,8 +4259,7 @@ struct _XDTableViewFlags {
 - (id)settingsForFile:(id)arg1 document:(id)arg2;
 - (id)flagStringForName:(id)arg1;
 - (id)propertyStringForName:(id)arg1;
-- (void)finalize;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (id)initWithIssueManager:(id)arg1 extension:(id)arg2;
 
 @end
@@ -4279,7 +4308,7 @@ struct _XDTableViewFlags {
     NSArray *_availibleImportItems;
     BOOL _animateProgressIndicator;
     id <DVTObservingToken> _workspaceValidObservationToken;
-    id _indexDidChangeNotificationObserver;
+    id <DVTObservingToken> _indexDidChangeNotificationObserver;
 }
 
 @property BOOL animateProgressIndicator; // @synthesize animateProgressIndicator=_animateProgressIndicator;
@@ -4288,6 +4317,7 @@ struct _XDTableViewFlags {
 - (BOOL)canGoForward;
 - (BOOL)canGoBack;
 - (BOOL)canFinish;
+- (void)viewWillUninstall;
 - (void)viewDidInstall;
 - (void)itemsToImportChanged:(id)arg1;
 - (void)_setContextForTemplateInstantiation;
@@ -4595,18 +4625,16 @@ struct _XDTableViewFlags {
 
 @interface IDEDataModelRefactoringFileChangeSet : IDERefactoringFileChangeSet
 {
-    CDMModel *_dataModel;
+    IDEDataModelDocument *_document;
 }
 
 + (id)changeSetForFileAtPath:(id)arg1 transformation:(id)arg2 error:(id *)arg3;
-@property(retain) CDMModel *dataModel; // @synthesize dataModel=_dataModel;
+@property(retain) IDEDataModelDocument *document; // @synthesize document=_document;
 - (void)writeTempResults;
 - (BOOL)writesOwnTempResults;
 - (BOOL)resultIsEditable;
 - (BOOL)applyChangesWithError:(id *)arg1;
 - (id)initWithFilePath:(id)arg1;
-- (BOOL)_saveModelToFilePath:(id)arg1;
-- (void)_loadModelAtFilePath:(id)arg1;
 
 @end
 
@@ -4733,6 +4761,14 @@ struct _XDTableViewFlags {
 - (void)takeDocumentDependency:(id)arg1;
 - (void)setModelVersionIdentifier:(id)arg1;
 - (id)modelVersionIdentifier;
+
+@end
+
+@interface IDETextIndexCoreDataModelDataProvider : IDETextIndexDataProvider
+{
+}
+
+- (id)textRepresentationOfContentsAtPath:(id)arg1;
 
 @end
 

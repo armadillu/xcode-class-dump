@@ -30,9 +30,9 @@ struct _NSRange {
 
 /*
  * File: /Applications/Xcode.app/Contents/PlugIns/IDEDocViewer.ideplugin/Contents/MacOS/IDEDocViewer
- * UUID: D47E1D85-4FD3-36FC-A220-758FC2DF34DF
+ * UUID: AC6E51CE-2FCA-3D95-8436-1B39EE0842D8
  * Arch: Intel x86-64 (x86_64)
- *       Current version: 1172.0.0, Compatibility version: 1.0.0
+ *       Current version: 2054.0.0, Compatibility version: 1.0.0
  *       Minimum Mac OS X version: 10.7.0
  *
  *       Objective-C Garbage Collection: Required
@@ -74,6 +74,7 @@ struct _NSRange {
 @protocol DVTFindBarFindable
 
 @optional
+- (struct _NSRange)selectedRangeForFindBar:(id)arg1;
 - (id)startingLocationForFindBar:(id)arg1 findingBackwards:(BOOL)arg2;
 - (void)dvtFindBar:(id)arg1 didUpdateCurrentResult:(id)arg2;
 - (void)dvtFindBar:(id)arg1 didUpdateResults:(id)arg2;
@@ -115,6 +116,7 @@ struct _NSRange {
 - (struct CGRect)expressionFrameForExpression:(id)arg1;
 
 @optional
+@property(readonly, nonatomic) NSString *selectedText;
 @property(readonly) DVTSourceExpression *quickHelpExpression;
 - (void)unregisterMouseOverExpressionObserver:(id)arg1;
 - (void)registerMouseOverExpressionObserver:(id)arg1;
@@ -174,6 +176,7 @@ struct _NSRange {
 @optional
 - (struct _NSRange)outlineView:(id)arg1 initialSelectionRangeForCell:(id)arg2 proposedRange:(struct _NSRange)arg3;
 - (BOOL)outlineView:(id)arg1 shouldShowOutlineCellForItem:(id)arg2 hasUserFocus:(BOOL)arg3;
+- (id)trayItemsForNavigableItem:(id)arg1;
 - (id)outlineView:(id)arg1 childItemsForItem:(id)arg2;
 - (BOOL)outlineView:(id)arg1 isGroupHeaderItem:(id)arg2;
 @end
@@ -181,6 +184,7 @@ struct _NSRange {
 @protocol IDEOrganizerSource <NSObject, DVTStatefulObject>
 
 @optional
+- (void)organizerSourceWillCloseInWindowController:(id)arg1;
 - (void)organizerSourceWillAppearInWindowController:(id)arg1;
 - (void)openFileURL:(id)arg1 withFileType:(id)arg2;
 - (void)searchWithString:(id)arg1;
@@ -231,6 +235,9 @@ struct _NSRange {
 - (Class)superclass;
 - (unsigned long long)hash;
 - (BOOL)isEqual:(id)arg1;
+
+@optional
+- (id)debugDescription;
 @end
 
 @protocol NSOutlineViewDataSource <NSObject>
@@ -389,14 +396,27 @@ struct _NSRange {
 - (id)buttonForItem:(id)arg1 createIfNecessary:(BOOL)arg2;
 @end
 
+@protocol __ARCLiteIndexedSubscripting__
+- (void)setObject:(id)arg1 atIndexedSubscript:(unsigned long long)arg2;
+- (id)objectAtIndexedSubscript:(unsigned long long)arg1;
+@end
+
+@protocol __ARCLiteKeyedSubscripting__
+- (void)setObject:(id)arg1 forKeyedSubscript:(id)arg2;
+- (id)objectForKeyedSubscript:(id)arg1;
+@end
+
 @interface IDEDocViewerDocument : IDEEditorDocument
 {
+    NSString *_loadedContentTitle;
 }
 
 + (BOOL)autosavesInPlace;
 + (BOOL)shouldUnlockFileURLBeforeMakingChanges;
+@property(retain) NSString *loadedContentTitle; // @synthesize loadedContentTitle=_loadedContentTitle;
 - (int)readOnlyStatus;
 - (void)updateChangeCount:(unsigned long long)arg1;
+- (id)displayName;
 - (id)dataOfType:(id)arg1 error:(id *)arg2;
 - (BOOL)readFromURL:(id)arg1 ofType:(id)arg2 error:(id *)arg3;
 
@@ -458,7 +478,7 @@ struct _NSRange {
 - (void)addToDownloaders:(id)arg1;
 - (id)installedContentViewController;
 @property(readonly) WebView *webView;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)loadView;
 - (id)historyCacheURL;
 
@@ -613,19 +633,18 @@ struct _NSRange {
 @property unsigned long long minimumFontSize;
 - (void)updateMinSizeComboBox;
 - (void)minimumFontSizeEnabledAction:(id)arg1;
-- (BOOL)validateUserInterfaceItem:(id)arg1;
 - (void)_initWebPreferences;
 - (void)docSetDidLoad:(id)arg1;
 - (void)docSetGroup:(id)arg1 updateItemsModified:(id)arg2;
 - (void)docSetGroup:(id)arg1 updateItemsAdded:(id)arg2;
 - (void)docSetGroup:(id)arg1 updateItemsRemoved:(id)arg2;
-- (void)deleteDocSetFeed:(id)arg1;
+- (void)deleteDocSet:(id)arg1;
+- (void)deleteDocSetAlertDidEnd:(id)arg1 returnCode:(long long)arg2 contextInfo:(void *)arg3;
 - (void)downloadAction:(id)arg1;
-- (void)showLastCheckNowDate;
 - (id)noUpdatesAvailableLabelText;
 - (void)viewWillUninstall;
 - (void)loadView;
-- (BOOL)_canUnsubscribeFromPublisher:(id)arg1;
+- (BOOL)_canDeleteUpdate:(id)arg1;
 - (id)publisherContainingGroup:(id)arg1;
 - (void)_performanceMeasurementWithState:(int)arg1 comment:(id)arg2;
 
@@ -641,7 +660,6 @@ struct _NSRange {
 
 @interface IDEDocViewerMain : NSObject <NSUserInterfaceItemSearching, IDEInitialization>
 {
-    id _helpMenuResultsBlock;
 }
 
 + (BOOL)ide_initializeWithOptions:(int)arg1 error:(id *)arg2;
@@ -649,7 +667,6 @@ struct _NSRange {
 - (void)performActionForItem:(id)arg1;
 - (id)localizedTitlesForItem:(id)arg1;
 - (void)searchForItemsWithSearchString:(id)arg1 resultLimit:(long long)arg2 matchedItemHandler:(id)arg3;
-- (void)_executeQuery:(id)arg1;
 - (void)descendantsOfTextResult:(id)arg1 descendants:(id)arg2;
 - (id)queryWithSearchString:(id)arg1 docSet:(id)arg2;
 - (void)applicationDidResignActive:(id)arg1;
@@ -748,7 +765,7 @@ struct _NSRange {
 @property(readonly) IDEEditorContext *editorContext;
 - (id)loadEditorState:(id)arg1;
 - (id)docSetNodeInEditorContext:(id)arg1;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)loadView;
 
 @end
@@ -787,7 +804,7 @@ struct _NSRange {
 - (void)showBookmarksArea:(id)arg1;
 - (void)showSearchArea:(id)arg1;
 - (void)showExploreArea:(id)arg1;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (id)currentNavigator;
 - (void)showNavigatorWithIdentifier:(id)arg1;
 - (void)viewDidInstall;
@@ -835,7 +852,8 @@ struct _NSRange {
 - (void)addBookmarkForCurrentPage;
 - (void)addBookmarkForToken:(id)arg1;
 - (void)addBookmarkForNode:(id)arg1;
-- (void)addBookmarkForNode:(id)arg1 title:(id)arg2 URL:(id)arg3;
+- (void)addBookmarkForNode:(id)arg1 title:(id)arg2 anchor:(id)arg3;
+- (void)addBookmarkForNode:(id)arg1 withRelativePath:(id)arg2 title:(id)arg3;
 - (id)installedNavigatorArea;
 - (void)showWhatsNewInXcode;
 - (void)showXcodeReleaseNotes;
@@ -852,7 +870,7 @@ struct _NSRange {
 - (void)setStateToken:(id)arg1;
 - (void)viewDidInstall;
 - (void)_setUpNavigatorAreaObservations;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)loadView;
 - (void)displayPDFAtURL:(id)arg1 forDocSetNode:(id)arg2;
 - (void)_openPDFAtFileURL:(id)arg1;
@@ -871,7 +889,7 @@ struct _NSRange {
 
 @end
 
-@interface IDEDocSearchArea : IDEDocNavigator <DSMDocSetLoaderListener>
+@interface IDEDocSearchNavigator : IDEDocNavigator <DSMDocSetLoaderListener>
 {
     DVTReplacementView *_resultsReplacementView;
     IDEProgressSearchField *_searchField;
@@ -879,7 +897,6 @@ struct _NSRange {
     NSString *_queuedSearchString;
     IDEDocSearchResultsController *_resultsController;
     NSMutableArray *_observingTokens;
-    IDENavigableItemCoordinator *_navigableItemCoordinator;
     IDEDocSearchResultsContext *_resultsContext;
     IDEDocSearchController *_searchController;
     BOOL _showsSearchOptions;
@@ -932,7 +949,7 @@ struct _NSRange {
 - (void)setUpSearchFieldCell;
 - (id)contextMenuSelectedNavItems;
 @property(readonly) IDEDocSearchResultsController *resultsController;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)viewDidInstall;
 - (void)loadView;
 - (id)idedocnavigator_identifier;
@@ -944,7 +961,7 @@ struct _NSRange {
     DVTBorderedView *_searchFieldBorderedView;
     DVTBorderedView *_searchOptionsBorderedView;
     DVTBorderedView *_searchResultsBorderedView;
-    IDEDocSearchArea *_searchNavigatorArea;
+    IDEDocSearchNavigator *_searchNavigatorArea;
 }
 
 - (void)layoutTopDown;
@@ -983,7 +1000,8 @@ struct _NSRange {
 - (id)systemGuidesResultsGroup;
 - (id)referenceResultsGroup;
 @property(retain) DSMQuery *query;
-- (id)docSetRecordsForSearching;
+- (id)docSetsForSearching;
+- (id)_activeWorkspaceWindowController;
 - (id)nameKeyAscendingCaseInsensitiveSortDescriptor;
 - (id)activeLanguages;
 - (id)initWithSearchOptionsController:(id)arg1;
@@ -996,12 +1014,13 @@ struct _NSRange {
     NSPopUpButton *_matchTypeButton;
     NSPopUpButton *_docSetsButton;
     NSPopUpButton *_languagesButton;
-    IDEDocSearchArea *_docSearchArea;
+    IDEDocSearchNavigator *_docSearchArea;
     id _searchOptionsChangedToken;
+    id <DVTObservingToken> _usesSDKDocSetsWatcher;
 }
 
 + (id)defaultViewNibName;
-@property(retain) IDEDocSearchArea *docSearchArea; // @synthesize docSearchArea=_docSearchArea;
+@property(retain) IDEDocSearchNavigator *docSearchArea; // @synthesize docSearchArea=_docSearchArea;
 @property(retain) NSPopUpButton *languagesButton; // @synthesize languagesButton=_languagesButton;
 @property(retain) NSPopUpButton *docSetsButton; // @synthesize docSetsButton=_docSetsButton;
 @property(retain) NSPopUpButton *matchTypeButton; // @synthesize matchTypeButton=_matchTypeButton;
@@ -1078,7 +1097,6 @@ struct _NSRange {
     IDENavigableItem *_selectedItem;
     NSString *_searchString;
     NSImage *_bookImage;
-    NSImage *_sampleCodeImage;
     NSString *_autoExpandGroupIdentifier;
 }
 
@@ -1208,7 +1226,7 @@ struct _NSRange {
 
 @end
 
-@interface IDEDocExploreArea : IDEDocNavigator <IDENavigatorOutlineViewDelegate, NSOutlineViewDataSource, DSMDocSetLoaderListener>
+@interface IDEDocExploreNavigator : IDEDocNavigator <IDENavigatorOutlineViewDelegate, NSOutlineViewDataSource, DSMDocSetLoaderListener>
 {
     IDEDocExploreOutlineView *_docSetsOutlineView;
     NSImage *_docSetsImage;
@@ -1216,7 +1234,6 @@ struct _NSRange {
     IDENavigatorDataCell *_docSetCell;
     IDENavigatorDataCell *_nodeCell;
     IDENavigableItem *_selectedNode;
-    IDENavigableItemCoordinator *_navigableItemCoordinator;
     NSSet *_expandedItems;
     NSArray *_selectedObjects;
     BOOL _restoringState;
@@ -1226,7 +1243,6 @@ struct _NSRange {
 + (long long)version;
 + (void)configureStateSavingObjectPersistenceByName:(id)arg1;
 + (void)initialize;
-@property(retain) IDENavigableItemCoordinator *navigableItemCoordinator; // @synthesize navigableItemCoordinator=_navigableItemCoordinator;
 @property(retain) IDENavigatorOutlineView *docSetsOutlineView; // @synthesize docSetsOutlineView=_docSetsOutlineView;
 - (id)stateSavingExpandedItems;
 - (id)itemsForNameArrays:(id)arg1;
@@ -1256,7 +1272,7 @@ struct _NSRange {
 - (void)selectNavigableItemForDocSetNode:(id)arg1 loadEditorArea:(BOOL)arg2;
 - (void)updateContent;
 - (id)contextMenuSelectedNavItems;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (id)idedocnavigator_identifier;
 - (void)loadView;
 - (id)initWithNibName:(id)arg1 bundle:(id)arg2;
@@ -1271,17 +1287,17 @@ struct _NSRange {
 
 @interface IDEDocExploreOutlineView : IDENavigatorOutlineView
 {
-    IDEDocExploreArea *_exploreNavigator;
+    IDEDocExploreNavigator *_exploreNavigator;
 }
 
-@property(retain) IDEDocExploreArea *exploreNavigator; // @synthesize exploreNavigator=_exploreNavigator;
+@property(retain) IDEDocExploreNavigator *exploreNavigator; // @synthesize exploreNavigator=_exploreNavigator;
 - (void)openClickedNavigableItemAction:(id)arg1;
 - (void)openSelectedNavigableItemsKeyAction:(id)arg1;
 - (BOOL)_shouldContinueExpandAtLevel:(long long)arg1 beganAtLevel:(long long)arg2;
 
 @end
 
-@interface IDEDocSampleCodeArea : IDEViewController <NSTableViewDataSource, NSTableViewDelegate>
+@interface IDEDocSampleCodeNavigator : IDEViewController <NSTableViewDataSource, NSTableViewDelegate>
 {
     NSArray *_sampleCodeNodes;
     IDENavigatorDataCell *_groupCell;
@@ -1309,7 +1325,7 @@ struct _NSRange {
 - (id)nodeCell;
 - (void)findSampleCode;
 - (id)nodeSortDescriptors;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)loadView;
 
 @end
@@ -1332,17 +1348,15 @@ struct _NSRange {
 
 @end
 
-@interface IDEDocBookmarksArea : IDEDocNavigator <NSOutlineViewDelegate, NSOutlineViewDataSource>
+@interface IDEDocBookmarksNavigator : IDEDocNavigator <NSOutlineViewDelegate, NSOutlineViewDataSource>
 {
     IDEDocBookmarksOutlineView *_bookmarksOutlineView;
     IDENavigatorDataCell *_prototypeCell;
-    IDENavigableItemCoordinator *_navigableItemCoordinator;
     NSImage *_bookImage;
     NSArray *_bookmarks;
     NSArray *_draggedBookmarks;
 }
 
-@property(retain) IDENavigableItemCoordinator *navigableItemCoordinator; // @synthesize navigableItemCoordinator=_navigableItemCoordinator;
 @property(retain) IDEDocBookmarksOutlineView *bookmarksOutlineView; // @synthesize bookmarksOutlineView=_bookmarksOutlineView;
 - (id)docSetNameForDocSetIdentifier:(id)arg1;
 - (BOOL)outlineView:(id)arg1 acceptDrop:(id)arg2 item:(id)arg3 childIndex:(long long)arg4;
@@ -1350,7 +1364,6 @@ struct _NSRange {
 - (unsigned long long)outlineView:(id)arg1 validateDrop:(id)arg2 proposedItem:(id)arg3 proposedChildIndex:(long long)arg4;
 - (BOOL)outlineView:(id)arg1 writeItems:(id)arg2 toPasteboard:(id)arg3;
 - (id)moveObjectsInArrangedObjectsFromIndexes:(id)arg1 toIndex:(unsigned int)arg2;
-- (void)outlineViewSelectionDidChange:(id)arg1;
 - (void)updateSelectedBookmarkForSelectedRow;
 - (BOOL)outlineView:(id)arg1 doCommandBySelector:(SEL)arg2;
 - (void)outlineView:(id)arg1 willDisplayCell:(id)arg2 forTableColumn:(id)arg3 item:(id)arg4;
@@ -1368,7 +1381,7 @@ struct _NSRange {
 - (void)reload;
 - (void)viewWillUninstall;
 - (void)viewDidInstall;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (id)idedocnavigator_identifier;
 - (void)loadView;
 
@@ -1376,10 +1389,10 @@ struct _NSRange {
 
 @interface IDEDocBookmarksOutlineView : IDENavigatorOutlineView
 {
-    IDEDocBookmarksArea *_bookmarksArea;
+    IDEDocBookmarksNavigator *_bookmarksArea;
 }
 
-@property(retain) IDEDocBookmarksArea *bookmarksArea; // @synthesize bookmarksArea=_bookmarksArea;
+@property(retain) IDEDocBookmarksNavigator *bookmarksArea; // @synthesize bookmarksArea=_bookmarksArea;
 - (void)openClickedNavigableItemAction:(id)arg1;
 - (void)openSelectedNavigableItemsKeyAction:(id)arg1;
 
@@ -1401,8 +1414,9 @@ struct _NSRange {
 
 - (id)typeForSymbol:(id)arg1;
 - (id)queryInfoFromIndexSymbol:(id)arg1;
+- (id)_adoptedProtocolsForIndexSymbol:(id)arg1;
 - (id)_inheritanceHierarchyForIndexSymbol:(id)arg1;
-- (void)queryInfoFromIndexSymbol:(id)arg1 handlerBlock:(id)arg2;
+- (void)queryInfoFromIndexSymbol:(id)arg1 resultQueue:(struct dispatch_queue_s *)arg2 handlerBlock:(id)arg3;
 
 @end
 
@@ -1492,7 +1506,7 @@ struct _NSRange {
 
 @end
 
-@interface IDEDocNavigator : IDEViewController
+@interface IDEDocNavigator : IDENavigator
 {
     id _selectedItem;
 }
@@ -1500,10 +1514,15 @@ struct _NSRange {
 + (long long)version;
 + (void)configureStateSavingObjectPersistenceByName:(id)arg1;
 @property(retain) id selectedItem; // @synthesize selectedItem=_selectedItem;
+- (void)focusSearchField;
 - (void)commitStateToDictionary:(id)arg1;
 - (void)revertStateWithDictionary:(id)arg1;
 - (id)idedocnavigator_identifier;
 - (id)contextMenuSelectedNavItems;
+- (void)primitiveInvalidate;
+- (void)viewDidInstall;
+- (void)loadView;
+- (id)domainIdentifier;
 
 @end
 
@@ -1729,6 +1748,7 @@ struct _NSRange {
 - (void)setIdentifiersOfEnabledDocSetsSearching:(id)arg1;
 @property(readonly) NSDictionary *identifiersOfEnabledDocSets;
 - (id)publisherMenuItems;
+@property(readonly) BOOL useSDKDocSets;
 @property(readonly) NSArray *matchTypeMenuItems;
 - (id)matchTypeMenuItemWithTitle:(id)arg1 tag:(unsigned long long)arg2;
 - (void)changeMatchType:(long long)arg1;
@@ -1772,6 +1792,7 @@ struct _NSRange {
     DVTBorderedView *_openButtonBorderedView;
     NSPopUpButton *_sourceFilesPopUp;
     DSANode *_node;
+    NSImageView *_imageView;
 }
 
 @property(retain, nonatomic) DSANode *node; // @synthesize node=_node;
@@ -1790,11 +1811,10 @@ struct _NSRange {
     short _stickyTextMagnifyGestureDirection;
     float _textSizeMultiplierAtGestureStart;
     NSURL *_initialRequestURL;
-    IDEEditor *_editor;
+    IDEEditor *_editor_dvtWeak;
 }
 
 @property(copy) NSURL *initialRequestURL; // @synthesize initialRequestURL=_initialRequestURL;
-@property __weak IDEEditor *editor; // @synthesize editor=_editor;
 @property(readonly) WebView *webView; // @synthesize webView=_webView;
 - (void)setZoomMultiplier:(float)arg1;
 - (float)zoomMultiplier;
@@ -1819,8 +1839,9 @@ struct _NSRange {
 - (void)_recordLastViewedURL:(id)arg1;
 - (void)updateContentViewForNode:(id)arg1;
 - (void)configureWebView;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)loadView;
+@property __weak IDEEditor *editor;
 
 @end
 
@@ -1837,7 +1858,7 @@ struct _NSRange {
     IDEDocViewingPrefPaneController *_prefPaneController;
     IDEComponentDownloadsProgressCell *_downloadProgressCell;
     NSButtonCell *_downloadButtonCell;
-    NSMapTable *_buttonsByItem;
+    DVTMapTable *_buttonsByItem;
     DSADocSetUpdate *_selectedDocSetUpdate;
     DVTTableView *_tableView;
     NSButtonCell *_downloadProblemCell;
@@ -1856,7 +1877,6 @@ struct _NSRange {
 - (id)_buttonColumnInOutlineView;
 - (void)cancel:(id)arg1;
 - (void)showProblemInfoForUpdate:(id)arg1;
-- (void)docSetUpdateFailed:(id)arg1 returnCode:(int)arg2 contextInfo:(void *)arg3;
 - (void)_retryInstallUpdate:(id)arg1;
 - (void)_removeProgressIndicatorForItem:(id)arg1;
 - (void)_removeCancelButtonForItem:(id)arg1;

@@ -43,9 +43,18 @@ struct _xmlNode;
 
 struct _xmlParserInput;
 
+struct _xmlParserNodeInfo;
+
 struct _xmlValidState;
 
 #pragma mark Typedef'd Structures
+
+typedef struct {
+    unsigned long long _field1;
+    unsigned long long _field2;
+    unsigned long long _field3;
+    unsigned long long _field4;
+} CDStruct_33dcf794;
 
 typedef struct {
     unsigned long long _field1;
@@ -55,11 +64,22 @@ typedef struct {
 } CDStruct_70511ce9;
 
 typedef struct {
+    unsigned int isMutable:1;
+    unsigned int forceArbitrationAfterCompletion:1;
+    unsigned int invalidateDescendants:1;
+} CDStruct_c60c94c2;
+
+typedef struct {
     double minX;
     double minY;
     double maxX;
     double maxY;
 } CDStruct_c519178c;
+
+typedef struct {
+    double start;
+    double length;
+} CDStruct_79f57be0;
 
 typedef struct {
     long long _field1;
@@ -72,23 +92,26 @@ typedef struct {
 } CDStruct_bdb7e8f2;
 
 typedef struct {
-    struct CGPoint _field1;
-    struct CGPoint _field2;
-} CDStruct_e3b9714e;
+    struct CGPoint start;
+    struct CGPoint end;
+} CDStruct_f6143a38;
 
 typedef struct {
     struct CGRect _field1[8];
 } CDStruct_648df176;
 
+typedef struct {
+    struct CGRect rect;
+    unsigned long long rectEdge;
+    CDStruct_79f57be0 range;
+} CDStruct_700ccd87;
+
 #pragma mark Typedef'd Unions
 
 typedef union {
     double _field1[2];
-    struct {
-        double _field1;
-        double _field2;
-    } _field2;
-} CDUnion_af3ad131;
+    CDStruct_79f57be0 _field2;
+} CDUnion_37ff53f0;
 
 typedef union {
     double _field1[4];
@@ -110,13 +133,18 @@ typedef union {
 
 /*
  * File: /Applications/Xcode.app/Contents/PlugIns/IDEInterfaceBuilderKit.ideplugin/Contents/MacOS/IDEInterfaceBuilderKit
- * UUID: 2E41D771-B34A-388F-AE24-30AE175B0FB7
+ * UUID: 219DB25F-7C9D-3E3A-9178-CABBDFC82560
  * Arch: Intel x86-64 (x86_64)
- *       Current version: 2182.0.0, Compatibility version: 1.0.0
+ *       Current version: 3084.0.0, Compatibility version: 1.0.0
  *       Minimum Mac OS X version: 10.7.0
  *
  *       Objective-C Garbage Collection: Required
  */
+
+@protocol DVTColoredSpinnerDelegate <NSObject>
+- (void)coloredSpinnerDidFinishAnimating:(id)arg1;
+- (void)coloredSpinnerDidBeginAnimating:(id)arg1;
+@end
 
 @protocol DVTDiffTextFilter <NSObject>
 + (id)textFileDataTypeForInputFilePath:(id)arg1;
@@ -146,6 +174,11 @@ typedef union {
 @property(readonly) DVTStackBacktrace *invalidationBacktrace;
 @property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (void)invalidate;
+@end
+
+@protocol DVTInvalidation_New <DVTInvalidation>
+@property(retain) DVTStackBacktrace *creationBacktrace;
+- (void)primitiveInvalidate;
 @end
 
 @protocol DVTOutlineViewDelegate <NSOutlineViewDelegate>
@@ -178,6 +211,7 @@ typedef union {
 - (struct CGRect)expressionFrameForExpression:(id)arg1;
 
 @optional
+@property(readonly, nonatomic) NSString *selectedText;
 @property(readonly) DVTSourceExpression *quickHelpExpression;
 - (void)unregisterMouseOverExpressionObserver:(id)arg1;
 - (void)registerMouseOverExpressionObserver:(id)arg1;
@@ -211,6 +245,113 @@ typedef union {
 - (void)didClickAnnotation:(id)arg1 inTextSidebarView:(id)arg2 event:(id)arg3;
 @end
 
+@protocol IBAutolayoutFrameDeciderDelegate <NSObject>
+
+@optional
+- (void)frameDecider:(id)arg1 didPropagateFrameSize:(struct CGSize)arg2 toView:(id)arg3;
+- (void)frameDecider:(id)arg1 didPropagateFrame:(struct CGRect)arg2 toView:(id)arg3;
+@end
+
+@protocol IBAutolayoutInfoProvider <NSObject>
+@property(readonly, nonatomic) Class autolayoutFrameDecisionDriverClass;
+@property(readonly, nonatomic) Class symbolicLayoutConstantClass;
+@property(readonly, nonatomic) Class layoutConstantClass;
+@property(readonly, nonatomic) Class layoutConstraintClass;
+@property(readonly, nonatomic) Class autolayoutEngineClass;
+@property(readonly, nonatomic) Class arbitrationUnitClass;
+@property(readonly, nonatomic) long long userInterfaceLayoutDirection;
+- (id)sparseAutolayoutInfoForArbitrationUnit:(id)arg1 objectTransformationBlock:(id)arg2;
+- (id)arbitrationUnitForObject:(id)arg1;
+- (id)allArbitrationUnits;
+- (BOOL)viewIsVerticallyResizable:(id)arg1;
+- (BOOL)viewIsHorizontallyResizable:(id)arg1;
+- (BOOL)viewPrefersToVerticallyResizeWithContainer:(id)arg1;
+- (BOOL)viewPrefersToHorizontallyResizeWithContainer:(id)arg1;
+- (BOOL)viewDerivesInternalConstraintsBasedUponInitialFrameSize:(id)arg1;
+- (double)priorityStrongerThanInternalWeakSizeConstraintsForCompressingView:(id)arg1 inLayoutEngineForOrientation:(unsigned long long)arg2;
+- (unsigned long long)orientationsWithInternalConstraintsThatWeaklyDefineViewSizeForView:(id)arg1;
+- (unsigned long long)customSubviewLayoutStrategyForView:(id)arg1;
+- (BOOL)viewWithSuperviewOwnedLayoutAllowsSizingConstraints:(id)arg1;
+- (BOOL)viewShouldUseConstraintsInsteadOfAutoresizing:(id)arg1;
+- (id)designableContentViewForView:(id)arg1;
+- (CDStruct_c519178c)insetToDesignableContentAreaForView:(id)arg1;
+- (id)containerWidgetTypeForView:(id)arg1;
+- (id)widgetTypeForView:(id)arg1;
+- (id)objectsFromAncestor:(id)arg1 toObject:(id)arg2;
+- (id)topLevelObjects;
+- (id)objects;
+- (id)orderedChildrenOfObject:(id)arg1;
+- (id)childrenOfObject:(id)arg1;
+- (id)parentOfObject:(id)arg1;
+- (BOOL)containsObject:(id)arg1;
+
+@optional
+- (double)priorityForRunningLiveViewResizingFrameDecison;
+- (id)debugDescription;
+@end
+
+@protocol IBAutolayoutView <NSObject>
+@property(readonly, nonatomic) NSSet *ibFallbackViewsForCandidateConstraintGenerationForFailedArbitration;
+@property(readonly, nonatomic) id ibWindowForArbitration;
+@property(nonatomic) double ibShadowedVerticalContentCompressionResistancePriority;
+@property(nonatomic) double ibShadowedHorizontalContentCompressionResistancePriority;
+@property(nonatomic) double ibShadowedVerticalContentHuggingPriority;
+@property(nonatomic) double ibShadowedHorizontalContentHuggingPriority;
+@property(nonatomic) BOOL ibExternalTranslatesAutoresizingMaskIntoConstraints;
+@property(readonly, nonatomic) NSArray *ibExternalReferencingConstraints;
+@property(readonly, nonatomic) NSArray *ibExternalConstraints;
+@property(readonly, nonatomic) struct CGRect ibLayoutFrameworkBounds;
+@property(nonatomic) struct CGRect ibLayoutFrame;
+@property(readonly, nonatomic) struct CGRect ibLayoutBounds;
+@property(readonly, nonatomic) NSArray *constraints;
+@property(readonly, nonatomic) long long ibBaselineCount;
+@property(readonly, nonatomic) double baselineOffsetFromBottom;
+@property(readonly, nonatomic) struct CGSize intrinsicContentSize;
+@property(readonly, nonatomic) CDStruct_c519178c ibLayoutInset;
+@property(nonatomic) BOOL translatesAutoresizingMaskIntoConstraints;
+@property(readonly, nonatomic, getter=isFlipped) BOOL flipped;
+@property(readonly, nonatomic) struct CGRect bounds;
+@property(nonatomic) struct CGRect frame;
+@property(readonly, nonatomic) id window;
+@property(readonly, nonatomic) NSArray *subviews;
+@property(readonly, nonatomic) NSObject<IBAutolayoutView> *superview;
+- (void)ibPrimitiveRemoveConstraintsFromExternalConstraints:(id)arg1;
+- (void)ibPrimitiveAddConstraintsToExternalConstraints:(id)arg1;
+- (id)ibEffectiveWindowForConversions;
+- (id)ibViewForAncestorViewEdgeMovementQuestionsOfSubview:(id)arg1;
+- (struct CGRect)ibLayoutFrameForFrame:(struct CGRect)arg1;
+- (struct CGRect)ibFrameForLayoutFrame:(struct CGRect)arg1;
+- (BOOL)ib_hasAmbiguousLayout;
+- (void)setContentCompressionResistancePriority:(float)arg1 forOrientation:(unsigned long long)arg2;
+- (float)contentCompressionResistancePriorityForOrientation:(unsigned long long)arg1;
+- (void)setContentHuggingPriority:(float)arg1 forOrientation:(unsigned long long)arg2;
+- (float)contentHuggingPriorityForOrientation:(unsigned long long)arg1;
+- (void)removeConstraints:(id)arg1;
+- (void)removeConstraint:(id)arg1;
+- (void)addConstraints:(id)arg1;
+- (void)addConstraint:(id)arg1;
+- (unsigned long long)convertKnobPosition:(unsigned long long)arg1 fromView:(id)arg2;
+- (unsigned long long)convertKnobPosition:(unsigned long long)arg1 toView:(id)arg2;
+- (int)convertRectEdge:(int)arg1 fromView:(id)arg2;
+- (int)convertRectEdge:(int)arg1 toView:(id)arg2;
+- (CDStruct_c519178c)convertInset:(CDStruct_c519178c)arg1 fromView:(id)arg2;
+- (CDStruct_c519178c)convertInset:(CDStruct_c519178c)arg1 toView:(id)arg2;
+- (struct CGRect)convertRect:(struct CGRect)arg1 toView:(id)arg2;
+- (struct CGRect)convertRect:(struct CGRect)arg1 fromView:(id)arg2;
+- (struct CGSize)convertSize:(struct CGSize)arg1 toView:(id)arg2;
+- (struct CGSize)convertSize:(struct CGSize)arg1 fromView:(id)arg2;
+- (struct CGPoint)convertPoint:(struct CGPoint)arg1 toView:(id)arg2;
+- (struct CGPoint)convertPoint:(struct CGPoint)arg1 fromView:(id)arg2;
+- (struct CGRect)alignmentRectForFrame:(struct CGRect)arg1;
+- (BOOL)ibIsBaselineAtIndex:(long long)arg1 inMotionWithKnob:(unsigned long long)arg2;
+- (double)ibBaselineAtIndex:(long long)arg1;
+- (void)addSubview:(id)arg1;
+- (void)removeFromSuperview;
+- (id)ancestorSharedWithView:(id)arg1;
+- (BOOL)isDescendantOfView:(id)arg1;
+- (id)initWithFrame:(struct CGRect)arg1;
+@end
+
 @protocol IBCanvasViewDelegate <NSObject>
 - (id)draggedTypesForCanvasView:(id)arg1;
 - (void)canvasView:(id)arg1 transferFirstResponderAfterDragConclusion:(id)arg2;
@@ -223,6 +364,7 @@ typedef union {
 - (unsigned long long)canvasView:(id)arg1 draggingUpdated:(id)arg2;
 - (unsigned long long)canvasView:(id)arg1 draggingEntered:(id)arg2;
 - (id)canvasView:(id)arg1 draggedImageState:(id)arg2;
+- (void)canvasViewWillInvalidateCursorRects:(id)arg1;
 - (void)canvasViewDidUpdateTrackingAreas:(id)arg1;
 - (void)canvasViewResetCursorRects:(id)arg1;
 - (void)canvasViewWillUpdateTrackingAreas:(id)arg1;
@@ -245,11 +387,20 @@ typedef union {
 - (void)canvasView:(id)arg1 canvasFrameDidResize:(id)arg2;
 - (void)canvasView:(id)arg1 canvasFrameDidBecomeKey:(id)arg2;
 - (void)canvasView:(id)arg1 canvasFrameDidResignKey:(id)arg2;
+- (id)canvasView:(id)arg1 decoratorRectForCanvasFrame:(id)arg2;
 - (void)canvasView:(id)arg1 userDidAddSpaceWithArrowKeyEvent:(id)arg2;
 @end
 
 @protocol IBConnectionPopUpMenuDelegate <NSObject>
-- (void)ibConnectionMenu:(id)arg1 willHighlightItem:(id)arg2;
+- (void)connectionMenu:(id)arg1 willHighlightItem:(id)arg2;
+@end
+
+@protocol IBCustomClassSuggestionsProviderDelegate <NSObject>
+- (void)customClassSuggestionsProvider:(id)arg1 didUpdateQueryState:(BOOL)arg2;
+@end
+
+@protocol IBDelegatedCanvasOverlayDelegate <NSObject>
+- (id)delegatedCanvasOverlay:(id)arg1 hitTest:(struct CGPoint)arg2;
 @end
 
 @protocol IBDockViewHighlightProviderDelegate
@@ -260,6 +411,10 @@ typedef union {
 - (id)document;
 - (id)dockView;
 - (id)view;
+@end
+
+@protocol IBDocumentArbitrationResponder <NSObject>
+- (void)document:(id)arg1 willRunArbitrationOfUnits:(id)arg2;
 @end
 
 @protocol IBDocumentArchiving <NSObject>
@@ -283,7 +438,7 @@ typedef union {
 
 @protocol IBDragAndDropInsertionIndicatorDelegate <NSObject>
 @property(readonly) unsigned long long orderedRelationInsertionEdge;
-@property(readonly) long long orderedRelationInsertionIndex;
+@property(readonly, nonatomic) long long orderedRelationInsertionIndex;
 @property(readonly) NSArray *orderedRelation;
 - (struct CGRect)dragAlignmentRectForRelatedObject:(id)arg1;
 - (struct CGRect)rectInWindowSpaceForEditedObject;
@@ -357,19 +512,35 @@ typedef union {
 @property(copy) NSString *filterString;
 @end
 
+@protocol IBImageSlicingViewDelegate <NSObject>
+- (void)imageSlicingView:(id)arg1 didUpdateInsetValue:(double)arg2 andOppositeValue:(double)arg3 forEdge:(unsigned long long)arg4;
+@end
+
+@protocol IBInspectorReferencingConstraintViewControllerDelegate <NSObject>
+- (void)referencingConstraintViewControllerStopHighlightingConstraint:(id)arg1;
+- (void)referencingConstraintViewControllerStartHighlightingConstraint:(id)arg1;
+- (void)referencingConstraintViewControllerPromoteConstraint:(id)arg1;
+- (void)referencingConstraintViewControllerDeleteConstraint:(id)arg1;
+- (void)referencingConstraintViewControllerSelectConstraint:(id)arg1;
+@end
+
+@protocol IBInspectorReferencingConstraintViewDelegate <NSObject>
+- (void)constraintViewWillChangeHighlighted:(id)arg1;
+@end
+
 @protocol IBKeyEquivalentTrackingDelegate
 - (void)reflectKeyEquivalentTracking:(id)arg1;
 @end
 
 @protocol IBLayoutGuideGeneratorDelegate <NSObject>
 - (long long)userInterfaceLayoutDirectionForLayoutGuideGenerator:(id)arg1;
-- (Class)layoutSymbolicConstantClassForLayoutGuideGenerator:(id)arg1;
+- (Class)symbolicLayoutConstantClassForLayoutGuideGenerator:(id)arg1;
 - (Class)layoutConstantClassForLayoutGuideGenerator:(id)arg1;
 - (BOOL)layoutGuideGenerator:(id)arg1 shouldConsiderSiblingGuidesFromSelection:(id)arg2 toView:(id)arg3;
-- (BOOL)layoutGuideGenerator:(id)arg1 shouldConsiderSelectionEdge:(unsigned long long)arg2 toSiblingEdge:(unsigned long long)arg3 guideFromSelection:(id)arg4 toView:(id)arg5;
-- (BOOL)layoutGuideGenerator:(id)arg1 isEdge:(unsigned long long)arg2 ofAncestor:(id)arg3 fixedDuringResizingOfSubviews:(id)arg4 fromKnob:(long long)arg5;
-- (BOOL)layoutGuideGenerator:(id)arg1 isEdge:(unsigned long long)arg2 ofSubview:(id)arg3 fixedInPositionOnWindowDuringResizeFromKnob:(long long)arg4;
-- (BOOL)layoutGuideGenerator:(id)arg1 isDistanceFromSubviewEdge:(unsigned long long)arg2 ofSubview:(id)arg3 toSameEdgeOfSuperviewChangingOneToOneWithKnob:(long long)arg4;
+- (BOOL)layoutGuideGenerator:(id)arg1 shouldConsiderSelectionEdge:(int)arg2 toSiblingEdge:(int)arg3 guideFromSelection:(id)arg4 toView:(id)arg5;
+- (BOOL)layoutGuideGenerator:(id)arg1 isEdge:(int)arg2 ofAncestor:(id)arg3 fixedDuringResizingOfSubviews:(id)arg4 fromKnob:(unsigned long long)arg5;
+- (BOOL)layoutGuideGenerator:(id)arg1 isEdge:(int)arg2 ofSubview:(id)arg3 fixedInPositionOnWindowDuringResizeFromKnob:(unsigned long long)arg4;
+- (BOOL)layoutGuideGenerator:(id)arg1 isDistanceFromSubviewEdge:(int)arg2 ofSubview:(id)arg3 toSameEdgeOfSuperviewChangingOneToOneWithKnob:(unsigned long long)arg4;
 - (BOOL)layoutGuideGenerator:(id)arg1 shouldViewHaveContainedSubviewGuides:(id)arg2;
 - (BOOL)layoutGuideGenerator:(id)arg1 isViewVerticallyResizable:(id)arg2;
 - (BOOL)layoutGuideGenerator:(id)arg1 isViewHorizontallyResizable:(id)arg2;
@@ -382,7 +553,7 @@ typedef union {
 - (id)layoutGuideGenerator:(id)arg1 widgetTypeForView:(id)arg2;
 - (id)layoutGuideGenerator:(id)arg1 viewsForSelectionToSubviewsGuides:(id)arg2;
 - (id)layoutGuideGenerator:(id)arg1 siblingsForApplyingGuidesToViews:(id)arg2;
-- (id)layoutGuideGenerator:(id)arg1 baselinesForViews:(id)arg2 withSuggestedLayoutFrame:(struct CGRect)arg3 andKnobPosition:(long long)arg4;
+- (id)layoutGuideGenerator:(id)arg1 baselinesForViews:(id)arg2 withSuggestedLayoutFrame:(struct CGRect)arg3 andKnobPosition:(unsigned long long)arg4;
 - (id)layoutGuideGenerator:(id)arg1 viewForContainmentGuides:(id)arg2;
 - (id)userLayoutGuidesForLayoutGuideGenerator:(id)arg1;
 @end
@@ -444,7 +615,6 @@ typedef union {
 - (void)dockView:(id)arg1 deleteRepresentedObjects:(id)arg2;
 - (BOOL)dockView:(id)arg1 canDeleteRepresentedObjects:(id)arg2;
 - (id)dockView:(id)arg1 draggedImageState:(id)arg2;
-- (id)dockView:(id)arg1 draggedImageState:(id)arg2;
 - (void)dockView:(id)arg1 draggingEnded:(id)arg2;
 - (void)dockView:(id)arg1 draggingExited:(id)arg2;
 - (void)dockView:(id)arg1 concludeDragOperation:(id)arg2;
@@ -493,6 +663,9 @@ typedef union {
 - (id)organizationName;
 - (id)name;
 - (id)blueprints;
+@end
+
+@protocol IDECommandHandler <NSObject, NSUserInterfaceValidations>
 @end
 
 @protocol IDEComparisonEditorHostContext <NSObject>
@@ -544,6 +717,7 @@ typedef union {
 - (void)symbolsForExpression:(id)arg1 inQueue:(struct dispatch_queue_s *)arg2 completionBlock:(id)arg3;
 
 @optional
+- (BOOL)isLocationInFunctionOrMethodBody:(id)arg1;
 - (id)importStringInExpression:(id)arg1;
 @end
 
@@ -560,6 +734,7 @@ typedef union {
 @end
 
 @protocol IDEWorkspaceTabControllerCursorRectInterceptor
+- (void)workspaceTabControllerWillInvalidateCursorRectsForViewsWithNoTrackingAreas:(id)arg1;
 - (void)workspaceTabController:(id)arg1 willInvalidateCursorRectsForView:(id)arg2;
 - (BOOL)workspaceTabController:(id)arg1 interceptAddCursorRect:(struct CGRect)arg2 cursor:(id)arg3 forView:(id)arg4 inWindow:(id)arg5;
 - (BOOL)workspaceTabController:(id)arg1 interceptSetCursorForMouseLocation:(struct CGPoint)arg2 inWindow:(id)arg3;
@@ -568,6 +743,24 @@ typedef union {
 @protocol NSCoding
 - (id)initWithCoder:(id)arg1;
 - (void)encodeWithCoder:(id)arg1;
+@end
+
+@protocol NSComboBoxCellDataSource <NSObject>
+
+@optional
+- (id)comboBoxCell:(id)arg1 completedString:(id)arg2;
+- (unsigned long long)comboBoxCell:(id)arg1 indexOfItemWithStringValue:(id)arg2;
+- (id)comboBoxCell:(id)arg1 objectValueForItemAtIndex:(long long)arg2;
+- (long long)numberOfItemsInComboBoxCell:(id)arg1;
+@end
+
+@protocol NSComboBoxDataSource <NSObject>
+
+@optional
+- (id)comboBox:(id)arg1 completedString:(id)arg2;
+- (unsigned long long)comboBox:(id)arg1 indexOfItemWithStringValue:(id)arg2;
+- (id)comboBox:(id)arg1 objectValueForItemAtIndex:(long long)arg2;
+- (long long)numberOfItemsInComboBox:(id)arg1;
 @end
 
 @protocol NSControlTextEditingDelegate <NSObject>
@@ -658,6 +851,9 @@ typedef union {
 - (Class)superclass;
 - (unsigned long long)hash;
 - (BOOL)isEqual:(id)arg1;
+
+@optional
+- (id)debugDescription;
 @end
 
 @protocol NSOutlineViewDataSource <NSObject>
@@ -790,6 +986,7 @@ typedef union {
 - (void)textView:(id)arg1 doubleClickedOnCell:(id)arg2 inRect:(struct CGRect)arg3;
 - (void)textView:(id)arg1 clickedOnCell:(id)arg2 inRect:(struct CGRect)arg3;
 - (BOOL)textView:(id)arg1 clickedOnLink:(id)arg2;
+- (id)textView:(id)arg1 willShowSharingServicePicker:(id)arg2 forItems:(id)arg3;
 - (id)textView:(id)arg1 URLForContentsOfTextAttachment:(id)arg2 atIndex:(unsigned long long)arg3;
 - (id)textView:(id)arg1 didCheckTextInRange:(struct _NSRange)arg2 types:(unsigned long long)arg3 options:(id)arg4 results:(id)arg5 orthography:(id)arg6 wordCount:(long long)arg7;
 - (id)textView:(id)arg1 willCheckTextInRange:(struct _NSRange)arg2 options:(id)arg3 types:(unsigned long long *)arg4;
@@ -832,6 +1029,7 @@ typedef union {
 - (void)windowWillStartLiveResize:(id)arg1;
 - (void)windowDidEndSheet:(id)arg1;
 - (void)windowWillBeginSheet:(id)arg1;
+- (void)windowDidChangeBackingProperties:(id)arg1;
 - (void)windowDidChangeScreenProfile:(id)arg1;
 - (void)windowDidChangeScreen:(id)arg1;
 - (void)windowDidUpdate:(id)arg1;
@@ -892,6 +1090,16 @@ typedef union {
 - (void)parser:(id)arg1 foundNotationDeclarationWithName:(id)arg2 publicID:(id)arg3 systemID:(id)arg4;
 - (void)parserDidEndDocument:(id)arg1;
 - (void)parserDidStartDocument:(id)arg1;
+@end
+
+@protocol __ARCLiteIndexedSubscripting__
+- (void)setObject:(id)arg1 atIndexedSubscript:(unsigned long long)arg2;
+- (id)objectAtIndexedSubscript:(unsigned long long)arg1;
+@end
+
+@protocol __ARCLiteKeyedSubscripting__
+- (void)setObject:(id)arg1 forKeyedSubscript:(id)arg2;
+- (id)objectForKeyedSubscript:(id)arg1;
 @end
 
 @interface IBDocumentArchivingSchemaBitmaskNSModifierMask : IBDocumentArchivingSchemaBitmask
@@ -1114,11 +1322,13 @@ typedef union {
     long long delayExecutionOfDidChangeChildWrapperBlocksNestingCount;
     NSMutableOrderedSet *delayedDidChangeChildWrapperMemberWrappers;
     BOOL isFlushingUpdatesToDelayedDidChangeChildWrapperMemberWrappers;
-    NSMutableDictionary *explicitDefaultVersionsForDocumentDependencies;
-    NSMutableDictionary *explicitVersionsForDocumentDependencies;
+    IBMutableIdentityDictionary *explicitDefaultVersionsForDocumentDependencies;
+    IBMutableIdentityDictionary *explicitVersionsForDocumentDependencies;
     NSDictionary *lastSavedPluginVersionsForDependentPlugins;
     NSString *lastSavedSystemVersion;
     NSString *lastSavedInterfaceBuilderVersion;
+    NSNumber *cachedDevelopmentVersion;
+    NSNumber *cachedSystemVersion;
     NSDictionary *additionalInstantiationInformation;
     DVTPerformanceMetric *documentLoadingMetric;
     NSString *classNameThatPreventedDecode;
@@ -1149,6 +1359,7 @@ typedef union {
     IBMutableIdentityDictionary *undoBlocks;
     BOOL logUndoActions;
     id <DVTObservingToken> undoManagerObservations;
+    BOOL didOpenArbitrationStackEntryInDidStartEditing;
     NSMutableSet *editorViewControllers;
     IBMutableIdentityDictionary *workspaceDocumentsByEditorViewController;
     long long nextObjectObserverKey;
@@ -1163,14 +1374,13 @@ typedef union {
     NSMutableSet *parentsWithPendingChildWarningCalculations;
     NSMutableSet *membersWithPendingWarningCalculations;
     NSMutableSet *classNamesWithPendingWarningCalculations;
-    DVTDelayedValidator *warningsValidator;
+    DVTDelayedInvocation *warningsInvocation;
     BOOL warningsEnabled;
+    long long autolayoutAutomaticConstraintInvalidationPreventionNestingCount;
     long long autolayoutAutomaticConstraintUpdatingPreventionNestingCount;
-    long long autolayoutForceAutomaticConstraintUpdatingNestingCount;
     NSCountedSet *keepReferencingConstraintsNestingCountsByView;
-    NSMutableOrderedSet *scheduledUnitsForDelayedArbitration;
-    NSMutableArray *autolayoutArbitrationOptionsStack;
     BOOL assertDuringConstraintUpdatingNestingCount;
+    NSMutableArray *autolayoutArbitrationStack;
     BOOL automaticConstraintUpdatingDisabled;
     BOOL isRunningArbitrationOfUnit;
     BOOL useAutolayout;
@@ -1181,7 +1391,7 @@ typedef union {
 
 @end
 
-@interface IBDocument : IDEEditorDocument <IBXMLCoderDelegate, IBXMLDecoderDelegate, IDEDocumentStructureProviding, IBObjectContainerArchivingDelegate, IDENavigableItemArchivableRepresentationSupport, DVTFileDataTypeDetector>
+@interface IBDocument : IDEEditorDocument <IBXMLCoderDelegate, IBXMLDecoderDelegate, IDEDocumentStructureProviding, IBObjectContainerArchivingDelegate, IDENavigableItemArchivableRepresentationSupport, DVTFileDataTypeDetector, IBAutolayoutInfoProvider, IBAutolayoutFrameDeciderDelegate>
 {
     IBDocumentStorage *storage;
 }
@@ -1229,6 +1439,7 @@ typedef union {
 + (BOOL)isAutomaticUndoObservationEnabled;
 + (void)removeDocumentInstance:(id)arg1;
 + (void)addDocumentInstance:(id)arg1;
++ (id)documentsWithFileURLs;
 + (id)documents;
 + (id)supportedTargetRuntimes;
 + (id)defaultTargetRuntime;
@@ -1240,6 +1451,23 @@ typedef union {
 - (id)userDefinedRuntimeAttributesPlaceholderForObject:(id)arg1;
 - (BOOL)supportsUserDefinedRuntimeAttributesForObject:(id)arg1;
 - (Class)classForUserDefinedRuntimeAttributesPlaceholderForObject:(id)arg1;
+- (BOOL)viewIsVerticallyResizable:(id)arg1;
+- (BOOL)viewIsHorizontallyResizable:(id)arg1;
+- (BOOL)viewPrefersToVerticallyResizeWithContainer:(id)arg1;
+- (BOOL)viewPrefersToHorizontallyResizeWithContainer:(id)arg1;
+- (double)priorityStrongerThanInternalWeakSizeConstraintsForCompressingView:(id)arg1 inLayoutEngineForOrientation:(unsigned long long)arg2;
+- (unsigned long long)orientationsWithInternalConstraintsThatWeaklyDefineViewSizeForView:(id)arg1;
+- (unsigned long long)customSubviewLayoutStrategyForView:(id)arg1;
+- (BOOL)viewDerivesInternalConstraintsBasedUponInitialFrameSize:(id)arg1;
+- (BOOL)viewWithSuperviewOwnedLayoutAllowsSizingConstraints:(id)arg1;
+- (BOOL)viewShouldUseConstraintsInsteadOfAutoresizing:(id)arg1;
+- (id)designableContentViewForView:(id)arg1;
+- (CDStruct_c519178c)insetToDesignableContentAreaForView:(id)arg1;
+- (id)containerWidgetTypeForView:(id)arg1;
+- (id)widgetTypeForView:(id)arg1;
+- (id)autolayoutDescriptiveTextForPriority:(float)arg1;
+- (void)frameDecider:(id)arg1 didPropagateFrameSize:(struct CGSize)arg2 toView:(id)arg3;
+- (void)frameDecider:(id)arg1 didPropagateFrame:(struct CGRect)arg2 toView:(id)arg3;
 - (void)keepReferencingConstraintsWhenMovingTopLevelView:(id)arg1 during:(id)arg2;
 - (BOOL)isKeepingReferencingConstraintsForMovingTopLevelViewOrDescendantView:(id)arg1;
 - (BOOL)isKeepingReferencingConstraintsForMovingTopLevelView:(id)arg1;
@@ -1247,23 +1475,35 @@ typedef union {
 - (BOOL)isRunningArbitrationOfUnit;
 - (void)assertIfArbitrationIsScheduledDuring:(id)arg1;
 - (BOOL)shouldAssertIfArbitrationIsScheduled;
-- (BOOL)isDelayingAutomaticConstraintUpdating;
 - (void)forceAutomaticConstraintUpdatingDuring:(id)arg1;
-- (BOOL)isForcingAutomaticConstraintUpdating;
 - (void)preventAutomaticConstraintUpdatingDuring:(id)arg1;
 - (BOOL)isPreventingAutomaticConstraintUpdating;
+- (void)preventAutomaticConstraintInvalidationDuring:(id)arg1;
+- (BOOL)isPreventingAutomaticConstraintInvalidation;
 - (void)setAutomaticConstraintUpdatingDisabled:(BOOL)arg1;
 - (BOOL)automaticConstraintUpdatingDisabled;
 - (void)modifyViewsInAutolayoutSafeWayWithoutUpdatingConstraintsDuring:(id)arg1;
 - (void)addAutolayoutOptionsForNextArbitration:(id)arg1;
-- (id)internalCurrentAutolayoutArbitrationOptionsForAddingOptions;
-- (id)internalCurrentAutolayoutArbitrationOptions;
 - (void)modifyViewsInAutolayoutSafeWayDuring:(id)arg1;
 - (void)modifyViewsIgnoringDescendantsInAutolayoutSafeWayDuring:(id)arg1;
 - (void)modifyViewsAndDescendants:(BOOL)arg1 inAutolayoutSafeWayDuring:(id)arg2;
+- (void)invalidateConstraintsForAllObjectHierarchiesForReasonWithBlock:(id)arg1;
+- (void)invalidateConstraintsForHierarchyContainingObject:(id)arg1 reasonBlock:(id)arg2;
+- (void)invalidateConstraintsForHierarchyContainingObject:(id)arg1 forceInvalidationOfDescendants:(BOOL)arg2 reasonBlock:(id)arg3;
+- (void)invalidateConstraintsForObjectRepresentation:(id)arg1 withBlock:(id)arg2;
+- (void)didInvalidateConstraintsForObject:(id)arg1;
+- (void)runBlockInNewArbitrationStackEntryWithBehavior:(CDStruct_c60c94c2)arg1 block:(id)arg2;
+- (void)unitTestsCaughtAssertionFailure;
+- (void)popArbitrationStackEntry;
+- (id)pushArbitrationStackEntryWithBehavior:(CDStruct_c60c94c2)arg1;
+- (id)currentArbitrationStackEntry;
 - (BOOL)isUpdatingViewsInAutolayoutSafeWay;
+- (id)sparseAutolayoutInfoForArbitrationUnit:(id)arg1 objectTransformationBlock:(id)arg2;
+- (id)childProducerBlock;
+- (Class)autolayoutFrameDecisionDriverClass;
+- (Class)autolayoutEngineClass;
 - (Class)arbitrationUnitClass;
-- (Class)layoutSymbolicConstantClass;
+- (Class)symbolicLayoutConstantClass;
 - (Class)layoutConstantClass;
 - (Class)layoutConstraintClass;
 - (id)autolayoutDocumentDependencyVersion;
@@ -1272,6 +1512,13 @@ typedef union {
 - (void)enableAutolayout;
 - (void)setUseAutolayout:(BOOL)arg1;
 @property(readonly) BOOL useAutolayout;
+- (void)debugMenuItemPrintArbitrationUnits:(id)arg1;
+- (id)topMostObjectOfClass:(Class)arg1 inLineageToArbitrationUnitRootContainingObject:(id)arg2;
+- (id)arbitrationUnitsAtAndBelowObject:(id)arg1;
+- (id)arbitrationUnitsAtAndBelowObjects:(id)arg1;
+- (id)arbitrationUnitsForObjects:(id)arg1;
+- (id)arbitrationUnitForObject:(id)arg1;
+- (id)allArbitrationUnits;
 - (unsigned long long)navigableItem_indexOfRepresentedObjectForIdentifier:(id)arg1 inRelationshipKeyPath:(id)arg2;
 - (id)navigableItem_identifierForRepresentedObjectAtIndex:(unsigned long long)arg1 inRelationshipKeyPath:(id)arg2;
 - (void)setIdeTopLevelStructureObjects:(id)arg1;
@@ -1341,6 +1588,7 @@ typedef union {
 - (void)setDefaultVersionFromSDKString:(id)arg1 forDocumentDependency:(id)arg2;
 - (void)setVersion:(id)arg1 forDocumentDependency:(id)arg2;
 - (void)setDefaultVersion:(id)arg1 forDocumentDependency:(id)arg2;
+- (void)dropDependencyVersionCaches;
 - (id)defaultVersionForDocumentDependency:(id)arg1;
 - (id)explicitDefaultVersionForDocumentDependency:(id)arg1;
 - (id)effectiveVersionForDocumentDependency:(id)arg1;
@@ -1380,6 +1628,7 @@ typedef union {
 - (void)suggestDerivedNameForCurrentEditingAction:(id)arg1;
 - (void)setNameForCurrentEditingAction:(id)arg1 onObjects:(id)arg2;
 - (void)suggestDerivedNameForCurrentEditingAction:(id)arg1 onObjects:(id)arg2;
+- (void)openImplicitUndoGroup;
 - (void)ensureUndoNamingSetIsOpen;
 - (void)closeUndoNamingSet;
 - (id)undoNameForAction:(id)arg1 onObjects:(id)arg2;
@@ -1423,8 +1672,17 @@ typedef union {
 - (id)nextTransientIDForChildOfObject:(id)arg1 startingPoint:(id)arg2;
 - (id)firstUniqueIDFromGenerator:(id)arg1;
 - (id)initialIDForVerifiedTransientObjects;
+- (void)debugMenuVerifyConstraintIntegrity:(id)arg1;
 - (id)performVerification;
+- (void)verificationDidFinish;
 - (id)verify;
+- (id)verifyViewCCRHPriorities;
+- (void)verifyViewsHaveCorrectFrames;
+- (void)verifyConstraints;
+- (id)verifyConstraintIntegrityAndTryToFixIssues:(BOOL)arg1 userVisible:(BOOL)arg2;
+- (id)constraintIntegrityIssueMessageForUserVisibility:(BOOL)arg1 withFormat:(id)arg2;
+- (id)constraintIntegrityIssueMessageObjectDescriptionAttributes;
+- (id)constraintIntegrityIssueMessageTextAttributes;
 - (id)verifyRootObjectRootsAllObjects;
 - (id)generatePluginDependenciesForCompatibilityWithIB3;
 - (id)verifyExclusiveConnections;
@@ -1432,15 +1690,16 @@ typedef union {
 - (long long)propertyAccessControlForMember:(id)arg1;
 - (void)setPropertyAccessControl:(long long)arg1 forMember:(id)arg2;
 - (void)clearEffectivePropertyAccessControlCache;
-- (void)debugMenuItemLocalizableStringActionsUppercaseAllStrings:(id)arg1;
-- (void)debugMenuItemLocalizableStringActionsRepeatAllStrings:(id)arg1;
+- (id)constraintChangesFromReceiverToTargetDocument:(id)arg1;
+- (void)internalMenuItemLocalizableStringActionsUppercaseAllStrings:(id)arg1;
+- (void)internalMenuItemLocalizableStringActionsRepeatAllStrings:(id)arg1;
 - (void)transformAllLocalizableStringsInDocumentUsingBlock:(id)arg1;
 - (id)objectIDsForStringsFileKey:(id)arg1 context:(id)arg2;
+- (void)convertToDocumentAtFilePath:(id)arg1 forFileDataType:(id)arg2 completionBlock:(id)arg3;
 - (BOOL)applyStringsFileAtPath:(id)arg1 error:(id *)arg2;
 - (id)willApplyStringsFileAtPath:(SEL)arg1 context:(id)arg2;
 - (long long)userInterfaceLayoutDirection;
 - (void)validateLocalizableProperty:(id)arg1 onObject:(id)arg2 forLocalization:(id)arg3;
-- (void)takeLocalizedValues:(SEL)arg1 fromLocalization:(id)arg2 forObjects:(id)arg3;
 - (void)invalidateLocalizableProperty:(id)arg1 onObject:(id)arg2;
 - (void)invalidateLocalizableProperty:(id)arg1 onObject:(id)arg2 forLocalization:(id)arg3;
 - (id)localizedProperty:(id)arg1 forObject:(id)arg2 inLocalization:(id)arg3;
@@ -1456,6 +1715,7 @@ typedef union {
 - (void)setSwitchingLocalizations:(BOOL)arg1;
 - (BOOL)isSwitchingLocalizations;
 - (id)lprojFolderName;
+- (BOOL)systemTargetSupportsInternationalizationOrError:(id *)arg1;
 - (void)noteMember:(id)arg1 didChangeProperty:(id)arg2 fromValue:(id)arg3;
 - (BOOL)isPropertyLocked:(id)arg1 forAnyMember:(id)arg2;
 - (BOOL)isPropertyLocked:(id)arg1 forMember:(id)arg2;
@@ -1479,7 +1739,7 @@ typedef union {
 - (id)subclassesOfClassNamed:(id)arg1;
 - (BOOL)is:(id)arg1 aKindOf:(id)arg2;
 - (void)renameClassNamed:(id)arg1 to:(id)arg2;
-- (id)commonCustomClassNameOfObjects:(id)arg1;
+- (id)commonBaseClassOfObjects:(id)arg1;
 - (id)connectionDataForEndPoint:(id)arg1;
 - (id)aggregatePredecessors:(id)arg1 andEquivalents:(id)arg2 byPrototypes:(id)arg3 withReferenceEndPoint:(id)arg4;
 - (id)predecessorInterfaceOrderComparator;
@@ -1500,6 +1760,8 @@ typedef union {
 - (BOOL)containsConnection:(id)arg1;
 - (id)connectionsFromObject:(id)arg1 toObject:(id)arg2;
 - (id)connectionsToObject:(id)arg1;
+- (long long)numberOfConnectionsToObject:(id)arg1;
+- (long long)numberOfConnectionsFromObject:(id)arg1;
 - (id)connectionsFromObject:(id)arg1;
 - (id)connectionsForObject:(id)arg1;
 - (void)connectBinding:(id)arg1 ofSourceObject:(id)arg2 toDestinationObject:(id)arg3 keyPath:(id)arg4 options:(id)arg5;
@@ -1540,7 +1802,7 @@ typedef union {
 - (id)orderedChildrenOfObjectFromBackToFront:(id)arg1;
 - (id)filesOwner;
 - (BOOL)hasConceptOfFilesOwner;
-- (id)orderedChildrenOfObject:(id)arg1 orderedKeyPathsSelector:(SEL)arg2;
+- (id)orderedChildrenOfObject:(id)arg1 orderedKeyPathsProvider:(id)arg2;
 - (id)extractObjects:(id)arg1;
 - (id)firstCommonAncestorOfObjects:(id)arg1;
 - (id)mostSeniorObjectsOfObjects:(id)arg1;
@@ -1576,6 +1838,7 @@ typedef union {
 - (id)objectsFromTopLevelToParentOfObject:(id)arg1;
 - (id)objectsFromTopLevelToObject:(id)arg1;
 - (id)firstAncestorOfObject:(id)arg1 ofClass:(Class)arg2;
+- (id)firstAncestorOfObject:(id)arg1 passingTest:(id)arg2;
 - (id)parentOfObject:(id)arg1;
 - (id)childrenOfObject:(id)arg1;
 - (id)parentsOfObjects:(id)arg1;
@@ -1587,7 +1850,9 @@ typedef union {
 - (BOOL)containsObject:(id)arg1;
 - (id)objectRecordsForObjects:(id)arg1;
 - (id)objectRecordForObject:(id)arg1;
-- (id)hybridPackage;
+- (id)fileWrapperOfType:(id)arg1 error:(id *)arg2;
+- (id)fileWrapperOfType:(id)arg1 options:(id)arg2 error:(id *)arg3;
+- (id)hybridPackageWithOptions:(id)arg1 error:(id *)arg2;
 - (id)hybridPackageType;
 - (id)internalCompiledPackageWithOptions:(id)arg1 error:(id *)arg2;
 - (id)compiledPackageWithOptions:(id)arg1 error:(id *)arg2;
@@ -1620,8 +1885,8 @@ typedef union {
 - (void)cacheBuildSettingsSnapshotDuring:(id)arg1;
 - (id)buildSettingsSnapshot;
 - (id)connectToSourceTargetCandidatesForContainingClassNamed:(id)arg1 toObject:(id)arg2 preferredTarget:(id *)arg3;
-- (id)connectToSourceTopLevelObjectsForConnectingToObject:(id)arg1;
-- (id)connectToSourceFileOwnershipObjectForConnectingToObject:(id)arg1;
+- (id)connectToSourceCandidatesForConnectingToObject:(id)arg1 preferredCandidates:(id *)arg2;
+- (id)connectToSourceFileOwnershipObjectForConnectingToObject:(id)arg1 relativeTopLevelObjects:(id *)arg2;
 - (BOOL)supportsSourceCodeConnectionContext:(id)arg1;
 - (unsigned long long)connectToSourceInstanceVariableTeardownTypeForCounterpart:(id)arg1;
 - (id)connectToSourceTeardownMethodCounterpartsForContext:(id)arg1;
@@ -1737,8 +2002,11 @@ typedef union {
 - (id)dataOfType:(id)arg1 error:(id *)arg2;
 - (long long)documentArchivingCompatibilityVersion;
 - (id)archiveTypeForFileType:(id)arg1;
+- (Class)documentUnarchiver:(id)arg1 classForUnknownElementNamed:(id)arg2;
 - (id)documentUnarchiver:(id)arg1 objectForReferenceID:(id)arg2 referenceType:(id)arg3;
 - (void)unarchiveDocument:(id)arg1;
+- (void)acceptDecodedUseAutoLayoutValueOrRaise:(BOOL)arg1;
+- (BOOL)acceptDecodedUseAutoLayoutValue:(BOOL)arg1 error:(id *)arg2;
 - (void)unarcvhiveTopLevelObjects:(id)arg1;
 - (void)documentUnarchiver:(id)arg1 didUnarchiveObject:(id)arg2;
 - (void)documentUnarchiver:(id)arg1 willUnarchiveObject:(id)arg2;
@@ -1785,6 +2053,10 @@ typedef union {
 - (BOOL)usesDocumentArchiverForType:(id)arg1;
 - (void)didArchiveWithContext:(id)arg1;
 - (void)willArchiveWithContext:(id)arg1;
+- (id)relationshipsFromParent:(id)arg1 toChild:(id)arg2;
+- (id)appendableRelationshipDescriptionForObject:(id)arg1;
+- (id)appendableLoggingDescriptionForObject:(id)arg1;
+- (id)loggingDescription;
 - (Class)xmlDecoder:(id)arg1 cannotDecodeObjectOfClassName:(id)arg2;
 - (Class)unarchiver:(id)arg1 cannotDecodeObjectOfClassName:(id)arg2 originalClasses:(id)arg3;
 - (Class)coder:(id)arg1 cannotDecodeObjectOfClassName:(id)arg2;
@@ -1928,6 +2200,7 @@ typedef union {
 - (id)prototypeWithRespectTo:(id)arg1;
 - (BOOL)allowsEstablishingNewConnections;
 - (long long)relationshipType;
+- (long long)compareToPrototype:(id)arg1 predecessors:(id)arg2 predecessorsForSelf:(id)arg3;
 - (long long)compareToConnectionForPrototypeMenu:(id)arg1;
 - (id)labelForMenu;
 - (id)label;
@@ -1949,8 +2222,8 @@ typedef union {
 - (id)equivalentSourceInDocument:(id)arg1;
 - (id)equivalentDestinationInDocument:(id)arg1;
 - (id)endPointForEquivalentEndPoint:(id)arg1 inDocument:(id)arg2;
-- (void)completeWithComponentChoice:(id)arg1;
-- (id)missingComponentChoices;
+- (void)completeWithMissingComponent:(id)arg1;
+- (id)missingComponents;
 - (id)source;
 - (BOOL)useConnectionSourceForWarningLocation;
 - (id)copyWithSource:(id)arg1 destination:(id)arg2;
@@ -1964,48 +2237,6 @@ typedef union {
 - (id)initWithDestination:(id)arg1 andLabel:(id)arg2;
 - (id)ibXLIFFClassName:(id)arg1;
 - (id)connectionDefinitionForObject:(id)arg1;
-
-@end
-
-@interface IBClassForLoactingInterfaceBuilderKitBundle : NSObject
-{
-}
-
-@end
-
-@interface IBMutableIdentityDictionary : NSMutableDictionary
-{
-    NSMapTable *table;
-    NSSortDescriptor *codingSortDescriptor;
-}
-
-@property(copy) NSSortDescriptor *codingSortDescriptor; // @synthesize codingSortDescriptor;
-- (void)removeObjectForKey:(id)arg1;
-- (void)setObject:(id)arg1 forKey:(id)arg2;
-- (unsigned long long)countByEnumeratingWithState:(CDStruct_70511ce9 *)arg1 objects:(id *)arg2 count:(unsigned long long)arg3;
-- (id)keyEnumerator;
-- (id)allKeys;
-- (id)objectForKey:(id)arg1;
-- (unsigned long long)count;
-- (Class)classForCoder;
-- (id)mutableCopyWithZone:(struct _NSZone *)arg1;
-- (id)copyWithZone:(struct _NSZone *)arg1;
-- (void)encodeWithCoder:(id)arg1;
-- (id)initWithCoder:(id)arg1;
-- (id)init;
-- (id)initWithCapacity:(unsigned long long)arg1;
-- (id)initWithObjects:(id *)arg1 forKeys:(id *)arg2 count:(unsigned long long)arg3;
-- (id)initWithObjects:(id)arg1 forKeys:(id)arg2;
-- (id)initWithObjects:(const id *)arg1 forKeys:(const id *)arg2 count:(unsigned long long)arg3 codingSortDescriptor:(id)arg4;
-- (id)initWithObjects:(id)arg1 forKeys:(id)arg2 codingSortDescriptor:(id)arg3;
-
-@end
-
-@interface IBCFMutableDictionary : NSMutableDictionary
-{
-}
-
-- (id)initWithCoder:(id)arg1;
 
 @end
 
@@ -2261,7 +2492,7 @@ typedef union {
 - (void)didSelect:(id)arg1 andDeselect:(id)arg2;
 - (void)willSelect:(id)arg1 andDeselect:(id)arg2;
 - (BOOL)selectionContainsObject:(id)arg1;
-@property(retain) id <IBSelectionOwnerDelegate> delegate;
+@property __weak id <IBSelectionOwnerDelegate> delegate;
 - (id)init;
 - (id)initWithDelegate:(id)arg1;
 - (void)captureDelegateImplementedMethods;
@@ -2286,6 +2517,21 @@ typedef union {
 + (id)sharedInstance;
 - (void)scheduleBlock:(id)arg1;
 - (void)sendEvent:(id)arg1;
+
+@end
+
+@interface IBBestFrameRectWrapper : NSObject
+{
+    BOOL hasHash;
+    unsigned long long hash;
+    double _distanceFromStartingRect;
+    struct CGRect _rectValue;
+}
+
+@property struct CGRect rectValue; // @synthesize rectValue=_rectValue;
+@property double distanceFromStartingRect; // @synthesize distanceFromStartingRect=_distanceFromStartingRect;
+- (BOOL)isEqual:(id)arg1;
+- (unsigned long long)hash;
 
 @end
 
@@ -2369,17 +2615,17 @@ typedef union {
 }
 
 @property(nonatomic) double textRotation; // @synthesize textRotation;
-@property(copy) NSImage *image; // @synthesize image;
-@property(copy) NSColor *textColor; // @synthesize textColor;
-@property(copy) NSFont *textFont; // @synthesize textFont;
-@property(copy) NSString *text; // @synthesize text;
-@property(copy) NSColor *innerBorderColor; // @synthesize innerBorderColor;
-@property(copy) NSColor *borderColor; // @synthesize borderColor;
-@property(copy) NSColor *fillColor; // @synthesize fillColor;
+@property(copy, nonatomic) NSImage *image; // @synthesize image;
+@property(copy, nonatomic) NSColor *textColor; // @synthesize textColor;
+@property(copy, nonatomic) NSFont *textFont; // @synthesize textFont;
+@property(copy, nonatomic) NSString *text; // @synthesize text;
+@property(copy, nonatomic) NSColor *innerBorderColor; // @synthesize innerBorderColor;
+@property(copy, nonatomic) NSColor *borderColor; // @synthesize borderColor;
+@property(copy, nonatomic) NSColor *fillColor; // @synthesize fillColor;
 @property(nonatomic) double cornerRadius; // @synthesize cornerRadius;
-@property(getter=isFlipped) BOOL flipped; // @synthesize flipped;
+@property(nonatomic, getter=isFlipped) BOOL flipped; // @synthesize flipped;
 - (void)drawRect:(struct CGRect)arg1;
-- (struct CGRect)destinationRectForContentWithSize:(struct CGSize)arg1 knob:(long long)arg2 offset:(struct CGPoint)arg3;
+- (struct CGRect)destinationRectForContentWithSize:(struct CGSize)arg1 knob:(unsigned long long)arg2 offset:(struct CGPoint)arg3;
 - (void)recacheOpaque;
 - (struct CGSize)effectiveTextAttributedStringSize;
 - (id)effectiveTextAttributedString;
@@ -2506,6 +2752,7 @@ typedef union {
     NSSet *documentDependencyExtensions;
     NSSet *classDescriptionsExtensions;
     NSSet *embeddingPolicyExtensions;
+    NSSet *buildEnvironmentVerifiers;
     NSSet *connectionExtensions;
     BOOL installedColorList;
 }
@@ -2519,12 +2766,14 @@ typedef union {
 - (id)colorList;
 - (id)connectionClasses;
 - (id)connectionExtensionForConnectionClass:(Class)arg1;
+- (id)buildEnvironmentVerifiers;
 - (id)connectionExtensions;
 - (id)embeddingPolicyExtensions;
 - (id)classDescriptionsExtensions;
 - (id)documentDependencyExtensions;
 - (id)objectLibraryTemplateExtensions;
 - (Class)documentClass;
+- (id)operatingSystemName;
 - (id)windowPasteboardType;
 - (id)viewPasteboardType;
 - (id)objectPasteboardType;
@@ -2712,8 +2961,7 @@ typedef union {
 - (id)equivalentPrototypeWithRespectToEquivalentEndPoint:(id)arg1 inDocument:(id)arg2;
 - (id)prototypeWithRespectTo:(id)arg1;
 - (BOOL)validateSource:(id)arg1;
-- (void)completeWithComponentChoice:(id)arg1;
-- (id)missingComponentChoices;
+- (id)missingComponents;
 - (BOOL)validateDestination:(id)arg1;
 - (BOOL)isPrototypeFor:(id)arg1;
 - (BOOL)isEquivalentToPrototypeFor:(id)arg1 inDocument:(id)arg2;
@@ -2752,8 +3000,7 @@ typedef union {
 - (BOOL)isExclusiveTo:(id)arg1 inObjectContainer:(id)arg2;
 - (BOOL)validateDestination:(id)arg1;
 - (BOOL)validateSource:(id)arg1;
-- (void)completeWithComponentChoice:(id)arg1;
-- (id)missingComponentChoices;
+- (id)missingComponents;
 - (id)equivalentPrototypeWithRespectToEquivalentEndPoint:(id)arg1 inDocument:(id)arg2;
 - (long long)previousConnectionStateIndicatorForDragFromObject:(id)arg1 toObject:(id)arg2 inDocument:(id)arg3;
 - (id)prototypeWithRespectTo:(id)arg1;
@@ -2796,8 +3043,7 @@ typedef union {
 - (BOOL)isActuallyAnOutlet;
 - (BOOL)canCoexistsWithOtherConnectionsHavingSameEndPoint;
 - (BOOL)validateSource:(id)arg1;
-- (void)completeWithComponentChoice:(id)arg1;
-- (id)missingComponentChoices;
+- (id)missingComponents;
 - (BOOL)validateDestination:(id)arg1;
 - (id)equivalentPrototypeWithRespectToEquivalentEndPoint:(id)arg1 inDocument:(id)arg2;
 - (id)equivalentSourceInDocument:(id)arg1;
@@ -2820,9 +3066,9 @@ typedef union {
 
 @end
 
-@interface IBClassDescriber : NSObject <NSCoding>
+@interface IBClassDescriber : NSObject <NSCoding, DVTInvalidation_New>
 {
-    DVTDelayedValidator *classDataIsUpdatingDelayedValidator;
+    DVTDelayedInvocation *classDataIsUpdatingDelayedInvocation;
     NSSet *readonlyPartialsToIntegrateWhenClassProvidersAreFirstSet;
     NSSet *classProviderObservingTokens;
     DVTDispatchLock *ivarAccessLock;
@@ -2831,9 +3077,21 @@ typedef union {
     BOOL classDataIsUpdating;
     NSArray *classProviders;
     IBDocument *document;
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
+@property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 @property BOOL classDataIsUpdating; // @synthesize classDataIsUpdating;
+- (void)primitiveInvalidate;
+- (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (id)collectionTypeForToManyOutlet:(id)arg1 forClassNamed:(id)arg2 recursive:(BOOL)arg3;
 - (id)memberTypeForToManyOutlet:(id)arg1 forClassNamed:(id)arg2 recursive:(BOOL)arg3;
 - (id)typeForToOneOutlet:(id)arg1 forClassNamed:(id)arg2 recursive:(BOOL)arg3;
@@ -2916,7 +3174,7 @@ typedef union {
     IBShadowBox *shadowBox;
     NSView *endOfUndockedViewsToken;
     NSView *endOfDockedViewsToken;
-    DVTDelayedValidator *shrinkValidator;
+    DVTDelayedInvocation *shrinkInvocation;
     BOOL shrinksToFitFrames;
     IBSelectionOwner *canvasFrameSelectionOwner;
     IBCanvasBandSelectionView *bandSelectionView;
@@ -2970,6 +3228,7 @@ typedef union {
 - (void)zoomToFactor:(double)arg1 anchor:(struct CGPoint)arg2 animateSynchronouslyForDuration:(double)arg3;
 - (void)zoomToFactor:(double)arg1 anchor:(struct CGPoint)arg2;
 - (void)_updateTrackingAreas;
+- (void)_invalidateCursorRects;
 - (BOOL)isUpdateTrackingAreasEnabled;
 - (void)stopSuppressingTrackingAreaUpdates;
 - (void)suppressTrackingAreaUpdates;
@@ -2987,6 +3246,7 @@ typedef union {
 - (void)setBoundsOrigin:(struct CGPoint)arg1;
 - (struct CGRect)boundsForCanvasFrameViewsFrame:(struct CGRect)arg1;
 - (struct CGRect)rectForUserPositionedCanvasFramesInView:(id)arg1;
+- (struct CGRect)layoutRectForNonAutoPositionedFrame:(id)arg1;
 - (void)positionChildFramesForPhase:(long long)arg1;
 - (id)subviewsOrderedForLayout;
 - (id)undockedFrameViewsFromBackToFront;
@@ -3017,7 +3277,7 @@ typedef union {
 
 @end
 
-@interface IBEditorCanvasFrame : IBCanvasFrame
+@interface IBEditorCanvasFrame : IBCanvasFrame <IBDocumentArbitrationResponder>
 {
     IBEditorCanvasFrameContentView *contentView;
     NSTrackingArea *mouseMovedArea;
@@ -3026,7 +3286,7 @@ typedef union {
     IBEditorCanvasFrameController *controller;
     id closeHandler;
     NSString *title;
-    long long pinnedKnob;
+    unsigned long long pinnedKnob;
     BOOL horizontallyResizable;
     BOOL verticallyResizable;
     IBImageButton *closeButton;
@@ -3035,16 +3295,17 @@ typedef union {
 }
 
 @property struct CGPoint pinningPoint; // @synthesize pinningPoint;
-@property NSView *pinnedDescendantView; // @synthesize pinnedDescendantView;
+@property(retain) NSView *pinnedDescendantView; // @synthesize pinnedDescendantView;
 @property(retain, nonatomic) IBImageButton *closeButton; // @synthesize closeButton;
 @property(getter=isVerticallyResizable) BOOL verticallyResizable; // @synthesize verticallyResizable;
 @property(getter=isHorizontallyResizable) BOOL horizontallyResizable; // @synthesize horizontallyResizable;
 @property(readonly) NSView *contentView; // @synthesize contentView;
-@property long long pinnedKnob; // @synthesize pinnedKnob;
+@property unsigned long long pinnedKnob; // @synthesize pinnedKnob;
 @property(copy) NSString *title; // @synthesize title;
 @property(copy) id closeHandler; // @synthesize closeHandler;
 @property(retain) IBEditorCanvasFrameController *controller; // @synthesize controller;
 @property(copy) NSEvent *lastMouseDown; // @synthesize lastMouseDown;
+- (void)document:(id)arg1 willRunArbitrationOfUnits:(id)arg2;
 - (void)didCompleteLayout;
 - (void)hasKeyLookDidChange;
 - (void)draggedImage:(id)arg1 movedTo:(struct CGPoint)arg2;
@@ -3084,7 +3345,7 @@ typedef union {
 - (struct CGRect)frameForCenteringInRect:(struct CGRect)arg1;
 - (struct CGRect)contentRect;
 - (BOOL)isFlipped;
-- (struct CGRect)frameToFitDocumentViewPinningKnob:(long long)arg1;
+- (struct CGRect)frameToFitDocumentViewPinningKnob:(unsigned long long)arg1;
 - (struct CGSize)sizeForDocumentSize:(struct CGSize)arg1;
 - (CDStruct_c519178c)dockingInset;
 - (CDStruct_c519178c)contentInset;
@@ -3244,7 +3505,7 @@ typedef union {
     NSError *error;
 }
 
-+ (id)asyncXMLDecoderWrapperForURL:(id)arg1 data:(id)arg2 type:(id)arg3;
++ (id)asyncXMLDecoderWrapperForURL:(id)arg1 data:(id)arg2 type:(id)arg3 error:(id *)arg4;
 @property(copy) NSError *error; // @synthesize error;
 @property(copy) NSData *data; // @synthesize data;
 @property(readonly) NSURL *fileURL; // @synthesize fileURL;
@@ -3258,7 +3519,7 @@ typedef union {
 @property(readonly) NSData *initializedData;
 - (void)waitForInitializationIfNeeded;
 - (void)beginDecoding;
-- (id)initWithURL:(id)arg1 data:(id)arg2 type:(id)arg3;
+- (id)initWithURL:(id)arg1 data:(id)arg2 type:(id)arg3 error:(id *)arg4;
 
 @end
 
@@ -3309,11 +3570,12 @@ typedef union {
     long long maxID;
     BOOL usesAutoincrementingIDs;
     id <IBObjectContainerDelegate> delegate;
+    NSArray *verificationIssues;
 }
 
 + (id)objectContainerFromData:(id)arg1 withArchivingDelegate:(id)arg2;
 + (id)objectContainerWithInitilallyDesignableChildrenOfObjects:(id)arg1 usingAutoincrementingIDs:(BOOL)arg2;
-@property(retain) id <IBObjectContainerDelegate> delegate; // @synthesize delegate;
+@property __weak id <IBObjectContainerDelegate> delegate; // @synthesize delegate;
 @property(nonatomic) BOOL usesAutoincrementingIDs; // @synthesize usesAutoincrementingIDs;
 - (id)decomposeIgnoringRoots:(id)arg1;
 - (id)rootsReachableFromRoot:(id)arg1 ignoring:(id)arg2;
@@ -3379,9 +3641,13 @@ typedef union {
 - (id)connectionForConnectionID:(id)arg1;
 - (id)connectionIDForConnection:(id)arg1;
 - (void)addConnection:(id)arg1 withConnectionID:(id)arg2;
+- (void)addConnection:(id)arg1 withConnectionID:(id)arg2 sourceIndex:(long long)arg3;
+- (void)addConnection:(id)arg1 withConnectionID:(id)arg2 blockForInsertingIntoConnectionsBySource:(id)arg3;
 - (id)connectionsFromObject:(id)arg1 toObject:(id)arg2;
 - (id)connectionsToObject:(id)arg1;
 - (id)connectionsFromObject:(id)arg1;
+- (long long)numberOfConnectionsToObject:(id)arg1;
+- (long long)numberOfConnectionsFromObject:(id)arg1;
 - (id)connectionsForObject:(id)arg1;
 - (id)orderedConnections;
 - (id)connections;
@@ -3438,7 +3704,10 @@ typedef union {
 - (void)decodeObjectsWithCoder:(id)arg1;
 - (id)init;
 - (id)copyViaSerialization;
+@property(readonly) NSArray *verificationIssues;
 - (void)verify;
+- (void)verifyMembersHaveUniqueIDs;
+- (id)verifyMaxID;
 - (void)verifyNoObjectIsInTheChildListTwice;
 - (void)verifyConnectionEndPoints;
 - (void)verifyConnectionKeys;
@@ -3446,6 +3715,7 @@ typedef union {
 - (BOOL)isObject:(id)arg1 aDescendantOfObject:(id)arg2;
 - (id)mostSeniorObjectsOfObjects:(id)arg1;
 - (id)firstCommonAncestorOfObjects:(id)arg1;
+- (id)firstAncestorOfObject:(id)arg1 passingTest:(id)arg2;
 - (id)topLevelObjectsForObjects:(id)arg1;
 - (id)topLevelObjectForObject:(id)arg1;
 - (id)descendantsOfObjects:(id)arg1;
@@ -3511,6 +3781,8 @@ typedef union {
 
 + (BOOL)ide_initializeWithOptions:(int)arg1 error:(id *)arg2;
 + (id)sharedInstance;
+- (void)initializeLayoutRules;
+- (void)setupFrameworkHooks;
 - (void)loadDefaults;
 - (id)init;
 
@@ -3518,7 +3790,7 @@ typedef union {
 
 @interface IBIntegratorManager : NSObject
 {
-    NSMutableDictionary *registeredIntegratorsByClass;
+    IBMutableIdentityDictionary *registeredIntegratorsByClass;
 }
 
 + (id)integratorExtensionPoint;
@@ -3561,7 +3833,7 @@ typedef union {
 
 @end
 
-@interface IBEditorCanvasFrameController : NSObject <IBEndPointProvider, NSUserInterfaceValidations, NSDraggingDestination>
+@interface IBEditorCanvasFrameController : NSObject <IBDelegatedCanvasOverlayDelegate, IBEndPointProvider, NSUserInterfaceValidations, NSDraggingDestination, IBDocumentArbitrationResponder>
 {
     IBEditorCanvasFrame *editorCanvasFrame;
     IBFieldEditor *fieldEditor;
@@ -3591,25 +3863,28 @@ typedef union {
     IBNavigationMenuController *navigationMenuController;
     IBCancellationToken *lastDragTargetHighlightCancellationToken;
     unsigned long long targetIdentifierUseCount;
-    long long overlayViewUseCount;
-    DVTDelayedValidator *uninstallOverlayViewsValidator;
     id objectToMeasureSelectionSpeedFor;
     NSSet *objectsShowingTargetIdentifier;
+    IBDelegatedCanvasOverlay *overlayView;
+    id <DVTInvalidation> dragAndDropDrawingToken;
 }
 
 @property(copy) NSEvent *lastRightMouseDown; // @synthesize lastRightMouseDown;
 @property(copy) NSEvent *lastLeftMouseDown; // @synthesize lastLeftMouseDown;
-@property(getter=isDropInProgress) BOOL dropInProgress; // @synthesize dropInProgress;
+@property(nonatomic, getter=isDropInProgress) BOOL dropInProgress; // @synthesize dropInProgress;
 @property(copy) NSDate *lastDragMouseMovedTime; // @synthesize lastDragMouseMovedTime;
 @property(retain) IBAbstractDocumentEditor *documentEditor; // @synthesize documentEditor;
 @property(retain) IBEditor *baseEditor; // @synthesize baseEditor;
 @property(retain) IBDocument *document; // @synthesize document;
 @property(retain, nonatomic) IBEditorCanvasFrame *editorCanvasFrame; // @synthesize editorCanvasFrame;
-- (void)didResizeEditedObject:(id)arg1 withEvent:(id)arg2 fromKnob:(long long)arg3;
-- (void)willResizeEditedObject:(id)arg1 withEvent:(id)arg2 fromKnob:(long long)arg3;
+- (void)document:(id)arg1 willRunArbitrationOfUnits:(id)arg2;
+- (void)didResizeEditedObject:(id)arg1 withEvent:(id)arg2 fromKnob:(unsigned long long)arg3;
+- (void)willResizeEditedObject:(id)arg1 withEvent:(id)arg2 fromKnob:(unsigned long long)arg3;
 - (void)recursivelyVisitEditorsStartingAtEditedObject:(id)arg1 callingBlockForEachVisitedEditor:(id)arg2;
 @property(readonly) IBLayoutManager *layoutManager;
 - (void)sendEvent:(id)arg1;
+- (BOOL)decoratorActionsShouldInterceptEvent:(id)arg1;
+- (BOOL)decoratorActionsShouldInterceptEventAtPoint:(struct CGPoint)arg1;
 - (id)connectionSourceForEvent:(id)arg1;
 - (id)initialEndPointForPossibleEndPoints:(id)arg1 givenSelection:(id)arg2;
 - (id)descendantEditorClickPassthroughTarget;
@@ -3652,6 +3927,7 @@ typedef union {
 - (id)pasteTarget;
 - (id)cutCopyDeleteDuplicateTarget;
 - (BOOL)shouldForwardPasteboardActionsToCanvasView;
+- (void)delegateDrawingDragAndDropInsertionHints;
 - (id)lastDragTarget;
 - (void)updateLastDragTargetEditedObject:(id)arg1 fromDraggingInfo:(id)arg2;
 - (void)concludeDragOperation:(id)arg1;
@@ -3666,7 +3942,7 @@ typedef union {
 - (BOOL)shouldBlockDragsUntilHoldFromDragginEntered;
 - (id)draggedImageState:(id)arg1;
 - (void)springForwardForDragAndDrop;
-- (id)springLoadedObjectAtPoint:(struct CGPoint)arg1;
+- (id)springLoadedObjectAtPoint:(struct CGPoint)arg1 criteria:(long long)arg2;
 - (BOOL)prepareToAcceptDragInfo:(id)arg1;
 - (id)dropTargetEditedObjectForDragInfo:(id)arg1;
 - (void)registerDragTypes;
@@ -3690,13 +3966,7 @@ typedef union {
 - (void)resetCursorRects;
 - (void)willResetCursorRects;
 - (void)positionChildEditorFrames;
-- (void)unacquireOverlayView;
-- (void)acquireOverlayView;
-- (void)uninstallOverlayViews;
-- (void)performOverlayViewDependentBlock:(id)arg1;
-- (void)uninstallOverlayViewForEditor:(id)arg1;
-- (void)installOverlayViewForEditorIfNeeded:(id)arg1;
-- (BOOL)needsOverlayViews;
+- (id)overlayView;
 - (id)accessibilityDescriptionForEditedObject;
 - (id)accessibilityUniqueIDForEditedObject;
 - (BOOL)editorCanvasFrame:(id)arg1 interceptDoubleClickedEvent:(id)arg2;
@@ -3707,11 +3977,13 @@ typedef union {
 - (id)editedObjectsFromBaseToActive;
 - (id)editorsFromBaseToActive;
 - (struct CGRect)clippedRectForObject:(id)arg1;
-- (id)childOfObject:(id)arg1 atPoint:(struct CGPoint)arg2;
-- (id)objectAtPoint:(struct CGPoint)arg1;
-- (id)objectsFromBackToFrontAtPoint:(struct CGPoint)arg1;
-- (void)depthFirstSearchForObjectsAtPoint:(struct CGPoint)arg1 fromObject:(id)arg2 clippedRect:(struct CGRect)arg3 clippingRectForChildren:(struct CGRect)arg4 addingObjectsToArray:(id)arg5;
+- (id)childOfObject:(id)arg1 atPoint:(struct CGPoint)arg2 criteria:(long long)arg3;
+- (id)objectAtPoint:(struct CGPoint)arg1 criteria:(long long)arg2;
+- (id)objectsFromBackToFrontAtPoint:(struct CGPoint)arg1 criteria:(long long)arg2;
+- (void)depthFirstSearchForObjectsAtPoint:(struct CGPoint)arg1 criteria:(long long)arg2 fromObject:(id)arg3 clippedRect:(struct CGRect)arg4 clippingRectForChildren:(struct CGRect)arg5 addingObjectsToArray:(id)arg6;
 - (struct CGRect)rectClippedToViewAncestorsForChild:(id)arg1 ofParent:(id)arg2;
+- (struct CGRect)clipRect:(struct CGRect)arg1 toViewAncestorsOfObject:(id)arg2;
+- (id)delegatedCanvasOverlay:(id)arg1 hitTest:(struct CGPoint)arg2;
 - (void)decrementTargetIdentifierUseCount;
 - (void)incrementTargetIdentifierUseCount;
 - (void)willClose;
@@ -3732,10 +4004,9 @@ typedef union {
 - (void)setActiveEditor:(id)arg1;
 - (id)activeEditor;
 - (BOOL)wouldEditObject:(id)arg1;
-- (id)selectableObjects;
-- (id)selectableObjectsFromBackToFront;
-- (id)selectableChildrenOfObjectFromBackToFront:(id)arg1;
-- (void)enumerateSelectableChildrenOfObject:(id)arg1 fromBackToFrontWithBlock:(id)arg2;
+- (id)objectsFromBackToFrontForCriteria:(long long)arg1;
+- (id)childrenOfObjectFromBackToFront:(id)arg1 criteria:(long long)arg2;
+- (void)enumerateChildrenOfObject:(id)arg1 criteria:(long long)arg2 fromBackToFrontWithBlock:(id)arg3;
 - (id)baseEditedObject;
 - (struct CGRect)unclippedRectForObject:(id)arg1;
 - (struct CGRect)rectForBaseEditedObject;
@@ -3744,7 +4015,7 @@ typedef union {
 
 @end
 
-@interface IBAbstractDocumentEditor : IDEEditor <IDEMediaLibraryDelegate, DVTReplacementViewDelegate, IDESourceExpressionSource, NSUserInterfaceValidations>
+@interface IBAbstractDocumentEditor : IDEEditor <IDEMediaLibraryDelegate, DVTReplacementViewDelegate, IDESourceExpressionSource, NSUserInterfaceValidations, IBDocumentArbitrationResponder>
 {
     DVTReplacementView *structureAreaContainer;
     DVTSplitView *structureAreaSplitView;
@@ -3765,8 +4036,8 @@ typedef union {
     id <DVTObservingToken> documentMemberRemovedObserver;
     id <DVTObservingToken> kvoDocumentObservingToken;
     BOOL registeredWithDocument;
-    DVTDelayedValidator *selectionPushValidator;
-    DVTDelayedValidator *ensureAnObjectEditorIsOpenValidator;
+    DVTDelayedInvocation *selectionPushInvocation;
+    DVTDelayedInvocation *ensureAnObjectEditorIsOpenInvocation;
     NSMutableSet *highlightProviders;
     DVTMutableOrderedSet *selectionProviders;
     id <IBSelectionProvider> selectionProvider;
@@ -3777,12 +4048,18 @@ typedef union {
     IBMutableIdentityDictionary *flattenedObjectObservers;
     IBMutableIdentityDictionary *objectObservers;
     long long nextObjectObserverKey;
+    NSSet *_possiblyStalePreviouslyHighlightedObjects;
+    IBCancellationToken *_possiblyStaleCancelationTokenForPreviouslyHighlightedObjects;
     IBMenuTargetResponderForwarder *editorMenuTarget;
 }
 
++ (id)debugCompiledDocumentFileExtension;
 + (void)configureStateSavingObjectPersistenceByName:(id)arg1;
 + (id)visibleDocumentEditorControllersFromBackToFrontInDocument:(id)arg1;
++ (void)revealDocumentMemberAtLocation:(id)arg1 withEditor:(id)arg2 openSpecifierCustomizationBlock:(id)arg3;
 + (id)showTargetIdentifierForObjects:(id)arg1 showLabels:(BOOL)arg2 inDocuments:(id)arg3;
++ (void)cancelAllOutstandingTargetIdentifiers;
++ (id)lastActiveDocumentEditorForWorkspaceTabController:(id)arg1 forDocument:(id)arg2;
 + (id)lastActiveDocumentEditorForWorkspaceTabController:(id)arg1;
 + (void)noteEditorWillDeactivate:(id)arg1 inWorkspaceTabController:(id)arg2;
 + (void)noteEditorDidActivate:(id)arg1 inWorkspaceTabController:(id)arg2 isActive:(BOOL)arg3;
@@ -3796,12 +4073,16 @@ typedef union {
 @property(retain, nonatomic) IBStructureViewController *structureViewController; // @synthesize structureViewController;
 @property(retain, nonatomic) id <IBSelectionProvider> selectionProvider; // @synthesize selectionProvider;
 @property(retain, nonatomic) IBCanvasViewController *canvasViewController; // @synthesize canvasViewController;
+- (void)debugCompileDocument:(id)arg1;
+- (void)document:(id)arg1 willRunArbitrationOfUnits:(id)arg2;
+- (id)frameControllersContainingArbitrationUnits:(id)arg1;
 - (void)commitStateToDictionary:(id)arg1;
 - (void)revertStateWithDictionary:(id)arg1;
 - (id)memberWrappersForMemberIDStrings:(id)arg1;
 - (BOOL)memberCanBeSelected:(id)arg1;
 - (BOOL)waitingForSubGraphInstantiation;
 - (void)displayLockedMemberAlertForMembers:(id)arg1;
+- (BOOL)canAcceptPasteboardTypes:(id)arg1;
 - (id)typeForTopLevelPastingWithPasteboard:(id)arg1;
 - (void)zoomToFitSelection:(id)arg1;
 - (void)zoomToFitContent:(id)arg1;
@@ -3866,6 +4147,8 @@ typedef union {
 - (void)addConnectionPanelController:(id)arg1;
 - (void)editedTopLevelObjectsDidChange;
 - (void)deselectMembers:(id)arg1;
+- (BOOL)hasActiveEditorsOpen;
+- (BOOL)hasInstalledSubViewControllers;
 - (void)selectDocumentLocations:(id)arg1;
 - (id)membersFromDocumentLocations:(id)arg1;
 - (void)warnAboutBogusDocumentLocations:(id)arg1;
@@ -3876,14 +4159,16 @@ typedef union {
 - (id)currentSelectedDocumentLocations;
 - (BOOL)selectionContainsObject:(id)arg1;
 - (void)pushSelection:(id)arg1;
-- (void)invalidateSelectionPushValidator;
+- (void)invalidateSelectionPushInvocation;
 - (id)selectionProviders;
 - (id)currentSelectedItemsMembers;
 - (id)currentSelectedItemsObjects;
+- (void)selectionProviderWasClicked:(id)arg1;
 - (void)selectionProvider:(id)arg1 didUpdateSelectedMembers:(id)arg2;
 - (void)unregisterSelectionProvider:(id)arg1;
 - (void)registerSelectionProvider:(id)arg1;
 - (id)defaultSelectionProvider;
+- (void)revealDocumentMember:(id)arg1;
 - (void)unregisterHighlightProvider:(id)arg1;
 - (void)registerHighlightProvider:(id)arg1;
 - (id)highlightProviders;
@@ -3904,16 +4189,17 @@ typedef union {
 @property(readonly) IBCanvasView *canvasView;
 - (Class)canvasViewControllerClass;
 - (Class)structureViewControllerClass;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)unregisterWithDocument;
 - (void)registerWithDocument;
+- (void)recordUsageStatisticsWithReport:(id)arg1;
+- (void)recordUsageStatistics;
 - (void)colorPanelWillShow:(id)arg1;
 - (id)initWithNibName:(id)arg1 bundle:(id)arg2 document:(id)arg3;
 
 // Remaining properties
-@property(readonly) DVTStackBacktrace *invalidationBacktrace;
 @property(readonly) DVTSourceExpression *quickHelpExpression;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
+@property(readonly, nonatomic) NSString *selectedText;
 
 @end
 
@@ -3926,10 +4212,10 @@ typedef union {
     IBDocument *document;
     IBEditor *parentEditor;
     IBEditor *childEditor;
-    IBEditorOverlay *overlayView;
+    id <DVTInvalidation> selctionDrawingToken;
+    id <DVTInvalidation> activationDarkeningToken;
     NSMutableDictionary *selectionMasks;
     id editedObject;
-    BOOL showingSelection;
     NSBezierPath *activationHighlightPath;
     BOOL recalculateActivationPath;
     BOOL draggedObjectsAreInObjectModel;
@@ -3942,29 +4228,32 @@ typedef union {
     NSSet *selectionPriorToEventRouting;
     BOOL closing;
     BOOL closed;
-    BOOL needsOverlayView;
+    BOOL active;
+    BOOL frameControllerDragAndDropInProgress;
+    BOOL hasAnyObjectsSelected;
 }
 
 + (void)resetCursorRectsForObject:(id)arg1 inFrameController:(id)arg2;
 + (Class)ibDropTargetResolverClass;
-@property(readonly, nonatomic) IBEditorOverlay *overlayView; // @synthesize overlayView;
-@property BOOL needsOverlayView; // @synthesize needsOverlayView;
+@property(nonatomic) BOOL hasAnyObjectsSelected; // @synthesize hasAnyObjectsSelected;
+@property(nonatomic, getter=isFrameControllerDragAndDropInProgress) BOOL frameControllerDragAndDropInProgress; // @synthesize frameControllerDragAndDropInProgress;
+@property(nonatomic, getter=isActive) BOOL active; // @synthesize active;
 @property(getter=isClosed) BOOL closed; // @synthesize closed;
 @property(copy, nonatomic) NSSet *selectionPriorToEventRouting; // @synthesize selectionPriorToEventRouting;
-- (void)setGrowthDirection:(long long)arg1 forDragAndDropPoliciesWithRelation:(id)arg2;
+- (void)setSecondaryGrowthDirection:(long long)arg1 forDragAndDropPoliciesWithRelation:(id)arg2;
+- (void)setPrimaryGrowthDirection:(long long)arg1 forDragAndDropPoliciesWithRelation:(id)arg2;
 - (void)dropTargetResolver:(id)arg1 orderedRelation:(id)arg2 insertionIndexDidChange:(long long)arg3;
 - (void)dropTargetResolver:(id)arg1 orderedRelation:(id)arg2 insertionIndexWillChange:(long long)arg3;
 - (void)drawDragAndDropInsertionHints;
 - (void)setNeedsDisplayInDragInsertionIndicatorRect;
 - (id)insertionIndicator;
-- (void)drawOverlay;
-- (void)drawOverlayContentsMutuallyExclusiveToDragAndDrop;
 - (void)editorCanvasFrameDidCompleteLayout;
 - (void)canvasFrameOverlayNeedsDisplay;
-- (void)willDrawOverlay;
+- (void)willDrawActivationDarkening;
 - (void)drawActivationDarkening;
+- (BOOL)effectiveDrawsActivationDarkening;
 - (BOOL)childEditorShouldDrawActivationDarkening:(id)arg1;
-- (void)drawSelection;
+- (void)drawSelectionMasks;
 - (void)drawSelectionHighlightForObject:(id)arg1;
 - (struct CGRect)highlightRectForObject:(id)arg1;
 - (struct CGRect)windowClippingRectForHighlightingObject:(id)arg1;
@@ -4027,15 +4316,17 @@ typedef union {
 - (void)documentDidSave;
 - (void)documentWillSave;
 - (id)connectionSourceForEvent:(id)arg1;
-- (void)resizeFrameViewWithEvent:(id)arg1 fromEditorCanvasFrameKnob:(long long)arg2;
-- (void)didResizeEditedObjectOrAncestorEditedObject:(id)arg1 withEvent:(id)arg2 fromKnob:(long long)arg3;
-- (void)willResizeEditedObjectOrAncestorEditedObject:(id)arg1 withEvent:(id)arg2 fromKnob:(long long)arg3;
+- (void)resizeFrameViewWithEvent:(id)arg1 fromEditorCanvasFrameKnob:(unsigned long long)arg2;
+- (void)didResizeEditedObjectOrAncestorEditedObject:(id)arg1 withEvent:(id)arg2 fromKnob:(unsigned long long)arg3;
+- (void)willResizeEditedObjectOrAncestorEditedObject:(id)arg1 withEvent:(id)arg2 fromKnob:(unsigned long long)arg3;
 - (CDStruct_c519178c)canvasAlignmentInsetForEditorFrame;
 - (BOOL)shouldCloseWithEvent:(id)arg1;
 - (BOOL)shouldDragFrameWithMouseDownInEditedRect:(id)arg1;
 - (BOOL)forwardEvent:(id)arg1 toResponder:(id)arg2 makeFirstResponderIfNeeded:(BOOL)arg3 reHitTest:(BOOL)arg4 allowedEvents:(unsigned long long)arg5;
 - (BOOL)interceptEvent:(id)arg1;
+- (BOOL)interceptDecoratorActionEvent:(id)arg1;
 - (id)hitTestEditorView:(struct CGPoint)arg1;
+- (BOOL)isChildCurrentlySelectable:(id)arg1;
 - (id)stringEditingContextForEvent:(id)arg1;
 - (void)editStringWithContext:(id)arg1;
 - (void)restoreEditorState:(id)arg1;
@@ -4082,16 +4373,20 @@ typedef union {
 - (void)didActivate;
 - (void)willEditChild:(id)arg1 inFrameController:(id)arg2;
 - (void)close;
-- (id)frontmostDescendantAtLocation:(struct CGPoint)arg1 inView:(id)arg2;
-- (id)descendantsFromBackToFrontAtLocation:(struct CGPoint)arg1 inView:(id)arg2;
+- (id)frontmostDescendantAtLocation:(struct CGPoint)arg1 inView:(id)arg2 criteria:(long long)arg3;
+- (id)descendantsFromBackToFrontAtLocation:(struct CGPoint)arg1 inView:(id)arg2 criteria:(long long)arg3;
 @property BOOL drawsActivationDarkening;
 - (id)selectionOwner;
 - (void)setOrderedSelectionAnchor:(id)arg1;
 - (id)orderedSelectionAnchor;
 - (void)setActivationHighlightPath:(id)arg1;
 - (id)activationHighlightPath;
-- (void)setShowingSelection:(BOOL)arg1;
-- (BOOL)isShowingSelection;
+@property(readonly, nonatomic) IBDelegatedCanvasOverlay *overlayView;
+- (void)invokeSelectionShowingChangingBlock:(id)arg1;
+- (id)installSelectionDrawingHandlers;
+- (BOOL)actuallyShowsSelectionIndicators;
+- (BOOL)forbidsShowingSelectionIndicators;
+- (BOOL)wantsToShowSelectionIndicators;
 - (id)parentEditor;
 - (id)editorCanvasFrame;
 - (id)frameController;
@@ -4113,16 +4408,19 @@ typedef union {
 
 @interface IBViewEditorCanvasFrameController : IBEditorCanvasFrameController
 {
-    IBMeasurementOverlay *measurementOverlay;
+    IBMeasurementDrawingHandler *measurementDrawingHandler;
+    IBLayoutGuideDrawingHandler *layoutGuideDrawingHandler;
     IBLayoutManager *layoutManager;
     IBEditorFrameLayoutGuideGeneratorDelegate *layoutGuideGeneratorDelegate;
     NSMutableArray *cachedUserGuides;
-    DVTDelayedValidator *guideValidator;
+    DVTDelayedInvocation *guideInvocation;
     IBViewTracker *activeViewTracker;
+    id <DVTInvalidation> hiddenViewDrawingToken;
+    BOOL observingHiddenState;
     BOOL hasHiddenViewsInViewSubgraph;
 }
 
-@property BOOL hasHiddenViewsInViewSubgraph; // @synthesize hasHiddenViewsInViewSubgraph;
+@property(nonatomic) BOOL hasHiddenViewsInViewSubgraph; // @synthesize hasHiddenViewsInViewSubgraph;
 @property(retain) IBViewTracker *activeViewTracker; // @synthesize activeViewTracker;
 - (void)resetCursorRects;
 @property(readonly) IBLayoutManager *layoutManager;
@@ -4145,11 +4443,10 @@ typedef union {
 - (BOOL)guidesStoleEvent:(id)arg1;
 - (id)userLayoutGuideAtPoint:(struct CGPoint)arg1;
 - (id)editorCanvasFrame;
-@property(readonly) IBMeasurementOverlay *measurementOverlay;
+@property(readonly) IBMeasurementDrawingHandler *measurementDrawingHandler;
 - (void)setBaseEditor:(id)arg1;
 - (void)willClose;
 - (void)didOpen;
-- (id)init;
 
 @end
 
@@ -4196,17 +4493,6 @@ typedef union {
 
 @end
 
-@interface IBEditorOverlay : IBCanvasOverlay
-{
-    IBEditor *editor;
-}
-
-- (void)viewWillDraw;
-- (void)drawRect:(struct CGRect)arg1;
-- (id)initWithEditor:(id)arg1;
-
-@end
-
 @interface IBViewTrackerLayoutGuideState : NSObject
 {
     struct CGRect layoutFrame;
@@ -4222,7 +4508,8 @@ typedef union {
 
 @interface IBViewTracker : NSObject
 {
-    long long initialKnob;
+    NSEvent *currentResizingEvent;
+    unsigned long long initialKnob;
     BOOL trackingIsHorzFlipped;
     BOOL trackingIsVertFlipped;
     NSArray *layoutManagers;
@@ -4236,10 +4523,15 @@ typedef union {
     id didTrackHandler;
     BOOL showsTrackingKnob;
     NSNumber *forceBoundsIndicatorValue;
+    IBAutolayoutFrameDecider *frameDecider;
 }
 
++ (void)setAutolayoutLiveResizingStrategyMask:(unsigned long long)arg1;
++ (unsigned long long)autolayoutLiveResizingStrategyMask;
 + (void)setAppliesAutoResizingRulesWhileResizing:(BOOL)arg1;
 + (BOOL)appliesAutoResizingRulesWhileResizing;
++ (void)initialize;
+@property(readonly) IBAutolayoutFrameDecider *frameDecider; // @synthesize frameDecider;
 @property(copy) NSNumber *forceBoundsIndicatorValue; // @synthesize forceBoundsIndicatorValue;
 @property BOOL showsTrackingKnob; // @synthesize showsTrackingKnob;
 @property(copy) id didTrackHandler; // @synthesize didTrackHandler;
@@ -4256,124 +4548,70 @@ typedef union {
 - (void)clearGuides;
 - (void)displayGuides;
 - (id)layoutFrameAfterApplyingLayoutGuides:(struct CGRect)arg1;
-- (BOOL)shouldConsiderSelectionEdge:(unsigned long long)arg1 toSiblingEdge:(unsigned long long)arg2 guideFromSelection:(id)arg3 toView:(id)arg4;
-- (BOOL)isEdge:(unsigned long long)arg1 ofAncestor:(id)arg2 fixedDuringResizeOfSubview:(id)arg3 fromKnob:(long long)arg4;
-- (BOOL)isEdge:(unsigned long long)arg1 ofSubview:(id)arg2 fixedInPositionOnWindowDuringResizeFromKnob:(long long)arg3;
-- (BOOL)isDistanceFromSubviewEdge:(unsigned long long)arg1 ofSubview:(id)arg2 toSameEdgeOfSuperviewChangingOneToOneWithKnob:(long long)arg3;
+- (void)placeSubviewForAutolayoutDocumentApplyingConstraintsInLayoutFrame:(struct CGRect)arg1;
+- (void)placeSubviewInFrame:(struct CGRect)arg1 event:(id)arg2;
+- (BOOL)shouldConsiderSelectionEdge:(unsigned long long)arg1 toSiblingEdge:(unsigned long long)arg2 guideFromSelection:(id)arg3 toView:(id)arg4 coordinateSpaceView:(id)arg5;
+- (BOOL)isEdge:(unsigned long long)arg1 ofAncestor:(id)arg2 fixedDuringResizeOfSubview:(id)arg3 fromKnob:(unsigned long long)arg4;
+- (BOOL)isEdge:(unsigned long long)arg1 ofSubview:(id)arg2 fixedInPositionOnWindowDuringResizeFromKnob:(unsigned long long)arg3;
+- (BOOL)isDistanceFromSubviewEdge:(unsigned long long)arg1 ofSubview:(id)arg2 toSameEdgeOfSuperviewChangingOneToOneWithKnob:(unsigned long long)arg3;
 - (struct CGRect)snapToGuidedLayoutFrame:(struct CGRect)arg1 originalLayoutFrame:(struct CGRect)arg2;
 - (void)resumeAutoResizingSubviews:(id)arg1;
 - (id)stopAutoResizingSubviews;
+- (BOOL)shouldPinEditorCanvasFrameForResizing;
 - (BOOL)shouldAutoResizeSubviewsGivenEvent:(id)arg1;
 - (BOOL)shouldApplyAutoResizingRulesWhileResizing;
-- (void)placeSubviewInFrame:(struct CGRect)arg1 event:(id)arg2;
+- (BOOL)shouldSizeUsingFrameDeciderForEvent:(id)arg1;
+- (id)generateFrameDeciderForPlacingSubviewInFrameWithInitialEvent:(id)arg1;
 - (void)pushTrackingIndicators;
-- (long long)effectiveKnobInSpaceOfView:(id)arg1;
-- (long long)initialKnobInSpaceOfView:(id)arg1;
+- (unsigned long long)effectiveKnobInSpaceOfView:(id)arg1;
+- (unsigned long long)initialKnobInSpaceOfView:(id)arg1;
+- (id)canvasView;
 - (id)editorCanvasFrame;
-@property(readonly) IBMeasurementOverlay *overlayView;
+- (id)overlayDrawingHandler;
+- (id)overlayView;
 @property(readonly) IBDocument *document;
-- (id)initWithTrackedView:(id)arg1 measurementTarget:(id)arg2 frameController:(id)arg3 knob:(long long)arg4;
+- (id)initWithTrackedView:(id)arg1 measurementTarget:(id)arg2 frameController:(id)arg3 knob:(unsigned long long)arg4;
 
 @end
 
-@interface IBLayoutGuide : NSObject
+@interface IBLayoutManager : NSObject <DVTInvalidation_New>
 {
-}
-
-- (id)description;
-- (double)locationInView:(id)arg1;
-- (struct CGPoint)endInView:(id)arg1;
-- (struct CGPoint)startInView:(id)arg1;
-- (BOOL)isHorizontal;
-- (BOOL)isVertical;
-
-@end
-
-@interface IBLiveGuide : IBLayoutGuide
-{
-    struct CGPoint start;
-    struct CGPoint end;
-    NSView *view;
-}
-
-- (id)description;
-- (BOOL)isVertical;
-- (struct CGPoint)endInView:(id)arg1;
-- (struct CGPoint)startInView:(id)arg1;
-- (id)initWithStart:(struct CGPoint)arg1 end:(struct CGPoint)arg2 inView:(id)arg3;
-
-@end
-
-@interface IBUserGuide : IBLayoutGuide <NSCoding, IBDocumentArchiving>
-{
-    NSView *view;
-    unsigned long long affinity;
-    double relativeLocation;
-    IBLayoutGuideOverlay *layoutGuideOverlay;
-    BOOL dragging;
-}
-
-+ (id)instantiateWithDocumentUnarchiver:(id)arg1;
-@property(retain) NSView *view; // @synthesize view;
-@property(retain, nonatomic) IBLayoutGuideOverlay *layoutGuideOverlay; // @synthesize layoutGuideOverlay;
-- (void)invalidate;
-- (void)drawInView:(id)arg1;
-- (struct CGRect)maxTipRectInView:(id)arg1;
-- (struct CGRect)minTipRectInView:(id)arg1;
-- (struct CGRect)placementTipRectInView:(id)arg1;
-- (struct CGSize)tipSizeInView:(id)arg1;
-- (id)maxTip;
-- (id)minTip;
-- (id)attributedTip:(id)arg1;
-- (double)reportedDistanceFromMaxEdge;
-- (double)reportedDistanceFromMinEdge;
-- (void)trackWithLeftMouseDownEvent:(id)arg1 inDocument:(id)arg2;
-- (struct CGRect)drawignBoundsInView:(id)arg1;
-- (struct CGRect)hitTestingRectInView:(id)arg1;
-- (void)updateWithRelativeLocationFromPoint:(struct CGPoint)arg1 andAffinity:(unsigned long long)arg2 inView:(id)arg3 inDocument:(id)arg4;
-- (id)description;
-@property(readonly, getter=isVisible) BOOL visible;
-- (struct CGPoint)endInView:(id)arg1;
-- (struct CGPoint)startInView:(id)arg1;
-- (void)setDragging:(BOOL)arg1;
-- (void)setAffinity:(unsigned long long)arg1;
-- (void)setRelativeLocation:(double)arg1;
-- (CDStruct_e3b9714e)lineInView:(id)arg1;
-- (id)document;
-- (BOOL)isVertical;
-- (struct CGRect)containerAreaInView:(id)arg1;
-- (void)unarchiveWithDocumentUnarchiver:(id)arg1;
-- (void)archiveWithDocumentArchiver:(id)arg1;
-- (void)encodeWithCoder:(id)arg1;
-- (id)initWithCoder:(id)arg1;
-- (id)initWithView:(id)arg1 location:(double)arg2 andAffinity:(unsigned long long)arg3;
-
-@end
-
-@interface IBLayoutManager : NSObject
-{
-    DVTDelayedValidator *clearingPolicy;
-    IBLayoutGuideOverlay *guideOverlay;
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
+    DVTDelayedInvocation *clearingPolicy;
+    IBLayoutGuideDrawingHandler *guideOverlay;
     unsigned long long currentDisplayToken;
     IBLayoutGuideGenerator *layoutGuideGenerator;
+    IBLayoutGuideDrawingHandler *layoutDrawingHandler;
 }
 
 + (void)setGuidesAreEnabled:(BOOL)arg1;
 + (BOOL)guidesAreEnabled;
-@property(readonly) IBLayoutGuideOverlay *guideOverlay; // @synthesize guideOverlay;
-- (long long)displayGuidesForViews:(id)arg1 usingContainerResizingRules:(BOOL)arg2 draggedKnobInSuperview:(long long)arg3 andReturningLayoutGuideMatches:(id *)arg4;
-- (long long)suggestGuidesForViews:(id)arg1 withSuggestedFrame:(struct CGRect)arg2 returningX:(double *)arg3 andReturningY:(double *)arg4 andReturningLayoutGuideMatches:(id *)arg5 fromKnobPositionInSuperview:(long long)arg6 usingContainerResizingRules:(BOOL)arg7 snaps:(BOOL)arg8;
-- (long long)applyGuidesForViews:(id)arg1 withSuggestedFrame:(struct CGRect)arg2 andSiblings:(id)arg3 returningX:(double *)arg4 andReturningY:(double *)arg5 andReturningLayoutGuideMatches:(id *)arg6 fromKnobPositionInTargetSuperview:(long long)arg7 usingContainerResizingRules:(BOOL)arg8 displayOnly:(BOOL)arg9 maxSnapDistance:(double)arg10;
-- (long long)applyGuidesForViews:(id)arg1 withSuggestedFrame:(struct CGRect)arg2 targetSuperview:(id)arg3 andSiblings:(id)arg4 returningX:(double *)arg5 andReturningY:(double *)arg6 andReturningLayoutGuideMatches:(id *)arg7 fromKnobPositionInTargetSuperview:(long long)arg8 usingContainerResizingRules:(BOOL)arg9 displayOnly:(BOOL)arg10 maxSnapDistance:(double)arg11 baselines:(id)arg12;
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
+@property(readonly) IBLayoutGuideDrawingHandler *layoutDrawingHandler; // @synthesize layoutDrawingHandler;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
+@property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
+- (long long)displayGuidesForViews:(id)arg1 usingContainerResizingRules:(BOOL)arg2 draggedKnobInSuperview:(unsigned long long)arg3 andReturningLayoutGuideMatches:(id *)arg4;
+- (long long)suggestGuidesForViews:(id)arg1 withSuggestedFrame:(struct CGRect)arg2 returningX:(double *)arg3 andReturningY:(double *)arg4 andReturningLayoutGuideMatches:(id *)arg5 fromKnobPositionInSuperview:(unsigned long long)arg6 usingContainerResizingRules:(BOOL)arg7 snaps:(BOOL)arg8;
+- (long long)applyGuidesForViews:(id)arg1 withSuggestedFrame:(struct CGRect)arg2 andSiblings:(id)arg3 returningX:(double *)arg4 andReturningY:(double *)arg5 andReturningLayoutGuideMatches:(id *)arg6 fromKnobPositionInTargetSuperview:(unsigned long long)arg7 usingContainerResizingRules:(BOOL)arg8 displayOnly:(BOOL)arg9 maxSnapDistance:(double)arg10;
+- (long long)applyGuidesForViews:(id)arg1 withSuggestedFrame:(struct CGRect)arg2 targetSuperview:(id)arg3 andSiblings:(id)arg4 returningX:(double *)arg5 andReturningY:(double *)arg6 andReturningLayoutGuideMatches:(id *)arg7 fromKnobPositionInTargetSuperview:(unsigned long long)arg8 usingContainerResizingRules:(BOOL)arg9 displayOnly:(BOOL)arg10 maxSnapDistance:(double)arg11 baselines:(id)arg12;
 - (void)clearLiveGuides;
 - (void)clearLiveGuidesDirectly;
 - (void)clearLiveGuidesAfterDelay:(double)arg1;
 - (BOOL)isCurrentDisplayToken:(unsigned long long)arg1;
 - (unsigned long long)currentDisplayToken;
 - (void)invalidateCurrentDisplayToken;
+@property(readonly) NSView *guideOverlay;
 - (struct CGRect)boundingLayoutFrameForViews:(id)arg1;
 - (CDStruct_c519178c)insetFromContainer:(id)arg1 toViews:(id)arg2;
-- (id)initWithOverlay:(id)arg1 delegate:(id)arg2;
+- (void)primitiveInvalidate;
+- (id)initWithLayoutDrawingHandler:(id)arg1 delegate:(id)arg2;
+- (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 
 @end
 
@@ -4407,50 +4645,200 @@ typedef union {
 
 @end
 
+@interface IBViewEditorLayoutConstraintDrawable : NSObject
+{
+    double _movementPriority;
+    BOOL _insetToAvoidOtherDrawables;
+    NSImage *_badgeImage;
+    BOOL _shouldAlwaysDrawGuideLinesIfNeeded;
+    BOOL _selectable;
+    IBNSLayoutConstraint *_constraint;
+    double _lineThickness;
+    NSNumber *_edgeBias;
+    BOOL _selected;
+    BOOL _dashed;
+    CDStruct_700ccd87 _leftOrBottomEdge;
+    CDStruct_f6143a38 _originalLineBeforeInsettingToAvoidOtherDrawables;
+    CDStruct_f6143a38 _line;
+    unsigned long long _type;
+    CDStruct_700ccd87 _rightOrTopEdge;
+    NSColor *_color;
+}
+
+@property(copy, nonatomic) NSColor *color; // @synthesize color=_color;
+@property(readonly, nonatomic) CDStruct_700ccd87 rightOrTopEdge; // @synthesize rightOrTopEdge=_rightOrTopEdge;
+@property(readonly, nonatomic) unsigned long long type; // @synthesize type=_type;
+@property(nonatomic) CDStruct_f6143a38 line; // @synthesize line=_line;
+@property(nonatomic) CDStruct_f6143a38 originalLineBeforeInsettingToAvoidOtherDrawables; // @synthesize originalLineBeforeInsettingToAvoidOtherDrawables=_originalLineBeforeInsettingToAvoidOtherDrawables;
+@property(readonly, nonatomic) CDStruct_700ccd87 leftOrBottomEdge; // @synthesize leftOrBottomEdge=_leftOrBottomEdge;
+@property(nonatomic, getter=isDashed) BOOL dashed; // @synthesize dashed=_dashed;
+@property(nonatomic, getter=isSelected) BOOL selected; // @synthesize selected=_selected;
+@property(copy, nonatomic) NSNumber *edgeBias; // @synthesize edgeBias=_edgeBias;
+@property(nonatomic) double lineThickness; // @synthesize lineThickness=_lineThickness;
+@property(readonly, nonatomic) IBNSLayoutConstraint *constraint; // @synthesize constraint=_constraint;
+@property(nonatomic, getter=isSelectable) BOOL selectable; // @synthesize selectable=_selectable;
+@property(nonatomic) BOOL shouldAlwaysDrawGuideLinesIfNeeded; // @synthesize shouldAlwaysDrawGuideLinesIfNeeded=_shouldAlwaysDrawGuideLinesIfNeeded;
+@property(retain, nonatomic) NSImage *badgeImage; // @synthesize badgeImage=_badgeImage;
+@property(nonatomic, getter=isInsetToAvoidOtherDrawables) BOOL insetToAvoidOtherDrawables; // @synthesize insetToAvoidOtherDrawables=_insetToAvoidOtherDrawables;
+@property(readonly, nonatomic) double movementPriority; // @synthesize movementPriority=_movementPriority;
+@property(readonly, nonatomic) BOOL supportsInsettingToAvoidOtherDrawablesOrGuidelines;
+- (BOOL)constraintIsVertical;
+- (BOOL)isVertical;
+- (id)description;
+- (id)initWithConstraint:(id)arg1 line:(CDStruct_f6143a38)arg2 type:(unsigned long long)arg3 color:(id)arg4 movementPriority:(double)arg5;
+- (id)initWithConstraint:(id)arg1 line:(CDStruct_f6143a38)arg2 type:(unsigned long long)arg3 color:(id)arg4 movementPriority:(double)arg5 leftOrBottomEdge:(CDStruct_700ccd87)arg6 rightOrTopEdge:(CDStruct_700ccd87)arg7;
+
+@end
+
 @interface IBViewEditor : IBEditor
 {
+    DVTDelayedInvocation *_constraintUpdatingInvocation;
+    long long _constraintHidingCount;
+    unsigned long long bandSelectionFramesDrawn;
+    id <DVTInvalidation> constraintDrawingToken;
+    DVTDelayedInvocation *mouseRestValidator;
+    id mouseMovedObservationToken;
+    IBNSLayoutConstraint *lastMousedOverConstraint;
+    IBNSLayoutConstraint *nextSelectableConstraint;
+    struct CGPoint lastMouseMovedPoint;
     struct CGRect bandSelectionRect;
     BOOL reguardSiblingsIngoredForDragGuides;
     NSSet *siblingsIngoredForDragGuides;
     long long pasteOffsetType;
     NSValue *nextPasteTarget;
     unsigned long long dragAndDropGuideDisplayToken;
-    unsigned long long bandSelectionFramesDrawn;
+    IBAutolayoutConstraintAdditionValidationState *_constraintAdditionState;
+    NSSet *_viewsInvolvedWithSelectedConstraints;
+    NSArray *_currentConstraintDrawableGuideLines;
+    NSDictionary *_constraintToConstraintDrawablesMap;
+    id <DVTObservingToken> _kvoObservingTokenForDocument;
+    NSArray *_currentConstraintDrawables;
+    NSArray *_orderedConstraintsToDraw;
+    NSSet *_viewsToDrawConstraintsFor;
+    NSSet *_selectedConstraints;
+    IBMutableIdentityDictionary *_observingTokensByView;
+    IBViewTracker *activeTracker;
 }
 
++ (void)setUpgradesRedundantConstraintsToUserConstraintsForFrameDecideThenConstraintAddition:(BOOL)arg1;
++ (BOOL)upgradesRedundantConstraintsToUserConstraintsForFrameDecideThenConstraintAddition;
++ (void)setUpgradesRedundantConstraintsToUserConstraintsForPureConstraintAddition:(BOOL)arg1;
++ (BOOL)upgradesRedundantConstraintsToUserConstraintsForPureConstraintAddition;
 + (void)resetCursorRectsForObject:(id)arg1 inFrameController:(id)arg2;
 + (struct CGRect)rectForDefaultCursorForChildView:(id)arg1 ofEditedObject:(id)arg2 inFrameController:(id)arg3;
++ (void)setEnforcesCurrentSizesWhenAligningViews:(BOOL)arg1;
++ (BOOL)enforcesCurrentSizesWhenAligningViews;
++ (id)keyPathsForInvalidatingConstraints;
 + (struct CGSize)knobSize;
 + (id)lockedKnobImage;
 + (id)inactiveKnobImage;
 + (id)knobImage;
 + (Class)ibDropTargetResolverClass;
+@property(retain, nonatomic) IBViewTracker *activeTracker; // @synthesize activeTracker;
 @property(copy) NSValue *nextPasteTarget; // @synthesize nextPasteTarget;
-- (void)drawOverlayContentsMutuallyExclusiveToDragAndDrop;
-- (void)drawOverlay;
-- (BOOL)childEditorShouldDrawActivationDarkening:(id)arg1;
+@property(copy) NSSet *selectedConstraints; // @synthesize selectedConstraints=_selectedConstraints;
+@property(copy, nonatomic) NSSet *viewsToDrawConstraintsFor; // @synthesize viewsToDrawConstraintsFor=_viewsToDrawConstraintsFor;
+@property(copy) NSArray *orderedConstraintsToDraw; // @synthesize orderedConstraintsToDraw=_orderedConstraintsToDraw;
+@property(copy, nonatomic) NSArray *currentConstraintDrawables; // @synthesize currentConstraintDrawables=_currentConstraintDrawables;
+@property(retain) id <DVTObservingToken> kvoObservingTokenForDocument; // @synthesize kvoObservingTokenForDocument=_kvoObservingTokenForDocument;
+@property(copy) NSDictionary *constraintToConstraintDrawablesMap; // @synthesize constraintToConstraintDrawablesMap=_constraintToConstraintDrawablesMap;
+@property(copy) NSArray *currentConstraintDrawableGuideLines; // @synthesize currentConstraintDrawableGuideLines=_currentConstraintDrawableGuideLines;
+@property(copy) NSSet *viewsInvolvedWithSelectedConstraints; // @synthesize viewsInvolvedWithSelectedConstraints=_viewsInvolvedWithSelectedConstraints;
+- (void)debugMenuItemMakeSelectedConstraintsUserDefined:(id)arg1;
+- (void)insertEqualHeightsConstraint:(id)arg1;
+- (void)insertEqualWidthsConstraint:(id)arg1;
+- (void)_insertEqualSizeConstraintForAttribute:(unsigned long long)arg1 constraintAdditionState:(id)arg2;
+- (void)addConstraintsRequiringFrameDecision:(id)arg1 options:(id)arg2 frameDecisionBlock:(id)arg3;
+- (void)insertBottomSpacingToSuperviewConstraint:(id)arg1;
+- (void)insertTopSpacingToSuperviewConstraint:(id)arg1;
+- (void)insertTrailingSpacingToSuperviewConstraint:(id)arg1;
+- (void)insertLeadingSpacingToSuperviewConstraint:(id)arg1;
+- (void)_insertSpacingToSuperviewConstraintForAttribute:(unsigned long long)arg1 constraintAdditionState:(id)arg2;
+- (void)insertVerticalSpacingConstraint:(id)arg1;
+- (void)insertHorizontalSpacingConstraint:(id)arg1;
+- (void)_insertSpacingConstraintForOrientation:(unsigned long long)arg1 constraintAdditionState:(id)arg2;
+- (void)insertHeightConstraint:(id)arg1;
+- (void)insertWidthConstraint:(id)arg1;
+- (void)_insertAbsoluteConstraintForAttribute:(unsigned long long)arg1 constraintAdditionState:(id)arg2;
+- (id)arbitrationOptionsForArbitrationBeforeConstraintAddition;
+- (id)arbitrationOptionsForFrameDecideThenConstraintAddition;
+- (id)arbitrationOptionsForPureConstraintAddition;
+- (id)objectsForSelectingAll;
+- (void)didClose;
+- (void)didOpen;
+- (void)stopObservingOnDeactivation;
+- (void)startObservingOnActivation;
+- (id)connectionSourceForEvent:(id)arg1;
+- (id)constraintAtPointInOverlayView:(struct CGPoint)arg1;
+- (id)constraintDrawableAtPointInOverlayView:(struct CGPoint)arg1;
+- (void)selectConstraintsIfPossible:(id)arg1 withEvent:(id)arg2;
+- (void)selectConstraintsIfPossible:(id)arg1;
+- (void)selectConstraintsIfPossible:(id)arg1 withSelectionCallbackBlock:(id)arg2;
+- (id)determineConstraintsToSelectAndWarnIfAnyConstraintWasRemovedFromDocument:(id)arg1;
+- (void)didResizeEditedObjectOrAncestorEditedObject:(id)arg1 withEvent:(id)arg2 fromKnob:(unsigned long long)arg3;
+- (void)willResizeEditedObjectOrAncestorEditedObject:(id)arg1 withEvent:(id)arg2 fromKnob:(unsigned long long)arg3;
+- (void)noteAncestor:(id)arg1 didChangeProperty:(id)arg2 fromValue:(id)arg3;
+- (void)updateConstraintVisibilityBasedUponSelection;
+- (void)addEffectiveViewsInvolvedInConstraintToDraw:(id)arg1 toCollection:(id)arg2;
+- (void)clearAllConstraintDrawing;
+- (void)updateConstraintsForViews;
+- (void)willDrawConstriants;
+- (void)pushOrderedConstraintsToDraw:(id)arg1;
+- (void)invalidateConstraintsForViews;
+- (id)constraintsToDrawForView:(id)arg1;
+- (BOOL)constraintItemIsLegitimateItemForDrawing:(id)arg1 relativeToView:(id)arg2;
+- (void)invalidateDrawingAreaForCurrentDrawablesAndGuideLines;
+- (struct CGRect)drawingAreaForDrawableBadge:(id)arg1;
+- (struct CGRect)drawingAreaForDrawable:(id)arg1;
+- (void)updateConstraintDrawablesAndGuideLines;
+- (id)constraintDrawableOrderingComparator;
+- (void)drawSelectionHighlightForObject:(id)arg1;
+- (void)drawConstraintItem:(id)arg1;
+- (void)determineConstraintDrawableGuideLines:(CDStruct_f6143a38 *)arg1 maxGuideLineCount:(unsigned long long)arg2 forDrawables:(id)arg3 givenMovedDrawableIndexes:(id)arg4;
+- (id)moveDrawablesToAvoidOverlapping:(id)arg1 givenMoveableDrawableIndexes:(id)arg2 movingToAvoidDrawablesAtIndexes:(id)arg3 insettingToAvoidDrawablesAtIndexes:(id)arg4;
+- (BOOL)attemptToInsetDrawable:(id)arg1 toAvoidDrawable:(id)arg2;
+- (BOOL)isDrawable:(id)arg1 intersectingDrawable:(id)arg2;
+- (void)drawGuideLine:(CDStruct_f6143a38)arg1;
+- (void)drawViewEditorDrawable:(id)arg1;
+- (id)effectiveShadowForConstraintDrawable:(id)arg1;
+- (id)effectiveStrokeColorForConstraintDrawable:(id)arg1;
+- (void)drawRelativeConstraintAlignmentLineWithLine:(CDStruct_f6143a38)arg1 withColor:(id)arg2 strokeColor:(id)arg3 lineThickness:(double)arg4 dashed:(BOOL)arg5 edgeBias:(id)arg6;
+- (void)drawLimitedSpaceDualTBeamWithDrawable:(id)arg1 withColor:(id)arg2 strokeColor:(id)arg3 lineThickness:(double)arg4 dashed:(BOOL)arg5;
+- (void)drawLimitedSpaceConnectionWithLine:(CDStruct_f6143a38)arg1 withColor:(id)arg2 strokeColor:(id)arg3 lineThickness:(double)arg4 dashed:(BOOL)arg5;
+- (void)drawConstraintStraightLine:(CDStruct_f6143a38)arg1 withColor:(id)arg2 strokeColor:(id)arg3 lineThickness:(double)arg4 dashed:(BOOL)arg5 edgeBias:(id)arg6;
+- (void)drawIBeamWithLine:(CDStruct_f6143a38)arg1 withColor:(id)arg2 strokeColor:(id)arg3 lineThickness:(double)arg4 dashed:(BOOL)arg5;
+- (id)dashedBezierPathLineForLine:(CDStruct_f6143a38)arg1 withThickness:(double)arg2 onDashLength:(double)arg3 offDashLength:(double)arg4 phase:(double)arg5 edgeBias:(id)arg6;
+- (void)drawConstraints;
 - (void)drawTrackingKnobs;
 - (id)viewForClippingToWhenDrawingSelectionKnobsForObject:(id)arg1;
 - (void)drawBandSelection;
 - (CDStruct_c519178c)decorationInsetForChild:(id)arg1;
 - (void)drawKnobsForView:(id)arg1;
 - (id)effectiveKnobImageForObject:(id)arg1;
+- (id)installSelectionDrawingHandlers;
 - (BOOL)interceptEvent:(id)arg1;
-- (void)resizeFrameViewWithEvent:(id)arg1 fromEditorCanvasFrameKnob:(long long)arg2;
+- (BOOL)isChildCurrentlySelectable:(id)arg1;
+- (void)resizeFrameViewWithEvent:(id)arg1 fromEditorCanvasFrameKnob:(unsigned long long)arg2;
 - (BOOL)interceptMouseDragged:(id)arg1;
 - (BOOL)child:(id)arg1 shouldBeSelectedOnMouseDraggedWithEvent:(id)arg2;
-- (BOOL)fallbackInterceptMouseDown:(id)arg1;
-- (BOOL)interceptMouseDown:(id)arg1;
+- (BOOL)interceptDeadClicks:(id)arg1;
+- (BOOL)interceptDecoratorActionEvent:(id)arg1;
+- (BOOL)interceptResizingEvent:(id)arg1;
+- (id)selectableEventInterceptingLayoutConstraintAtPoint:(struct CGPoint)arg1;
 - (void)moveSelectedViewsWithKeyEvent:(id)arg1;
 - (struct CGSize)directionForKeyEvent:(id)arg1;
 - (id)frameToWindowTransformForPasteboardViews:(id)arg1;
 - (void)bandSelect;
-- (void)resizeChild:(id)arg1 fromKnob:(long long)arg2 withEvent:(id)arg3;
+- (void)resizeChild:(id)arg1 fromKnob:(unsigned long long)arg2 withEvent:(id)arg3;
 - (id)viewForTrackingObject:(id)arg1;
-- (BOOL)shouldResizeChild:(id *)arg1 fromKnob:(long long *)arg2 inEvent:(id)arg3;
+- (BOOL)shouldResizeChild:(id *)arg1 fromKnob:(unsigned long long *)arg2 inEvent:(id)arg3;
 - (BOOL)shouldChildHaveResizeKnobs:(id)arg1;
 - (BOOL)areKnobsLockedForObject:(id)arg1;
 - (BOOL)wasChildSelectedBeforeClick:(id)arg1;
+- (void)validateMouseRested:(id)arg1;
+- (void)mouseMovedToScreenLocation:(struct CGPoint)arg1 withButtonStates:(long long)arg2;
+- (void)refreshMouseOverConstraintState;
+- (void)setConstraintSelectableUpdatingDelay:(double)arg1;
 - (void)resetCursorRects;
 - (CDStruct_648df176)activeKnobRectsForObject:(id)arg1;
 - (id)objectsInRect:(struct CGRect)arg1;
@@ -4475,10 +4863,12 @@ typedef union {
 - (void)customizePasteboardInsertionContext:(id)arg1 fromPasteboard:(id)arg2 andDraggingInfo:(id)arg3;
 - (BOOL)selectsNextObjectAfterDeletionFromRelationship:(id)arg1;
 - (void)selectionOwner:(id)arg1 didSelect:(id)arg2 andDeselect:(id)arg3;
+- (void)selectionOwner:(id)arg1 willSelect:(id)arg2 andDeselect:(id)arg3;
 - (CDStruct_c519178c)canvasAlignmentInsetForEditorFrame;
 - (BOOL)canSizeSelectionToFit;
 - (void)sizeSelectionToFit:(id)arg1;
 - (BOOL)validateUserInterfaceItem:(id)arg1;
+- (id)_constraintAdditionStateByUpdatingCurrentSelection;
 - (void)performCopy:(id)arg1;
 - (void)performCut:(id)arg1;
 - (void)addVerticalGuide:(id)arg1;
@@ -4498,10 +4888,59 @@ typedef union {
 - (void)sendToFront:(id)arg1;
 - (void)sendBackward:(id)arg1;
 - (void)sendToBack:(id)arg1;
+- (void)alignViews:(id)arg1 withConstraints:(id)arg2;
 - (void)didDeactivate;
 - (void)didActivate;
+- (id)constraintDrawablesForConstraint:(id)arg1;
+- (id)relativeConstraintDrawableForConstraint:(id)arg1;
+- (id)edgeBiasForLayoutAttribute:(unsigned long long)arg1;
+- (id)absoluteConstraintDrawableForConstraint:(id)arg1 item:(id)arg2 attribute:(unsigned long long)arg3;
+- (struct CGRect)rectIncludingBadgeForDrawable:(id)arg1;
+- (struct CGRect)rectForDrawableBadge:(id)arg1;
+- (struct CGRect)rectForDrawingOverlayForConstraintItem:(id)arg1;
+- (struct CGRect)rectForDrawingConstraintItem:(id)arg1;
+- (struct CGRect)rectForGuideLine:(CDStruct_f6143a38)arg1;
+- (id)hitRectsForConstraint:(id)arg1 inCoordinateSpaceOfView:(id)arg2;
+- (struct CGRect)hitRectForDrawable:(id)arg1;
+- (struct CGRect)rectForDrawable:(id)arg1;
+- (struct CGRect)rectForLimitedSpaceDualTBeamForDrawable:(id)arg1;
+- (struct CGRect)rectForConstraintLineWithLine:(CDStruct_f6143a38)arg1 lineThickness:(double)arg2 edgeBias:(id)arg3;
+- (struct CGRect)rectForIBeamWithLine:(CDStruct_f6143a38)arg1;
+- (struct CGRect)layoutRectInOverlayCoordinatesForConstraintItem:(id)arg1;
+- (void)setNextSelectableConstraint:(id)arg1;
+- (BOOL)wantsToShowSelectionIndicators;
+- (BOOL)forbidsShowingSelectionIndicators;
+- (BOOL)constraintIsSelectable:(id)arg1;
+- (BOOL)constraintIsVisible:(id)arg1;
+- (id)constraintUpdatingInvocation;
+- (void)withConstraintDrawingHidden:(id)arg1;
+- (void)finishHidingConstraintDrawing;
+- (void)beginHidingConstraintDrawing;
+- (void)updateConstraintHidingCount:(long long)arg1;
+@property(readonly, nonatomic) BOOL hidesConstraints;
+- (void)stopObservingDocument;
+- (void)startObservingDocument;
+- (void)stopObservingView:(id)arg1 forKeyPaths:(id)arg2 andNotifications:(id)arg3;
+- (void)startObservingView:(id)arg1 forKeyPaths:(id)arg2 andNotifications:(id)arg3;
+@property(readonly) IBMutableIdentityDictionary *observingTokensByView; // @synthesize observingTokensByView=_observingTokensByView;
+- (id)equalSizeBadge;
+- (id)greaterThanOrEqualToBadge;
+- (id)lessThanOrEqualToBadge;
+- (id)involvedViewOverlayChiselColor;
+- (id)involvedViewOverlayInnerPathGradient;
+- (id)involvedViewOverlayOuterStrokeColor;
+- (id)selectableConstraintShadow;
+- (id)selectedConstraintShadow;
+- (id)selectableConstraintLineColor;
+- (id)selectedConstraintLineColor;
+- (id)guideLineColor;
+- (id)relativeAlignmentConstraintLineColor;
+- (id)relativeConstraintLineColor;
+- (id)absoluteConstraintLineColor;
+- (id)standardConstraintLineColor;
+- (id)measurementDrawingHandler;
 - (BOOL)isFrameLockedForView:(id)arg1;
-- (id)trackerForChild:(id)arg1 withView:(id)arg2 fromKnob:(long long)arg3;
+- (id)trackerForChild:(id)arg1 withView:(id)arg2 fromKnob:(unsigned long long)arg3;
 - (void)setBandSelectionRect:(struct CGRect)arg1;
 - (struct CGRect)bandSelectionRect;
 - (id)selectedViewsInDesignableContainer;
@@ -4517,19 +4956,21 @@ typedef union {
 - (id)viewToTrackForFrameResizing;
 - (id)editedView;
 - (id)editorView;
+- (id)initWithEditedObject:(id)arg1 parentEditor:(id)arg2 frameController:(id)arg3;
 
 @end
 
 @interface IBKVCUndoRecord : NSObject
 {
-    NSString *keyPath;
-    id object;
-    id value;
+    NSString *_keyPath;
+    id _object;
+    id _value;
 }
 
-@property(readonly) id value; // @synthesize value;
-@property(readonly) id object; // @synthesize object;
-@property(readonly) NSString *keyPath; // @synthesize keyPath;
+@property(readonly) id value; // @synthesize value=_value;
+@property(readonly) id object; // @synthesize object=_object;
+@property(readonly) NSString *keyPath; // @synthesize keyPath=_keyPath;
+- (id)debugDescription;
 - (id)initWithObject:(id)arg1 andValue:(id)arg2 forKeyPath:(id)arg3;
 
 @end
@@ -4672,30 +5113,34 @@ typedef union {
 
 @end
 
-@interface IBDecodedPasteboardContent : NSObject <DVTInvalidation>
+@interface IBDecodedPasteboardContent : NSObject <DVTInvalidation_New>
 {
     NSArray *topLevelObjects;
     IBDocument *document;
     NSDictionary *originalOIDToDecodedOIDMap;
     NSDictionary *decodedOIDToOriginalOIDMap;
-    DVTStackBacktrace *invalidationBacktrace;
-    DVTStackBacktrace *validationBacktrace;
-    BOOL valid;
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
 + (id)contentWithDocument:(id)arg1 topLevelObjects:(id)arg2 decodedOIDToOriginalOIDMap:(id)arg3;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
+@property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 @property(readonly) NSDictionary *decodedOIDToOriginalOIDMap; // @synthesize decodedOIDToOriginalOIDMap;
-@property(retain) DVTStackBacktrace *validationBacktrace; // @synthesize validationBacktrace;
-@property(nonatomic, getter=isValid) BOOL valid; // @synthesize valid;
-@property(retain) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (id)objectInDestinationDocumentForObject:(id)arg1 inSourceDocument:(id)arg2;
 - (id)identifiedTopLevelObjectsUsingStrategy:(long long)arg1;
 - (id)identifierForObject:(id)arg1 usingStrategy:(long long)arg2;
 @property(readonly) NSArray *topLevelObjects; // @dynamic topLevelObjects;
 @property(readonly) IBDocument *document; // @synthesize document;
 @property(readonly) NSDictionary *originalOIDToDecodedOIDMap;
-- (void)finalize;
 - (id)initWithDocument:(id)arg1 topLevelObjects:(id)arg2 decodedOIDToOriginalOIDMap:(id)arg3;
 
 @end
@@ -4880,7 +5325,7 @@ typedef union {
 
 @interface IBSoundResource : IBResource
 {
-    NSSound *sound;
+    NSSound *_sound;
 }
 
 + (id)keyPathsAffectingValueForResourceValue;
@@ -4888,7 +5333,8 @@ typedef union {
 + (id)synchronizedResourceUTIs;
 + (id)systemResourceWithIDEMediaResource:(id)arg1;
 + (id)systemResource:(id)arg1 name:(id)arg2;
-@property(retain) NSSound *sound; // @synthesize sound;
+- (id)soundOrNil;
+- (id)soundByFaultingIfNeeded;
 - (id)resourceValueByFaultingIfNeeded;
 - (id)resourceValue;
 - (id)pasteboardTypes;
@@ -4897,8 +5343,12 @@ typedef union {
 
 @end
 
-@interface IBMeasurementOverlay : IBLayoutGuideOverlay
+@interface IBMeasurementDrawingHandler : NSObject <DVTInvalidation_New>
 {
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
     IBRelativeMeasurementDescriptor *relativeMeasurementDescriptor;
     IBRelativeMeasurement *relativeMeasurement;
     IBViewEditorCanvasFrameController *frameController;
@@ -4911,11 +5361,19 @@ typedef union {
     struct CGRect hintedTrackedViewRectangle;
     struct CGRect trackedKnobRect;
     IBTrackingIndicatorLayoutInfo *trackingIndicatorLayoutInfo;
+    id <DVTInvalidation> canvasOverlayToken;
 }
 
 + (id)calculateMeasurementLinesWithStartRect:(struct CGRect)arg1 andEndRect:(struct CGRect)arg2;
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
 @property(readonly) IBViewEditorCanvasFrameController *frameController; // @synthesize frameController;
-- (void)drawRect:(struct CGRect)arg1;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
+@property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
+- (void)drawHintedTrackedViewRectangle;
+- (void)drawLiveTrackingSizeInfo;
+- (void)drawTrackingKnob;
+- (void)drawBorderRectangles;
 - (void)drawFrameMarkersForView:(id)arg1;
 - (void)drawContainerContentInsetsForView:(id)arg1;
 - (void)drawBoundsRectForView:(id)arg1;
@@ -4927,7 +5385,7 @@ typedef union {
 - (void)setMeasurementLinesNeedDisplay:(id)arg1;
 - (void)setNeedsDisplayOnRectEdges:(struct CGRect)arg1;
 - (void)invalidateRelativeMeasurement;
-- (void)viewWillDraw;
+- (void)willDrawRelativeMeasurements;
 - (void)invalidateDrawing;
 - (id)calculateRelativeMeasurementFromDescriptor:(id)arg1;
 - (void)trackedObjectsDidChange;
@@ -4935,9 +5393,8 @@ typedef union {
 - (struct CGRect)relativeMeasuringFrame;
 - (struct CGRect)layoutRectForView:(id)arg1;
 - (struct CGRect)clippingRectForClippingToView:(id)arg1;
-- (void)invalidateCursorRects;
 - (void)clearTrackingIndicators;
-- (void)setTrackedSize:(struct CGSize)arg1 forViewRectangle:(struct CGRect)arg2 fromKnob:(long long)arg3 showingBoundsIndicator:(BOOL)arg4 showsTrackingKnob:(BOOL)arg5;
+- (void)setTrackedSize:(struct CGSize)arg1 forViewRectangle:(struct CGRect)arg2 fromKnob:(unsigned long long)arg3 showingBoundsIndicator:(BOOL)arg4 showsTrackingKnob:(BOOL)arg5;
 - (void)setTrackedKnobRect:(struct CGRect)arg1;
 - (void)setTrackingIndicatorLayoutInfo:(id)arg1;
 - (void)setHintedTrackedViewRectangle:(struct CGRect)arg1;
@@ -4953,6 +5410,11 @@ typedef union {
 @property(getter=isShowingRelativeMeasurement) BOOL showingRelativeMeasurement;
 - (id)document;
 - (id)documentEditor;
+@property(readonly) IBDelegatedCanvasOverlay *canvasOverlay;
+- (void)primitiveInvalidate;
+- (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (id)initWithFrameController:(id)arg1;
 
 @end
@@ -4993,7 +5455,7 @@ typedef union {
 + (id)secondaryParsableFileTypeIdentifiers;
 + (id)primaryParsableFileTypeIdentifiers;
 + (id)supportedFileExtensions;
-- (id)parserLaunchArgumentsForFile:(id)arg1;
+- (id)parserLaunchArguments;
 
 @end
 
@@ -5002,7 +5464,7 @@ typedef union {
 }
 
 - (id)processParserOutput:(id)arg1 fromFile:(id)arg2 errors:(id *)arg3;
-- (id)parserLaunchPathForFile:(id)arg1;
+- (id)parserLaunchPath;
 
 @end
 
@@ -5013,7 +5475,7 @@ typedef union {
 + (id)secondaryParsableFileTypeIdentifiers;
 + (id)primaryParsableFileTypeIdentifiers;
 + (id)supportedFileExtensions;
-- (id)parserLaunchArgumentsForFile:(id)arg1;
+- (id)parserLaunchArguments;
 
 @end
 
@@ -5027,8 +5489,8 @@ typedef union {
 + (id)supportedFileExtensions;
 - (id)orderedRelationsOfRelationshipType:(long long)arg1 inClassDescription:(id)arg2;
 - (id)processParserOutput:(id)arg1 fromFile:(id)arg2 errors:(id *)arg3;
-- (id)parserLaunchPathForFile:(id)arg1;
-- (id)parserLaunchArgumentsForFile:(id)arg1;
+- (id)parserLaunchPath;
+- (id)parserLaunchArguments;
 - (id)init;
 
 @end
@@ -5060,10 +5522,10 @@ typedef union {
 }
 
 - (id)parseData:(id)arg1 fromFile:(id)arg2 errors:(id *)arg3;
-- (id)taskForParsingDataFromFile:(id)arg1 input:(id *)arg2 output:(id *)arg3 error:(id *)arg4;
+- (id)taskForParsingReturningError:(id *)arg1;
 - (id)processParserOutput:(id)arg1 fromFile:(id)arg2 errors:(id *)arg3;
-- (id)parserLaunchArgumentsForFile:(id)arg1;
-- (id)parserLaunchPathForFile:(id)arg1;
+- (id)parserLaunchArguments;
+- (id)parserLaunchPath;
 
 @end
 
@@ -5089,80 +5551,40 @@ typedef union {
 
 @end
 
-@interface IBSnapSet : NSObject
-{
-    unsigned char count;
-    double *values;
-}
-
-+ (void)initialize;
-@property(readonly) unsigned char count; // @synthesize count;
-- (id)description;
-- (void)enumerateUsingBlock:(id)arg1;
-- (double)maxValue;
-- (void)setValue:(double)arg1 atIndex:(unsigned char)arg2;
-- (double)valueAtIndex:(unsigned char)arg1;
-- (void)dealloc;
-- (id)initWithCount:(unsigned long long)arg1;
-- (id)init;
-
-@end
-
-@interface IBLayoutRuleManager : NSObject
-{
-    NSMutableDictionary *sharedLayoutRules;
-    DVTMutableOrderedSet *fallbackWidgetTypes;
-    DVTMapTable *widgetCodes;
-    DVTMapTable *compactLayoutRules;
-    BOOL maxRuleDistanceIsValid;
-    double maxRuleDistance;
-}
-
-+ (id)sharedInstance;
-- (long long)uniqueRuleSubKeyForWidgetType:(id)arg1;
-- (id)ruleForView:(long long)arg1 comparedToView:(long long)arg2 withRuleEdge:(unsigned long long)arg3 viewFallbackKey:(long long)arg4;
-- (id)ruleForView:(long long)arg1 comparedToContainer:(long long)arg2 withRuleEdge:(unsigned long long)arg3 viewFallbackKey:(long long)arg4 containerFallbackKey:(long long)arg5;
-- (id)zeroRule;
-- (void)validateTextualRules:(id)arg1;
-- (id)invertRules:(id)arg1;
-- (BOOL)shouldValidateTextualRules;
-- (double)maxRuleDistance;
-- (void)invalidateCompactLayoutRules;
-- (id)compactLayoutRules;
-- (id)compactRules:(id)arg1;
-- (void)declareWidgetTypes:(id)arg1;
-- (void)removeLayoutRules:(id)arg1;
-- (void)addLayoutRules:(id)arg1;
-- (void)declareFallbackWidgetType:(id)arg1;
-- (id)fallbackWidgetTypes;
-- (id)sharedLayoutRules;
-- (void)loadLayoutRuleExtensions;
-- (BOOL)addLayoutRulesFromFile:(id)arg1 error:(id *)arg2;
-
-@end
-
 @interface IBIssueProvider : IDEIssueProvider
 {
-    IDEContainerQuery *ibFilesQuery;
-    NSMutableSet *watchedUnopenFilePaths;
-    NSMutableSet *openDocumentFilePaths;
-    NSOperationQueue *backgroundWarningCalculationQueue;
-    id <DVTObservingToken> kvoMatchesToken;
-    id <DVTObservingToken> kvoEditorDocumentsToken;
+    IDEFileReferenceContainerObserver *fileReferenceObserver;
+    DVTDelayedInvocation *batchedUpdateInvocation;
+    id <DVTInvalidation> fileReferenceObserverToken;
+    id <DVTObservingToken> workspaceContentsChangedToken;
+    id <DVTObservingToken> openDocumentsChangedToken;
+    id <DVTObservingToken> warningsChangedToken;
+    BOOL workspaceContentChanged;
+    BOOL openDocumentsChanged;
+    NSSet *observedFilePaths;
+    NSMutableSet *futureObservedFilePaths;
+    NSSet *observedDocumentFilePaths;
+    long long scheduledIbtoolInvocationsCounter;
+    NSMutableDictionary *scheduledIbtoolInvocations;
+    NSMutableDictionary *unprocessedIbtoolIssues;
+    NSMutableSet *changedDocumentFilePaths;
+    NSMutableSet *changedFilePaths;
+    IBToolIssueGenerator *ibtoolIssueGenerator;
 }
 
 + (int)providerType;
 - (id)ideModelObjectTypeIdentifier;
 - (id)displayNameForIssueTypeIdentifier:(id)arg1;
-- (void)openDocumentWarningsChanged:(id)arg1;
-- (void)updateOpenDocuments;
-- (void)configureFileWatchers;
-- (void)kickOffWarningsForClosedDocumentCalculation:(id)arg1;
-- (id)runIBToolOnClosedDocument:(id)arg1;
-- (void)parseIBToolOutput:(id)arg1 forFilePath:(id)arg2;
-- (void)updateWarningsForOpenDocument:(id)arg1 filePath:(id)arg2;
-- (BOOL)buildableExistsForFile:(id)arg1;
-- (void)invalidate;
+- (void)processBatchedChanges:(id)arg1;
+- (void)processDocumentIssues;
+- (void)processIbtoolIssues;
+- (void)scheduleibtoolInvocationsForChangedFilePaths;
+- (BOOL)shouldProcessFileAsOpenDocument:(id)arg1;
+- (BOOL)shouldProcessFilePathWithIbtool:(id)arg1;
+- (void)scheduleIbtoolInvocationForFilePath:(id)arg1;
+- (void)noticeOpenDocumentChanges;
+- (void)noticeWorkspaceContentChanges;
+- (void)primitiveInvalidate;
 - (id)initWithIssueManager:(id)arg1 extension:(id)arg2;
 
 @end
@@ -5181,7 +5603,7 @@ typedef union {
 + (void)setSeverityMap:(id)arg1;
 + (id)warningWithSource:(id)arg1 warningType:(long long)arg2 message:(id)arg3 affectedObjects:(id)arg4;
 + (id)ibVersionNumberForSDKString:(id)arg1;
-+ (id)displayNameForMinMacOSXVersion:(long long)arg1;
++ (id)displayNameForInvalidMacOSXVersionRange:(long long)arg1;
 + (id)categoryList;
 + (id)ibWarningTypeForMachineParseableName:(id)arg1;
 + (id)displayNameForWarningType:(long long)arg1;
@@ -5213,7 +5635,7 @@ typedef union {
 + (id)minimumTargetRuntime;
 @property(copy) NSString *currentDragMarker; // @synthesize currentDragMarker;
 @property(retain) DVTPerformanceMetric *objectLibraryLoadingPerformanceMetric; // @synthesize objectLibraryLoadingPerformanceMetric;
-@property(retain) IBTargetRuntime *targetRuntime; // @synthesize targetRuntime;
+@property(retain, nonatomic) IBTargetRuntime *targetRuntime; // @synthesize targetRuntime;
 - (void)libraryDidLoad;
 - (void)activeEditorDidChange:(id)arg1;
 - (BOOL)isApplicableDocument:(id)arg1;
@@ -5264,6 +5686,7 @@ typedef union {
 }
 
 @property(readonly) DVTExtension *extension; // @synthesize extension;
+- (BOOL)shouldIncludeTemplate:(id)arg1;
 - (id)nibLoadingBundleForTemplate:(id)arg1;
 - (void)document:(id)arg1 didAddDraggedObjects:(id)arg2 fromDraggedObjectLibraryTemplate:(id)arg3;
 - (id)pasteboardObjectsForTemplate:(id)arg1;
@@ -5301,8 +5724,8 @@ typedef union {
 @property(copy) NSAttributedString *fullDescription; // @synthesize fullDescription;
 @property(copy) NSString *briefDescription; // @synthesize briefDescription;
 @property(copy) NSArray *filterableNames; // @synthesize filterableNames;
-@property(retain) NSView *draggedView; // @synthesize draggedView;
-@property(retain) id representedObject; // @synthesize representedObject;
+@property(retain, nonatomic) NSView *draggedView; // @synthesize draggedView;
+@property(retain, nonatomic) id representedObject; // @synthesize representedObject;
 @property(copy) NSString *initialCategoryPath; // @synthesize initialCategoryPath;
 @property(copy) NSString *subtitle; // @synthesize subtitle;
 @property(copy) NSString *label; // @synthesize label;
@@ -5352,7 +5775,7 @@ typedef union {
 
 + (id)imageOfView:(id)arg1 transformsWhenScaled:(BOOL)arg2 opacity:(double)arg3;
 @property double opacity; // @synthesize opacity;
-@property(nonatomic) NSView *view; // @synthesize view;
+@property(retain, nonatomic) NSView *view; // @synthesize view;
 @property BOOL transformsWhenScaled; // @synthesize transformsWhenScaled;
 - (void)viewBoundsChanged:(id)arg1;
 - (BOOL)_drawFromRect:(struct CGRect)arg1 toRect:(struct CGRect)arg2 operation:(unsigned long long)arg3 alpha:(double)arg4 compositing:(BOOL)arg5 flipped:(BOOL)arg6 ignoreContext:(BOOL)arg7;
@@ -5368,8 +5791,8 @@ typedef union {
 @interface IBDocumentInspector : IDEInspectorViewController
 {
     IBMutableIdentityDictionary *observingTokensByDocument;
-    DVTDelayedValidator *useAutolayoutStateValidator;
-    DVTDelayedValidator *targetMenusValidator;
+    DVTDelayedInvocation *useAutolayoutStateInvocation;
+    DVTDelayedInvocation *targetMenusInvocation;
     long long useAutolayoutState;
     NSArray *deploymentMenuItems;
     NSArray *developmentMenuItems;
@@ -5418,6 +5841,7 @@ typedef union {
 - (void)takeDocumentDependency:(id)arg1;
 - (void)documentUpdatedDependencies:(id)arg1;
 - (id)documentDependencyExtensionsForDocuments:(id)arg1 type:(id)arg2;
+- (void)primitiveInvalidate;
 - (void)viewWillUninstall;
 - (void)viewDidInstall;
 - (id)initWithNibName:(id)arg1 bundle:(id)arg2;
@@ -5522,9 +5946,9 @@ typedef union {
     BOOL allInspectedDocumentsAreNotUsingAutolayout;
     BOOL allInspectedDocumentsAreUsingAutolayout;
     NSSet *inspectedInterfaceBuilderDocuments;
-    DVTDelayedValidator *imageNameValidator;
-    DVTDelayedValidator *soundNameValidator;
-    DVTDelayedValidator *nibNameValidator;
+    DVTDelayedInvocation *imageNameInvocation;
+    DVTDelayedInvocation *soundNameInvocation;
+    DVTDelayedInvocation *nibNameInvocation;
     NSArray *availableImageNames;
     NSArray *availableSoundNames;
     NSArray *availableNibNames;
@@ -5548,7 +5972,7 @@ typedef union {
 - (void)setAvailableImageNames:(id)arg1;
 @property(readonly) NSArray *availableSoundNames;
 - (void)setAvailableSoundNames:(id)arg1;
-- (id)createNameValidatorForComputationKeyPath:(id)arg1 withStorageKeyPath:(id)arg2;
+- (id)createNameInvocationForComputationKeyPath:(id)arg1 withStorageKeyPath:(id)arg2;
 - (id)computeAvailableSoundNames;
 - (id)computeAvailableImageNames;
 - (Class)effectiveSoundResourceClassForInspectedDocuments;
@@ -5591,16 +6015,17 @@ typedef union {
 
 @interface IBOrderedRelationshipDragAndDropPolicy : NSObject <IBDragAndDropInsertionIndicatorDelegate>
 {
-    id <IBDragAndDropPolicyDelegate> delegate;
     id representedObject;
-    NSString *relationKeyPath;
+    id <IBDragAndDropPolicyDelegate> delegate;
     NSSet *pasteboardTypes;
+    NSString *relationKeyPath;
     long long orderedRelationInsertionIndex;
-    long long growthDirection;
+    long long primaryGrowthDirection;
+    long long secondaryGrowthDirection;
 }
 
-@property(nonatomic) long long growthDirection; // @synthesize growthDirection;
-@property long long orderedRelationInsertionIndex; // @synthesize orderedRelationInsertionIndex;
+@property(nonatomic) long long secondaryGrowthDirection; // @synthesize secondaryGrowthDirection;
+@property(nonatomic) long long primaryGrowthDirection; // @synthesize primaryGrowthDirection;
 @property(readonly) NSString *relationKeyPath; // @synthesize relationKeyPath;
 @property(readonly) NSSet *pasteboardTypes; // @synthesize pasteboardTypes;
 @property(readonly) id <IBDragAndDropPolicyDelegate> delegate; // @synthesize delegate;
@@ -5611,13 +6036,20 @@ typedef union {
 - (void)customizePasteboardInsertionContext:(id)arg1 fromPasteboard:(id)arg2 andDraggingInfo:(id)arg3;
 - (BOOL)canAcceptDragInfo:(id)arg1;
 - (long long)insertionIndexForPoint:(struct CGPoint)arg1;
+- (BOOL)shouldIncrementInsertionIndexForPoint:(struct CGPoint)arg1 rectForObjectAtInsertionIndex:(struct CGRect)arg2;
+- (double)distanceInSecondaryGrowthDirectionBetweenPoint:(struct CGPoint)arg1 andRect:(struct CGRect)arg2;
+- (double)distanceInPrimaryGrowthDirectionBetweenPoint:(struct CGPoint)arg1 andRect:(struct CGRect)arg2;
+- (double)distanceInDirection:(long long)arg1 betweenPoint:(struct CGPoint)arg2 andRect:(struct CGRect)arg3;
+- (BOOL)hasSecondaryGrowthDirection;
 @property(readonly) unsigned long long orderedRelationInsertionEdge;
 - (struct CGRect)confinementRect;
 - (struct CGRect)dragAlignmentRectForRelatedObject:(id)arg1;
 - (struct CGRect)rectInWindowSpaceForEditedObject;
+@property(nonatomic) long long orderedRelationInsertionIndex; // @synthesize orderedRelationInsertionIndex;
 @property(readonly) NSArray *orderedRelation;
 - (id)initWithDelegate:(id)arg1 representedObject:(id)arg2 toManyRelation:(id)arg3 pasteboardType:(id)arg4 andGrowthDirection:(long long)arg5;
 - (id)initWithDelegate:(id)arg1 representedObject:(id)arg2 toManyRelation:(id)arg3 pasteboardTypes:(id)arg4 andGrowthDirection:(long long)arg5;
+- (id)initWithDelegate:(id)arg1 representedObject:(id)arg2 toManyRelation:(id)arg3 pasteboardTypes:(id)arg4 primaryGrowthDirection:(long long)arg5 secondaryGrowthDirection:(long long)arg6;
 
 @end
 
@@ -5646,23 +6078,28 @@ typedef union {
     IBTrackingIndicatorMagnitudeLayoutInfo *heightLayoutInfo;
 }
 
-+ (id)trackingIndicatorForSize:(struct CGSize)arg1 fromKnob:(long long)arg2 ofTrackedRect:(struct CGRect)arg3 constrainedToRect:(struct CGRect)arg4;
++ (id)trackingIndicatorForSize:(struct CGSize)arg1 fromKnob:(unsigned long long)arg2 ofTrackedRect:(struct CGRect)arg3 constrainedToRect:(struct CGRect)arg4;
 - (BOOL)isEqual:(id)arg1;
 - (BOOL)isEqualToTrackingIndicatorLayoutInfo:(id)arg1;
 - (unsigned long long)hash;
 - (struct CGRect)boundingFrame;
 - (void)draw;
-- (id)initWithSize:(struct CGSize)arg1 fromKnob:(long long)arg2 ofTrackedRect:(struct CGRect)arg3 constrainedToRect:(struct CGRect)arg4;
+- (id)initWithSize:(struct CGSize)arg1 fromKnob:(unsigned long long)arg2 ofTrackedRect:(struct CGRect)arg3 constrainedToRect:(struct CGRect)arg4;
 
 @end
 
 @interface IBInspectorResourceProperty : IDEInspectorProperty
 {
-    NSComboBox *comboBox;
-    DVTDelayedValidator *validator;
+    IBAutoCompletingComboBoxDataSource *comboBoxDataSource;
+    IBButtonComboBox *comboBox;
+    DVTDelayedInvocation *delayedInvocation;
     id reflectedValue;
 }
 
++ (Class)propertyClassForPropertyDefinition:(id)arg1;
+- (void)loadView;
+- (void)configureComboBoxButton;
+- (void)unbindAndTearDown;
 - (id)bindAndConfigure;
 - (id)reflectedValue;
 - (void)validateReflectedValue:(id)arg1;
@@ -5673,22 +6110,19 @@ typedef union {
 - (Class)resourceClass;
 - (double)baseline;
 - (id)inspectorController;
+- (id)comboBox;
 - (id)initWithPropertyDefinition:(id)arg1 andController:(id)arg2;
 
 @end
 
 @interface IBCancellationToken : NSObject
 {
-    BOOL cancellationRequired;
     id cancellationBlock;
-    DVTStackBacktrace *creationBacktrace;
 }
 
 + (id)aggregatedCancelationToken:(id)arg1;
-- (BOOL)cancellationRequired;
 - (void)cancel;
 - (id)initWithOptionalCancellationBlock:(id)arg1;
-- (id)initWithCancellationBlock:(id)arg1;
 
 @end
 
@@ -5845,9 +6279,9 @@ typedef union {
 
 @end
 
-@interface IBConnectionsViewController : NSViewController <DVTInvalidation>
+@interface IBConnectionsViewController : NSViewController <DVTInvalidation_New>
 {
-    DVTDelayedValidator *validator;
+    DVTDelayedInvocation *delayedInvocation;
     DVTMutableOrderedDictionary *dicslosureViews;
     NSColor *lastDisclosureBottomBorderColor;
     IBDocument *document;
@@ -5856,11 +6290,16 @@ typedef union {
     IBConnectionInterfaceStyle *connectionInterfaceStyle;
     id endPoint;
     id <DVTObservingToken> classesObservingToken;
-    BOOL isInvalidated;
-    DVTStackBacktrace *invalidationBacktrace;
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
-@property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace;
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
+@property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 - (void)refreshConnectionsData:(id)arg1;
 - (void)syncSyncPrototypeStack:(id)arg1 withPrototypeData:(id)arg2;
 - (id)matchingPrototypeForPrototype:(id)arg1 inSet:(id)arg2;
@@ -5869,7 +6308,9 @@ typedef union {
 - (void)identifyPredecessorRepresentations:(id)arg1 inPrototypeView:(id)arg2;
 - (void)beginConnectingFromPrototypeView:(id)arg1;
 - (void)disconnectPredecessorHandler:(id)arg1;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
 @property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (void)setLastDisclosureBottomBorderColor:(id)arg1;
 - (id)disclosureViews;
@@ -6128,7 +6569,6 @@ typedef union {
     NSMutableDictionary *backgroundImages;
     NSMutableDictionary *imageOpacities;
     NSMutableDictionary *backgroundImageOpacities;
-    id mouseObserveringToken;
     id target;
     SEL action;
     SEL dragAction;
@@ -6138,11 +6578,11 @@ typedef union {
     NSCursor *cursor;
     id mouseDownHandler;
     id clickHandler;
-    id mouseWillCloseNotificationToken;
     NSString *accessibilityTitle;
     unsigned long long imageLayoutMode;
     NSArray *buttonToShareRolloverWith;
     CDStruct_c519178c hitTestInset;
+    IBMouseMovedObservingViewHelper *mouseMovedHelper;
 }
 
 + (void)makeButtonsStartSharingRolloverState:(id)arg1;
@@ -6167,7 +6607,6 @@ typedef union {
 - (BOOL)accessibilityIsIgnored;
 - (void)viewDidMoveToWindow;
 - (void)viewWillMoveToWindow:(id)arg1;
-- (void)unregisterMouseMovedObserver;
 - (void)mouseMoved:(struct CGPoint)arg1 buttonStates:(unsigned long long)arg2;
 - (void)mouseDown:(id)arg1;
 - (void)beginTrackingClickWithMouseDown:(id)arg1 validMouseUpArea:(struct CGRect)arg2;
@@ -6701,6 +7140,7 @@ typedef union {
 }
 
 + (id)showTargetsWithSpecifiers:(id)arg1 forDuration:(double)arg2;
++ (void)runTargetIdentificationGroup:(id)arg1;
 + (void)cancelAllOutstandingIdentifiers;
 - (void)drawRect:(struct CGRect)arg1;
 - (void)drawInsertionLineInRect:(struct CGRect)arg1;
@@ -6780,6 +7220,7 @@ typedef union {
 }
 
 - (void)setContent:(id)arg1;
+- (void)primitiveInvalidate;
 - (void)loadView;
 - (id)layoutView;
 - (id)statusAreaView;
@@ -6798,12 +7239,13 @@ typedef union {
     BOOL showingProgressArea;
     NSScrollView *scrollView;
     DVTBorderedView *statusAreaView;
-    NSProgressIndicator *spinner;
+    DVTColoredSpinner *spinner;
 }
 
 - (void)layoutBottomUp;
 - (void)layoutTopDown;
 @property BOOL showingProgressArea; // @synthesize showingProgressArea;
+- (void)awakeFromNib;
 
 @end
 
@@ -6931,62 +7373,51 @@ typedef union {
 
 @end
 
-@interface IBCustomClassInspectorProperty : IDEInspectorProperty
+@interface IBCustomClassInspectorProperty : IDEInspectorProperty <IBCustomClassSuggestionsProviderDelegate>
 {
     IBButtonComboBox *comboBox;
-    id <DVTObservingToken> classDescriberObservingToken;
-    id <DVTObservingToken> documentCloseNotificationToken;
-    id <DVTObservingToken> classDescriberIsUpdatingObservingToken;
-    unsigned long long applicableCustomClassNamesRefreshReasons;
-    DVTDelayedValidator *applicableCustomClassNamesValidator;
-    NSMutableDictionary *cachedApplicableCustomClassNamesByClassName;
-    NSTimer *comboBoxAnimationStateTimer;
-    NSMutableSet *classNamesBeingQueried;
+    IBCustomClassSuggestionsProvider *classSuggestionsProvider;
+    DVTDelayedInvocation *indexBasedRefreshInvocation;
+    IBCustomClassQuickStateProvider *quickStateProvider;
+    IBCustomClassIndexStateProvider *indexStateProvider;
+    IBAutoCompletingComboBoxDataSource *comboBoxDatasource;
+    BOOL comboBoxStringValueIsRefreshingFromIndex;
+    BOOL comboBoxSuggestionsQueryInFlight;
     NSArray *applicableCustomClassNames;
-    NSOperationQueue *indexQueryQueue;
-    NSString *lastClassNameRequested;
     BOOL showingProgressIndicator;
     BOOL updatingApplicableCustomClassNames;
 }
 
-+ (id)keyPathsForValuesAffectingInspectedDocumentObjects;
+@property BOOL updatingApplicableCustomClassNames; // @synthesize updatingApplicableCustomClassNames;
 @property(nonatomic) BOOL showingProgressIndicator; // @synthesize showingProgressIndicator;
 @property(copy) NSArray *applicableCustomClassNames; // @synthesize applicableCustomClassNames;
-- (void)revealCustomClassInEditor:(id)arg1;
 - (void)awakeFromNib;
-- (id)customClassButtonContentForState:(unsigned long long)arg1;
-- (id)activeWorkspaceTabController;
-- (id)workspaceWindowController;
 - (void)unbindAndTearDown;
 - (id)bindAndConfigure;
-- (void)tearDownClassDescriberObserving;
-- (void)invalidateApplicableCustomClassNamesAndKillCaches:(BOOL)arg1 reason:(unsigned long long)arg2;
-- (void)invalidateApplicableCustomClassNamesForReason:(unsigned long long)arg1;
+- (void)refreshComboBox;
+- (void)refreshComboBoxFromQuickState;
+- (void)refreshComboBoxFromIndexState:(id)arg1;
 - (void)changeCustomClass:(id)arg1;
-- (void)refreshCustomClassComboBox;
-- (void)attemptToSetComboBoxCellToString:(id)arg1;
-- (BOOL)isRefreshingSolelyBecauseClassDescriberChanged;
-- (void)updateApplicableCustomClassNamesForClassNamed:(id)arg1;
-- (void)updateSpinner;
-- (void)stopAnimatingComboBoxSpinner:(id)arg1;
-- (BOOL)isCompleteType:(id)arg1;
-- (BOOL)anyCustomClasses;
-- (id)commonClassName;
-- (id)mostDerivedCommonClassName;
-- (BOOL)shouldComboBoxBeEnabled;
-- (id)mostDerivedClassName;
+- (void)revealCustomClassInEditor:(id)arg1;
+- (void)cancelQueryingComboBoxDataSource;
+- (void)refreshComboBoxDataSource;
+- (void)applyValidatedClassName:(id)arg1 toObject:(id)arg2;
+- (void)customClassSuggestionsProvider:(id)arg1 didUpdateQueryState:(BOOL)arg2;
+- (void)setComboBoxStringValueIsRefreshingFromIndex:(BOOL)arg1;
+- (void)updateSpinnerWithNewRefreshingStringValueState:(BOOL)arg1 dataSourceState:(BOOL)arg2;
+- (double)baseline;
 - (id)inspectedDocumentObjects;
 - (id)inspectedDocument;
-- (double)baseline;
 - (id)inspectorController;
-@property BOOL updatingApplicableCustomClassNames; // @synthesize updatingApplicableCustomClassNames;
+- (id)activeWorkspaceTabController;
+- (id)workspaceWindowController;
 - (id)initWithPropertyDefinition:(id)arg1 andController:(id)arg2;
 
 @end
 
-@interface IBButtonComboBox : NSComboBox
+@interface IBButtonComboBox : NSComboBox <DVTColoredSpinnerDelegate>
 {
-    DVTDelayedValidator *progressIndicatorValidator;
+    DVTDelayedInvocation *progressIndicatorInvocation;
     BOOL shouldShowProgressIndicator;
     DVTColoredSpinner *progressIndicator;
     IBImageButton *button;
@@ -6994,8 +7425,16 @@ typedef union {
 
 + (Class)cellClass;
 @property(getter=isShowingProgressIndicator) BOOL showingProgressIndicator;
+- (void)setShowingProgressIndicator:(BOOL)arg1 delayBeforeStarting:(double)arg2 minimumTimeOn:(double)arg3;
+- (struct CGRect)progressIndicatorFrame;
+- (void)coloredSpinnerDidFinishAnimating:(id)arg1;
+- (void)coloredSpinnerDidBeginAnimating:(id)arg1;
+@property(getter=isButtonHidden) BOOL buttonHidden;
+- (void)changeStateAndInvalidateRightControlAreaIfNeeded:(id)arg1;
+- (BOOL)isShowingButton;
+- (BOOL)showingRightEdgeControl;
 - (void)setEnabled:(BOOL)arg1;
-- (id)button;
+@property(readonly) IBImageButton *button;
 - (void)initializeButton;
 - (struct CGRect)buttonRect;
 - (double)comboBoxButtonOffset;
@@ -7012,7 +7451,7 @@ typedef union {
 - (void)drawInteriorWithFrame:(struct CGRect)arg1 inView:(id)arg2;
 - (void)selectWithFrame:(struct CGRect)arg1 inView:(id)arg2 editor:(id)arg3 delegate:(id)arg4 start:(long long)arg5 length:(long long)arg6;
 - (void)editWithFrame:(struct CGRect)arg1 inView:(id)arg2 editor:(id)arg3 delegate:(id)arg4 event:(id)arg5;
-- (struct CGRect)scaleRect:(struct CGRect)arg1 forControlView:(id)arg2;
+- (struct CGRect)clipRect:(struct CGRect)arg1 forControlView:(id)arg2 remainderRect:(struct CGRect *)arg3;
 
 @end
 
@@ -7133,7 +7572,7 @@ typedef union {
 @interface IBKeyEquivalentInspectorProperty : IDEInspectorProperty
 {
     IBKeyEquivalentEntryField *keyEquivalentEntryField;
-    DVTDelayedValidator *validator;
+    DVTDelayedInvocation *delayedInvocation;
 }
 
 - (id)bindAndConfigure;
@@ -7222,7 +7661,7 @@ typedef union {
 @property(copy) NSNumber *anchor; // @synthesize anchor;
 @property(copy) NSFont *font; // @synthesize font;
 - (id)effectiveInitalAttributedValue;
-- (long long)effectiveAnchor;
+- (unsigned long long)effectiveAnchor;
 - (id)copyWithZone:(struct _NSZone *)arg1;
 - (id)init;
 
@@ -7245,8 +7684,8 @@ typedef union {
 }
 
 - (void)drawRect:(struct CGRect)arg1;
-- (void)refreshImagesForResizingGripWithKnob:(long long)arg1;
-- (id)knobButtonImageForState:(unsigned long long)arg1 knob:(long long)arg2;
+- (void)refreshImagesForResizingGripWithKnob:(unsigned long long)arg1;
+- (id)knobButtonImageForState:(unsigned long long)arg1 knob:(unsigned long long)arg2;
 - (id)closeButtonImageForState:(unsigned long long)arg1;
 - (id)closeButtonShadow:(BOOL)arg1;
 - (id)closeButtonGradientKey:(BOOL)arg1 pressed:(BOOL)arg2;
@@ -7254,7 +7693,7 @@ typedef union {
 - (id)closeButtonBorderColor:(BOOL)arg1 pressed:(BOOL)arg2;
 - (void)hasKeyLookDidChange;
 - (BOOL)isSubviewHittable:(id)arg1;
-- (void)dragKnob:(long long)arg1 withMouseDown:(id)arg2;
+- (void)dragKnob:(unsigned long long)arg1 withMouseDown:(id)arg2;
 - (void)canvasFrameResizingTest:(id)arg1;
 - (BOOL)shouldDragFrameWithMouseDown:(id)arg1;
 - (void)layoutBottomUp;
@@ -7265,6 +7704,7 @@ typedef union {
 - (struct CGRect)closeButtonRect;
 - (struct CGRect)glassRect;
 - (CDStruct_c519178c)insetToGlass;
+- (id)resizingGripViewForKnob:(unsigned long long)arg1;
 - (void)setShowingSelectionRing:(BOOL)arg1;
 - (BOOL)isDrawingCachingEnabled;
 - (void)enableDrawingCaching;
@@ -7273,9 +7713,9 @@ typedef union {
 - (void)setHorizontallyResizable:(BOOL)arg1;
 - (void)updateGrowKnobsVisibility;
 - (void)setAllGrowKnobsAreEnabled:(BOOL)arg1;
-- (void)setGrowKnob:(long long)arg1 isEnabled:(BOOL)arg2;
-- (BOOL)isGrowKnobEnabled:(long long)arg1;
-- (BOOL)isAxisForKnobResizable:(long long)arg1;
+- (void)setGrowKnob:(unsigned long long)arg1 isEnabled:(BOOL)arg2;
+- (BOOL)isGrowKnobEnabled:(unsigned long long)arg1;
+- (BOOL)isAxisForKnobResizable:(unsigned long long)arg1;
 @property(nonatomic) double glassCornerRadius;
 @property(nonatomic) CDStruct_c519178c glassToContentInset;
 @property unsigned long long contentFrameStyle;
@@ -7389,9 +7829,9 @@ typedef union {
 - (BOOL)documentEditor:(id)arg1 canSelectMembers:(id)arg2;
 - (void)documentEditor:(id)arg1 deselectMembers:(id)arg2;
 - (void)documentEditor:(id)arg1 pullSelection:(id)arg2;
-@property(readonly) BOOL onlySupportsDocumentObjectMembers;
+- (BOOL)onlySupportsDocumentObjectMembers;
 - (void)documentEditor:(id)arg1 selectMembers:(id)arg2;
-@property(readonly) NSString *stateSavingIdentifier;
+- (id)stateSavingIdentifier;
 - (void)becomeSelectionProvider;
 - (void)selectionDidChange;
 - (id)selectedObjects;
@@ -7406,7 +7846,7 @@ typedef union {
 - (void)dockLabelsDidChange;
 - (void)editedTopLevelObjectsDidChange;
 - (void)topLevelObjectsChanged;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)viewDidInstall;
 
 // Remaining properties
@@ -7416,6 +7856,7 @@ typedef union {
 
 @interface IBStructureAreaDockView : DVTLayoutView_ML <IBSelectionOwnerDelegate>
 {
+    NSDictionary *targetIdentifiedRepresentedObjects;
     IBStructureAreaDockLabelContainer *labelPopUpContainer;
     id <IBStructureAreaDockViewDelegate> delegate;
     NSArray *allGroups;
@@ -7431,7 +7872,7 @@ typedef union {
     NSMutableDictionary *viewsPerGroupAndRepresentedObject;
     NSMutableDictionary *overflowIndicatorItemViewsPerGroup;
     NSValue *tileSize;
-    IBStructureAreaDockItemView *rolledOverDockItem;
+    IBDockObjectAndGroupPair *rolledOverObjectAndGroupPair;
     IBDockObjectAndGroupPair *insertionIndicatorPair;
     NSBezierPath *insertionIndicatorPath;
     BOOL validData;
@@ -7441,20 +7882,21 @@ typedef union {
     NSImage *overflowItemChevronImage;
     int layoutDirection;
     unsigned long long labelArrowEdge;
+    BOOL drawsGroupDividers;
 }
 
+@property BOOL drawsGroupDividers; // @synthesize drawsGroupDividers;
+@property(copy, nonatomic) NSDictionary *targetIdentifiedRepresentedObjects; // @synthesize targetIdentifiedRepresentedObjects;
 @property(nonatomic) unsigned long long labelArrowEdge; // @synthesize labelArrowEdge;
 @property(nonatomic) int layoutDirection; // @synthesize layoutDirection;
 @property(retain, nonatomic) IBDockObjectAndGroupPair *insertionIndicatorPair; // @synthesize insertionIndicatorPair;
-@property(retain, nonatomic) IBStructureAreaDockItemView *rolledOverDockItem; // @synthesize rolledOverDockItem;
+@property(retain, nonatomic) IBDockObjectAndGroupPair *rolledOverObjectAndGroupPair; // @synthesize rolledOverObjectAndGroupPair;
 @property(retain) IBStructureAreaDockLabelContainer *labelPopUpContainer; // @synthesize labelPopUpContainer;
 @property struct CGSize itemImageSize; // @synthesize itemImageSize;
 @property(retain) id <IBStructureAreaDockViewDelegate> delegate; // @synthesize delegate;
 - (void)drawRect:(struct CGRect)arg1;
 - (id)dividerShadow;
 - (void)invalidateDisplayInRects:(id)arg1;
-- (void)stopDisplayingLabelsForRepresentedObjects:(id)arg1;
-- (void)beginDisplayingLabelsForRepresentedObjects:(id)arg1;
 - (void)showOverflowMenuForGroup:(id)arg1 withEvent:(id)arg2;
 - (void)selectGroupObjectPairFromMenu:(id)arg1;
 - (BOOL)validateUserInterfaceItem:(id)arg1;
@@ -7501,9 +7943,11 @@ typedef union {
 - (id)representedObjectAndGroupAtPoint:(struct CGPoint)arg1;
 - (id)unvalidatedDockItemViewAtPoint:(struct CGPoint)arg1 includeOverflowItem:(BOOL)arg2;
 - (id)insertionIndicatorPathForIndicatorPair:(id)arg1;
+- (BOOL)shouldShowLabelPopUpForObject:(id)arg1 inGroup:(id)arg2;
 - (id)representedObjectsForGroup:(id)arg1 inRange:(struct _NSRange)arg2;
 - (void)invalidateData;
 - (void)validateDataIfNeeded;
+- (void)willStopUsingDockItemView:(id)arg1;
 - (long long)effectiveMinimumTileCount;
 - (long long)effectiveMinimumTilesForGroup:(id)arg1;
 - (long long)minimumTilesForGroup:(id)arg1;
@@ -7569,9 +8013,11 @@ typedef union {
     id dragHandler;
     BOOL showingOpenIndicator;
     unsigned long long labelArrowEdge;
+    BOOL shouldShowLabelPopUp;
 }
 
 + (id)openIndicatorImage;
+@property(nonatomic) BOOL shouldShowLabelPopUp; // @synthesize shouldShowLabelPopUp;
 @property(nonatomic) unsigned long long labelArrowEdge; // @synthesize labelArrowEdge;
 @property(nonatomic, getter=isShowingOpenIndicator) BOOL showingOpenIndicator; // @synthesize showingOpenIndicator;
 @property(retain) IBStructureAreaDockLabelContainer *labelPopUpContainer; // @synthesize labelPopUpContainer;
@@ -7591,8 +8037,6 @@ typedef union {
 - (struct CGPoint)startOfCurveCommingFromCorner:(struct CGPoint)arg1 goingAroundCorner:(struct CGPoint)arg2 withRadius:(double)arg3;
 - (double)valueApproachingValue:(double)arg1 from:(double)arg2 distance:(double)arg3;
 - (id)cachedPressedImageMask;
-- (void)closeLabelPopUp;
-- (void)openLabelPopUp;
 - (void)rightMouseDown:(id)arg1;
 - (void)mouseDown:(id)arg1;
 - (void)trackMouse:(id)arg1;
@@ -7675,7 +8119,7 @@ typedef union {
 + (void)alignViews:(id)arg1 withXFunction:(void *)arg2 yFunction:(void *)arg3 xAccumulator:(void *)arg4 andYAccumulator:(void *)arg5;
 + (BOOL)canFillContainerVertically:(id)arg1;
 + (BOOL)canFillContainerHorizontally:(id)arg1;
-+ (BOOL)canAlignBaselinesForViews:(id)arg1;
++ (BOOL)canAlignBaselinesForViews:(id)arg1 inDocument:(id)arg2;
 + (BOOL)canContainerAlignViews:(id)arg1;
 + (BOOL)canAlignViews:(id)arg1;
 + (BOOL)viewsHaveSameSuperview:(id)arg1;
@@ -7835,7 +8279,7 @@ typedef union {
 - (id)targetToSendToEndPointProviderForConnectionSuccess;
 - (id)connectionForConnectingFromAnnotation:(id)arg1;
 - (id)presentDisambiguatingPopupForAnnotationConnections:(id)arg1;
-- (void)ibConnectionMenu:(id)arg1 willHighlightItem:(id)arg2;
+- (void)connectionMenu:(id)arg1 willHighlightItem:(id)arg2;
 - (id)connectionForPrototype:(id)arg1 interfaceStyle:(id)arg2;
 - (id)connectionForConnectingFromObject:(id)arg1;
 @property(readonly) NSWindow *destinationWindow;
@@ -7895,7 +8339,7 @@ typedef union {
 @property(nonatomic) BOOL wasInserted; // @synthesize wasInserted;
 @property(nonatomic) unsigned long long sourceLineNumber; // @synthesize sourceLineNumber;
 @property(copy, nonatomic) NSString *type; // @synthesize type;
-@property(nonatomic) IBConnection *connectionPrototypeToComplete; // @synthesize connectionPrototypeToComplete;
+@property(retain, nonatomic) IBConnection *connectionPrototypeToComplete; // @synthesize connectionPrototypeToComplete;
 @property(nonatomic) long long action; // @synthesize action;
 @property struct _NSRange range; // @synthesize range;
 @property(copy, nonatomic) NSString *name; // @synthesize name;
@@ -7972,6 +8416,7 @@ typedef union {
 - (id)prepareToInsertSourceCode:(id *)arg1;
 - (id)counterpartsToCustomLocations;
 - (BOOL)shouldGenerateIvarDeclaration;
+- (BOOL)shouldGenerateAtSynthesizeStatement;
 - (id)counterpartsForIgnoringErrors;
 - (id)representativeCounterpart;
 - (BOOL)parseSourceModelItem:(id)arg1 sourceModel:(id)arg2;
@@ -8020,6 +8465,7 @@ typedef union {
 - (id)prepareToInsertSourceCode:(id *)arg1;
 - (long long)outletCollectionPropertyObjCStorageType;
 - (BOOL)shouldGenerateIvarDeclaration;
+- (BOOL)shouldGenerateAtSynthesizeStatement;
 - (id)counterpartsForIgnoringErrors;
 - (id)representativeCounterpart;
 - (BOOL)parseSourceModelItem:(id)arg1 sourceModel:(id)arg2;
@@ -8364,7 +8810,6 @@ typedef union {
 {
     BOOL drawsWithActiveLook;
     NSView *overlayView;
-    NSMutableArray *pointsOfInterest;
     double lineScalingFactor;
     id drawingCompletionBlock;
 }
@@ -8373,8 +8818,6 @@ typedef union {
 @property(nonatomic) double lineScalingFactor; // @synthesize lineScalingFactor;
 @property(retain, nonatomic) NSView *overlayView; // @synthesize overlayView;
 @property(nonatomic) BOOL drawsWithActiveLook; // @synthesize drawsWithActiveLook;
-- (void)addPointOfInterest:(struct CGPoint)arg1 color:(id)arg2;
-- (void)clearPointsOfIntereset;
 - (id)hitTest:(struct CGPoint)arg1;
 - (void)drawRect:(struct CGRect)arg1;
 - (void)drawGraphPaper;
@@ -8395,6 +8838,7 @@ typedef union {
     id <DVTObservingToken> classDescriberObservingToken;
 }
 
++ (id)keyPathsForValuesAffectingActionRelations;
 + (id)keyPathsForValuesAffectingDocument;
 - (id)bindAndConfigure;
 - (void)awakeFromNib;
@@ -8460,18 +8904,19 @@ typedef union {
     NSMutableSet *stacksBeingModified;
     NSMutableDictionary *objectIDToLastKnownCanvasPositionMap;
     DVTMutableOrderedSet *selectedConnections;
-    DVTDelayedValidator *delayedEditorDeselectionValidator;
+    DVTDelayedInvocation *delayedEditorDeselectionInvocation;
     BOOL editorsProvidingSelection;
-    DVTDelayedValidator *fontAndColorValidator;
+    DVTDelayedInvocation *fontAndColorInvocation;
     IBHitDetectionMap *cursorMap;
     BOOL updatingColorPanel;
     BOOL invalidating;
     BOOL resettingCursorRects;
     BOOL canvasViewDescendentHasInvalidCursorRects;
     BOOL canvasViewItselfHasInvalidCursorRects;
-    DVTDelayedValidator *canvasViewCursorValidator;
+    DVTDelayedInvocation *canvasViewCursorInvocation;
     IBCanvasControllerLayoutGuideGeneratorDelegate *frameLayoutGuideGeneratorDelegate;
-    IBLayoutGuideOverlay *guideOverlay;
+    IBDelegatedCanvasOverlay *guideOverlay;
+    IBLayoutGuideDrawingHandler *layoutGuideDrawingHandler;
     IBLayoutManager *frameLayoutManager;
     IBImageButton *zoomInButton;
     IBImageButton *zoomActualButton;
@@ -8481,29 +8926,39 @@ typedef union {
     DVTDraggedImageState *imageState;
     NSMutableArray *expansionTokens;
     NSNumber *lastOverviewZoomFactor;
+    IBImageButton *actionAreaAlignButton;
+    IBImageButton *actionAreaPinButton;
+    IBImageButton *actionAreaLiveAutoresizingBehaviorButton;
+    id <DVTObservingToken> useAutolayoutObservingToken;
+    BOOL showingAutoLayoutActionArea;
 }
 
 + (void)configureStateSavingObjectPersistenceByName:(id)arg1;
 + (id)canvasBarButtonWithImageName:(id)arg1 selectedImageName:(id)arg2 backgroundImageName:(id)arg3 selectedBackgroundImageName:(id)arg4;
 + (id)canvasBarButtonWithImage:(id)arg1 selectedImage:(id)arg2 backgroundImage:(id)arg3 selectedBackgroundImage:(id)arg4;
 + (void)initialize;
-@property(readonly) IBLayoutGuideOverlay *guideOverlay; // @synthesize guideOverlay;
-@property(readonly) IBCanvasControllerLayoutGuideGeneratorDelegate *frameLayoutGuideGeneratorDelegate; // @synthesize frameLayoutGuideGeneratorDelegate;
-@property(readonly) IBLayoutManager *frameLayoutManager; // @synthesize frameLayoutManager;
-@property(copy) DVTMutableOrderedSet *selectedConnections; // @synthesize selectedConnections;
-@property(readonly, getter=isUpdatingColorPanel) BOOL updatingColorPanel; // @synthesize updatingColorPanel;
+@property(nonatomic, getter=isShowingAutoLayoutActionArea) BOOL showingAutoLayoutActionArea; // @synthesize showingAutoLayoutActionArea;
+@property(readonly, nonatomic) IBLayoutGuideDrawingHandler *layoutGuideDrawingHandler; // @synthesize layoutGuideDrawingHandler;
+@property(readonly, nonatomic) IBDelegatedCanvasOverlay *guideOverlay; // @synthesize guideOverlay;
+@property(readonly, nonatomic) IBCanvasControllerLayoutGuideGeneratorDelegate *frameLayoutGuideGeneratorDelegate; // @synthesize frameLayoutGuideGeneratorDelegate;
+@property(readonly, nonatomic) IBLayoutManager *frameLayoutManager; // @synthesize frameLayoutManager;
+@property(copy, nonatomic) DVTMutableOrderedSet *selectedConnections; // @synthesize selectedConnections;
+@property(readonly, nonatomic, getter=isUpdatingColorPanel) BOOL updatingColorPanel; // @synthesize updatingColorPanel;
 @property(retain) NSMutableDictionary *objectIDToLastKnownCanvasPositionMap; // @synthesize objectIDToLastKnownCanvasPositionMap;
-@property BOOL editorsProvidingSelection; // @synthesize editorsProvidingSelection;
-@property(readonly) IBCanvasView *canvasView; // @synthesize canvasView;
-@property(retain) IBAbstractDocumentEditor *documentEditor; // @synthesize documentEditor;
+@property(nonatomic) BOOL editorsProvidingSelection; // @synthesize editorsProvidingSelection;
+@property(readonly, nonatomic) IBCanvasView *canvasView; // @synthesize canvasView;
+@property(retain, nonatomic) IBAbstractDocumentEditor *documentEditor; // @synthesize documentEditor;
 - (void)canvasViewRunResizeTest:(id)arg1;
 - (void)canvasViewRunScrollTest:(id)arg1;
 - (void)canvasViewRunZoomTest:(id)arg1;
 - (void)measureFPSWhileInvoking:(id)arg1;
+- (void)toggleLiveAutoresizingBehaviorApplyConstraintsToSiblingsAndAncestors:(id)arg1;
+- (void)toggleLiveAutoresizingBehaviorApplyConstraintsToDescendants:(id)arg1;
 - (void)commitStateToDictionary:(id)arg1;
 - (void)revertStateWithDictionary:(id)arg1;
 - (void)canvasViewDidCompleteLayout:(id)arg1;
 - (void)canvasView:(id)arg1 willRemoveCanvasFrame:(id)arg2;
+- (void)canvasViewWillInvalidateCursorRects:(id)arg1;
 - (void)canvasViewDidUpdateTrackingAreas:(id)arg1;
 - (BOOL)shouldAddSelectableObjectCursorRectsForFrameController:(id)arg1;
 - (void)canvasViewResetCursorRects:(id)arg1;
@@ -8549,7 +9004,9 @@ typedef union {
 - (BOOL)canDeleteCanvasFrames:(id)arg1;
 - (BOOL)workspaceTabController:(id)arg1 interceptAddCursorRect:(struct CGRect)arg2 cursor:(id)arg3 forView:(id)arg4 inWindow:(id)arg5;
 - (BOOL)workspaceTabController:(id)arg1 interceptSetCursorForMouseLocation:(struct CGPoint)arg2 inWindow:(id)arg3;
+- (void)workspaceTabControllerWillInvalidateCursorRectsForViewsWithNoTrackingAreas:(id)arg1;
 - (void)workspaceTabController:(id)arg1 willInvalidateCursorRectsForView:(id)arg2;
+- (void)didInvalidateCursorRectsForView:(id)arg1;
 - (void)validateFontAndColorSelection:(id)arg1;
 - (BOOL)interceptAddCursorRect:(struct CGRect)arg1 cursor:(id)arg2 forView:(id)arg3;
 - (void)invalidateCursorRects;
@@ -8572,6 +9029,7 @@ typedef union {
 - (BOOL)didAddObjects:(id)arg1 whilePerformingDragOperation:(id)arg2 insertionContext:(id)arg3;
 - (unsigned long long)canvasView:(id)arg1 draggingUpdated:(id)arg2;
 - (unsigned long long)canvasView:(id)arg1 draggingEntered:(id)arg2;
+- (id)canvasView:(id)arg1 decoratorRectForCanvasFrame:(id)arg2;
 - (void)canvasView:(id)arg1 userDidAddSpaceWithArrowKeyEvent:(id)arg2;
 - (void)updateDragAutoExpansion:(struct CGPoint)arg1 willAccept:(BOOL)arg2;
 - (id)canvasAutoExpansionEdgeForPoint:(struct CGPoint)arg1;
@@ -8689,7 +9147,7 @@ typedef union {
 - (void)editorStackWillChange:(id)arg1 dueToOpeningEditorForObject:(id)arg2;
 - (void)editorStackMightChange:(id)arg1 dueToOpeningEditorForObject:(id)arg2;
 - (id)specifierForObject:(id)arg1 showLabels:(BOOL)arg2;
-@property BOOL drawsWithActiveLook;
+@property(nonatomic) BOOL drawsWithActiveLook;
 @property(retain) NSView *leftButtonBarView;
 - (id)buttonBar;
 - (void)takeFocus;
@@ -8700,7 +9158,7 @@ typedef union {
 - (id)frameControllersContainingObjects:(id)arg1;
 - (void)loadView;
 - (void)registerForLibraryDrags;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (id)initWithNibName:(id)arg1 bundle:(id)arg2;
 
 @end
@@ -8738,7 +9196,7 @@ typedef union {
 
 + (Class)editorDocumentClass;
 - (void)findGeniusResultsForEditorDocument:(id)arg1 selectedDocumentLocations:(id)arg2;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)unregisterDocumentAndSelectionObservations;
 - (void)registerObservationsWithDocument:(id)arg1 andLocations:(id)arg2;
 - (BOOL)_getUpdateGeniusResultsPhaseOneBlock:(id *)arg1 phaseTwoBlock:(void)arg2 phaseThreeBlock:(id *)arg3;
@@ -8800,7 +9258,7 @@ typedef union {
 
 @property(copy) IBMemberID *containingGroupID; // @synthesize containingGroupID;
 @property(copy) NSString *externalClassName; // @synthesize externalClassName;
-@property(retain) IBStructureRepresentingObject *parentObject; // @synthesize parentObject;
+@property __weak IBStructureRepresentingObject *parentObject; // @synthesize parentObject;
 @property(copy) IBMemberID *objectID; // @synthesize objectID;
 @property(copy) NSString *effectiveClassName; // @synthesize effectiveClassName;
 @property(copy) NSString *className; // @synthesize className;
@@ -8965,6 +9423,10 @@ typedef union {
         int _field81;
         unsigned long long _field82;
         unsigned long long _field83;
+        struct _xmlParserNodeInfo *_field84;
+        int _field85;
+        int _field86;
+        struct _xmlParserNodeInfo *_field87;
     } *context;
 }
 
@@ -9151,7 +9613,6 @@ typedef union {
     id decodedObject;
 }
 
-@property(nonatomic) id decodedObject; // @synthesize decodedObject;
 @property(readonly) NSString *className; // @synthesize className;
 @property(readonly) NSString *identifier; // @synthesize identifier;
 @property(readonly) IBXMLDecoderAbstractObjectElement *resolvedAbstractObjectElement;
@@ -9161,6 +9622,8 @@ typedef union {
 - (void)finishedAddingSubelements;
 - (BOOL)acceptAbstractValueElement:(id)arg1 error:(id *)arg2;
 - (id)initWithAttributes:(const char **)arg1 error:(id *)arg2;
+- (id)decodedObject;
+- (void)setDecodedObject:(id)arg1;
 
 @end
 
@@ -9446,7 +9909,7 @@ typedef union {
 - (void)commitStateToDictionary:(id)arg1;
 - (void)revertStateWithDictionary:(id)arg1;
 - (void)setStateToken:(id)arg1;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)editedTopLevelObjectsDidChange;
 - (void)editorInstalled;
 - (void)topLevelObjectsChanged;
@@ -9530,7 +9993,7 @@ typedef union {
 + (void)unregisterWorkspaceDocumentClassProvider:(id)arg1;
 + (id)retainedClassProviderForWorkspaceDocument:(id)arg1;
 + (id)retainedClassProviderForReferenceKey:(id)arg1 initNewProviderBlock:(id)arg2;
-@property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace;
+- (id)invalidationBacktrace;
 @property(readonly) IDEWorkspaceDocument *workspaceDocument; // @synthesize workspaceDocument;
 - (void)releaseClassProvider;
 - (id)retainClassProvider;
@@ -9538,7 +10001,7 @@ typedef union {
 - (void)markForInvalidation;
 - (void)timeoutTimerDidFire:(id)arg1;
 - (id)referenceKey;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (BOOL)isValid;
 - (void)invalidate;
 - (id)initWithWorkspaceDocument:(id)arg1;
 
@@ -9569,7 +10032,6 @@ typedef union {
 - (id)absolutePathInTermsOfDocumentPath:(id)arg1;
 - (id)description;
 - (id)displayLabelInDocument:(id)arg1;
-- (id)displayImageInDocument:(id)arg1;
 - (id)frameworkName;
 - (id)pluginBundleIdentifier;
 - (id)frameworkRelativeInterfaceFile;
@@ -9776,6 +10238,7 @@ typedef union {
     id indexLoadedNotificationToken;
 }
 
++ (double)timeout;
 - (id)staticIndexDefinedDescriptionForClassName:(id)arg1;
 - (id)collectionTypeForToManyOutlet:(id)arg1 forClassNamed:(id)arg2;
 - (id)typeForNamedRelation:(id)arg1 ofRelationshipType:(long long)arg2 forClassNamed:(id)arg3;
@@ -9859,17 +10322,22 @@ typedef union {
 
 @end
 
-@interface IBDocumentMemberWrapper : NSObject <IBDocumentMemberMutationDelegate, IDEInspectorMatching, DVTInvalidation>
+@interface IBDocumentMemberWrapper : NSObject <IBDocumentMemberMutationDelegate, IDEInspectorMatching, DVTInvalidation_New>
 {
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
     NSMutableSet *registeredDidChangeBlocks;
     IBMemberID *cachedMemberIDValue;
-    BOOL invalidated;
     id member;
     IBDocument *document;
-    DVTStackBacktrace *invalidationBacktrace;
 }
 
-@property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace;
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
+@property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 @property(readonly) IBDocument *document; // @synthesize document;
 @property(readonly) id member; // @synthesize member;
 - (void)document:(id)arg1 relationshipKeyPath:(id)arg2 didChangeForMember:(id)arg3;
@@ -9885,7 +10353,7 @@ typedef union {
 - (BOOL)wrapsNormalDocumentObject;
 @property(readonly) NSImage *image;
 @property(readonly) NSString *name;
-@property(readonly) NSArray *childWrappers;
+@property(readonly, nonatomic) NSArray *childWrappers;
 @property(readonly) IBDocumentMemberLocation *navigableDocumentLocation;
 @property(readonly) NSString *navigableGroupIdentifier;
 - (id)descriptionWithChildren;
@@ -9893,8 +10361,10 @@ typedef union {
 @property(readonly) IBDocumentMemberLocation *documentLocation;
 @property(readonly) id identifier;
 @property(readonly) IBMemberID *memberID;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (id)initWithMember:(id)arg1 document:(id)arg2;
 
 @end
@@ -9906,6 +10376,7 @@ typedef union {
     NSArray *childWrappers;
 }
 
++ (id)keyPathsForValuesAffectingImage;
 + (id)keyPathsForValuesAffectingName;
 + (id)keyPathsForValuesAffectingObject;
 - (void)document:(id)arg1 relationshipKeyPath:(id)arg2 didChangeForMember:(id)arg3;
@@ -9918,7 +10389,7 @@ typedef union {
 - (id)childWrappers;
 - (void)rebuildChildWrappers;
 @property(readonly) id object;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (id)initWithMember:(id)arg1 document:(id)arg2;
 - (id)humanReadableNameForInspectorKeyPath:(id)arg1;
 - (id)applicableInspectorsForCategory:(id)arg1 suggestion:(id)arg2;
@@ -9981,7 +10452,7 @@ typedef union {
     NSMutableArray *lowPriorityPendingPathSets;
     id <DVTInvalidation> sourceFileObserver;
     IBMutableIdentityDictionary *trackedContainerToSourceFileObserver;
-    DVTDelayedValidator *parseNextPathSetValidator;
+    DVTDelayedInvocation *parseNextPathSetInvocation;
     DVTDispatchLock *isCanceledAccessLock;
     struct dispatch_queue_s *headerScanningQueue;
     DVTDispatchDelayedValidator *idleValidator;
@@ -10106,75 +10577,16 @@ typedef union {
 
 @end
 
-@interface IBLayoutGuideMatch : NSObject
-{
-    unsigned long long relativeAttribute;
-    unsigned long long attribute;
-    IBLayoutConstant *constant;
-    NSView *relativeTo;
-}
-
-@property(readonly) IBLayoutConstant *constant; // @synthesize constant;
-@property(readonly) unsigned long long relativeAttribute; // @synthesize relativeAttribute;
-@property(readonly) NSView *relativeTo; // @synthesize relativeTo;
-@property(readonly) unsigned long long attribute; // @synthesize attribute;
-- (id)layoutGuideMatchByConvertingToCoordinateSpaceOfView:(id)arg1 fromCoordinateSpaceOfView:(id)arg2;
-- (BOOL)exactlyMatchesView:(id)arg1 withConstantInCoordinateSpaceOfView:(id)arg2 userInterfaceLayoutDirection:(long long)arg3;
-- (id)constantInCoordinateSpaceOfView:(id)arg1 fromCoordinateSpaceOfView:(id)arg2;
-- (id)description;
-- (unsigned long long)hash;
-- (BOOL)isEqualToLayoutGuideMatch:(id)arg1;
-- (BOOL)isEqual:(id)arg1;
-@property(readonly, getter=isAbsolute) BOOL absolute;
-- (id)initWithAttribute:(unsigned long long)arg1 constant:(id)arg2;
-- (id)initWithAttribute:(unsigned long long)arg1 relativeTo:(id)arg2 relativeAttribute:(unsigned long long)arg3 constant:(id)arg4;
-
-@end
-
-@interface IBLayoutCoordinateApplicationState : NSObject
-{
-    double coordinate;
-    long long exclusivity;
-    NSMutableArray *guides;
-    NSMutableSet *layoutGuideMatches;
-}
-
-+ (void)initialize;
-@property long long exclusivity; // @synthesize exclusivity;
-@property double coordinate; // @synthesize coordinate;
-- (id)initWithCoordinate:(double)arg1 exclusivity:(long long)arg2;
-
-// Remaining properties
-@property(copy) NSArray *guides; // @dynamic guides;
-@property(copy) NSSet *layoutGuideMatches; // @dynamic layoutGuideMatches;
-@property(readonly) NSMutableArray *mutableGuides; // @dynamic mutableGuides;
-@property(readonly) NSMutableSet *mutableLayoutGuideMatches; // @dynamic mutableLayoutGuideMatches;
-
-@end
-
-@interface IBLayoutGuideApplicationState : NSObject
-{
-    IBLayoutCoordinateApplicationState *x;
-    IBLayoutCoordinateApplicationState *y;
-}
-
-@property(readonly) IBLayoutCoordinateApplicationState *y; // @synthesize y;
-@property(readonly) IBLayoutCoordinateApplicationState *x; // @synthesize x;
-@property(readonly) NSSet *allLayoutGuideMatches;
-@property(readonly) NSArray *allGuides;
-- (id)initWithXCoordinateState:(id)arg1 andYCoordinateState:(id)arg2;
-
-@end
-
-@interface IBEditorFrameLayoutGuideGeneratorDelegate : IBLayoutGuideGeneratorDelegate
+@interface IBEditorFrameLayoutGuideGeneratorDelegate : IBIDELayoutGuideGeneratorDelegate
 {
     IBViewEditorCanvasFrameController *frameController;
 }
 
-- (BOOL)layoutGuideGenerator:(id)arg1 shouldConsiderSelectionEdge:(unsigned long long)arg2 toSiblingEdge:(unsigned long long)arg3 guideFromSelection:(id)arg4 toView:(id)arg5;
-- (BOOL)layoutGuideGenerator:(id)arg1 isEdge:(unsigned long long)arg2 ofAncestor:(id)arg3 fixedDuringResizingOfSubviews:(id)arg4 fromKnob:(long long)arg5;
-- (BOOL)layoutGuideGenerator:(id)arg1 isEdge:(unsigned long long)arg2 ofSubview:(id)arg3 fixedInPositionOnWindowDuringResizeFromKnob:(long long)arg4;
-- (BOOL)layoutGuideGenerator:(id)arg1 isDistanceFromSubviewEdge:(unsigned long long)arg2 ofSubview:(id)arg3 toSameEdgeOfSuperviewChangingOneToOneWithKnob:(long long)arg4;
+- (BOOL)layoutGuideGenerator:(id)arg1 shouldConsiderSelectionEdge:(int)arg2 toSiblingEdge:(int)arg3 guideFromSelection:(id)arg4 toView:(id)arg5;
+- (BOOL)layoutGuideGenerator:(id)arg1 isEdge:(int)arg2 ofAncestor:(id)arg3 fixedDuringResizingOfSubviews:(id)arg4 fromKnob:(unsigned long long)arg5;
+- (BOOL)layoutGuideGenerator:(id)arg1 isEdge:(int)arg2 ofSubview:(id)arg3 fixedInPositionOnWindowDuringResizeFromKnob:(unsigned long long)arg4;
+- (BOOL)layoutGuideGenerator:(id)arg1 isDistanceFromSubviewEdge:(int)arg2 ofSubview:(id)arg3 toSameEdgeOfSuperviewChangingOneToOneWithKnob:(unsigned long long)arg4;
+- (id)userLayoutGuides;
 - (id)initWithViewEditorFrameController:(id)arg1;
 
 @end
@@ -10186,14 +10598,14 @@ typedef union {
     NSView *trackedView;
 }
 
-- (Class)layoutSymbolicConstantClassForLayoutGuideGenerator:(id)arg1;
+- (Class)symbolicLayoutConstantClassForLayoutGuideGenerator:(id)arg1;
 - (Class)layoutConstantClassForLayoutGuideGenerator:(id)arg1;
 - (long long)userInterfaceLayoutDirectionForLayoutGuideGenerator:(id)arg1;
 - (BOOL)layoutGuideGenerator:(id)arg1 shouldConsiderSiblingGuidesFromSelection:(id)arg2 toView:(id)arg3;
-- (BOOL)layoutGuideGenerator:(id)arg1 shouldConsiderSelectionEdge:(unsigned long long)arg2 toSiblingEdge:(unsigned long long)arg3 guideFromSelection:(id)arg4 toView:(id)arg5;
-- (BOOL)layoutGuideGenerator:(id)arg1 isEdge:(unsigned long long)arg2 ofAncestor:(id)arg3 fixedDuringResizingOfSubviews:(id)arg4 fromKnob:(long long)arg5;
-- (BOOL)layoutGuideGenerator:(id)arg1 isEdge:(unsigned long long)arg2 ofSubview:(id)arg3 fixedInPositionOnWindowDuringResizeFromKnob:(long long)arg4;
-- (BOOL)layoutGuideGenerator:(id)arg1 isDistanceFromSubviewEdge:(unsigned long long)arg2 ofSubview:(id)arg3 toSameEdgeOfSuperviewChangingOneToOneWithKnob:(long long)arg4;
+- (BOOL)layoutGuideGenerator:(id)arg1 shouldConsiderSelectionEdge:(int)arg2 toSiblingEdge:(int)arg3 guideFromSelection:(id)arg4 toView:(id)arg5;
+- (BOOL)layoutGuideGenerator:(id)arg1 isEdge:(int)arg2 ofAncestor:(id)arg3 fixedDuringResizingOfSubviews:(id)arg4 fromKnob:(unsigned long long)arg5;
+- (BOOL)layoutGuideGenerator:(id)arg1 isEdge:(int)arg2 ofSubview:(id)arg3 fixedInPositionOnWindowDuringResizeFromKnob:(unsigned long long)arg4;
+- (BOOL)layoutGuideGenerator:(id)arg1 isDistanceFromSubviewEdge:(int)arg2 ofSubview:(id)arg3 toSameEdgeOfSuperviewChangingOneToOneWithKnob:(unsigned long long)arg4;
 - (BOOL)layoutGuideGenerator:(id)arg1 isViewVerticallyResizable:(id)arg2;
 - (BOOL)layoutGuideGenerator:(id)arg1 isViewHorizontallyResizable:(id)arg2;
 - (CDStruct_c519178c)layoutGuideGenerator:(id)arg1 layoutInsetOfView:(id)arg2;
@@ -10206,7 +10618,7 @@ typedef union {
 - (id)layoutGuideGenerator:(id)arg1 viewsForSelectionToSubviewsGuides:(id)arg2;
 - (BOOL)layoutGuideGenerator:(id)arg1 shouldViewHaveContainedSubviewGuides:(id)arg2;
 - (id)layoutGuideGenerator:(id)arg1 siblingsForApplyingGuidesToViews:(id)arg2;
-- (id)layoutGuideGenerator:(id)arg1 baselinesForViews:(id)arg2 withSuggestedLayoutFrame:(struct CGRect)arg3 andKnobPosition:(long long)arg4;
+- (id)layoutGuideGenerator:(id)arg1 baselinesForViews:(id)arg2 withSuggestedLayoutFrame:(struct CGRect)arg3 andKnobPosition:(unsigned long long)arg4;
 - (id)userLayoutGuidesForLayoutGuideGenerator:(id)arg1;
 - (id)layoutGuideGenerator:(id)arg1 viewForContainmentGuides:(id)arg2;
 - (void)wrapContentResizingOfView:(id)arg1 inFrame:(id)arg2 block:(id)arg3;
@@ -10214,80 +10626,40 @@ typedef union {
 
 @end
 
-@interface IBLayoutGuideOverlay : IBCanvasOverlay
+@interface IBLayoutGuideDrawingHandler : NSObject <DVTInvalidation_New>
 {
-    BOOL showingGuides;
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
     NSMutableArray *liveLayoutGuides;
     NSMutableArray *userLayoutGuides;
-    NSMutableArray *points;
+    id <DVTInvalidation> guidesToken;
+    id <DVTInvalidation> guideOffsetsToken;
+    IBDelegatedCanvasOverlay *canvasOverlay;
+    IBViewEditorCanvasFrameController *_frameController;
+    BOOL _showingGuides;
 }
 
-- (void)addPointOfInterest:(struct CGPoint)arg1 color:(id)arg2;
-- (void)clearPointsOfIntereset;
-- (void)drawRect:(struct CGRect)arg1;
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
+@property(getter=isShowingGuides) BOOL showingGuides; // @synthesize showingGuides=_showingGuides;
+@property(retain, nonatomic) IBViewEditorCanvasFrameController *frameController; // @synthesize frameController=_frameController;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
+@property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
+@property(readonly) IBDelegatedCanvasOverlay *canvasOverlay; // @synthesize canvasOverlay;
+- (void)drawGuideOffsetIndicators;
 - (void)drawGuides;
+- (void)willDrawGuides;
 - (void)drawLiveGuides:(id)arg1;
 @property(copy) NSArray *liveLayoutGuides;
 @property(copy) NSArray *userLayoutGuides;
-@property(getter=isShowingGuides) BOOL showingGuides;
 - (void)setLayoutGuideNeedsDisplay:(id)arg1;
-- (void)invalidateCursorRects;
-- (id)initWithFrame:(struct CGRect)arg1;
-
-@end
-
-@interface IBLayoutConstraint : NSObject <NSCopying, NSCoding>
-{
-    NSView *firstItem;
-    unsigned long long firstAttribute;
-    long long relation;
-    NSView *secondItem;
-    unsigned long long secondAttribute;
-    double multiplier;
-    IBLayoutConstant *constant;
-    double priority;
-}
-
-+ (id)mutableSetForStoringConstraintsByComponentEquality;
-+ (Class)pasteboardRepresentationClass;
-+ (double)minimumPriority;
-+ (double)maximumPriority;
-+ (id)keyPathsForValuesAffectingIbInspectedFirstAttributeName;
-+ (id)keyPathsForValuesAffectingIbDefaultLabel;
-@property(nonatomic) double priority; // @synthesize priority;
-@property(retain) IBLayoutConstant *constant; // @synthesize constant;
-@property(nonatomic) double multiplier; // @synthesize multiplier;
-@property(readonly) unsigned long long secondAttribute; // @synthesize secondAttribute;
-@property(readonly) NSView *secondItem; // @synthesize secondItem;
-@property long long relation; // @synthesize relation;
-@property(readonly) unsigned long long firstAttribute; // @synthesize firstAttribute;
-@property(readonly) NSView *firstItem; // @synthesize firstItem;
-- (id)itemNotMatchingItem:(id)arg1;
-- (id)constraintByReplacingView:(id)arg1 withView:(id)arg2 andReplacingView:(id)arg3 withView:(id)arg4;
-- (id)constraintByReplacingView:(id)arg1 withView:(id)arg2;
-- (id)constraintByReversingFirstAndSecondItem;
-- (id)pasteboardRepresentationForDocument:(id)arg1;
-- (unsigned long long)hashOfComponents;
-- (BOOL)hasComponentsEqualToComponentsOfConstraintAllowingReversing:(id)arg1;
-- (BOOL)hasComponentsEqualToComponentsOfConstraint:(id)arg1;
-@property(readonly, getter=isAbsolute) BOOL absolute;
-- (id)description;
-- (id)copyWithZone:(struct _NSZone *)arg1;
-- (void)encodeWithCoder:(id)arg1;
-- (id)initWithCoder:(id)arg1;
-- (id)initWithPasteboardRepresentation:(id)arg1 identifierToObjectMapping:(id)arg2;
-- (id)initWithItem:(id)arg1 attribute:(unsigned long long)arg2 constant:(id)arg3;
-- (id)initWithFirstItem:(id)arg1 firstAttribute:(unsigned long long)arg2 relation:(long long)arg3 secondItem:(id)arg4 secondAttribute:(unsigned long long)arg5 constant:(id)arg6;
-- (BOOL)ibIsCopyableGivenSelection:(id)arg1;
-- (id)ibInspectedFirstAttributeName;
-- (BOOL)ibNeedsToCompileWithCopyOfDocument:(id)arg1;
-- (id)ibDefaultLabel;
-
-@end
-
-@interface __IBLayoutCommon : NSObject
-{
-}
+- (void)primitiveInvalidate;
+- (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (id)initWithCanvasOverlay:(id)arg1;
 
 @end
 
@@ -10318,7 +10690,7 @@ typedef union {
     NSStepper *heightStepper;
     NSStepper *widthStepper;
     long long inspectedRectType;
-    long long pinningKnob;
+    unsigned long long pinningKnob;
     NSString *pinningKnobDefaultsKey;
 }
 
@@ -10328,7 +10700,7 @@ typedef union {
 + (id)keyPathsForValuesAffectingInspectedXValue;
 + (id)keyPathsForValuesAffectingRectGetter;
 @property(copy, nonatomic) NSString *pinningKnobDefaultsKey; // @synthesize pinningKnobDefaultsKey;
-@property(nonatomic) long long pinningKnob; // @synthesize pinningKnob;
+@property(nonatomic) unsigned long long pinningKnob; // @synthesize pinningKnob;
 @property long long inspectedRectType; // @synthesize inspectedRectType;
 - (void)inspectedDocumentObjectsDidChange;
 - (void)loadView;
@@ -10343,8 +10715,8 @@ typedef union {
 - (id)rectSetter;
 - (id)rectGetter;
 - (void)bindMatrixToPinningDefaultKey;
-- (long long)pinningKnobInFrameSpaceOfView:(id)arg1;
-- (long long)convertKnob:(long long)arg1 toFrameSpaceOfView:(id)arg2;
+- (unsigned long long)pinningKnobInFrameSpaceOfView:(id)arg1;
+- (unsigned long long)convertKnob:(unsigned long long)arg1 toFrameSpaceOfView:(id)arg2;
 - (id)initWithPropertyDefinition:(id)arg1 andController:(id)arg2;
 
 @end
@@ -10362,7 +10734,7 @@ typedef union {
     NSButton *maxYStrut;
     NSButton *widthSpring;
     NSButton *heightSpring;
-    DVTDelayedValidator *autoresizingMaskButtonsValidator;
+    DVTDelayedInvocation *autoresizingMaskButtonsInvocation;
     NSArray *observationTokens;
     double animationDuration;
     NSDate *animationStart;
@@ -10448,18 +10820,8 @@ typedef union {
 {
 }
 
++ (BOOL)validateBuildEnvironmentForTargetRuntime:(id)arg1 error:(id *)arg2;
 + (BOOL)validateBuildEnvironment:(id *)arg1;
-
-@end
-
-@interface IBBuildEnvironmentVerificationManager : NSObject
-{
-    NSMutableArray *buildVerifierClasses;
-}
-
-+ (id)sharedInstance;
-- (BOOL)environmentIsValidForBuildingWithError:(id *)arg1;
-- (id)init;
 
 @end
 
@@ -10531,9 +10893,11 @@ typedef union {
     NSSet *_draggedAttributes;
     NSArray *_userDefinedRuntimeAttributes;
     NSString *_currentPasteboardDragMarker;
+    BOOL _reloadingData;
 }
 
 + (BOOL)supportsMultipleObjectInspection;
+@property(nonatomic, getter=isReloadingData) BOOL reloadingData; // @synthesize reloadingData=_reloadingData;
 @property(copy, nonatomic) NSString *currentPasteboardDragMarker; // @synthesize currentPasteboardDragMarker=_currentPasteboardDragMarker;
 @property(copy, nonatomic) NSArray *userDefinedRuntimeAttributes; // @synthesize userDefinedRuntimeAttributes=_userDefinedRuntimeAttributes;
 @property(copy, nonatomic) NSSet *draggedAttributes; // @synthesize draggedAttributes=_draggedAttributes;
@@ -10568,7 +10932,9 @@ typedef union {
 - (id)defaultType;
 - (id)userDefinedRuntimeAttributeTypeForTypeIdentifier:(id)arg1 isLocalized:(BOOL)arg2;
 - (id)customAttributeTypes;
+- (void)reloadTableViewDataIgnoringEditingActions;
 - (void)loadView;
+- (id)validatesImmediatelyOptionDictionary;
 - (void)setupControlBarAfterLoading;
 
 @end
@@ -10599,41 +10965,16 @@ typedef union {
 
 @end
 
-@interface IBLayoutSymbolicConstant : IBLayoutConstant
-{
-}
-
-@end
-
-@interface IBLayoutConstant : NSObject <NSCoding>
-{
-    double value;
-}
-
-@property(readonly) double value; // @synthesize value;
-- (id)constantBySettingValueToValue:(double)arg1;
-- (id)constantInCoordinateSpaceOfView:(id)arg1 fromCoordinateSpaceOfView:(id)arg2 forLayoutAttribute:(unsigned long long)arg3;
-- (unsigned long long)hash;
-- (BOOL)isEqualToConstant:(id)arg1;
-- (BOOL)isEqual:(id)arg1;
-@property(readonly) NSString *shortDescription;
-- (id)description;
-@property(readonly) id symbolicValue;
-- (double)valueForView:(id)arg1 inCoordinateSpaceOfView:(id)arg2;
-- (void)encodeWithCoder:(id)arg1;
-- (id)initWithCoder:(id)arg1;
-- (id)initWithValue:(double)arg1;
-
-@end
-
 @interface IBDocumentArchiverRecursionState : NSObject
 {
     id object;
     NSXMLElement *element;
     long long kind;
+    NSMutableArray *blocksToRunPostSubgraphArchiving;
 }
 
 + (id)recursionStateWithElement:(id)arg1 object:(id)arg2 kind:(long long)arg3;
+@property(retain, nonatomic) NSMutableArray *blocksToRunPostSubgraphArchiving; // @synthesize blocksToRunPostSubgraphArchiving;
 @property(nonatomic) long long kind; // @synthesize kind;
 @property(retain, nonatomic) NSXMLElement *element; // @synthesize element;
 @property(retain, nonatomic) id object; // @synthesize object;
@@ -10700,6 +11041,7 @@ typedef union {
 - (void)archiveObject:(id)arg1 forKey:(id)arg2;
 - (void)archiveObject:(id)arg1;
 - (void)archiveObject:(id)arg1 forOptionalKey:(id)arg2;
+- (void)archiveUsingBlockAfterArchivingSubgraph:(id)arg1;
 - (id)archiveElementNameForObject:(id)arg1;
 - (void)archiveNilWithKey:(id)arg1 elementName:(id)arg2;
 - (id)dataFromArchiveDocument:(id)arg1 withType:(id)arg2 compatibilityVersion:(long long)arg3;
@@ -10715,7 +11057,7 @@ typedef union {
 
 @interface IBDocumentArchivingSchema : NSObject
 {
-    NSMutableDictionary *classesToElementNames;
+    IBMutableIdentityDictionary *classesToElementNames;
     NSMutableDictionary *elementNamesToClasses;
     NSMutableDictionary *enumerationsByTypeNames;
     NSMutableDictionary *bitmasksByTypeNames;
@@ -10811,6 +11153,7 @@ typedef union {
     NSMutableSet *referenceTypesEnabledForUnarchiving;
     NSSet *allowedReferenceTypes;
     NSMutableArray *allUnarchivedObjects;
+    NSMutableArray *softErrorMessages;
 }
 
 @property(readonly) NSMutableDictionary *context; // @synthesize context;
@@ -10836,6 +11179,7 @@ typedef union {
 - (id)unarchiveObjectReferenceWithType:(id)arg1 forKey:(id)arg2 defaultValue:(id)arg3;
 - (id)unarchiveObjectForKey:(id)arg1 defaultValue:(id)arg2;
 - (BOOL)containsValueForKey:(id)arg1;
+- (id)softErrorMessages;
 - (void)addSoftErrorMessage:(id)arg1;
 - (void)enumerateObjectMembers:(id)arg1;
 - (void)enumerateGroupMembers:(id)arg1;
@@ -10910,6 +11254,23 @@ typedef union {
 
 @end
 
+@interface _IBColorSpaceContainer : NSObject
+{
+    NSColorSpace *_colorSpace;
+    id _archiveColorToArchiver;
+    long long _archivedColorSpace;
+    long long _customArchivedColorSpace;
+}
+
++ (id)containerWithCS:(id)arg1 archivedCS:(long long)arg2 customCS:(long long)arg3 action:(id)arg4;
+@property(nonatomic) long long customArchivedColorSpace; // @synthesize customArchivedColorSpace=_customArchivedColorSpace;
+@property(nonatomic) long long archivedColorSpace; // @synthesize archivedColorSpace=_archivedColorSpace;
+@property(copy, nonatomic) id archiveColorToArchiver; // @synthesize archiveColorToArchiver=_archiveColorToArchiver;
+@property(retain, nonatomic) NSColorSpace *colorSpace; // @synthesize colorSpace=_colorSpace;
+- (id)initWithColorSpace:(id)arg1 archivedColorSpace:(long long)arg2 customArchivedColorSpace:(long long)arg3 action:(id)arg4;
+
+@end
+
 @interface IBArchivedNumber : NSNumber
 {
 }
@@ -10943,89 +11304,6 @@ typedef union {
 
 + (void)archiveNumber:(id)arg1 withArchiver:(id)arg2;
 + (id)instantiateWithDocumentUnarchiver:(id)arg1;
-
-@end
-
-@interface IBLayoutGuideGeneratorResult : NSObject
-{
-    long long validGuides;
-    NSArray *layoutGuides;
-    NSSet *layoutGuideMatches;
-    struct CGRect targetRect;
-}
-
-@property struct CGRect targetRect; // @synthesize targetRect;
-@property(retain, nonatomic) NSSet *layoutGuideMatches; // @synthesize layoutGuideMatches;
-@property(retain, nonatomic) NSArray *layoutGuides; // @synthesize layoutGuides;
-@property long long validGuides; // @synthesize validGuides;
-
-@end
-
-@interface IBLayoutGuideGenerator : NSObject
-{
-    id <IBLayoutGuideGeneratorDelegate> delegate;
-    NSString *fallbackContainerWidgetType;
-    NSString *fallbackWidgetType;
-    NSView *coordinateSpaceView;
-}
-
-@property(copy, nonatomic) NSString *fallbackContainerWidgetType; // @synthesize fallbackContainerWidgetType;
-@property(copy, nonatomic) NSString *fallbackWidgetType; // @synthesize fallbackWidgetType;
-@property(readonly) NSView *coordinateSpaceView; // @synthesize coordinateSpaceView;
-@property(readonly) id <IBLayoutGuideGeneratorDelegate> delegate; // @synthesize delegate;
-- (id)generateGuidesForRootedView:(id)arg1 optionsMask:(unsigned long long)arg2;
-- (id)generateGuidesForUnionedBoundingRect:(struct CGRect)arg1 ofViews:(id)arg2 targetSuperview:(id)arg3 siblings:(id)arg4 baselines:(id)arg5 knobPosition:(long long)arg6 snapDistance:(double)arg7 optionsMask:(unsigned long long)arg8;
-- (void)applySelectionToUserGuideGuidesToViews:(id)arg1 targetSuperview:(id)arg2 selectionRect:(struct CGRect)arg3 knobPosition:(long long)arg4 snapDistance:(double)arg5 displayOnly:(BOOL)arg6 widgetTypeSubKey:(long long)arg7 fallbackViewSubKey:(long long)arg8 fallbackContainerSubKey:(long long)arg9 applicationState:(id)arg10;
-- (void)applySelectionToSubviewGuidesToViews:(id)arg1 targetSuperview:(id)arg2 selectionRect:(struct CGRect)arg3 knobPosition:(long long)arg4 snapDistance:(double)arg5 displayOnly:(BOOL)arg6 widgetTypeSubKey:(long long)arg7 fallbackViewSubKey:(long long)arg8 fallbackContainerSubKey:(long long)arg9 applicationState:(id)arg10;
-- (void)applySelectionToSuperviewGuidesToViews:(id)arg1 targetSuperview:(id)arg2 selectionRect:(struct CGRect)arg3 knobPosition:(long long)arg4 snapDistance:(double)arg5 displayOnly:(BOOL)arg6 widgetTypeSubKey:(long long)arg7 fallbackViewSubKey:(long long)arg8 fallbackContainerSubKey:(long long)arg9 applicationState:(id)arg10;
-- (void)applyPreferredDesignSizeGuidesToViews:(id)arg1 targetSuperview:(id)arg2 selectionRect:(struct CGRect)arg3 knobPosition:(long long)arg4 snapDistance:(double)arg5 displayOnly:(BOOL)arg6 widgetTypeSubKey:(long long)arg7 fallbackViewSubKey:(long long)arg8 fallbackContainerSubKey:(long long)arg9 applicationState:(id)arg10;
-- (void)applySelectionToSiblingGuidesToViews:(id)arg1 siblings:(id)arg2 targetSuperview:(id)arg3 selectionRect:(struct CGRect)arg4 baselines:(id)arg5 knobPosition:(long long)arg6 snapDistance:(double)arg7 displayOnly:(BOOL)arg8 widgetTypeSubKey:(long long)arg9 fallbackViewSubKey:(long long)arg10 fallbackContainerSubKey:(long long)arg11 applicationState:(id)arg12;
-- (void)applySelectionToSiblingIndentationGuidesToViews:(id)arg1 sibling:(id)arg2 siblingRect:(struct CGRect)arg3 targetSuperview:(id)arg4 selectionRect:(struct CGRect)arg5 baselines:(id)arg6 knobPosition:(long long)arg7 snapDistance:(double)arg8 displayOnly:(BOOL)arg9 useVerticalGuides:(BOOL)arg10 useHorizontalGuides:(BOOL)arg11 widgetTypeSubKey:(long long)arg12 fallbackViewSubKey:(long long)arg13 fallbackContainerSubKey:(long long)arg14 siblingWidgetTypeSubKey:(long long)arg15 applicationState:(id)arg16;
-- (void)applySelectionToSiblingBaselineGuidesToViews:(id)arg1 sibling:(id)arg2 siblingRect:(struct CGRect)arg3 targetSuperview:(id)arg4 selectionRect:(struct CGRect)arg5 baselines:(id)arg6 knobPosition:(long long)arg7 snapDistance:(double)arg8 displayOnly:(BOOL)arg9 useVerticalGuides:(BOOL)arg10 useHorizontalGuides:(BOOL)arg11 widgetTypeSubKey:(long long)arg12 fallbackViewSubKey:(long long)arg13 fallbackContainerSubKey:(long long)arg14 applicationState:(id)arg15;
-- (void)applySelectionToSiblingEdgeGuidesToViews:(id)arg1 sibling:(id)arg2 siblingRect:(struct CGRect)arg3 targetSuperview:(id)arg4 selectionRect:(struct CGRect)arg5 baselines:(id)arg6 knobPosition:(long long)arg7 snapDistance:(double)arg8 displayOnly:(BOOL)arg9 useVerticalGuides:(BOOL)arg10 useHorizontalGuides:(BOOL)arg11 widgetTypeSubKey:(long long)arg12 fallbackViewSubKey:(long long)arg13 fallbackContainerSubKey:(long long)arg14 siblingWidgetTypeSubKey:(long long)arg15 applicationState:(id)arg16;
-- (BOOL)applyMiddlingRuleToSelectionRect:(struct CGRect)arg1 rectToCenterTo:(struct CGRect)arg2 knobPosition:(long long)arg3 snapDistance:(double)arg4 displayOnly:(BOOL)arg5 applicationState:(id)arg6;
-- (BOOL)applyCenteringRuleToSelectionRect:(struct CGRect)arg1 rectToCenterTo:(struct CGRect)arg2 knobPosition:(long long)arg3 snapDistance:(double)arg4 displayOnly:(BOOL)arg5 applicationState:(id)arg6;
-- (BOOL)applyMiddlingRuleToSelectionRect:(struct CGRect)arg1 centeringRectForSelectionRect:(struct CGRect)arg2 rectToCenterTo:(struct CGRect)arg3 knobPosition:(long long)arg4 snapDistance:(double)arg5 displayOnly:(BOOL)arg6 applicationState:(id)arg7;
-- (BOOL)applyCenteringRuleToSelectionRect:(struct CGRect)arg1 centeringRectForSelectionRect:(struct CGRect)arg2 rectToCenterTo:(struct CGRect)arg3 knobPosition:(long long)arg4 snapDistance:(double)arg5 displayOnly:(BOOL)arg6 applicationState:(id)arg7;
-- (void)applySizingGuideForRect:(struct CGRect)arg1 vertical:(BOOL)arg2 originalCoordinate:(double)arg3 displayOnly:(BOOL)arg4 withTarget:(double)arg5 applicationState:(id)arg6 exclusive:(BOOL)arg7;
-- (void)applyContainmentGuideForContainerEdge:(unsigned long long)arg1 ofContainerRect:(struct CGRect)arg2 toSubviewRect:(struct CGRect)arg3 originalCoordinate:(double)arg4 applicationState:(id)arg5 displayOnly:(BOOL)arg6 withTarget:(double)arg7 exclusive:(BOOL)arg8;
-- (void)applyUserGuide:(id)arg1 originalCoordinate:(double)arg2 displayOnly:(BOOL)arg3 withTarget:(double)arg4 applicationState:(id)arg5 exclusive:(BOOL)arg6;
-- (void)applyBaselineGuideForBaseline:(double)arg1 selectionRect:(struct CGRect)arg2 siblingRect:(struct CGRect)arg3 originalCoordinate:(double)arg4 displayOnly:(BOOL)arg5 withTarget:(double)arg6 applicationState:(id)arg7 exclusive:(BOOL)arg8;
-- (void)applyCenteringGuide:(BOOL)arg1 selectionDrawingRect:(struct CGRect)arg2 realtiveRect:(struct CGRect)arg3 originalCoordinate:(double)arg4 displayOnly:(BOOL)arg5 withTarget:(double)arg6 applicationState:(id)arg7 exclusive:(BOOL)arg8;
-- (void)applyIndentationGuideFromEdge:(unsigned long long)arg1 ofSelectionRect:(struct CGRect)arg2 toEdge:(unsigned long long)arg3 ofSiblingRect:(struct CGRect)arg4 originalCoordinate:(double)arg5 displayOnly:(BOOL)arg6 withTarget:(double)arg7 applicationState:(id)arg8 exclusive:(BOOL)arg9;
-- (void)applyEdgeToEdgeGuideFromEdge:(unsigned long long)arg1 ofSelectionRect:(struct CGRect)arg2 toEdge:(unsigned long long)arg3 ofSiblingRect:(struct CGRect)arg4 originalCoordinate:(double)arg5 displayOnly:(BOOL)arg6 withTarget:(double)arg7 applicationState:(id)arg8 exclusive:(BOOL)arg9;
-- (void)addLayoutGuideMatchForAttribute:(unsigned long long)arg1 constant:(id)arg2 applicationState:(id)arg3;
-- (void)addLayoutGuideMatchForAttribute:(unsigned long long)arg1 relativeTo:(id)arg2 relativeType:(unsigned long long)arg3 constant:(id)arg4 applicationState:(id)arg5;
-- (id)effectiveLayoutConstantWithValue:(double)arg1;
-- (id)layoutConstantWithValue:(double)arg1;
-- (id)layoutSymbolicConstantWithValue:(double)arg1;
-- (long long)userInterfaceLayoutDirectionToUseForGeneratingLayoutGuideMatches;
-- (void)applyGuideFromPoint:(struct CGPoint)arg1 toPoint:(struct CGPoint)arg2 originalCoordinate:(double)arg3 displayOnly:(BOOL)arg4 withTarget:(double)arg5 applicationState:(id)arg6 exclusive:(BOOL)arg7;
-- (BOOL)guideWouldBeSuggestion:(double)arg1 originalCoordinate:(double)arg2 applicationState:(id)arg3;
-- (CDStruct_c519178c)insetFromContainer:(id)arg1 toViews:(id)arg2;
-- (struct CGRect)boundingLayoutFrameForViewsNotNecessarilyInSuperview:(id)arg1 inCoordinateSpaceOfTargetSuperview:(id)arg2;
-- (id)siblingsForGeneratingGuidesForViews:(id)arg1;
-- (struct CGRect)boundingLayoutFrameForViews:(id)arg1;
-- (BOOL)isEdge:(unsigned long long)arg1 ofAncestor:(id)arg2 fixedDuringResizingOfSubviews:(id)arg3 fromKnob:(long long)arg4;
-- (BOOL)isEdge:(unsigned long long)arg1 ofSubview:(id)arg2 fixedInPositionOnWindowDuringResizeFromKnob:(long long)arg3;
-- (BOOL)isDistanceFromSubviewEdge:(unsigned long long)arg1 ofSubview:(id)arg2 toSameEdgeOfSuperviewChangingOneToOneWithKnob:(long long)arg3;
-- (BOOL)shouldViewHaveContainedSubviewGuides:(id)arg1;
-- (id)baselinesForViews:(id)arg1 withSuggestedLayoutFrame:(struct CGRect)arg2 andKnobPosition:(long long)arg3;
-- (BOOL)isViewVerticallyResizable:(id)arg1;
-- (BOOL)isViewHorizontallyResizable:(id)arg1;
-- (struct CGRect)layoutBoundsOfView:(id)arg1;
-- (double)baselineOfView:(id)arg1 atIndex:(long long)arg2;
-- (long long)numberOfBaselinesOfView:(id)arg1;
-- (struct CGSize)preferredSizeForView:(id)arg1 suggestedSize:(struct CGSize)arg2 suggestedWidth:(char *)arg3 suggestedHeight:(char *)arg4 scaleAxesIndependently:(char *)arg5;
-- (struct CGRect)boundsForLayoutBounds:(struct CGRect)arg1 ofView:(id)arg2;
-- (CDStruct_c519178c)layoutInsetOfView:(id)arg1;
-- (CDStruct_c519178c)insetToDesignableContentAreaForView:(id)arg1;
-- (id)containerWidgetTypeForView:(id)arg1;
-- (id)widgetTypeForView:(id)arg1;
-- (id)legalViewsForUserGuidesInView:(id)arg1;
-- (id)userLayoutGuides;
-- (id)layoutRuleManager;
-- (id)initWithCoordinateSpaceView:(id)arg1 delegate:(id)arg2;
 
 @end
 
@@ -11080,50 +11358,10 @@ typedef union {
 - (void)setChildWrappers:(id)arg1;
 - (id)childWrappers;
 @property(readonly) IBGroup *group;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (id)initWithMember:(id)arg1 document:(id)arg2;
 - (void)unregisterForChildWrapperInvalidationNotificationsNamed:(id)arg1;
 - (void)registerForChildWrapperInvalidationNotificationsNamed:(id)arg1;
-
-@end
-
-@interface IBLayoutGuideGeneratorDelegate : NSObject <IBLayoutGuideGeneratorDelegate>
-{
-    long long disabledContainmentGuidesCount;
-    long long disabledSiblingGuidesCount;
-    NSArray *userLayoutGuides;
-    IBDocument *document;
-}
-
-@property(readonly) IBDocument *document; // @synthesize document;
-@property(readonly) NSArray *userLayoutGuides; // @synthesize userLayoutGuides;
-- (Class)layoutSymbolicConstantClassForLayoutGuideGenerator:(id)arg1;
-- (Class)layoutConstantClassForLayoutGuideGenerator:(id)arg1;
-- (long long)userInterfaceLayoutDirectionForLayoutGuideGenerator:(id)arg1;
-- (BOOL)layoutGuideGenerator:(id)arg1 shouldConsiderSiblingGuidesFromSelection:(id)arg2 toView:(id)arg3;
-- (BOOL)layoutGuideGenerator:(id)arg1 shouldConsiderSelectionEdge:(unsigned long long)arg2 toSiblingEdge:(unsigned long long)arg3 guideFromSelection:(id)arg4 toView:(id)arg5;
-- (BOOL)layoutGuideGenerator:(id)arg1 isEdge:(unsigned long long)arg2 ofAncestor:(id)arg3 fixedDuringResizingOfSubviews:(id)arg4 fromKnob:(long long)arg5;
-- (BOOL)layoutGuideGenerator:(id)arg1 isEdge:(unsigned long long)arg2 ofSubview:(id)arg3 fixedInPositionOnWindowDuringResizeFromKnob:(long long)arg4;
-- (BOOL)layoutGuideGenerator:(id)arg1 isDistanceFromSubviewEdge:(unsigned long long)arg2 ofSubview:(id)arg3 toSameEdgeOfSuperviewChangingOneToOneWithKnob:(long long)arg4;
-- (BOOL)layoutGuideGenerator:(id)arg1 isViewVerticallyResizable:(id)arg2;
-- (BOOL)layoutGuideGenerator:(id)arg1 isViewHorizontallyResizable:(id)arg2;
-- (CDStruct_c519178c)layoutGuideGenerator:(id)arg1 layoutInsetOfView:(id)arg2;
-- (double)layoutGuideGenerator:(id)arg1 baselineOfView:(id)arg2 atIndex:(long long)arg3;
-- (long long)layoutGuideGenerator:(id)arg1 numberOfBaselinesOfView:(id)arg2;
-- (struct CGSize)layoutGuideGenerator:(id)arg1 preferredSizeForView:(id)arg2 suggestedSize:(struct CGSize)arg3 suggestedWidth:(char *)arg4 suggestedHeight:(char *)arg5 scaleAxesIndependently:(char *)arg6;
-- (CDStruct_c519178c)layoutGuideGenerator:(id)arg1 insetToDesignableContentAreaForView:(id)arg2;
-- (id)layoutGuideGenerator:(id)arg1 containerWidgetTypeForView:(id)arg2;
-- (id)layoutGuideGenerator:(id)arg1 widgetTypeForView:(id)arg2;
-- (id)layoutGuideGenerator:(id)arg1 viewsForSelectionToSubviewsGuides:(id)arg2;
-- (BOOL)layoutGuideGenerator:(id)arg1 shouldViewHaveContainedSubviewGuides:(id)arg2;
-- (id)layoutGuideGenerator:(id)arg1 siblingsForApplyingGuidesToViews:(id)arg2;
-- (id)layoutGuideGenerator:(id)arg1 baselinesForViews:(id)arg2 withSuggestedLayoutFrame:(struct CGRect)arg3 andKnobPosition:(long long)arg4;
-- (struct CGRect)boundingLayoutFrameForViews:(id)arg1;
-- (id)userLayoutGuidesForLayoutGuideGenerator:(id)arg1;
-- (id)layoutGuideGenerator:(id)arg1 viewForContainmentGuides:(id)arg2;
-- (void)disableContainmentGuidesWhileInvoking:(id)arg1;
-- (void)disableSiblingToSiblingGuidesWhileInvoking:(id)arg1;
-- (id)initWithUserLayoutGuides:(id)arg1 document:(id)arg2;
 
 @end
 
@@ -11226,7 +11464,7 @@ typedef union {
     IBMutableIdentityDictionary *_memberWrapperToItemMap;
     NSSet *_observedMemberWrappers;
     id <DVTObservingToken> _kvoFirstResponderToken;
-    DVTDelayedValidator *_syncDelayedValidator;
+    DVTDelayedInvocation *_syncDelayedInvocation;
     IBOutlineViewImageAndTextCell *_prototypeCell;
     IBOutlineViewImageAndTextCell *_prototypeGroupCell;
     BOOL _allowDirectDropInOutlineView;
@@ -11283,14 +11521,14 @@ typedef union {
 - (id)endPointsFromBackToFrontAtPoint:(struct CGPoint)arg1 inView:(id)arg2 withContext:(id)arg3 forDocument:(id)arg4 connectionHandler:(id *)arg5;
 - (void)revealSpringLoadedObjectAndIndicateSuccess:(id)arg1;
 - (id)springLoadedObjectInfoAtPoint:(struct CGPoint)arg1 inView:(id)arg2 withContext:(id)arg3 forDocument:(id)arg4;
-@property(readonly) NSString *stateSavingIdentifier;
+- (id)stateSavingIdentifier;
 - (void)willResignAsSelectionProviderForDocumentEditor:(id)arg1;
 - (void)didBecomeSelectionProviderForDocumentEditor:(id)arg1;
 - (BOOL)documentEditor:(id)arg1 canSelectMembers:(id)arg2;
 - (void)documentEditor:(id)arg1 deselectMembers:(id)arg2;
 - (void)documentEditor:(id)arg1 pullSelection:(id)arg2;
 - (void)documentEditor:(id)arg1 selectMembers:(id)arg2;
-@property(readonly) BOOL onlySupportsDocumentObjectMembers;
+- (BOOL)onlySupportsDocumentObjectMembers;
 @property(readonly) BOOL wantsFilterField;
 - (id)documentEditor:(id)arg1 highlightObjects:(id)arg2 showLabels:(BOOL)arg3 successfulObjects:(id *)arg4;
 - (double)highlightPriorityInDocumentEditor:(id)arg1;
@@ -11346,7 +11584,7 @@ typedef union {
 - (void)restoreOutlineExpansionStateIfNeededForFiltering;
 - (void)stashOutlineExpansionStateIfNeededForFiltering;
 - (BOOL)isFiltering;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)viewWillUninstall;
 - (void)owningEditorInstalled;
 - (void)viewDidInstall;
@@ -11360,6 +11598,7 @@ typedef union {
 {
     id rightOrCtrlLeftClickHandler;
     id rightOrCtrlLeftDragHandler;
+    id mouseDownHandler;
     NSNumber *rowIndicatingPotentialConnection;
     NSSet *highlightedRows;
     BOOL drawsWithActiveLook;
@@ -11368,6 +11607,7 @@ typedef union {
 @property(nonatomic) BOOL drawsWithActiveLook; // @synthesize drawsWithActiveLook;
 @property(retain, nonatomic) NSSet *highlightedRows; // @synthesize highlightedRows;
 @property(copy, nonatomic) NSNumber *rowIndicatingPotentialConnection; // @synthesize rowIndicatingPotentialConnection;
+@property(copy) id mouseDownHandler; // @synthesize mouseDownHandler;
 @property(copy) id rightOrCtrlLeftDragHandler; // @synthesize rightOrCtrlLeftDragHandler;
 @property(copy) id rightOrCtrlLeftClickHandler; // @synthesize rightOrCtrlLeftClickHandler;
 - (void)highlightSelectionInClipRect:(struct CGRect)arg1;
@@ -11671,23 +11911,15 @@ typedef union {
 
 @end
 
+@interface IBDocumentArchivingSchemaEnumerationNSTextTabType : IBDocumentArchivingSchemaEnumeration
+{
+}
+
++ (id)sharedInstance;
+
+@end
+
 @interface IBDocumentArchivingSchemaEnumerationNSCellImagePosition : IBDocumentArchivingSchemaEnumeration
-{
-}
-
-+ (id)sharedInstance;
-
-@end
-
-@interface IBDocumentArchivingSchemaEnumerationIBLayoutAttribute : IBDocumentArchivingSchemaEnumeration
-{
-}
-
-+ (id)sharedInstance;
-
-@end
-
-@interface IBDocumentArchivingSchemaEnumerationIBLayoutRelation : IBDocumentArchivingSchemaEnumeration
 {
 }
 
@@ -11788,14 +12020,16 @@ typedef union {
 + (id)buildSettingsSnapshotFilePath:(id)arg1 inWorkspaces:(id)arg2;
 @property(readonly) NSSet *buildables; // @synthesize buildables;
 @property(readonly) NSSet *unpreprocessedInfoPlistPaths;
-- (void)enumerateValuseForBuildSetting:(id)arg1 withBlock:(id)arg2;
+- (void)enumerateValuesForBuildSetting:(id)arg1 withBlock:(id)arg2;
 @property(readonly) NSString *minimumIOSDeploymentTarget;
 @property(readonly) NSString *minimumMacOSXDeploymentTarget;
 - (id)minimumDeploymentTargetOfTargets:(id)arg1;
 @property(readonly) NSSet *iOSDeploymentTargets;
 @property(readonly) NSSet *macOSXDeploymentTargets;
+@property(readonly) BOOL anyBuildablesRequireManualSynthesis;
 @property(readonly) BOOL anyBuildablesAreUsingFragileIvarLayout;
 @property(readonly) BOOL allBuildablesAreUsingFragileIvarLayout;
+- (BOOL)isBuildableIncapableOfAutoSynthesize:(id)arg1;
 - (BOOL)isBuildableUsingFragileIvarLayout:(id)arg1;
 - (id)cachedValueForBuildSetting:(id)arg1 forConfiguration:(id)arg2 ofBuildable:(id)arg3;
 @property(readonly) BOOL anyBuildablesAreUsingAutomaticReferencingCounting;
@@ -11901,7 +12135,7 @@ typedef union {
 - (void)highlightDestinationObjectInAllOpenEditorsForConnectionAtLocation:(id)arg1;
 - (void)stopHighlightingAssociatedIBObjects;
 - (void)revealDestinationObjectForConnectionAtLocation:(id)arg1;
-- (id)destinationObjectLocationForConnection:(id)arg1;
+- (id)destinationObjectLocationForConnection:(id)arg1 fromDocument:(id)arg2;
 - (void)rebuildAnnotationsUsingDataCache;
 - (id)rebuiltAnnotationFromCachedAnnotation:(id)arg1;
 - (void)rebuildAnnotationsUsingIndex;
@@ -12126,39 +12360,11 @@ typedef union {
 
 @end
 
-@interface IBLayoutConstraintPasteboardRepresentation : NSObject <NSCoding>
-{
-    NSString *firstItemIdentifier;
-    unsigned long long firstAttribute;
-    long long relation;
-    NSString *secondItemIdentifier;
-    unsigned long long secondAttribute;
-    double priority;
-    double multiplier;
-    IBLayoutConstant *constant;
-}
-
-@property(readonly) IBLayoutConstant *constant; // @synthesize constant;
-@property(readonly) double multiplier; // @synthesize multiplier;
-@property(readonly) double priority; // @synthesize priority;
-@property(readonly) unsigned long long secondAttribute; // @synthesize secondAttribute;
-@property(readonly) NSString *secondItemIdentifier; // @synthesize secondItemIdentifier;
-@property(readonly) long long relation; // @synthesize relation;
-@property(readonly) unsigned long long firstAttribute; // @synthesize firstAttribute;
-@property(readonly) NSString *firstItemIdentifier; // @synthesize firstItemIdentifier;
-- (id)description;
-- (id)initWithCoder:(id)arg1;
-- (void)encodeWithCoder:(id)arg1;
-- (id)initWithLayoutConstraint:(id)arg1 forDocument:(id)arg2;
-
-@end
-
 @interface IBURLHandler : NSObject <IDEURLHandler>
 {
 }
 
 + (BOOL)handleURL:(id)arg1 error:(id *)arg2;
-+ (BOOL)isInterfaceBuilderDocumentAtURL:(id)arg1 error:(id *)arg2;
 + (BOOL)shouldRegisterURLHandlerForScheme:(id)arg1;
 + (BOOL)shouldOpenIBURLs;
 
@@ -12173,7 +12379,7 @@ typedef union {
 }
 
 @property(readonly) NSString *groupIdentifier; // @synthesize groupIdentifier;
-@property(copy) NSArray *childWrappers; // @synthesize childWrappers;
+@property(copy, nonatomic) NSArray *childWrappers; // @synthesize childWrappers;
 - (id)name;
 - (id)image;
 - (id)applicableInspectorsForCategory:(id)arg1 suggestion:(id)arg2;
@@ -12381,12 +12587,13 @@ typedef union {
 - (struct CGRect)dragAlignmentRectForRelatedObject:(id)arg1;
 - (struct CGRect)rectInWindowSpaceForEditedObject;
 @property(readonly) unsigned long long orderedRelationInsertionEdge;
-@property(readonly) long long orderedRelationInsertionIndex;
+@property(readonly, nonatomic) long long orderedRelationInsertionIndex;
 @property(readonly) NSArray *orderedRelation;
 - (id)orderedRelationForKeyPath:(id)arg1;
 - (id)targetRelationKeyPath;
 - (struct CGRect)confinementRectForEditedObject;
-- (void)setGrowthDirection:(long long)arg1 forPoliciesWithRelation:(id)arg2;
+- (void)setSecondaryGrowthDirection:(long long)arg1 forPoliciesWithRelation:(id)arg2;
+- (void)setPrimaryGrowthDirection:(long long)arg1 forPoliciesWithRelation:(id)arg2;
 - (BOOL)customizesDragInsertionIndicatorForDragInfo:(id)arg1;
 - (void)customizePasteboardInsertionContext:(id)arg1 fromPasteboard:(id)arg2 andDraggingInfo:(id)arg3;
 - (void)failToAcceptDragInfo:(id)arg1;
@@ -12398,6 +12605,7 @@ typedef union {
 - (id)chooseDestinationForDragInfo:(id)arg1;
 - (void)createTemporaryDropTargetResolverForObject:(id)arg1 whileInvoking:(id)arg2;
 - (id)childDragCandidateForDragInfo:(id)arg1;
+- (id)orderedRelationshipPolicyForToManyRelation:(id)arg1 pasteboardTypes:(id)arg2 primaryGrowthDirection:(long long)arg3 secondaryGrowthDirection:(long long)arg4;
 - (id)orderedRelationshipPolicyForToManyRelation:(id)arg1 pasteboardTypes:(id)arg2 growthDirection:(long long)arg3;
 - (id)orderedRelationshipPolicyForToManyRelation:(id)arg1 pasteboardType:(id)arg2 growthDirection:(long long)arg3;
 - (void)populatePolicies:(id)arg1;
@@ -12428,59 +12636,37 @@ typedef union {
 - (void)drawInsertionIndicator:(id)arg1;
 - (struct CGRect)dragInsertionIndicatorRect;
 - (id)dragInsertionIndicatorPath;
+- (long long)orderedRelationGrowthDirection;
 - (id)initWithDelegate:(id)arg1;
 
 @end
 
-@interface IBAutolayoutArbitrationUnit : NSObject
+@interface IBIDEAutolayoutArbitrationUnit : IBAutolayoutArbitrationUnit
 {
-    NSMutableSet *_objects;
-    id _rootObject;
-    IBDocument *_document;
 }
 
-+ (id)topMostObjectOfClass:(Class)arg1 inLineageToArbitrationUnitRootContainingObject:(id)arg2 inDocument:(id)arg3;
-+ (id)allArbitrationUnitsInDocument:(id)arg1;
-+ (id)arbitrationUnitsAtAndBelowObjects:(id)arg1 inDocument:(id)arg2;
-+ (id)arbitrationUnitForObject:(id)arg1 inDocument:(id)arg2;
-+ (id)arbitrationUnitsAtAndBelowObject:(id)arg1 inDocument:(id)arg2;
-@property(readonly) NSSet *objects; // @synthesize objects=_objects;
-@property(readonly) IBDocument *document; // @synthesize document=_document;
-@property(readonly) id rootObject; // @synthesize rootObject=_rootObject;
-- (void)arbitrateWithOptions:(id)arg1;
-- (void)addObject:(id)arg1;
-- (unsigned long long)hash;
-- (BOOL)isEqual:(id)arg1;
-- (id)firstAncestorOfObject:(id)arg1 ofClass:(Class)arg2;
-@property(readonly) NSString *debugDescription;
-- (id)description;
-- (id)initWithRootObject:(id)arg1 document:(id)arg2;
-
-@end
-
-@interface IBDocumentDelayedArbitrationEntry : NSObject
-{
-    IBAutolayoutArbitrationUnit *arbitrationUnit;
-    NSDictionary *options;
-}
-
-@property(readonly) NSDictionary *options; // @synthesize options;
-@property(readonly) IBAutolayoutArbitrationUnit *arbitrationUnit; // @synthesize arbitrationUnit;
-- (unsigned long long)hash;
-- (BOOL)isEqual:(id)arg1;
-- (id)initWithArbitrationUnit:(id)arg1 options:(id)arg2;
++ (id)topMostObjectOfClass:(Class)arg1 inLineageToArbitrationUnitRootContainingObject:(id)arg2 withLayoutInfo:(id)arg3;
++ (id)allArbitrationUnitsForLayoutInfo:(id)arg1;
++ (id)arbitrationUnitsForObjects:(id)arg1 withLayoutInfo:(id)arg2;
++ (id)arbitrationUnitsAtAndBelowObjects:(id)arg1 withLayoutInfo:(id)arg2;
++ (id)_arbitrationUnitsAtAndBelowObjects:(id)arg1 stoppingAtLeaves:(BOOL)arg2 withLayoutInfo:(id)arg3;
++ (id)arbitrationUnitsAtAndBelowObject:(id)arg1 withLayoutInfo:(id)arg2;
++ (id)_arbitrationUnitsAtAndBelowObject:(id)arg1 stoppingAtLeaves:(BOOL)arg2 withLayoutInfo:(id)arg3;
++ (id)arbitrationUnitForObject:(id)arg1 withLayoutInfo:(id)arg2;
++ (void)_recursivelyBuildArbitrationUnitsAndAddToOrderedSet:(id)arg1 nextObject:(id)arg2 currentUnit:(id)arg3 withLayoutInfo:(id)arg4 stoppingAtLeaves:(BOOL)arg5;
++ (id)_arbitrationUnitRootForObject:(id)arg1 withLayoutInfo:(id)arg2;
++ (BOOL)_objectShouldBeArbitrationUnitRoot:(id)arg1 withLayoutInfo:(id)arg2;
 
 @end
 
 @interface IBEditorStack : NSObject
 {
     NSMutableArray *editorStack;
-    id <IBEditorStackDelegate> delegate;
+    id _delegate_dvtWeak;
     IBEditorCanvasFrameController *baseFrameController;
 }
 
 @property(readonly) IBEditorCanvasFrameController *baseFrameController; // @synthesize baseFrameController;
-@property(readonly) id <IBEditorStackDelegate> delegate; // @synthesize delegate;
 - (void)closeAllEditors;
 - (void)closeTopmostEditor;
 - (id)openEditorForObject:(id)arg1 closingSubEditors:(BOOL)arg2;
@@ -12491,6 +12677,7 @@ typedef union {
 - (id)editorCanvasFrameControllers;
 - (id)deepestEditor;
 - (id)initWithBaseFrameController:(id)arg1 delegate:(id)arg2;
+@property __weak id <IBEditorStackDelegate> delegate;
 
 @end
 
@@ -12508,7 +12695,7 @@ typedef union {
     id <IBGlassCanvasFrameBackgroundDelegate> delegate;
 }
 
-@property(nonatomic) id <IBGlassCanvasFrameBackgroundDelegate> delegate; // @synthesize delegate;
+@property(nonatomic) __weak id <IBGlassCanvasFrameBackgroundDelegate> delegate; // @synthesize delegate;
 - (void)drawInRect:(struct CGRect)arg1 unflip:(BOOL)arg2 drawCenterComponent:(BOOL)arg3;
 @property(nonatomic) CDStruct_c519178c glassToContentInset;
 @property(nonatomic) CDStruct_c519178c insetToGlass;
@@ -12532,14 +12719,14 @@ typedef union {
 
 @end
 
-@interface IBHeaderScannerAccelerator : NSObject <DVTInvalidation>
+@interface IBHeaderScannerAccelerator : NSObject <DVTInvalidation_New>
 {
     IBHeaderScanningClassProvider *classProvider;
     IDEContainerQuery *frameworkQuery;
     id <DVTObservingToken> frameworkQueryObserver;
-    DVTDelayedValidator *frameworkQueryObserverDelayedValidator;
+    DVTDelayedInvocation *frameworkQueryObserverDelayedInvocation;
     NSMutableSet *cacheIndexFrameworkFilepaths;
-    DVTDelayedValidator *syncCacheIndexToDiskDelayedValidator;
+    DVTDelayedInvocation *syncCacheIndexToDiskDelayedInvocation;
     struct dispatch_queue_s *headerScannerAcceleratorIOQueue;
     NSMutableDictionary *frameworkContents;
     NSMutableSet *blacklistedFrameworkContentFilePaths;
@@ -12554,11 +12741,16 @@ typedef union {
     BOOL _internalIsInitialized;
     DVTSemaphore *_initializationSemaphore;
     BOOL _isInvalidated;
+    BOOL _isInvalidating;
     DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
-@property(nonatomic) BOOL isInitialized; // @synthesize isInitialized=_isInitialized;
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
+@property(nonatomic) BOOL isInitialized; // @synthesize isInitialized=_isInitialized;
 - (void)invalidateFrameworkRepresentations;
 - (void)cachePartialDescriptionsFromFiles:(id)arg1 errorsPerFile:(id)arg2;
 - (BOOL)shouldParseFileReference:(id)arg1;
@@ -12589,9 +12781,11 @@ typedef union {
 - (void)vacuumOldCachesFromCacheDirectory;
 - (void)loadCachesFromDisk;
 - (void)frameworksChanged;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)ensureCacheIndexHasBeenReadFromDisk;
+- (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (void)performDeferredInitialization;
 - (id)initWithHeaderScanningClassProvider:(id)arg1;
 
@@ -12603,8 +12797,8 @@ typedef union {
     NSResponder *targetResponder;
 }
 
-@property(readonly) NSSet *actionWhitelist; // @synthesize actionWhitelist;
-@property NSResponder *targetResponder; // @synthesize targetResponder;
+@property(readonly, nonatomic) NSSet *actionWhitelist; // @synthesize actionWhitelist;
+@property(retain, nonatomic) NSResponder *targetResponder; // @synthesize targetResponder;
 - (BOOL)validateUserInterfaceItem:(id)arg1;
 - (id)forwardingTargetForSelector:(SEL)arg1;
 - (BOOL)respondsToSelector:(SEL)arg1;
@@ -12615,274 +12809,851 @@ typedef union {
 
 @end
 
+@interface IBAutolayoutFrameDecider : NSObject
+{
+    id <IBAutolayoutFrameDeciderDelegate> _delegate;
+    IBAutolayoutArbitrationUnit *_arbitrationUnit;
+    IBAutolayoutFrameDecisionDriver *_driver;
+}
+
++ (void)decideAndSetFramesOfAllViewHierarchiesWithLayoutInfo:(id)arg1 delegate:(id)arg2;
++ (void)decideAndSetFramesOfEntireViewHierarchyToReflectChangeInConstraintsOfViewHierarchy:(id)arg1 layoutInfo:(id)arg2 delegate:(id)arg3;
++ (id)frameDeciderForViewHierarchyOfView:(id)arg1 layoutInfo:(id)arg2 delegate:(id)arg3 options:(id)arg4;
+@property(readonly) IBAutolayoutFrameDecisionDriver *driver; // @synthesize driver=_driver;
+@property(readonly) IBAutolayoutArbitrationUnit *arbitrationUnit; // @synthesize arbitrationUnit=_arbitrationUnit;
+@property(readonly) id <IBAutolayoutFrameDeciderDelegate> delegate; // @synthesize delegate=_delegate;
+- (BOOL)isEdge:(unsigned long long)arg1 ofAncestor:(id)arg2 fixedDuringResizeOfSubview:(id)arg3 fromKnob:(unsigned long long)arg4;
+- (BOOL)isEdge:(unsigned long long)arg1 ofSiblingView:(id)arg2 changingOneToOneWhenResizingView:(id)arg3 fromEdge:(unsigned long long)arg4 coordinateSpaceView:(id)arg5;
+- (BOOL)isEdge:(unsigned long long)arg1 ofDescendant:(id)arg2 fixedInPositionOnWindowDuringResizeOfAncestor:(id)arg3 fromKnob:(unsigned long long)arg4;
+- (BOOL)isDistanceFromEdge:(unsigned long long)arg1 ofDescendant:(id)arg2 toSameEdgeOfAncestor:(id)arg3 changingOneToOneWithKnob:(unsigned long long)arg4;
+- (void)decideAndSetFramesOfEntireViewHierarchyToReflectChangeInConstraintsOfViewHierarchy:(id)arg1;
+- (void)stopFrameDeciderSession;
+- (void)startFrameDeciderSession;
+- (void)propagateAllLayoutEngineFramesToCanvas;
+- (id)defaultFramePropagationBlock;
+- (void)propagateSize:(struct CGSize)arg1 toCanvasForView:(id)arg2;
+- (void)propagateFrame:(struct CGRect)arg1 toCanvasForView:(id)arg2;
+- (id)layoutInfo;
+@property(readonly) IBAutolayoutEngine *engine; // @dynamic engine;
+- (id)initWithArbitrationUnit:(id)arg1 driverOptions:(id)arg2 delegate:(id)arg3;
+
+@end
+
+@interface IBAutolayoutViewSizingFrameDecider : IBAutolayoutFrameDecider
+{
+    NSView *_sizingView;
+}
+
++ (void)decideAndSetFramesOfEntireViewHierarchyForSizingView:(id)arg1 toLayoutSize:(struct CGSize)arg2 suggestedLayoutOrigin:(struct CGPoint)arg3 allowTopLevelResize:(BOOL)arg4 layoutInfo:(id)arg5 delegate:(id)arg6;
+- (void)decideAndSetFramesOfEntireViewHierarchyForSizingViewToLayoutSize:(struct CGSize)arg1 suggestedLayoutOrigin:(struct CGPoint)arg2;
+- (id)initWithArbitrationUnit:(id)arg1 driverOptions:(id)arg2 delegate:(id)arg3 sizingView:(id)arg4;
+
+@end
+
+@interface IBAutolayoutViewLiveResizingFrameDecider : IBAutolayoutFrameDecider
+{
+    NSView *_sizingView;
+}
+
++ (id)frameDeciderForLiveResizingView:(id)arg1 layoutInfo:(id)arg2 delegate:(id)arg3 options:(id)arg4;
++ (void)setAbsoluteConstraintBreakageStrategyMask:(unsigned long long)arg1;
++ (unsigned long long)absoluteConstraintBreakageStrategyMask;
++ (void)initialize;
+- (void)decideAndSetFramesOfEntireViewHierarchyForLiveResizingViewToLayoutSize:(struct CGSize)arg1;
+- (id)initWithArbitrationUnit:(id)arg1 driverOptions:(id)arg2 delegate:(id)arg3 sizingView:(id)arg4;
+
+@end
+
+@interface IBAutolayoutConstraintAdditionFrameDecider : IBAutolayoutFrameDecider
+{
+}
+
++ (void)decideAndSetFramesOfEntireViewHierarchyByAddingConstraints:(id)arg1 forMakingViewsHaveTheSameSize:(id)arg2 layoutInfo:(id)arg3 delegate:(id)arg4;
++ (void)decideAndSetFramesOfEntireViewHierarchyByAddingConstraints:(id)arg1 forAligningViews:(id)arg2 byEnforcingCurrentSizes:(BOOL)arg3 layoutInfo:(id)arg4 delegate:(id)arg5;
++ (void)decideAndSetFramesOfEntireViewHierarchyByReplacingConstraints:(id)arg1 withConstraints:(id)arg2 layoutInfo:(id)arg3 delegate:(id)arg4;
++ (void)decideAndSetFramesOfEntireViewHierarchyByAddingConstraints:(id)arg1 layoutInfo:(id)arg2 delegate:(id)arg3;
++ (void)decideAndSetFramesOfEntireViewHierarchyByAddingConstraints:(id)arg1 mutuallyExclusiveConstraintBreakageStrategy:(int)arg2 replacingConstraints:(id)arg3 returningConstraintsAdded:(id *)arg4 returningConstraintsRemoved:(id *)arg5 layoutInfo:(id)arg6 delegate:(id)arg7;
++ (id)frameDeciderForAddingConstraints:(id)arg1 andReplacingConstraints:(id)arg2 layoutInfo:(id)arg3 delegate:(id)arg4;
+- (void)decideAndSetFramesOfEntireViewHierarchyByAddingConstraints:(id)arg1 replacingConstraints:(id)arg2 enforcingCurrentSizeOfViews:(id)arg3 mutuallyExclusiveConstraintBreakageStrategy:(int)arg4 returningConstraintsAdded:(id *)arg5 returningConstraintsRemoved:(id *)arg6;
+
+@end
+
+@interface __IBIDEAutolayoutCommon : NSObject
+{
+}
+
+@end
+
+@interface IBAbstractCustomClassStateProvider : NSObject
+{
+    IBCustomClassInspectorProperty *inspectorProperty;
+}
+
+@property(readonly) IDEWorkspaceTabController *activeWorkspaceTabController;
+@property(readonly) IBDocument *inspectedDocument;
+@property(readonly) NSArray *inspectedDocumentObjects;
+@property(readonly) IBInspectorViewController *inspectorController;
+@property(readonly) IBCustomClassInspectorProperty *inspectorProperty;
+- (id)initWithCustomClassInspectorProperty:(id)arg1;
+
+@end
+
+@interface IBCustomClassQuickStateProvider : IBAbstractCustomClassStateProvider
+{
+}
+
+- (BOOL)anyCustomClasses;
+- (BOOL)allObjectsCanChangeClassName;
+- (id)commonEffectiveClassName;
+- (id)commonRuntimeClassName;
+- (BOOL)canRefreshClassNameWithoutHittingIndex;
+
+@end
+
+@interface IBCustomClassIndexStateProvider : IBAbstractCustomClassStateProvider
+{
+}
+
+- (BOOL)isLegalClassName:(id)arg1 minimumName:(id)arg2;
+- (void)revealCustomClassInEditor;
+- (id)commonBaseClassOfObjects;
+- (BOOL)isCompleteType:(id)arg1;
+- (id)leastDerivedValidClassName;
+
+@end
+
+@interface IBAutoCompletingComboBoxDataSource : NSObject <NSComboBoxDataSource, NSComboBoxCellDataSource>
+{
+    NSArray *orderedValues;
+}
+
+- (id)comboBox:(id)arg1 completedString:(id)arg2;
+- (unsigned long long)comboBox:(id)arg1 indexOfItemWithStringValue:(id)arg2;
+- (id)comboBox:(id)arg1 objectValueForItemAtIndex:(long long)arg2;
+- (long long)numberOfItemsInComboBox:(id)arg1;
+- (id)comboBoxCell:(id)arg1 completedString:(id)arg2;
+- (unsigned long long)comboBoxCell:(id)arg1 indexOfItemWithStringValue:(id)arg2;
+- (id)comboBoxCell:(id)arg1 objectValueForItemAtIndex:(long long)arg2;
+- (long long)numberOfItemsInComboBoxCell:(id)arg1;
+- (void)takeContentFromStrings:(id)arg1;
+
+@end
+
+@interface IBCustomClassSuggestionsProvider : NSObject
+{
+    NSString *currentAutoCompletingComboBoxDataSourceBaseClassName;
+    unsigned int dataSourceQueryGeneration;
+    NSMutableArray *pendingHandlers;
+    NSSet *validResults;
+    BOOL queriesAreInFlight;
+    id <IBCustomClassSuggestionsProviderDelegate> delegate;
+}
+
+@property id <IBCustomClassSuggestionsProviderDelegate> delegate; // @synthesize delegate;
+- (void)suggestCompletionsForBaseclass:(id)arg1 fromDocument:(id)arg2 completionHandler:(id)arg3;
+- (void)setQueriesAreInFlight:(BOOL)arg1;
+- (void)notifyHandlersOfResults:(id)arg1;
+- (id)init;
+
+@end
+
+@interface IBClassForLocatingInterfaceBuilderKitBundle : NSObject
+{
+}
+
+@end
+
+@interface IBUserGuide : IBAbstractUserGuide <NSCoding, IBDocumentArchiving>
+{
+    NSView *view;
+    unsigned long long affinity;
+    double relativeLocation;
+    IBLayoutGuideDrawingHandler *layoutGuideDrawingHandler;
+    BOOL dragging;
+}
+
++ (id)instantiateWithDocumentUnarchiver:(id)arg1;
+@property(retain) NSView *view; // @synthesize view;
+@property(retain, nonatomic) IBLayoutGuideDrawingHandler *layoutGuideDrawingHandler; // @synthesize layoutGuideDrawingHandler;
+- (void)invalidate;
+- (void)drawOffsetIndicatorsView:(id)arg1;
+- (void)drawLineInView:(id)arg1;
+- (struct CGRect)maxTipRectInView:(id)arg1;
+- (struct CGRect)minTipRectInView:(id)arg1;
+- (struct CGRect)placementTipRectInView:(id)arg1;
+- (struct CGSize)tipSizeInView:(id)arg1;
+- (id)maxTip;
+- (id)minTip;
+- (id)attributedTip:(id)arg1;
+- (double)reportedDistanceFromMaxEdge;
+- (double)reportedDistanceFromMinEdge;
+- (void)trackWithLeftMouseDownEvent:(id)arg1 inDocument:(id)arg2;
+- (struct CGRect)drawignBoundsInView:(id)arg1;
+- (struct CGRect)hitTestingRectInView:(id)arg1;
+- (void)updateWithRelativeLocationFromPoint:(struct CGPoint)arg1 andAffinity:(unsigned long long)arg2 inView:(id)arg3 inDocument:(id)arg4;
+- (id)description;
+@property(readonly, getter=isVisible) BOOL visible;
+- (struct CGPoint)endInView:(id)arg1;
+- (struct CGPoint)startInView:(id)arg1;
+- (void)setDragging:(BOOL)arg1;
+- (void)setAffinity:(unsigned long long)arg1;
+- (void)setRelativeLocation:(double)arg1;
+- (CDStruct_f6143a38)lineInView:(id)arg1;
+- (id)document;
+- (BOOL)isVertical;
+- (struct CGRect)containerAreaInView:(id)arg1;
+- (id)overlayView;
+- (void)unarchiveWithDocumentUnarchiver:(id)arg1;
+- (void)archiveWithDocumentArchiver:(id)arg1;
+- (void)encodeWithCoder:(id)arg1;
+- (id)initWithCoder:(id)arg1;
+- (id)initWithView:(id)arg1 location:(double)arg2 andAffinity:(unsigned long long)arg3;
+
+@end
+
+@interface IBIDELayoutGuideGeneratorDelegate : IBLayoutGuideGeneratorDelegate
+{
+}
+
+- (BOOL)layoutGuideGenerator:(id)arg1 isEdge:(int)arg2 ofAncestor:(id)arg3 fixedDuringResizingOfSubviews:(id)arg4 fromKnob:(unsigned long long)arg5;
+- (BOOL)layoutGuideGenerator:(id)arg1 isEdge:(int)arg2 ofSubview:(id)arg3 fixedInPositionOnWindowDuringResizeFromKnob:(unsigned long long)arg4;
+- (BOOL)layoutGuideGenerator:(id)arg1 isDistanceFromSubviewEdge:(int)arg2 ofSubview:(id)arg3 toSameEdgeOfSuperviewChangingOneToOneWithKnob:(unsigned long long)arg4;
+- (struct CGSize)layoutGuideGenerator:(id)arg1 preferredSizeForView:(id)arg2 suggestedSize:(struct CGSize)arg3 suggestedWidth:(char *)arg4 suggestedHeight:(char *)arg5 scaleAxesIndependently:(char *)arg6;
+- (void)addBaselinesForResizingSingleView:(id)arg1 toArray:(id)arg2 fromKnob:(unsigned long long)arg3 withUnalignedSelectionFrame:(struct CGRect)arg4 coordinateSpaceView:(id)arg5;
+@property(readonly) IBDocument *document;
+
+@end
+
+@interface IBMissingConnectionComponent : NSObject
+{
+    NSString *title;
+    NSString *keyPath;
+    id value;
+}
+
++ (id)sortedComponentsForLabels:(id)arg1;
++ (id)componentWithTitle:(id)arg1 keyPath:(id)arg2 value:(id)arg3;
+@property(readonly) id value; // @synthesize value;
+@property(readonly) NSString *keyPath; // @synthesize keyPath;
+@property(readonly) NSString *title; // @synthesize title;
+- (id)initWithTitle:(id)arg1 keyPath:(id)arg2 value:(id)arg3;
+
+@end
+
+@interface IBImageInsetsControl : NSView <IBImageSlicingViewDelegate>
+{
+    NSTextField *minXInsetField;
+    NSStepper *minXStepper;
+    NSTextField *minYInsetField;
+    NSStepper *minYStepper;
+    NSTextField *maxXInsetField;
+    NSStepper *maxXStepper;
+    NSTextField *maxYInsetField;
+    NSStepper *maxYStepper;
+    IBImageSlicingView *slicingView;
+    NSPopUpButton *axisPopUp;
+    id <IBImageSlicingControlDelegate> delegate;
+}
+
+@property id <IBImageSlicingControlDelegate> delegate; // @synthesize delegate;
+- (void)refreshWithInsetImageDescriptions:(id)arg1;
+- (void)refreshAxisPopUpWithInsetImageDescriptions:(id)arg1;
+- (struct CGSize)minimumImageSizeForScaledImages:(id)arg1;
+- (void)refreshSlicingViewWithInsetImageDescriptions:(id)arg1;
+- (CDStruct_33dcf794)edgeStateMasksForValues:(id)arg1;
+- (CDStruct_c519178c)insetValueForScaledImages:(id)arg1;
+- (void)refreshTextFieldsAndSteppersWithInsetImageDescriptions:(id)arg1;
+- (id)placeholderForValues:(id)arg1;
+- (void)imageSlicingView:(id)arg1 didUpdateInsetValue:(double)arg2 andOppositeValue:(double)arg3 forEdge:(unsigned long long)arg4;
+- (void)userChangedTextField:(id)arg1;
+- (void)userChangedStepper:(id)arg1;
+- (void)userChangedAxes:(id)arg1;
+@property(copy) NSString *autosaveName;
+- (void)awakeFromNib;
+- (void)enumerateEdgeControls:(id)arg1;
+
+@end
+
+@interface IBImageSlicingScrollView : NSScrollView
+{
+}
+
+- (void)drawRect:(struct CGRect)arg1;
+
+@end
+
+@interface IBImageSlicingView : DVTLayoutView_ML
+{
+    IBImageButton *zoomInButton;
+    IBImageButton *zoomOutButton;
+    IBImageButton *previewButton;
+    CDStruct_c519178c unvalidatedImageInset;
+    CDStruct_c519178c drawnImageInset;
+    NSDate *previewStart;
+    NSTimer *previewTimer;
+    unsigned long long edgesWithAmbiguousValues;
+    NSString *autosaveName;
+    id <IBImageSlicingViewDelegate> delegate;
+    NSString *placeholder;
+    long long previewingScaleFactor;
+    long long editingScaleFactor;
+    NSImage *image;
+    NSNumber *trackedEdge;
+    double previewFadeLayerOpacity;
+    double previewImageOpacity;
+    double horizontalGrowth;
+    double verticalGrowth;
+}
+
++ (CDStruct_c519178c)updatedInset:(CDStruct_c519178c)arg1 byPushingEdge:(unsigned long long)arg2 byAmount:(double)arg3 imageSize:(struct CGSize)arg4 clipToMaxEdge:(BOOL)arg5 shouldDelete:(char *)arg6;
++ (BOOL)isValidInset:(CDStruct_c519178c)arg1 forImageSize:(struct CGSize)arg2;
++ (BOOL)isSlicableEdge:(unsigned long long)arg1 forImageSize:(struct CGSize)arg2;
+@property(nonatomic) double verticalGrowth; // @synthesize verticalGrowth;
+@property(nonatomic) double horizontalGrowth; // @synthesize horizontalGrowth;
+@property(nonatomic) double previewImageOpacity; // @synthesize previewImageOpacity;
+@property(nonatomic) double previewFadeLayerOpacity; // @synthesize previewFadeLayerOpacity;
+@property(copy) NSNumber *trackedEdge; // @synthesize trackedEdge;
+@property(nonatomic) NSImage *image; // @synthesize image;
+@property(nonatomic) long long editingScaleFactor; // @synthesize editingScaleFactor;
+@property(nonatomic) long long previewingScaleFactor; // @synthesize previewingScaleFactor;
+@property(copy, nonatomic) NSString *placeholder; // @synthesize placeholder;
+@property id <IBImageSlicingViewDelegate> delegate; // @synthesize delegate;
+@property(copy, nonatomic) NSString *autosaveName; // @synthesize autosaveName;
+@property(nonatomic) unsigned long long edgesWithAmbiguousValues; // @synthesize edgesWithAmbiguousValues;
+- (void)drawRect:(struct CGRect)arg1;
+- (void)drawPlaceholder;
+- (id)effectiveAttributedPlaceholder;
+- (id)effectivePlaceholderAttributes;
+- (void)drawPreviewImage;
+- (void)drawPreviewFadeLayer;
+- (void)drawEditableImage;
+- (void)drawEditableInsets;
+- (void)drawEditableInsetEdge:(unsigned long long)arg1 opacity:(double)arg2;
+- (void)drawEditingBackground;
+- (void)invalidateContent;
+- (struct CGRect)placeholderRect;
+- (struct CGRect)placeholderBackgroundRect;
+- (struct CGRect)placeholderVisualRect;
+- (void)mouseDown:(id)arg1;
+- (double)trackingLocationForEvent:(id)arg1 edge:(unsigned long long)arg2;
+- (void)preview:(id)arg1;
+- (void)zoomOut:(id)arg1;
+- (void)zoomIn:(id)arg1;
+- (id)hitEdgeForPoint:(struct CGPoint)arg1;
+- (void)resetCursorRects;
+- (id)cursorForEdge:(unsigned long long)arg1;
+- (struct CGRect)previewImageRect;
+- (struct CGSize)unscaledPreviewImageSize;
+- (struct CGRect)hitTestRectForEdge:(unsigned long long)arg1;
+- (CDStruct_f6143a38)drawnLineForEdge:(unsigned long long)arg1;
+- (void)layoutBottomUp;
+- (struct CGRect)frameForButtonOfSize:(struct CGSize)arg1 atIndex:(long long)arg2 inTrack:(struct CGRect)arg3;
+- (struct CGRect)buttonTrack;
+- (struct CGSize)buttonSize;
+- (struct CGRect)contentRect;
+- (void)updatePreview:(id)arg1;
+- (void)startPreviewAnimation;
+- (void)stopPreviewAnimation;
+@property CDStruct_c519178c imageInset;
+- (BOOL)isPreviewing;
+- (id)clipView;
+- (void)refreshButtons;
+- (void)writeValuesToUserDefaults;
+- (void)readValuesFromUserDefaults;
+- (id)editingScaleFactorDefaultsKey;
+- (id)previewingScaleFactorDefaultsKey;
+- (void)recomputeDrawnInset;
+- (void)awakeFromNib;
+- (id)initWithFrame:(struct CGRect)arg1;
+
+@end
+
+@interface IBInsetImageResourceInspectorProperty : IBInspectorResourceProperty
+{
+    IBImageInsetsControl *insetsControl;
+    NSPopover *insetControlPopover;
+    DVTDelayedInvocation *delayedInvocation;
+}
+
+- (void)imageInsetsControl:(id)arg1 didUpdateInsetValue:(double)arg2 andOppositeValue:(double)arg3 forEdge:(unsigned long long)arg4;
+- (void)imageInsetsControl:(id)arg1 forceValuesForRectEdges:(unsigned long long)arg2;
+- (void)imageInsetsControl:(id)arg1 didUpdateInsetValue:(double)arg2 forEdge:(unsigned long long)arg3;
+- (void)enumerateInspectedObjects:(id)arg1;
+- (void)unbindAndTearDown;
+- (id)bindAndConfigure;
+- (void)refreshInsets:(id)arg1;
+- (id)nibName;
+- (id)imageArrayKeyPath;
+- (id)representedObjectImageKeyPath;
+- (id)insetArrayKeyPath;
+- (id)representedObjectInsetKeyPath;
+- (id)representedObjectsKeyPathForKey:(id)arg1;
+- (id)representedObjectValueKeyPathForKey:(id)arg1;
+- (void)showPopover:(id)arg1;
+- (void)configureComboBoxButton;
+
+@end
+
+@interface IBInsetImageDescription : NSObject
+{
+    NSImage *image;
+    CDStruct_c519178c inset;
+}
+
+@property(readonly) NSImage *image; // @synthesize image;
+@property(readonly) CDStruct_c519178c inset; // @synthesize inset;
+@property(readonly) double maxYInset;
+@property(readonly) double maxXInset;
+@property(readonly) double minYInset;
+@property(readonly) double minXInset;
+- (id)description;
+- (id)initWithImage:(id)arg1 inset:(CDStruct_c519178c)arg2;
+
+@end
+
+@interface IBNSLayoutConstraintPriorityInspectorPropertyValueTransformer : NSValueTransformer
+{
+}
+
++ (BOOL)allowsReverseTransformation;
+- (id)transformedValue:(id)arg1;
+- (id)reverseTransformedValue:(id)arg1;
+
+@end
+
+@interface IBNSLayoutConstraintPriorityInspectorProperty : IDEInspectorProperty
+{
+    IBNSLayoutConstraintPrioritySlider *slider;
+    NSPopover *popover;
+    IBNSLayoutConstraintPriorityPopoverViewController *popoverViewController;
+}
+
+- (void)constraintPrioritySlider:(id)arg1 didStopTrackingAtPoint:(struct CGPoint)arg2;
+- (void)constraintPrioritySlider:(id)arg1 didContinueTrackingAtPoint:(struct CGPoint)arg2;
+- (void)constraintPrioritySlider:(id)arg1 didStartTrackingAtPoint:(struct CGPoint)arg2;
+- (void)unbindAndTearDown;
+- (id)bindAndConfigure;
+- (void)userDidChangeValue:(id)arg1;
+- (void)syncPopoverWithSliderKnob;
+- (id)documentToUseForPriorityDescriptiveText;
+- (BOOL)canTileIntoColumnsWithWidth:(double)arg1;
+- (BOOL)canTileIntoColumnsWithProperty:(id)arg1;
+- (double)baseline;
+@property(readonly) IBInspectorViewController *inspectorController;
+
+@end
+
+@interface IBNSLayoutConstraintPriorityPopoverViewController : NSViewController
+{
+    NSString *descriptiveText;
+    double priority;
+}
+
+@property(copy) NSString *descriptiveText; // @synthesize descriptiveText;
+@property double priority; // @synthesize priority;
+
+@end
+
+@interface IBNSLayoutConstraintPrioritySlider : NSSlider
+{
+    id delegate;
+}
+
++ (Class)cellClass;
+@property(retain) id <IBNSLayoutConstraintPrioritySliderDelegate> delegate; // @synthesize delegate;
+- (void)cellDidStopTrackingFromLastPoint:(struct CGPoint)arg1 to:(struct CGPoint)arg2 mouseIsUp:(BOOL)arg3;
+- (void)cellDidContinueTrackingFromLastPoint:(struct CGPoint)arg1 to:(struct CGPoint)arg2;
+- (void)cellDidStartTrackingAt:(struct CGPoint)arg1;
+
+@end
+
+@interface IBNSLayoutConstraintPrioritySliderCell : NSSliderCell
+{
+    BOOL isStartingTracking;
+}
+
+- (void)stopTracking:(struct CGPoint)arg1 at:(struct CGPoint)arg2 inView:(id)arg3 mouseIsUp:(BOOL)arg4;
+- (BOOL)continueTracking:(struct CGPoint)arg1 at:(struct CGPoint)arg2 inView:(id)arg3;
+- (BOOL)startTrackingAt:(struct CGPoint)arg1 inView:(id)arg2;
+- (id)prioritySlider;
+
+@end
+
+@interface IBAutolayoutConstraintAdditionValidationState : NSObject
+{
+    BOOL _canAddEqualHeightsConstraint;
+    BOOL _canAlignRightEdges;
+    BOOL _canAddHorizontalSpacingConstraint;
+    BOOL _allOrAllButOneSelectedViewsHaveUnownedLayout;
+    BOOL _canAlignLeftEdges;
+    BOOL _canAddExplicitWidthConstraints;
+    BOOL _canAddBottomToSuperviewSpacingConstraints;
+    BOOL _canAlignTopEdges;
+    BOOL _canAlignBaselines;
+    BOOL _canAddEqualWidthsConstraint;
+    BOOL _canAlignBottomEdges;
+    NSView *_containingView;
+    IBDocument *_document;
+    BOOL _canAddVerticalSpacingConstraint;
+    BOOL _canAlignCenterY;
+    BOOL _canAddTrailingToSuperviewSpacingConstraints;
+    NSArray *_selection;
+    BOOL _canAddLeadingToSuperviewSpacingConstraints;
+    BOOL _canAlignCenterX;
+    NSView *_sharedConstraintContainerView;
+    BOOL _allViewsHaveUnownedLayout;
+    NSSet *_selectedViews;
+    BOOL _canAlignCenterXInContainer;
+    BOOL _canAlignCenterYInContainer;
+    BOOL _canAddTopToSuperviewSpacingConstraints;
+    BOOL _canAddExplicitHeightConstraints;
+}
+
+@property(readonly) BOOL canAddExplicitHeightConstraints; // @synthesize canAddExplicitHeightConstraints=_canAddExplicitHeightConstraints;
+@property(readonly) BOOL canAddTopToSuperviewSpacingConstraints; // @synthesize canAddTopToSuperviewSpacingConstraints=_canAddTopToSuperviewSpacingConstraints;
+@property(readonly) BOOL canAlignCenterYInContainer; // @synthesize canAlignCenterYInContainer=_canAlignCenterYInContainer;
+@property(readonly) BOOL canAlignCenterXInContainer; // @synthesize canAlignCenterXInContainer=_canAlignCenterXInContainer;
+@property(readonly) NSSet *selectedViews; // @synthesize selectedViews=_selectedViews;
+@property(readonly, nonatomic) BOOL allViewsHaveUnownedLayout; // @synthesize allViewsHaveUnownedLayout=_allViewsHaveUnownedLayout;
+@property(readonly) NSView *sharedConstraintContainerView; // @synthesize sharedConstraintContainerView=_sharedConstraintContainerView;
+@property(readonly) BOOL canAlignCenterX; // @synthesize canAlignCenterX=_canAlignCenterX;
+@property(readonly) BOOL canAddLeadingToSuperviewSpacingConstraints; // @synthesize canAddLeadingToSuperviewSpacingConstraints=_canAddLeadingToSuperviewSpacingConstraints;
+@property(copy) NSArray *selection; // @synthesize selection=_selection;
+@property(readonly) BOOL canAddTrailingToSuperviewSpacingConstraints; // @synthesize canAddTrailingToSuperviewSpacingConstraints=_canAddTrailingToSuperviewSpacingConstraints;
+@property(readonly) BOOL canAlignCenterY; // @synthesize canAlignCenterY=_canAlignCenterY;
+@property(readonly) BOOL canAddVerticalSpacingConstraint; // @synthesize canAddVerticalSpacingConstraint=_canAddVerticalSpacingConstraint;
+@property(readonly) IBDocument *document; // @synthesize document=_document;
+@property(readonly) NSView *containingView; // @synthesize containingView=_containingView;
+@property(readonly) BOOL canAlignBottomEdges; // @synthesize canAlignBottomEdges=_canAlignBottomEdges;
+@property(readonly) BOOL canAddEqualWidthsConstraint; // @synthesize canAddEqualWidthsConstraint=_canAddEqualWidthsConstraint;
+@property(readonly) BOOL canAlignBaselines; // @synthesize canAlignBaselines=_canAlignBaselines;
+@property(readonly) BOOL canAlignTopEdges; // @synthesize canAlignTopEdges=_canAlignTopEdges;
+@property(readonly) BOOL canAddBottomToSuperviewSpacingConstraints; // @synthesize canAddBottomToSuperviewSpacingConstraints=_canAddBottomToSuperviewSpacingConstraints;
+@property(readonly) BOOL canAddExplicitWidthConstraints; // @synthesize canAddExplicitWidthConstraints=_canAddExplicitWidthConstraints;
+@property(readonly) BOOL canAlignLeftEdges; // @synthesize canAlignLeftEdges=_canAlignLeftEdges;
+@property(readonly, nonatomic) BOOL allOrAllButOneSelectedViewsHaveUnownedLayout; // @synthesize allOrAllButOneSelectedViewsHaveUnownedLayout=_allOrAllButOneSelectedViewsHaveUnownedLayout;
+@property(readonly) BOOL canAddHorizontalSpacingConstraint; // @synthesize canAddHorizontalSpacingConstraint=_canAddHorizontalSpacingConstraint;
+@property(readonly) BOOL canAlignRightEdges; // @synthesize canAlignRightEdges=_canAlignRightEdges;
+@property(readonly) BOOL canAddEqualHeightsConstraint; // @synthesize canAddEqualHeightsConstraint=_canAddEqualHeightsConstraint;
+- (BOOL)canAddConstraintsForActionSelector:(SEL)arg1;
+- (BOOL)isKnownConstraintAdditionActionSelector:(SEL)arg1;
+- (void)_updateValidationState;
+- (id)centerInContainerAlignmentConstraintsForAttribute:(unsigned long long)arg1;
+- (void)_updateCenterInContainerAlignmentConstraintsValidationState;
+- (id)baselineAlignmentConstraints;
+- (void)_updateBaselineAlignmentConstraintsValidationState;
+- (id)edgeOrCenterAlignmentConstraintsForAttribute:(unsigned long long)arg1;
+- (void)_updateEdgeOrCenterAlignmentConstraintsValidationState;
+- (id)_constraintsForAligningWithAttribute:(unsigned long long)arg1;
+- (id)_constraintsForAligningToView:(id)arg1 withAttribute:(unsigned long long)arg2;
+- (id)equalSizingConstraintsForAttribute:(unsigned long long)arg1;
+- (void)_updateEqualSizeConstraintsValidationState;
+- (id)edgeConstraintsForAttribute:(unsigned long long)arg1;
+- (void)_updateEdgeConstraintsValidationState;
+- (id)spacingConstraintForOrientation:(unsigned long long)arg1;
+- (void)_updateSpacingConstraintsValidationState;
+- (id)absoluteSizingConstraintsForAttribute:(unsigned long long)arg1;
+- (void)_updateAbsoluteConstraintsValidationState;
+- (long long)_nextLogicalLayoutRelationForAddingNewConstraintToView:(id)arg1 forConstraintsMatchingBlock:(id)arg2;
+- (BOOL)_viewHasUnownedLayout:(id)arg1;
+- (id)_effectiveContainingViewOfViews:(id)arg1 inArbitrationUnit:(id)arg2;
+- (id)initWithDocument:(id)arg1 containingView:(id)arg2;
+
+@end
+
+@interface IBAutolayoutDebuggingCommands : NSObject <IDECommandHandler>
+{
+}
+
++ (id)handlerForAction:(SEL)arg1 withSelectionSource:(id)arg2;
+- (void)debugMenuItemToggleBreakInequalityAbsoluteConstraints:(id)arg1;
+- (void)debugMenuItemToggleBreakEqualityAbsoluteConstraints:(id)arg1;
+- (void)debugMenuItemToggleBreakAbsoluteConstraintsToAncestorsAndSiblings:(id)arg1;
+- (void)debugMenuItemToggleBreakAbsoluteConstraintsToDescendants:(id)arg1;
+- (void)toggleValueOfAutolayoutLiveResizingAbsoluteConstraintBreakageStrategy:(unsigned long long)arg1;
+- (void)debugMenuItemToggleApplyConstraintsToDescendants:(id)arg1;
+- (void)debugMenuItemToggleApplyConstraintsToSiblingsAndAncestors:(id)arg1;
+- (void)toggleValueOfAutolayoutLiveResizingStrategy:(unsigned long long)arg1;
+- (void)debugMenuItemToggleUpgradeRedundantConstraintsForFrameDecideThenConstraintAddition:(id)arg1;
+- (void)debugMenuItemToggleUpgradeRedundantConstraintsForPureConstraintAddition:(id)arg1;
+- (void)debugMenuItemToggleEnforceCurrentViewSizesWhenAligning:(id)arg1;
+- (void)debugMenuItemUseQuadrantContainingBoundsExplicitConstraints:(id)arg1;
+- (void)debugMenuItemUseQuadrantContainingCenterPointExplicitConstraints:(id)arg1;
+- (void)debugMenuItemUseUpperLeadingExplicitConstraints:(id)arg1;
+- (BOOL)validateUserInterfaceItem:(id)arg1;
+
+@end
+
+@interface IBDocumentArbitrationStackEntry : NSObject
+{
+    IBMutableIdentityDictionary *_invalidationReasonsIgnoringDescendantsByObject;
+    IBMutableIdentityDictionary *_invalidationReasonsByObject;
+    NSMutableOrderedSet *_invalidatedObjects;
+    NSMutableOrderedSet *_invalidatedObjectsIgnoringDescendants;
+    NSMutableArray *_invalidationReasonsForAllObjects;
+    NSMutableDictionary *_options;
+    long long _retainCount;
+    CDStruct_c60c94c2 _behavior;
+    BOOL _hasInvalidatedAllObjects;
+}
+
++ (id)retainedArbitrationStackEntryWithBehavior:(CDStruct_c60c94c2)arg1;
++ (void)initialize;
+@property(readonly, nonatomic) BOOL hasInvalidatedAllObjects; // @synthesize hasInvalidatedAllObjects=_hasInvalidatedAllObjects;
+@property(readonly, nonatomic) CDStruct_c60c94c2 behavior; // @synthesize behavior=_behavior;
+@property(readonly, nonatomic) NSOrderedSet *invalidatedObjectsIgnoringDescendants; // @synthesize invalidatedObjectsIgnoringDescendants=_invalidatedObjectsIgnoringDescendants;
+@property(readonly, nonatomic) NSDictionary *options; // @synthesize options=_options;
+@property(readonly, nonatomic) NSOrderedSet *invalidatedObjects; // @synthesize invalidatedObjects=_invalidatedObjects;
+- (void)mergeWithStackEntry:(id)arg1;
+- (void)addOptions:(id)arg1;
+- (void)invalidateAllObjectsForReasonWithBlock:(id)arg1;
+- (void)addInvalidatedObjectIgnoringDescendants:(id)arg1 reasonBlock:(id)arg2;
+- (void)addInvalidatedObject:(id)arg1 reasonBlock:(id)arg2;
+- (void)_addAllObjectsInvalidationReason:(id)arg1;
+- (void)_addInvalidationIgnoringDescendantsReason:(id)arg1 forObject:(id)arg2;
+- (void)_addInvalidationReason:(id)arg1 forObject:(id)arg2;
+@property(readonly, nonatomic) BOOL invalidateDescendants;
+@property(readonly, nonatomic) BOOL forceArbitrationAfterCompletion;
+@property(readonly, nonatomic, getter=isMutable) BOOL mutable;
+- (id)_mutableOptionsCreatingIfNeeded;
+- (id)_mutableInvalidatedObjectsIgnoringDescendantsCreatingIfNeeded;
+- (id)_mutableInvalidatedObjectsCreatingIfNeeded;
+- (id)debugDescription;
+- (void)_clearAndSetupForBehavior:(CDStruct_c60c94c2)arg1;
+- (void)releaseEntry;
+- (void)_retainEntry;
+
+@end
+
+@interface IBReferencingConstraintsInspectorProperty : IBAbstractSizeInspectorProperty <IBInspectorReferencingConstraintViewControllerDelegate>
+{
+    id <DVTObservingToken> referencingConstraintsObservationToken;
+    IBCancellationToken *highlightCancellationToken;
+    IBInspectorReferencingConstraintViewController *highlightedController;
+}
+
+- (void)updateReferencingConstraintSubviews;
+- (void)referencingConstraintViewControllerPromoteConstraint:(id)arg1;
+- (void)referencingConstraintViewControllerStopHighlightingConstraint:(id)arg1;
+- (void)stopHighlightingConstraintForController:(id)arg1;
+- (void)referencingConstraintViewControllerStartHighlightingConstraint:(id)arg1;
+- (id)document;
+- (void)referencingConstraintViewControllerDeleteConstraint:(id)arg1;
+- (void)referencingConstraintViewControllerSelectConstraint:(id)arg1;
+- (void)openAttributesInspector;
+- (id)bindAndConfigure;
+- (id)constraintsKeyPath;
+- (void)loadView;
+- (id)referencingConstraints;
+- (id)referencedView;
+
+@end
+
+@interface IBInspectorReferencingConstraintViewController : DVTViewController <IBInspectorReferencingConstraintViewDelegate>
+{
+    NSView<IBAutolayoutView> *referencedView;
+    NSArray *observationTokens;
+    NSMenuItem *deleteMenuItem;
+    NSMenuItem *promoteMenuItem;
+    IBNSLayoutConstraint *constraint;
+    id <IBInspectorReferencingConstraintViewControllerDelegate> _delegate;
+}
+
++ (id)viewControllerForConstraint:(id)arg1 referencingView:(id)arg2;
+@property(retain, nonatomic) id <IBInspectorReferencingConstraintViewControllerDelegate> delegate; // @synthesize delegate=_delegate;
+@property(readonly, nonatomic) IBNSLayoutConstraint *constraint; // @synthesize constraint;
+@property(retain, nonatomic) NSMenuItem *promoteMenuItem; // @synthesize promoteMenuItem;
+@property(retain, nonatomic) NSMenuItem *deleteMenuItem; // @synthesize deleteMenuItem;
+- (void)viewWillUninstall;
+- (void)viewDidInstall;
+- (void)updateConstraintView;
+- (unsigned long long)relatedViewAttribute;
+- (unsigned long long)referencedViewAttribute;
+- (id)relatedViewInConstraintRelationship;
+- (BOOL)isFirstViewInConstraintRelationship;
+- (void)updateMenuItems;
+- (void)updateLayoutType;
+- (void)updateBorder;
+- (void)updateImageView;
+- (void)updateRelatedViewNameLabel;
+- (void)updateConstantValueLabel;
+- (void)updateConstantTypeLabel;
+- (void)updateRelatedViewTypeLabel;
+- (id)leftHandLabelFont;
+- (id)rightHandLabelFont;
+- (id)rightHandLabelTextColor;
+- (id)leftHandLabelTextColor;
+- (id)textForConstantTypeLabel;
+- (id)textForRelatedViewTypeLabel;
+- (id)textForAttributeType;
+- (id)textForLayoutRelation;
+- (long long)viewBorderAttributes;
+- (long long)viewLayoutType;
+- (BOOL)constraintHasConstant;
+- (id)constraintView;
+- (void)promoteConstraint:(id)arg1;
+- (void)deleteConstraint:(id)arg1;
+- (void)selectConstraint:(id)arg1;
+- (void)constraintViewWillChangeHighlighted:(id)arg1;
+- (id)initWithConstraint:(id)arg1 referencingView:(id)arg2;
+
+@end
+
+@interface IBInspectorReferencingConstraintView : DVTLayoutView_ML
+{
+    IBMouseMovedObservingViewHelper *mouseMovedHelper;
+    long long borderAttributes;
+    BOOL highlighted;
+    id <IBInspectorReferencingConstraintViewDelegate> delegate;
+    NSImageView *imageView;
+    NSTextField *relatedViewTypeLabel;
+    NSTextField *constantTypeLabel;
+    NSTextField *relatedViewNameLabel;
+    NSTextField *constantValueLabel;
+    NSPopUpButton *popUpButton;
+    long long layoutType;
+}
+
+@property(nonatomic) long long layoutType; // @synthesize layoutType;
+@property(retain, nonatomic) NSPopUpButton *popUpButton; // @synthesize popUpButton;
+@property(retain, nonatomic) NSTextField *constantValueLabel; // @synthesize constantValueLabel;
+@property(retain, nonatomic) NSTextField *relatedViewNameLabel; // @synthesize relatedViewNameLabel;
+@property(retain, nonatomic) NSTextField *constantTypeLabel; // @synthesize constantTypeLabel;
+@property(retain, nonatomic) NSTextField *relatedViewTypeLabel; // @synthesize relatedViewTypeLabel;
+@property(retain, nonatomic) NSImageView *imageView; // @synthesize imageView;
+@property(retain, nonatomic) id <IBInspectorReferencingConstraintViewDelegate> delegate; // @synthesize delegate;
+@property(nonatomic, getter=isHighlighted) BOOL highlighted; // @synthesize highlighted;
+@property(nonatomic) long long borderAttributes; // @synthesize borderAttributes;
+- (void)layoutBottomUp;
+- (void)layoutConstantValueLabel;
+- (void)layoutRelatedViewNameLabel;
+- (void)layoutRightHandLabel:(id)arg1 alignedToLabel:(id)arg2 unlessInLayoutMode:(long long)arg3;
+- (void)layoutConstantTypeLabel;
+- (void)layoutRelatedViewTypeLabel;
+- (void)layoutSubview:(id)arg1 unlessInLayoutMode:(long long)arg2 withBlock:(id)arg3;
+- (double)baselineForLabel:(id)arg1;
+- (double)yOriginForRightHandLabel:(id)arg1 alignedToLabel:(id)arg2;
+- (double)widthForRightHandLabel;
+- (double)widthForLeftHandLabel;
+- (double)xOriginForRightHandLabel;
+- (double)xOriginForLeftHandLabel;
+- (struct CGRect)contentBounds;
+- (BOOL)isFlipped;
+- (id)fillGradient;
+- (void)drawRect:(struct CGRect)arg1;
+- (id)highlightShadow;
+- (id)borderPath;
+- (struct CGRect)borderRect;
+- (double)borderThickness;
+- (void)viewWillMoveToWindow:(id)arg1;
+- (id)mouseMovedHelper;
+
+@end
+
+@interface IBMouseMovedObservingViewHelper : NSObject
+{
+    NSView *view;
+    id mouseObserverBlock;
+    id mouseObserveringToken;
+    id mouseWillCloseNotificationToken;
+}
+
+- (void)viewWillMoveToWindow:(id)arg1;
+- (void)unregisterMouseMovedObserver;
+- (id)initWithView:(id)arg1 mouseObserverBlock:(id)arg2;
+- (id)init;
+
+@end
+
+@interface IBDelegatedCanvasOverlayCallbackToken : NSObject
+{
+    id _callback;
+    double _priority;
+}
+
+- (void)invoke;
+- (long long)comparePriority:(id)arg1;
+- (id)initWithCallback:(id)arg1 priority:(void)arg2;
+
+@end
+
+@interface IBDelegatedCanvasOverlay : IBCanvasOverlay
+{
+    NSMutableOrderedSet *drawHandlers;
+    NSMutableOrderedSet *willDrawHandlers;
+    id <IBDelegatedCanvasOverlayDelegate> _delegate;
+}
+
+@property __weak id <IBDelegatedCanvasOverlayDelegate> delegate; // @synthesize delegate=_delegate;
+- (id)hitTest:(struct CGPoint)arg1;
+- (void)drawRect:(struct CGRect)arg1;
+- (void)viewWillDraw;
+@property(readonly) long long numberOfInstalledHandlers;
+- (void)installDrawingHandler:(id)arg1 withSelector:(SEL)arg2 priority:(double)arg3 whilePerformingBlock:(id)arg4;
+- (id)installDrawingHandler:(id)arg1 willDrawSelector:(SEL)arg2 drawSelector:(SEL)arg3 priority:(double)arg4;
+- (id)installWillDrawHandler:(id)arg1 selector:(SEL)arg2 priority:(double)arg3;
+- (id)installDrawHandler:(id)arg1 selector:(SEL)arg2 priority:(double)arg3;
+- (id)installWillDrawHandlerWithPriority:(double)arg1 block:(id)arg2;
+- (id)installDrawHandlerWithPriority:(double)arg1 block:(id)arg2;
+
+@end
+
+@interface IBLocalizableStringActionsPlaceholderMenuItem : NSMenuItem
+{
+}
+
+- (id)initWithTitle:(id)arg1 action:(SEL)arg2 keyEquivalent:(id)arg3;
+
+@end
+
+@interface IBToolIssueGenerator : NSObject
+{
+    NSOperationQueue *backgroundIssueCalculationQueue;
+}
+
+- (id)generateIssuesForPath:(id)arg1 queue:(struct dispatch_queue_s *)arg2 completionHandler:(id)arg3;
+- (id)runIBToolOnFilePath:(id)arg1;
+- (id)ibtoolArgumentsToGenerateIssuesForPath:(id)arg1;
+- (id)issueDescriptionsFromIBToolOutput:(id)arg1;
+- (id)init;
+
+@end
+
+@interface IBToolIssueDescription : NSObject
+{
+    NSString *_message;
+    long long _warningType;
+    IBMemberID *_sourceObjectID;
+}
+
+@property(readonly) IBMemberID *sourceObjectID; // @synthesize sourceObjectID=_sourceObjectID;
+@property(readonly) long long warningType; // @synthesize warningType=_warningType;
+@property(readonly) NSString *message; // @synthesize message=_message;
+- (id)initWithMemberID:(id)arg1 type:(long long)arg2 message:(id)arg3;
+
+@end
+
+@interface IBLocalizableStringTemplate : NSString
+{
+    NSString *_stringsFileKey;
+    NSString *_developmentLanguageString;
+}
+
+@property(readonly) NSString *developmentLanguageString; // @synthesize developmentLanguageString=_developmentLanguageString;
+@property(readonly) NSString *stringsFileKey; // @synthesize stringsFileKey=_stringsFileKey;
+- (unsigned short)characterAtIndex:(unsigned long long)arg1;
+- (unsigned long long)length;
+- (id)copyWithZone:(struct _NSZone *)arg1;
+- (Class)classForCoder;
+- (void)encodeWithCoder:(id)arg1;
+- (id)initWithStringsFileKey:(id)arg1 developmentLanguageString:(id)arg2;
+
+@end
+
 @interface NSView (IBDocumentArchivingGenerator) <IBDocumentArchiving>
 + (id)instantiateWithDocumentUnarchiver:(id)arg1;
 - (void)unarchiveWithDocumentUnarchiver:(id)arg1;
 - (void)archiveWithDocumentArchiver:(id)arg1;
-@end
-
-@interface NSString (IBStringAdditions)
-+ (id)stringWithListComponentsJoinedByCommasAndAnd:(id)arg1;
-- (BOOL)isNonEmpty;
-- (long long)numberOfOccurrencesOfString:(id)arg1;
-- (id)stringOfUniqueCharactersFromSet:(id)arg1;
-- (BOOL)containsCharactersFromSet:(id)arg1;
-- (BOOL)isComposedEntirelyOfCharactersFromSet:(id)arg1;
-- (BOOL)isRange:(struct _NSRange)arg1 composedEntirelyOfCharactersFromSet:(id)arg2;
-- (id)UTF8Representation;
-- (id)stringByPrependingString:(id)arg1;
-- (id)stringByAppendingPathComponents:(id)arg1;
-- (long long)caseInsensitiveNumericCompare:(id)arg1;
-@end
-
-@interface NSAttributedString (IBAttributedStringAdditions)
-+ (id)attributedStringWithString:(id)arg1 andAttributes:(id)arg2;
-+ (id)attributedStringWithString:(id)arg1;
-+ (id)attributedString;
-@end
-
-@interface NSMutableAttributedString (IBMutableAttributedStringAdditions)
-- (void)appendString:(id)arg1 withAttributes:(id)arg2;
-- (void)addAttribute:(id)arg1 withValue:(id)arg2;
-@end
-
-@interface NSDate (IBDateAdditions)
-+ (double)secondsSinceDate:(id)arg1;
-- (BOOL)isInThePast;
-- (BOOL)isBeforeDate:(id)arg1;
-- (double)secondsTillDate;
-@end
-
-@interface NSSet (IBSetAdditions)
-- (id)collectionByRemovingNulls;
-- (id)firstObjectPassingTest:(id)arg1;
-- (id)onlyObjectPassingTest:(id)arg1;
-- (BOOL)anyObjectsPassTest:(id)arg1;
-- (BOOL)allObjectsPassTest:(id)arg1;
-- (id)onlyObject;
-- (Class)mutableClass;
-- (void)makeReceiver:(id)arg1 performSelector:(SEL)arg2;
-- (BOOL)objectsAreStrictlyContainedBySet:(id)arg1;
-- (id)setByRemovingObjects:(id)arg1;
-- (id)setByAddingObjects:(id)arg1;
-- (id)setByMappingBlockAndAssertingOnNilMappedValue:(id)arg1;
-- (id)setByMappingBlock:(id)arg1;
-- (id)setByMappingBlock:(id)arg1 useNullInsteadOfNil:(void)arg2;
-- (id)setByMapping:(SEL)arg1 onObject:(id)arg2;
-- (id)setByMapping:(SEL)arg1 withObject:(id)arg2;
-- (id)setByMapping:(SEL)arg1;
-- (id)setBySymmetricallyDifferentiatingSet:(id)arg1;
-- (id)setByIntersectingWithSet:(id)arg1;
-- (id)objectsOfClasses:(id)arg1;
-- (id)objectsOfClass:(Class)arg1;
-- (id)collectionByFilteringUsingBlock:(id)arg1;
-- (id)setByFilteringUsingBlock:(id)arg1;
-- (id)uniqueObjects;
-@end
-
-@interface NSArray (IBArrayAdditions)
-- (id)collectionByRemovingNulls;
-- (id)indexesOfObjects:(id)arg1;
-- (BOOL)objectsAreStrictlyContainedBySet:(id)arg1;
-- (id)onlyObjectPassingTest:(id)arg1;
-- (id)firstObjectPassingTest:(id)arg1;
-- (BOOL)anyObjectsPassTest:(id)arg1;
-- (BOOL)allObjectsPassTest:(id)arg1;
-- (long long)commonPrefixLengthWithArray:(id)arg1;
-- (BOOL)isLastIndex:(unsigned long long)arg1;
-- (id)allObjects;
-- (Class)mutableClass;
-- (void)makeObjectsPerformMutatingSelector:(SEL)arg1;
-- (void)makeObjectsPerformMutatingSelector:(SEL)arg1 withObject:(id)arg2;
-- (id)objectBeforeObject:(id)arg1 wrap:(BOOL)arg2;
-- (id)objectAfterObject:(id)arg1 wrap:(BOOL)arg2;
-- (BOOL)isIndexInBounds:(unsigned long long)arg1;
-- (long long)countOf:(SEL)arg1 withObject:(id)arg2;
-- (void)makeReceiver:(id)arg1 performSelector:(SEL)arg2;
-- (id)objectsOfClasses:(id)arg1;
-- (id)objectsOfClass:(Class)arg1;
-- (BOOL)isEveryObject:(id)arg1;
-- (id)onlyObject;
-- (id)anyObject;
-- (id)orderedUniqueObjects;
-- (id)uniqueObjects;
-- (id)arrayBySortingUsingSelector:(SEL)arg1 onKeyPath:(id)arg2;
-- (id)keepIf:(SEL)arg1 withObject:(id)arg2;
-- (id)keepIf:(SEL)arg1;
-- (id)arrayByMapping:(SEL)arg1 withObject:(id)arg2;
-- (id)arrayByMappingBlockAndAssertingOnNilMappedValue:(id)arg1;
-- (id)arrayByMappingBlock:(id)arg1;
-- (id)arrayByMappingBlock:(id)arg1 nilBehavior:(void)arg2;
-- (id)collectionByFilteringUsingBlock:(id)arg1;
-- (id)arrayByFilteringUsingBlock:(id)arg1;
-- (id)arrayByRemovingObjectsInArray:(id)arg1;
-- (id)arrayByKeepingObjectsInSet:(id)arg1;
-- (id)arrayByRemovingObjectsInSet:(id)arg1;
-- (id)arrayByRemovingNulls;
-- (id)arrayByUniquifyingOnKey:(id)arg1;
-- (id)arrayByAppendingObjectsFromArrays:(id)arg1;
-- (id)arrayByRemovingObject:(id)arg1;
-- (id)arrayByAppendingObjects:(id)arg1;
-@end
-
-@interface NSMutableSet (IBMutableSetAdditions)
-+ (id)setWithCollection:(id)arg1;
-- (void)addObjectIfNonNil:(id)arg1;
-- (void)appendObjects:(id)arg1;
-- (id)objectsOfClass:(Class)arg1;
-@end
-
-@interface NSMutableArray (IBMutableArrayAdditions)
-- (void)removeObjects:(id)arg1;
-- (void)removeObjectsInSet:(id)arg1;
-- (void)push:(id)arg1;
-- (id)pop;
-- (void)appendObjects:(id)arg1;
-- (void)addObjectIfNonNil:(id)arg1;
-@end
-
-@interface NSDictionary (IBDictionaryAdditions)
-+ (id)dictionaryWithIntrinsicallyKeyedValues:(id)arg1 intrinsicKeyAccessor:(id)arg2;
-+ (id)dictionaryFromXMLPlistData:(id)arg1;
-+ (id)strictDictionaryWithKeysAndObjects:(id)arg1;
-- (long long)integerForKey:(id)arg1;
-- (long long)integerForKey:(id)arg1 defaultValue:(long long)arg2;
-- (id)objectArrayForKeyArray:(id)arg1;
-- (id)sortedKeysByComparingValuesWithSelector:(SEL)arg1;
-- (id)invertedDictionaryUsingMutableDictionaryClass:(Class)arg1;
-- (id)invertedDictionary;
-- (id)dictionaryBySettingObject:(id)arg1 forKey:(id)arg2;
-- (id)objectForKey:(id)arg1 inDictionaryForKey:(id)arg2;
-- (id)dictionaryByMappingBlock:(id)arg1;
-@end
-
-@interface NSMapTable (IBMapTableAdditions)
-- (void)addObject:(id)arg1 toSetForKey:(id)arg2;
-- (void)addObject:(id)arg1 toArrayForKey:(id)arg2;
-- (id)collectionOfClass:(Class)arg1 forKey:(id)arg2;
-@end
-
-@interface NSMutableDictionary (IBMutableDictionaryAdditions)
-- (void)setObjectIfNonNil:(id)arg1 forKey:(id)arg2;
-- (void)decrementIntegerForKey:(id)arg1;
-- (void)incrementIntegerForKey:(id)arg1;
-- (id)cachedObjectForKey:(id)arg1 fromInstantiator:(id)arg2;
-- (void)removeLastObjectFromArrayForKey:(id)arg1;
-- (void)removeObject:(id)arg1 fromSetForKey:(id)arg2;
-- (void)setInteger:(long long)arg1 forKey:(id)arg2;
-- (void)setObject:(id)arg1 forKey:(id)arg2 inDictionaryForKey:(id)arg3 inDictionaryForKey:(id)arg4;
-- (void)setObject:(id)arg1 forKey:(id)arg2 inDictionaryForKey:(id)arg3 inDictionaryForKey:(id)arg4 subDictionaryClass:(Class)arg5;
-- (void)removeObjectForKey:(id)arg1 inDictionaryForKey:(id)arg2 inDictionaryForKey:(id)arg3;
-- (void)removeObjectForKey:(id)arg1 inDictionaryForKey:(id)arg2;
-- (id)objectForKey:(id)arg1 inDictionaryForKey:(id)arg2 creatingIfNecessary:(id)arg3;
-- (id)objectForKey:(id)arg1 creatingIfNecessary:(id)arg2;
-- (void)setObject:(id)arg1 forKey:(id)arg2 inDictionaryForKey:(id)arg3;
-- (void)setObject:(id)arg1 forKey:(id)arg2 inDictionaryForKey:(id)arg3 subDictionaryClass:(Class)arg4;
-- (void)addObject:(id)arg1 toSetForKey:(id)arg2 inDictionaryForKey:(id)arg3 subDictionaryClass:(Class)arg4;
-- (void)addObject:(id)arg1 toSetForKey:(id)arg2 inDictionaryForKey:(id)arg3;
-- (void)addObject:(id)arg1 toOrderedSetForKey:(id)arg2;
-- (void)addObject:(id)arg1 toArrayForKey:(id)arg2 inDictionaryForKey:(id)arg3;
-- (void)addObject:(id)arg1 toArrayForKey:(id)arg2 inDictionaryForKey:(id)arg3 subDictionaryClass:(Class)arg4;
-- (void)addObject:(id)arg1 toSetForKey:(id)arg2;
-- (void)addObject:(id)arg1 toArrayForKey:(id)arg2;
-- (void)addObjects:(id)arg1 toSetForKey:(id)arg2;
-- (void)addObjects:(id)arg1 toArrayForKey:(id)arg2;
-- (id)collectionOfClass:(Class)arg1 forKey:(id)arg2;
-@end
-
-@interface DVTMutableOrderedSet (IBMutableOrderedSetAdditions)
-- (id)objectsOfClass:(Class)arg1;
-- (id)setByFilteringUsingBlock:(id)arg1;
-- (Class)mutableClass;
-@end
-
-@interface NSData (IBDataAdditions)
-- (BOOL)isBZip2Compressed;
-- (id)bzip2DecompressedData;
-- (id)bzip2CompressedData;
-- (id)initWithPrettyBase64String:(id)arg1;
-- (id)prettyBase64String;
-- (id)prettyBase64StringWithLineLength:(long long)arg1 wrappedWithNewlines:(BOOL)arg2;
-- (id)base64DecodedData;
-- (id)base64EncodedData;
-@end
-
-@interface NSMutableData (IBMutableDataAdditions)
-- (void)appendByte:(unsigned char)arg1;
-@end
-
-@interface NSError (IBErrorAdditions)
-+ (id)errorWithLocalizedDescription:(id)arg1 domain:(id)arg2 andCode:(long long)arg3;
-+ (id)errorWithLocalizedDescription:(id)arg1;
-+ (id)errorWithLocalizedDescription:(id)arg1 andFailureReason:(id)arg2;
-+ (id)errorWithLocalizedDescription:(id)arg1 andRecoverySuggestion:(id)arg2;
-+ (id)errorWithLocalizedDescription:(id)arg1 failureReason:(id)arg2 andRecoverySuggestion:(id)arg3;
-+ (id)errorWithLocalizedDescription:(id)arg1 failureReason:(id)arg2 recoverySuggestion:(id)arg3 domain:(id)arg4 andCode:(long long)arg5;
-+ (id)errorWithLocalizedDescription:(id)arg1 failureReason:(id)arg2 recoverySuggestion:(id)arg3 domain:(id)arg4 code:(long long)arg5 andRecoveryAttempter:(id)arg6;
-- (id)underlyingErrors;
-- (id)errorByInjectingUnderlyingError:(id)arg1;
-- (BOOL)isErrorWithDomain:(id)arg1 andCode:(long long)arg2;
-@end
-
-@interface NSValue (IBValueAdditions)
-- (id)stringRepresentation;
-- (BOOL)isRange;
-- (BOOL)isPoint;
-- (BOOL)isRect;
-- (BOOL)isSize;
-@end
-
-@interface NSAffineTransform (IBAffineTransformAdditions)
-+ (id)transformRoatedByDegrees:(double)arg1 aroundPoint:(struct CGPoint)arg2;
-+ (id)transformForFlippingRect:(struct CGRect)arg1;
-+ (id)transformWithScale:(double)arg1;
-- (struct CGRect)transformRect:(struct CGRect)arg1;
-@end
-
-@interface NSXMLElement (IBXMLElementAddition)
-- (void)addAttributeWithName:(id)arg1 andStringValue:(id)arg2;
-- (id)elements;
-@end
-
-@interface NSXMLNode (IBXMLNodeAdditions)
-+ (id)elementWithName:(id)arg1 attributes:(id)arg2;
-+ (id)elementWithName:(id)arg1 namespaces:(id)arg2 attributes:(id)arg3;
-+ (id)elementWithName:(id)arg1 stringValue:(id)arg2 attributes:(id)arg3;
-@end
-
-@interface NSKeyedArchiver (IBKeyedArchiverAdditions)
-+ (id)cloneObjectByArchiving:(id)arg1;
-@end
-
-@interface NSUserDefaults (IBUserDefaultAdditions)
-- (BOOL)hasPreferenceForKey:(id)arg1;
-@end
-
-@interface NSBundle (IBFoundationBundleAdditions)
-- (id)shortBundleVersion;
-- (id)bundleVersion;
-@end
-
-@interface NSFileManager (IBFileManagerAdditions)
-- (id)filesAtPath:(id)arg1 error:(id *)arg2;
-- (BOOL)pathIsFile:(id)arg1;
-- (BOOL)pathIsDirectory:(id)arg1;
-@end
-
-@interface NSObject (IBObjectAdditions)
-- (id)newObserverForRealChangesToKeyPath:(id)arg1 options:(unsigned long long)arg2 withHandlerBlock:(id)arg3;
-- (void)didChangeValueForKeys:(id)arg1;
-- (void)willChangeValueForKeys:(id)arg1;
-@end
-
-@interface NSOperationQueue (IBOperationQueueAdditions)
-- (void)addOperationWithBlock:(id)arg1 waitUntilFinished:(void)arg2;
-@end
-
-@interface NSValue (IBGeometryAdditions)
-+ (id)valueWithInset:(CDStruct_c519178c)arg1;
-- (BOOL)isInset;
-- (CDStruct_c519178c)insetValue;
 @end
 
 @interface NSObject (IBXMLCodingSpecialCases)
@@ -12993,10 +13764,10 @@ typedef union {
 - (void)scrollRectToVisible:(struct CGRect)arg1 animatingSynchronously:(BOOL)arg2 duration:(double)arg3;
 - (void)scrollRectToVisible:(struct CGRect)arg1 animatingSynchronously:(BOOL)arg2;
 - (struct CGRect)rectToScrollRectToVisible:(struct CGRect)arg1 keepingRectVisible:(struct CGRect)arg2;
-- (CDStruct_e3b9714e)convertLine:(CDStruct_e3b9714e)arg1 fromView:(id)arg2;
-- (CDStruct_e3b9714e)convertLine:(CDStruct_e3b9714e)arg1 toView:(id)arg2;
-- (long long)convertKnobPosition:(long long)arg1 fromView:(id)arg2;
-- (long long)convertKnobPosition:(long long)arg1 toView:(id)arg2;
+- (CDStruct_f6143a38)convertLine:(CDStruct_f6143a38)arg1 fromView:(id)arg2;
+- (CDStruct_f6143a38)convertLine:(CDStruct_f6143a38)arg1 toView:(id)arg2;
+- (unsigned long long)convertKnobPosition:(unsigned long long)arg1 fromView:(id)arg2;
+- (unsigned long long)convertKnobPosition:(unsigned long long)arg1 toView:(id)arg2;
 - (unsigned long long)convertRectEdge:(unsigned long long)arg1 fromView:(id)arg2;
 - (unsigned long long)convertRectEdge:(unsigned long long)arg1 toView:(id)arg2;
 - (id)transformForConvertingPointsFromView:(id)arg1;
@@ -13054,8 +13825,6 @@ typedef union {
 - (void)setContentViewSizePinningTopLeft:(struct CGSize)arg1 display:(BOOL)arg2;
 - (void)setContentViewSizePinningTopLeft:(struct CGSize)arg1 display:(BOOL)arg2 animate:(BOOL)arg3;
 - (struct CGRect)contentRectForContentSizePinningToTopLeft:(struct CGSize)arg1;
-- (void)ensureVisibilityOfPortion:(struct CGSize)arg1 ofRect:(struct CGRect)arg2 withBuffer:(long long)arg3 inPresenceOfWindows:(id)arg4;
-- (id)bestFrameWithVisibilityOfPortion:(struct CGSize)arg1 ofRect:(struct CGRect)arg2 withBuffer:(long long)arg3 inPresenceOfWindows:(id)arg4;
 - (id)bestScreenAndSetFrameIfNecessary;
 - (void)ensureVisibilityOfPortion:(struct CGSize)arg1 ofRect:(struct CGRect)arg2;
 - (struct CGPoint)contentRectTopLeftPoint;
@@ -13138,9 +13907,10 @@ typedef union {
 @end
 
 @interface NSGraphicsContext (IBGraphicsContextsAdditions)
++ (void)temporarilyMakeCGContextCurrent:(struct CGContext *)arg1 andDoOperationPerservingState:(id)arg2;
 - (void)invokeCommandsWithContextFocusedOnFlippedRect:(struct CGRect)arg1 commands:(id)arg2;
 - (void)drawTransparencyLayerWithShadow:(id)arg1 clippedToRect:(struct CGRect)arg2 commands:(id)arg3;
-- (void)temporarilyMakeCGContextCurrent:(struct CGContext *)arg1 andDoOperationPerservingState:(id)arg2;
+- (void)drawTransparencyLayerWithShadow:(id)arg1 opacity:(double)arg2 clippedToRect:(struct CGRect)arg3 commands:(id)arg4;
 @end
 
 @interface NSBundle (IBAppKitBundleAdditions)
@@ -13237,18 +14007,27 @@ typedef union {
 + (id)keyPathsForValuesAffectingIbEffectiveClassName;
 + (id)keyPathsForValuesAffectingIbEffectiveLabel;
 + (id)keyPathsForValuesAffectingIbDefaultLabel;
-- (id)ibDocumentSubtreeDescriptionWithAdditionalDescriptionsBlock:(id)arg1;
-- (id)ibSubtreeDescriptionWithIteratorBlock:(id)arg1 startingIndentation:(void)arg2 andAdditionalDescriptionsBlock:(id)arg3;
-- (void)ibRecursivelyAddSubtreeDescriptionToString:(id)arg1 indentation:(id)arg2 document:(id)arg3 withIteratorBlock:(id)arg4 andAdditionalDescriptionsBlock:(void)arg5;
-- (id)ibDefaultSubtreeDescription;
+- (id)ibSwizzledDefaultSubtreeDescription;
 - (id)ibObjectsForSubgroupWithIdentifier:(id)arg1;
 - (id)ibImageForSubgroupWithIdentifier:(id)arg1;
 - (id)ibTitleForSubgroupWithIdentifier:(id)arg1;
 - (id)ibSubgroupIdentifiers;
+- (BOOL)ibShouldChildBeIncludedInArbitrationUnitWithParent:(id)arg1;
+- (BOOL)ibIsArbitrationUnitLeaf;
+- (BOOL)ibIsChildArbitrationUnitLeaf:(id)arg1;
+- (BOOL)ibIsChildArbitrationUnitRoot:(id)arg1;
+- (void)ibArbitrationUnitWasCreatedWithReceiverAsRootUnderParent:(id)arg1;
+- (BOOL)ibIsLegalArbitrationUnitRoot;
+- (BOOL)ibChildViewHasCustomLayoutButAllowsAlignmentConstraints:(id)arg1;
+- (BOOL)ibChildViewHasCustomLayoutButAllowsSpacingConstraints:(id)arg1;
+- (BOOL)ibChildViewHasCustomLayoutButAllowsEqualSizeConstraints:(id)arg1;
+- (BOOL)ibChildViewHasCustomLayoutButAllowsExplicitSizeConstraints:(id)arg1;
+- (BOOL)ibChildViewDerivesInternalConstraintsBasedUponInitialFrameSize:(id)arg1;
+- (BOOL)ibShouldInvalidateConstraintsForChild:(id)arg1 forChangingValueOfKeyPath:(id)arg2 to:(id)arg3;
+- (BOOL)ibShouldInvalidateConstraintsForChangingValueOfKeyPath:(id)arg1 from:(id)arg2 to:(id)arg3 inDocument:(id)arg4;
+- (void)ibWillArbitrateInDocument:(id)arg1;
 - (id)ibSuperviewOfView:(id)arg1 inDocument:(id)arg2;
 - (BOOL)ibIsChildViewResizable:(id)arg1 whenSizingToFitDescendantView:(id)arg2;
-- (void)ibWillArbitrateInArbitrationUnit:(id)arg1;
-- (void)ibWillArbitrateChild:(id)arg1 inArbitrationUnit:(id)arg2;
 - (id)ibWindow:(SEL)arg1 forUpdatingConstraintsInDocument:(id *)arg2;
 - (void)ibDisableAutolayoutInDocument:(id)arg1;
 - (void)ibEnableAutolayoutInDocument:(id)arg1 context:(id)arg2;
@@ -13268,6 +14047,8 @@ typedef union {
 - (id)ibInspectedCustomClassName;
 - (void)ibDocument:(id)arg1 didStartSimulatorWithContext:(id)arg2;
 - (void)ibDocument:(id)arg1 willStartSimulatorWithContext:(id)arg2;
+- (void)ibDocument:(id)arg1 didSetValueDuringUndo:(id)arg2 forKeyPath:(id)arg3;
+- (void)ibDocument:(id)arg1 willSetValueDuringUndo:(id)arg2 forKeyPath:(id)arg3;
 - (BOOL)ibIsTopLevelObject;
 - (BOOL)ibAcceptsBindingsValidation;
 - (id)ibApplicableInspectorsForCategory:(id)arg1 suggestion:(id)arg2;
@@ -13284,6 +14065,7 @@ typedef union {
 - (void)ibDidRemoveFromDocument:(id)arg1;
 - (void)ibWillRemoveFromDocument:(id)arg1 previouslyMemberOfGroup:(id)arg2;
 - (void)ibDidAddToDocument:(id)arg1 phase:(unsigned long long)arg2;
+- (void)ibWasAddedToAutolayoutDocument:(id)arg1;
 - (void)ibDidAddToDocument:(id)arg1;
 - (void)ibAwakeInDocument:(id)arg1;
 - (id)ibBeginDesigningInDocument:(id)arg1;
@@ -13304,6 +14086,7 @@ typedef union {
 - (BOOL)ibExistsAtRuntime;
 - (BOOL)ibIsPlaceholder;
 - (id)ibRuntimeClassName;
+- (BOOL)ibUseFrameworkMetrics;
 - (void)ibConstrainBoundsToNearestLegalSize;
 - (id)ibContainerWidgetTypeForChildView:(id)arg1;
 - (CDStruct_c519178c)ibInsetToDesignableContentAreaForChildView:(id)arg1;
@@ -13324,39 +14107,51 @@ typedef union {
 - (id)ibEquivalentSourceForToOneOutlet:(id)arg1;
 - (id)ibInitialConnectionLabelSearchTerm;
 - (BOOL)ibIsChildTypicalConnectionTarget:(id)arg1;
-- (id)ibAllToManyAutoNullifyingNonChildRelationshipsKeyPaths;
-- (id)ibAllToOneAutoNullifyingNonChildRelationshipsKeyPaths;
-- (id)ibAllToManyNonChildRelationshipsKeyPaths;
-- (id)ibAllToOneNonChildRelationshipsKeyPaths;
-- (id)ibAllToManyRelationshipsKeyPaths;
-- (id)ibAllToOneRelationshipsKeyPaths;
 - (id)ibAllToManyAutoNullifyingNonChildRelationshipsKeyPathsStartingWithClass:(Class)arg1;
-- (id)ibAllToOneAutoNullifyingNonChildRelationshipsKeyPathsStartingWithClass:(Class)arg1;
-- (id)ibAllToManyNonChildRelationshipsKeyPathsStartingWithClass:(Class)arg1;
-- (id)ibAllToOneNonChildRelationshipsKeyPathsStartingWithClass:(Class)arg1;
-- (id)ibAllToManyRelationshipsKeyPathsStartingWithClass:(Class)arg1;
-- (id)ibAllToOneRelationshipsKeyPathsStartingWithClass:(Class)arg1;
-- (id)ibAllLocalizableKeyPaths;
-- (id)ibAllLocalizableGeometryAttributeKeyPaths;
-- (id)ibAllLocalizableStringsAttributeKeyPaths;
-- (id)ibAllAdditionalLocalizableAttributeKeyPaths;
-- (id)ibAllLocalizableStringArrayAttributeKeyPaths;
-- (id)ibAllLocalizableToManyRelationshipsKeyPaths;
-- (id)ibAllResourceArrayAttributeKeyPaths;
-- (id)ibAllAttributeKeyPaths;
-- (id)ibAllAttributeKeyPathsStartingWithClass:(Class)arg1;
-- (id)ibLocalLocalizableToManyRelationshipsKeyPaths;
-- (id)ibLocalResourceArrayAttributeKeyPaths;
-- (id)ibLocalAdditionalLocalizableAttributeKeyPaths;
-- (id)ibLocalLocalizableStringArrayAttributeKeyPaths;
-- (id)ibLocalLocalizableGeometryAttributeKeyPaths;
-- (id)ibLocalLocalizableStringsAttributeKeyPaths;
+- (id)ibAllToManyAutoNullifyingNonChildRelationshipsKeyPaths;
 - (id)ibLocalAutoNullifyingNonChildToManyRelationshipsKeyPaths;
+- (id)ibAllToManyNonChildRelationshipsKeyPathsStartingWithClass:(Class)arg1;
+- (id)ibAllToManyNonChildRelationshipsKeyPaths;
 - (id)ibLocalNonChildToManyRelationshipsKeyPaths;
+- (id)ibAllToManyRelationshipsKeyPathsStartingWithClass:(Class)arg1;
+- (id)ibAllToManyRelationshipsKeyPaths;
 - (id)ibLocalToManyRelationshipsKeyPaths;
+- (id)ibAllToOneAutoNullifyingNonChildRelationshipsKeyPathsStartingWithClass:(Class)arg1;
+- (id)ibAllToOneAutoNullifyingNonChildRelationshipsKeyPaths;
 - (id)ibLocalAutoNullifyingNonChildToOneRelationshipsKeyPaths;
+- (id)ibAllToOneNonChildRelationshipsKeyPathsStartingWithClass:(Class)arg1;
+- (id)ibAllToOneNonChildRelationshipsKeyPaths;
 - (id)ibLocalNonChildToOneRelationshipsKeyPaths;
+- (id)ibAllToOneRelationshipsKeyPathsStartingWithClass:(Class)arg1;
+- (id)ibAllToOneRelationshipsKeyPaths;
 - (id)ibLocalToOneRelationshipsKeyPaths;
+- (id)ibAllConstraintInvalidatingAttributeKeyPathsStartingWithClass:(Class)arg1;
+- (id)ibAllConstraintInvalidatingAttributeKeyPaths;
+- (id)ibLocalConstraintInvalidatingAttributeKeyPaths;
+- (id)ibAllAdditionalIbtoolDescriptionKeyPathsStartingWithClass:(Class)arg1;
+- (id)ibAllAdditionalIbtoolDescriptionKeyPaths;
+- (id)ibLocalAdditionalIbtoolDescriptionKeyPaths;
+- (id)ibAllResourceArrayAttributeKeyPathsStartingWithClass:(Class)arg1;
+- (id)ibAllResourceArrayAttributeKeyPaths;
+- (id)ibLocalResourceArrayAttributeKeyPaths;
+- (id)ibAllLocalizableToManyRelationshipsKeyPathsStartingWithClass:(Class)arg1;
+- (id)ibAllLocalizableToManyRelationshipsKeyPaths;
+- (id)ibLocalLocalizableToManyRelationshipsKeyPaths;
+- (id)ibAllAdditionalLocalizableAttributeKeyPathsStartingWithClass:(Class)arg1;
+- (id)ibAllAdditionalLocalizableAttributeKeyPaths;
+- (id)ibLocalAdditionalLocalizableAttributeKeyPaths;
+- (id)ibAllLocalizableStringArrayAttributeKeyPathsStartingWithClass:(Class)arg1;
+- (id)ibAllLocalizableStringArrayAttributeKeyPaths;
+- (id)ibLocalLocalizableStringArrayAttributeKeyPaths;
+- (id)ibAllLocalizableGeometryAttributeKeyPathsStartingWithClass:(Class)arg1;
+- (id)ibAllLocalizableGeometryAttributeKeyPaths;
+- (id)ibLocalLocalizableGeometryAttributeKeyPaths;
+- (id)ibAllLocalizableStringsAttributeKeyPathsStartingWithClass:(Class)arg1;
+- (id)ibAllLocalizableStringsAttributeKeyPaths;
+- (id)ibLocalLocalizableStringsAttributeKeyPaths;
+- (id)ibAllAttributeKeyPathsStartingWithClass:(Class)arg1;
+- (id)ibAllAttributeKeyPaths;
+- (id)ibAllLocalizableKeyPaths;
 - (id)ibUndoKeyPathForToManyRelationshipKeyPath:(id)arg1;
 - (void)ibDidRemoveChildren:(id)arg1 fromDocument:(id)arg2;
 - (void)ibRemoveChildren:(id)arg1;
@@ -13396,6 +14191,8 @@ typedef union {
 - (BOOL)ibAllowsClickPassthroughToParentEditorFrames;
 - (BOOL)ibChildEditsWithSingleClick:(id)arg1;
 - (BOOL)ibIsChildInitiallySelectable:(id)arg1;
+- (BOOL)ibAvoidsEditing;
+- (BOOL)ibSelectingChildWithMouseRequiresEditorConsent:(id)arg1;
 - (BOOL)ibIsChildSelectableInSameEditor:(id)arg1;
 - (BOOL)ibShouldHiddenChildViewBeVisible:(id)arg1;
 - (BOOL)ibIsChildViewSizable:(id)arg1;
@@ -13405,6 +14202,7 @@ typedef union {
 - (BOOL)ibCanChildChangeCustomClassName:(id)arg1;
 - (BOOL)ibCanChangeCustomClassName;
 - (struct CGRect)ibRectForChild:(id)arg1 inFrameController:(id)arg2;
+- (id)ibSecondaryHitTestingRectsForChild:(id)arg1 inFrameController:(id)arg2;
 - (BOOL)ibClipsChild:(id)arg1;
 - (id)ibEditorCanvasFrameControllerForDocument:(id)arg1;
 - (Class)ibDropTargetResolverClass;
@@ -13412,26 +14210,100 @@ typedef union {
 - (BOOL)ibSupportsMultipleSimultaneousEditors;
 - (id)ibDefaultImage;
 - (id)ibLabelQualifierForChild:(id)arg1;
+- (id)ibLoggingDescription;
 - (id)ibDefaultLabel;
 @end
 
-@interface NSView (IBViewIntegration)
+@interface NSView (IBViewIntegration) <IBAutolayoutView>
++ (id)keyPathsForIbInspectedVerticalContentCompressionResistancePriority;
++ (id)keyPathsForValuesAffectingIbInspectedHorizontalContentCompressionResistancePriority;
++ (id)keyPathsForValuesAffectingIbInspectedVerticalContentHuggingPriority;
++ (id)keyPathsForValuesAffectingIbInspectedHorizontalContentHuggingPriority;
 + (id)ibLayoutMetrics;
 + (id)keyPathsForValuesAffectingIbWidgetType;
 + (id)keyPathsForValuesAffectingIbDesignableContentView;
 + (id)keyPathsForValuesAffectingIbDefaultLabel;
+- (void)setIbInspectedVerticalContentCompressionResistancePriority:(double)arg1;
+- (double)ibInspectedVerticalContentCompressionResistancePriority;
+@property(nonatomic) double ibShadowedVerticalContentCompressionResistancePriority;
+- (void)setIbInspectedHorizontalContentCompressionResistancePriority:(double)arg1;
+- (double)ibInspectedHorizontalContentCompressionResistancePriority;
+@property(nonatomic) double ibShadowedHorizontalContentCompressionResistancePriority;
+- (void)setIbInspectedVerticalContentHuggingPriority:(double)arg1;
+- (double)ibInspectedVerticalContentHuggingPriority;
+@property(nonatomic) double ibShadowedVerticalContentHuggingPriority;
+- (void)setIbInspectedHorizontalContentHuggingPriority:(double)arg1;
+- (double)ibInspectedHorizontalContentHuggingPriority;
+@property(nonatomic) double ibShadowedHorizontalContentHuggingPriority;
+- (void)ibChangeInspectedContentPriorityInBlock:(id)arg1;
+- (void)ibChangePrimitiveContentPriorityInBlock:(id)arg1;
 - (id)ibSubviewSubtreeDescriptionWithAdditionalDescriptionsBlock:(id)arg1;
 - (id)ibDefaultSubtreeDescription;
+- (id)ibLoggingDescription;
 - (id)ibObjectsForSubgroupWithIdentifier:(id)arg1;
 - (id)ibImageForSubgroupWithIdentifier:(id)arg1;
 - (id)ibTitleForSubgroupWithIdentifier:(id)arg1;
 - (id)ibSubgroupIdentifiers;
+- (id)ibEffectiveWindowForConversions;
+- (id)ibViewForAncestorViewEdgeMovementQuestionsOfSubview:(id)arg1;
+- (BOOL)ib_hasAmbiguousLayout;
+- (BOOL)isDescendantOfView:(id)arg1;
+- (id)ibFallbackViewsForCandidateConstraintGenerationForFailedArbitration;
+- (id)ibWindowForArbitration;
+- (id)ibTopLevelViewForLayoutEngine:(id)arg1;
+- (id)ibEffectiveContainingViewForConstraintsWithLayoutInfo:(id)arg1;
+- (id)ibEffectiveConstrainableViewWithLayoutInfo:(id)arg1;
+- (BOOL)ibChildView:(id)arg1 shouldUseConstraintsInsteadOfAutoresizingWhenAddedToDocument:(id)arg2;
+- (void)ibArbitrationUnitWasCreatedWithReceiverAsRootUnderParent:(id)arg1;
+- (BOOL)ibIsLegalArbitrationUnitRoot;
 - (id)ibSuperviewOfView:(id)arg1 inDocument:(id)arg2;
 - (id)ibWindow:(SEL)arg1 forUpdatingConstraintsInDocument:(id *)arg2;
+- (void)ibPropagatePropertiesToCopyOfReceiver:(id)arg1 forLayoutEngine:(id)arg2;
+- (void)ibMapCopyOfReceiver:(id)arg1 intoLayoutEngine:(id)arg2;
+- (BOOL)ibPrefersToVerticallyResizeWithContainer;
+- (BOOL)ibPrefersToHorizontallyResizeWithContainer;
+- (BOOL)ibShouldApplyConstraintsWhenAutoresizingByDefault;
+- (double)ibPriorityStrongerThanInternalWeakSizeConstraintsForCompressingViewInLayoutEngineForOrientation:(unsigned long long)arg1;
+- (unsigned long long)ibOrientationsWithInternalConstraintsThatWeaklyDefineViewSize;
+- (unsigned long long)ibCustomSubviewLayoutStrategy;
+- (void)ibViewNonRecursiveDisableAutolayoutInDocument:(id)arg1;
 - (void)ibDisableAutolayoutInDocument:(id)arg1;
 - (void)ibEnableAutolayoutInDocument:(id)arg1 context:(id)arg2;
+- (BOOL)ibShouldInvalidateConstraintsForChangingValueOfKeyPath:(id)arg1 from:(id)arg2 to:(id)arg3 inDocument:(id)arg4;
+- (void)ibUpdateTranslatingAutoresizingMaskIntoConstraintsStateInDocument:(id)arg1;
+- (void)setIbInspectedTranslatesAutoresizingMaskIntoConstraints:(BOOL)arg1;
+- (BOOL)ibInspectedTranslatesAutoresizingMaskIntoConstraints;
+- (void)setIbExternalLastInspectedTranslatesAutoresizingMaskIntoConstraints:(id)arg1;
+- (id)ibExternalLastInspectedTranslatesAutoresizingMaskIntoConstraints;
+- (id)ibLastInspectedTranslatesAutoresizingMaskIntoConstraintsMetadataKeyInDocument:(id)arg1;
+- (void)setIbExternalTranslatesAutoresizingMaskIntoConstraints:(BOOL)arg1;
+- (BOOL)ibExternalTranslatesAutoresizingMaskIntoConstraints;
+- (id)ibTranslatesAutoresizingMaskIntoConstraintsMetadataKeyInDocument:(id)arg1;
+- (void)ibVerifyConstraintsAreSortedInDocument:(id)arg1;
+- (void)ibRemoveConstraints:(id)arg1;
+- (void)ibAddConstraints:(id)arg1;
+- (void)ibPrimitiveRemoveConstraints:(id)arg1 fromDocument:(id)arg2 allowingCascadingDelete:(BOOL)arg3;
+- (void)ibPrimitiveAddConstraints:(id)arg1 inDocument:(id)arg2;
+- (void)ibPrimitiveRemoveConstraintsFromExternalConstraints:(id)arg1;
+- (void)ibPrimitiveAddConstraintsToExternalConstraints:(id)arg1;
+- (void)ibSortConstraintChildrenInDocument:(id)arg1;
+- (id)ibConstraintComparator;
+- (id)ibConstraintComparatorForDocument:(SEL)arg1;
+- (void)setIbExternalConstraints:(id)arg1;
+- (id)ibExternalConstraintsInDocument:(id)arg1;
+- (id)ibExternalConstraints;
+- (id)ibConstraintsMetadataKeyInDocument:(id)arg1;
+- (id)ibConstraintsOrderedFromBackToFront;
+- (id)ibPossiblyStaleLastDrawnConstraintOrder;
+- (void)setIbPossiblyStaleLastDrawnConstraintOrder:(id)arg1;
+- (id)ibExternalReferencingConstraints;
+- (void)ibUnarchiveTranslatesAutoresizingMaskIntoConstraints:(id)arg1;
+- (void)ibArchiveTranslatesAutoresizingMaskIntoConstraints:(id)arg1;
+- (void)ibBeginArchivingDocument:(id)arg1 withContext:(id)arg2;
 - (void)setIbArchivedSubviews:(id)arg1;
 - (id)ibArchivedSubviews;
+- (void)ibDrawBoundsIndicatorInCoordinateSpaceOfView:(id)arg1;
+- (BOOL)ibWantsBoundsIndicatorAlways;
 - (BOOL)ibWantsBoundsIndicatorDuringTracking;
 - (BOOL)ibWantsSolidEditorSelectionHighlight;
 - (Class)ibViewRendererClass;
@@ -13443,19 +14315,22 @@ typedef union {
 - (id)ibIdentifiedViewsFromPasteboardImageResources:(id)arg1 inDocument:(id)arg2 insertionContext:(id)arg3;
 - (BOOL)ibCanAcceptContentsOfPasteboard:(id)arg1 inDocument:(id)arg2 targetChildRelation:(id *)arg3;
 - (void)ibWillArbitrateInArbitrationUnit:(id)arg1;
-- (BOOL)ibVerifyFrameAndBoundsIntegralityForDocument:(id)arg1;
-- (void)ibIntegralizeFrameOrBoundsIfNeeded:(struct CGRect)arg1 forVerificationInDocument:(id)arg2 rectDescription:(id)arg3 callingBlockIfIntegralizationWasNeeded:(id)arg4;
+- (BOOL)ibVerifyFrameAndBoundsIntegrality;
+- (void)ibIntegralizeFrameOrBoundsIfNeeded:(struct CGRect)arg1 callingBlockIfIntegralizationWasNeeded:(id)arg2;
 - (void)setIBContentSizeForEditorVerification:(id)arg1;
 - (id)ibContentSizeForEditorVerification;
 - (void)ibWarnings:(id)arg1 forDocument:(id)arg2 withComputationContext:(id)arg3;
 - (void)ibIssueOverlappingViewWarning:(id)arg1 forSibling:(id)arg2 withParentView:(id)arg3 inDocument:(id)arg4 withComputationContext:(id)arg5;
+- (BOOL)ibShouldGenerateOverlappingViewsWarningsInDocument:(id)arg1;
 - (BOOL)ibIsClippingContent;
 - (long long)ibPreferredResizeDirection;
 - (struct CGSize)ibPreferredSizeRespectingNearestLegalBoundsSize;
 - (struct CGSize)ibNearestLegalBoundsSize;
 - (struct CGPoint)ibPreferredOriginForSize:(struct CGSize)arg1;
 - (struct CGSize)ibPreferredSizeForSize:(struct CGSize)arg1 suggestedWidth:(char *)arg2 suggestedHeight:(char *)arg3 scaleAxesIndependently:(char *)arg4;
+- (struct CGSize)ibPreferredLayoutSize;
 - (struct CGSize)ibPreferredSize;
+- (struct CGSize)ibIntrinsicContentFrameSize;
 - (void)ibConstrainBoundsToNearestLegalSize;
 - (void)ibSuggestLayoutAllowingResizingTopLevelView:(BOOL)arg1;
 - (void)ibSuggestLayoutWithBoundsSize:(struct CGSize)arg1 allowResizingTopLevelView:(BOOL)arg2;
@@ -13464,14 +14339,14 @@ typedef union {
 - (void)ibSetFrameSize:(struct CGSize)arg1 withSuggestedFrameOrigin:(struct CGPoint)arg2 allowResizingTopLevelView:(BOOL)arg3;
 - (void)ibDidSuggestLayout:(struct CGRect)arg1 inView:(id)arg2 context:(id)arg3;
 - (void)ibWillSuggestLayout:(struct CGRect)arg1 inView:(id)arg2 context:(id)arg3;
-- (unsigned long long)ibLayoutHintsMaskForSuggestingLayout;
-- (void)ibDidFinishMovingDescendantViews:(id)arg1 withLayoutGuideMatches:(id)arg2 inDocument:(id)arg3;
+- (BOOL)ibUseFrameDecisionForSuggestingLayout;
+- (BOOL)ibShouldUpdateConstraintsForSuggestLayoutInDocument:(id)arg1;
 - (void)ibDidFinishTrackingFrameWithLayoutGuideMatches:(id)arg1 inDocument:(id)arg2;
 - (void)ibTakeTrackedFrame:(struct CGRect)arg1;
-- (BOOL)ibIsDistanceFromSubviewEdge:(unsigned long long)arg1 ofSubview:(id)arg2 toSameEdgeOfSuperviewChangingOneToOneWithKnob:(long long)arg3;
-- (BOOL)ibIsEdge:(unsigned long long)arg1 ofSubview:(id)arg2 fixedInPositionOnWindowDuringResizeFromKnob:(long long)arg3;
+- (BOOL)ibIsDistanceFromSubviewEdge:(unsigned long long)arg1 ofSubview:(id)arg2 toSameEdgeOfSuperviewChangingOneToOneWithKnob:(unsigned long long)arg3;
+- (BOOL)ibIsEdge:(unsigned long long)arg1 ofSubview:(id)arg2 fixedInPositionOnWindowDuringResizeFromKnob:(unsigned long long)arg3;
 - (void)ibResumeAutoResizingSubviews:(id)arg1;
-- (id)ibStopAutoResizingSubviewsWhileGrowingFromKnob:(long long)arg1 inDocument:(id)arg2;
+- (id)ibStopAutoResizingSubviewsWhileGrowingFromKnob:(unsigned long long)arg1 inDocument:(id)arg2;
 - (BOOL)ibPrefersFlippedFrameCoordinates;
 - (BOOL)ibIsVerticallyResizable;
 - (BOOL)ibIsHorizontallyResizable;
@@ -13490,12 +14365,14 @@ typedef union {
 - (struct CGRect)ibLayoutFrame;
 - (struct CGRect)ibLayoutFrameworkBounds;
 - (struct CGRect)ibLayoutBounds;
-- (BOOL)ibIsBaselineAtIndex:(long long)arg1 inMotionWithKnob:(long long)arg2;
+- (BOOL)ibIsBaselineAtIndex:(long long)arg1 inMotionWithKnob:(unsigned long long)arg2;
 - (double)ibBaselineAtIndex:(long long)arg1;
 - (long long)ibBaselineCount;
 - (struct CGSize)ibMaximumSize;
+- (struct CGSize)_ibMaximumSizeUsingWidgetType;
 - (struct CGSize)ibMinimumSize;
-- (struct CGSize)ibExtremeSizeForWidgetType:(id)arg1 maximum:(BOOL)arg2;
+- (struct CGSize)_ibMinimumSizeUsingWidgetType;
+- (struct CGSize)_ibExtremeSizeForWidgetType:(id)arg1 maximum:(BOOL)arg2;
 - (CDStruct_c519178c)ibFrameworkLayoutInset;
 - (CDStruct_c519178c)ibLayoutInset;
 - (CDStruct_c519178c)ibLayoutInsetForWidgetType:(id)arg1;
@@ -13515,15 +14392,17 @@ typedef union {
 - (void)setIbShadowedSubviews:(id)arg1;
 - (id)ibShadowedSubviews;
 - (id)ibDesignableContentView;
-- (void)setIbArchivedDesignableContentView:(id)arg1;
-- (id)ibArchivedDesignableContentView;
+@property(copy) NSView *ibArchivedDesignableContentView;
+- (BOOL)ibIsChildTypicalConnectionTarget:(id)arg1;
+- (BOOL)ibSelectingChildWithMouseRequiresEditorConsent:(id)arg1;
 - (struct CGRect)ibRectForChild:(id)arg1 inFrameController:(id)arg2;
-- (void)ibBeginArchivingDocument:(id)arg1 withContext:(id)arg2;
-- (BOOL)ibNeedsToCompileWithCopyOfDocument:(id)arg1;
+- (id)ibSecondaryHitTestingRectsForChild:(id)arg1 inFrameController:(id)arg2;
+- (id)ibHitRectsForConstraint:(id)arg1 inFrameController:(id)arg2;
 - (void)ibDidRemoveChildren:(id)arg1 fromDocument:(id)arg2;
 - (BOOL)ibCanRemoveChildren:(id)arg1;
 - (void)ibWillRemoveFromDocument:(id)arg1 previouslyMemberOfGroup:(id)arg2;
 - (void)ibDidAddToDocument:(id)arg1 phase:(unsigned long long)arg2;
+- (id)ibBeginDesigningInDocument:(id)arg1;
 - (void)ibDocument:(id)arg1 willStartSimulatorWithContext:(id)arg2;
 - (id)ibUnembedChildrenInDocument:(id)arg1;
 - (BOOL)ibCanUnembedChildrenInDocument:(id)arg1;
@@ -13542,6 +14421,11 @@ typedef union {
 - (BOOL)ibWantsEditorCanvasFrameContentBorder;
 - (id)ibEditorCanvasFrameControllerForDocument:(id)arg1;
 - (Class)ibEditorClass;
+@end
+
+@interface NSValue (IBViewEditorAdditions)
++ (id)valueWithLine:(CDStruct_f6143a38)arg1;
+- (CDStruct_f6143a38)lineValue;
 @end
 
 @interface CIImage (IBAdditions)
@@ -13592,7 +14476,24 @@ typedef union {
 - (double)ibInspectedFrameOriginX;
 @end
 
+@interface IBLayoutConstraint (IBLayoutConstraintIntegration)
++ (id)keyPathsForValuesAffectingIbInspectedFirstAttributeName;
++ (id)keyPathsForValuesAffectingIbDefaultLabel;
+- (BOOL)ibAvoidsEditing;
+- (id)ibLocalAdditionalIbtoolDescriptionKeyPaths;
+- (BOOL)ibIsCopyableGivenSelection:(id)arg1;
+- (id)ibInspectedFirstAttributeName;
+- (id)ibLoggingDescription;
+- (id)ibDefaultSubtreeDescription;
+- (id)ibDefaultLabel;
+@end
+
+@interface IBLayoutConstant (IBLayoutConstantIBToolAdaptation)
+- (id)ibCoerceToIBToolDisplayPListTypeForDisplay;
+@end
+
 @interface NSObject (IBMemberIntegration)
+- (id)ibCoerceValueToPlistTypeForIBToolDisplay:(id)arg1 forKeyPath:(id)arg2;
 - (id)ibImageForNavigationRepresentation;
 - (void)ibWillRemoveObject:(id)arg1 fromNonChildToManyRelation:(id)arg2;
 - (void)ibWillRemoveObject:(id)arg1 fromNonChildToOneRelation:(id)arg2;
@@ -13607,17 +14508,25 @@ typedef union {
 + (id)instantiateWithDocumentUnarchiver:(id)arg1;
 - (void)unarchiveWithDocumentUnarchiver:(id)arg1;
 - (void)archiveWithDocumentArchiver:(id)arg1;
+- (Class)classForDocumentArchiver:(id)arg1;
 @end
 
-@interface NSTextStorage (IBDocumentArchiving)
+@interface NSTextTab (IBDocumentArchiving) <IBDocumentArchiving>
 + (id)instantiateWithDocumentUnarchiver:(id)arg1;
 - (void)unarchiveWithDocumentUnarchiver:(id)arg1;
 - (void)archiveWithDocumentArchiver:(id)arg1;
 @end
 
+@interface NSParagraphStyle (IBDocumentArchiving) <IBDocumentArchiving>
++ (id)instantiateWithDocumentUnarchiver:(id)arg1;
+- (void)unarchiveWithDocumentUnarchiver:(id)arg1;
+- (void)archiveWithDocumentArchiver:(id)arg1;
+- (Class)classForDocumentArchiver:(id)arg1;
+@end
+
 @interface NSColor (IBDocumentArchiving) <IBDocumentArchiving>
 + (id)instantiateWithDocumentUnarchiver:(id)arg1;
-+ (CDUnion_af3ad131)unarchiveWhiteValueWithDocumentUnarchiver:(id)arg1;
++ (CDUnion_37ff53f0)unarchiveWhiteValueWithDocumentUnarchiver:(id)arg1;
 + (CDUnion_24d33b01)unarchiveRGBValueWithDocumentUnarchiver:(id)arg1;
 + (CDUnion_b8f7e27c)unarchiveCMYKValueWithDocumentUnarchiver:(id)arg1;
 - (void)archiveWithDocumentArchiver:(id)arg1;
@@ -13793,5 +14702,120 @@ typedef union {
 - (id)sourceModelInfoForObjCPropertyOutletCollectionContextItem:(id)arg1;
 - (id)sourceModelInfoForActionContextItem:(id)arg1 languageSpecification:(id)arg2;
 - (BOOL)sourceModelItemHasDescendantIBActionItem:(id)arg1;
+@end
+
+@interface NSImage (IBNSLayoutConstraintIntegrationAdditions)
++ (id)ib_autolayoutIntegrationImageNamed:(id)arg1;
++ (id)ib_defaultLayoutConstraintIcon;
+@end
+
+@interface NSObject (IBIDEObjectAdditions)
+- (id)ib_newObserverForRealChangesToKeyPath:(id)arg1 options:(unsigned long long)arg2 withHandlerBlock:(id)arg3;
+@end
+
+@interface DVTMutableOrderedSet (IBIDEMutableOrderedSetAdditions)
+- (id)ib_objectsOfClass:(Class)arg1;
+- (id)dvt_setByFilteringUsingBlock:(id)arg1;
+- (Class)ib_mutableClass;
+@end
+
+@interface NSArray (IBIDEArrayAdditions)
+- (id)ib_orderedUniqueObjects;
+@end
+
+@interface NSMutableDictionary (IBIDEMutableDictionaryAdditions)
+- (void)ib_insertObject:(id)arg1 intoOrderedSetForKey:(id)arg2 atIndex:(long long)arg3;
+- (void)ib_addObject:(id)arg1 toOrderedSetForKey:(id)arg2;
+@end
+
+@interface NSData (IBIDEDataAdditions)
+- (BOOL)ib_isBZip2Compressed;
+- (id)ib_bzip2DecompressedData;
+- (id)ib_bzip2CompressedData;
+@end
+
+@interface NSValue (IBIDEValueAdditions)
+- (id)ib_stringRepresentation;
+- (BOOL)ib_isRange;
+- (BOOL)ib_isPoint;
+- (BOOL)ib_isRect;
+- (BOOL)ib_isSize;
+@end
+
+@interface NSXMLElement (IBIDEXMLElementAddition)
+- (void)ib_addAttributeWithName:(id)arg1 andStringValue:(id)arg2;
+- (id)ib_elements;
+@end
+
+@interface NSXMLNode (IBIDEXMLNodeAdditions)
++ (id)ib_elementWithName:(id)arg1 attributes:(id)arg2;
++ (id)ib_elementWithName:(id)arg1 namespaces:(id)arg2 attributes:(id)arg3;
++ (id)ib_elementWithName:(id)arg1 stringValue:(id)arg2 attributes:(id)arg3;
+@end
+
+@interface NSAffineTransform (IBIDEAffineTransformAdditions)
++ (id)ib_transformForFlippingRect:(double)arg1 aroundPoint:(struct CGPoint)arg2;
++ (id)ib_transformForFlippingRect:(struct CGRect)arg1;
++ (id)ib_transformWithScale:(double)arg1;
+- (struct CGRect)ib_transformRect:(struct CGRect)arg1;
+@end
+
+@interface IDEIndexSymbol (IBIDEIndexSymbolAdditions)
+- (id)ib_definitionDocumentURLs;
+- (id)ib_declarationDocumentURLs;
+@end
+
+@interface IBNSLayoutConstraint (IBIDENSLayoutConstraintAdditions)
+@property(readonly, nonatomic) NSView *secondView;
+@property(readonly, nonatomic) NSView *firstView;
+@end
+
+@interface IBLayoutRuleManager (IBIDELayoutRuleManagerAdditions)
++ (id)layoutRuleFilePaths;
+@end
+
+@interface IBNSLayoutConstraint (IBNSLayoutConstraintIntegration)
++ (id)keyPathsForValuesAffectingIbInspectedMinimumConstant;
++ (id)keyPathsForValuesAffectingIbInspectedPriority;
++ (id)keyPathsForValuesAffectingIbInspectedMultiplier;
++ (id)keyPathsForValuesAffectingIbInspectedRelation;
++ (id)keyPathsForValuesAffectingIbInspectedConstant;
++ (id)keyPathsForValuesAffectingIbInspectedNonNilConstantValue;
++ (id)keyPathsForValuesAffectingIbInspectedCanEditMultiplier;
++ (id)keyPathsForValuesAffectingIbInspectedCanChangeLayoutDirection;
++ (id)keyPathsForValuesAffectingIbInspectedCanEditConstantSymbolically;
++ (id)keyPathsForValuesAffectingIbInspectedCanEditConstant;
++ (id)keyPathsForValuesAffectingIbInspectedConstantInspectionType;
++ (id)keyPathsForValuesAffectingIbInspectedCanEditRelation;
++ (id)keyPathsForValuesAffectingIbInspectedInspectorHeaderTitle;
++ (id)keyPathsForValuesAffectingIbDefaultImage;
++ (id)keyPathsForValuesAffectingIbDefaultLabel;
++ (id)keyPathsForValuesAffectingIbTypeLabel;
++ (id)keyPathsForValuesAffectingIbInspectedUserInterfaceDirection;
+- (BOOL)ibShouldIncludeKeyPathInIbtoolPrintingOutput:(id)arg1;
+- (void)ibDocument:(id)arg1 didAddConnection:(id)arg2;
+- (double)ibInspectedMinimumConstant;
+@property(nonatomic) double ibInspectedPriority;
+- (void)setIbInspectedMultiplier:(double)arg1;
+- (double)ibInspectedMultiplier;
+- (void)setIbInspectedRelation:(long long)arg1;
+- (long long)ibInspectedRelation;
+@property(copy, nonatomic) NSNumber *ibInspectedConstant; // @dynamic ibInspectedConstant;
+@property(readonly, nonatomic) NSNumber *ibInspectedNonNilConstantValue; // @dynamic ibInspectedNonNilConstantValue;
+- (BOOL)ibInspectedCanEditMultiplier;
+- (BOOL)ibInspectedCanChangeLayoutDirection;
+- (BOOL)ibInspectedCanEditConstantSymbolically;
+- (BOOL)ibInspectedCanEditConstant;
+- (unsigned long long)ibInspectedConstantInspectionType;
+- (BOOL)ibInspectedCanEditRelation;
+- (void)modifyPropertyOfConstraintWithOptions:(unsigned long long)arg1 usingBlock:(id)arg2;
+- (id)ibInspectedInspectorHeaderTitle;
+- (id)ibDefaultImage;
+- (id)ibDefaultLabel;
+- (id)ibTypeLabel;
+- (BOOL)ibNeedsToCompileWithCopyOfDocument:(id)arg1;
+@property(nonatomic) unsigned long long ibInspectedUserInterfaceDirection;
+- (void)ibPromoteToUserConstraint;
+- (id)ibRuntimeClassName;
 @end
 

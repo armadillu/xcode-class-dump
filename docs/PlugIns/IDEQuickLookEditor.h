@@ -25,9 +25,9 @@ struct CGSize {
 
 /*
  * File: /Applications/Xcode.app/Contents/PlugIns/IDEQuickLookEditor.ideplugin/Contents/MacOS/IDEQuickLookEditor
- * UUID: F0C98BD0-8EA0-3854-843E-93EED50E6449
+ * UUID: 9A176A3E-7F0D-31C8-9E57-62D5F3A8BB65
  * Arch: Intel x86-64 (x86_64)
- *       Current version: 1168.0.0, Compatibility version: 1.0.0
+ *       Current version: 2052.0.0, Compatibility version: 1.0.0
  *       Minimum Mac OS X version: 10.7.0
  *
  *       Objective-C Garbage Collection: Required
@@ -98,6 +98,9 @@ struct CGSize {
 - (Class)superclass;
 - (unsigned long long)hash;
 - (BOOL)isEqual:(id)arg1;
+
+@optional
+- (id)debugDescription;
 @end
 
 @protocol NSSplitViewDelegate <NSObject>
@@ -138,6 +141,16 @@ struct CGSize {
 - (void)previewView:(id)arg1 willLoadPreviewItem:(id)arg2;
 @end
 
+@protocol __ARCLiteIndexedSubscripting__
+- (void)setObject:(id)arg1 atIndexedSubscript:(unsigned long long)arg2;
+- (id)objectAtIndexedSubscript:(unsigned long long)arg1;
+@end
+
+@protocol __ARCLiteKeyedSubscripting__
+- (void)setObject:(id)arg1 forKeyedSubscript:(id)arg2;
+- (id)objectForKeyedSubscript:(id)arg1;
+@end
+
 @interface IDEQuickLookDocument : IDEEditorDocument <IDEDocumentStructureProviding>
 {
     unsigned long long _numberOfPages;
@@ -157,13 +170,12 @@ struct CGSize {
 @interface IDEQuickLookEditor : IDEEditor <QLPreviewViewDelegate, NSUserInterfaceValidations, IDEComparisonEditorHostContext>
 {
     QLPreviewView *_qlView;
-    IDEViewController *_hostViewController;
+    IDEViewController *_hostViewController_dvtWeak;
 }
 
 + (long long)version;
 + (void)configureStateSavingObjectPersistenceByName:(id)arg1;
 + (id)defaultViewNibName;
-@property __weak IDEViewController *hostViewController; // @synthesize hostViewController=_hostViewController;
 @property(retain) QLPreviewView *qlView; // @synthesize qlView=_qlView;
 - (BOOL)editorDocumentIsCurrentRevision;
 - (BOOL)editorIsHostedInComparisonEditor;
@@ -182,10 +194,11 @@ struct CGSize {
 - (void)nextPage:(id)arg1;
 - (void)previousPage:(id)arg1;
 - (BOOL)validateUserInterfaceItem:(id)arg1;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)previewView:(id)arg1 didChangeDisplayStateForPreviewItem:(id)arg2;
 - (void)previewView:(id)arg1 willShowPreviewItem:(id)arg2;
 - (void)loadView;
+@property __weak IDEViewController *hostViewController;
 
 @end
 
@@ -282,7 +295,7 @@ struct CGSize {
 - (void)comparisonEditor:(id)arg1 didReplacePrimaryDocument:(id)arg2;
 - (void)_syncStructureDocument;
 - (id)_fileTextSettings;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)viewDidInstall;
 - (void)loadView;
 @property(retain) IDEEditor *primaryEditor; // @synthesize primaryEditor=_primaryEditor;
@@ -305,7 +318,7 @@ struct CGSize {
     id <DVTObservingToken> _statsObservationToken;
     id <DVTObservingToken> _conflictResolutionDidCompleteObserver;
     NSDictionary *_previouslyRestoredStateDictionary;
-    IDESourceControlConflictMergeData *_previousMergeData;
+    IDESourceControlMergeData *_previousMergeData;
     unsigned long long _documentLoadCount;
 }
 
@@ -340,7 +353,7 @@ struct CGSize {
 - (void)_willOpenSpecifier:(id)arg1;
 - (void)viewWillUninstall;
 - (void)viewDidInstall;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)loadView;
 - (void)_syncStructureDocument;
 - (void)_initializeDiffSession;
@@ -348,14 +361,13 @@ struct CGSize {
 - (void)_saveMergeState;
 - (void)_resetMergeState;
 - (id)_windowForError;
-@property(readonly) IDESourceControlConflictMergeData *previousMergeData;
+@property(readonly) IDESourceControlMergeData *previousMergeData;
 @property(retain) DVTDiffSession *diffSession;
 @property(retain) IDEEditor *secondaryEditor; // @synthesize secondaryEditor=_secondaryEditor;
 @property(retain) IDEEditor *primaryEditor; // @synthesize primaryEditor=_primaryEditor;
 @property(readonly) QLPreviewView *secondaryQuickLookView;
 @property(readonly) QLPreviewView *primaryQuickLookView;
 - (id)keyEditor;
-- (void)comparisonContextMenu_copyDiff:(id)arg1;
 
 @end
 
@@ -369,6 +381,14 @@ struct CGSize {
 - (id)uistring_mediaCodecs;
 - (id)uistring_mediaAudioChannels;
 - (id)uistring_mediaDuration;
+- (id)uistring_pdfKeywords;
+- (id)uistring_pdfPageCount;
+- (id)uistring_pdfDescription;
+- (id)uistring_pdfSubject;
+- (id)uistring_pdfAuthors;
+- (id)uistring_pdfTitle;
+- (id)uistring_pdfDimensions;
+- (id)_spotlightItemStringValueForAttribute:(const struct __CFString *)arg1;
 - (id)uistring_imageHasAlphaChannel;
 - (id)uistring_imageColorSpace;
 - (id)uistring_imageResolution;

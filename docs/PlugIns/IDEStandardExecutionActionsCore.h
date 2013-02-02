@@ -8,13 +8,23 @@
 
 /*
  * File: /Applications/Xcode.app/Contents/PlugIns/IDEStandardExecutionActionsCore.ideplugin/Contents/MacOS/IDEStandardExecutionActionsCore
- * UUID: D3E9AB28-C029-345F-A2DB-D93D61090325
+ * UUID: AED88C80-B0CE-3113-BBD5-FBFCD467373C
  * Arch: Intel x86-64 (x86_64)
- *       Current version: 1170.0.0, Compatibility version: 1.0.0
+ *       Current version: 2053.0.0, Compatibility version: 1.0.0
  *       Minimum Mac OS X version: 10.7.0
  *
  *       Objective-C Garbage Collection: Required
  */
+
+@protocol __ARCLiteIndexedSubscripting__
+- (void)setObject:(id)arg1 atIndexedSubscript:(unsigned long long)arg2;
+- (id)objectAtIndexedSubscript:(unsigned long long)arg1;
+@end
+
+@protocol __ARCLiteKeyedSubscripting__
+- (void)setObject:(id)arg1 forKeyedSubscript:(id)arg2;
+- (id)objectForKeyedSubscript:(id)arg1;
+@end
 
 @interface IDEAlertExecutionAction : IDEExecutionAction
 {
@@ -96,7 +106,7 @@
 }
 
 + (id)actionType;
-@property(retain) IDESchemeBuildableReference *buildableReferenceToUseForBuildSettings; // @synthesize buildableReferenceToUseForBuildSettings=_buildableReferenceToUseForBuildSettings;
+@property(retain, nonatomic) IDESchemeBuildableReference *buildableReferenceToUseForBuildSettings; // @synthesize buildableReferenceToUseForBuildSettings=_buildableReferenceToUseForBuildSettings;
 @property(copy) NSString *shellToInvoke; // @synthesize shellToInvoke=_shellToInvoke;
 @property(copy, nonatomic) NSString *embeddedScriptText; // @synthesize embeddedScriptText=_embeddedScriptText;
 - (void)setShellToInvokeFromUTF8String:(char *)arg1 fromXMLUnarchiver:(id)arg2;

@@ -30,9 +30,9 @@ struct _NSRange {
 
 /*
  * File: /Applications/Xcode.app/Contents/PlugIns/IDESourceEditor.ideplugin/Contents/MacOS/IDESourceEditor
- * UUID: B1776C9F-426F-3F26-91A8-4DD2E5F24F78
+ * UUID: 5DD95A0A-1FA8-3CC1-B387-889B05F9E1AE
  * Arch: Intel x86-64 (x86_64)
- *       Current version: 1175.0.0, Compatibility version: 1.0.0
+ *       Current version: 2063.0.0, Compatibility version: 1.0.0
  *       Minimum Mac OS X version: 10.7.0
  *
  *       Objective-C Garbage Collection: Required
@@ -41,6 +41,7 @@ struct _NSRange {
 @protocol DVTCompletingTextViewDelegate <NSTextViewDelegate>
 
 @optional
+- (void)setupTextViewContextMenuWithMenu:(id)arg1;
 - (BOOL)completingTextViewHandleCancel:(id)arg1;
 - (unsigned long long)textView:(id)arg1 lineEndingForWritingSelectionToPasteboard:(id)arg2 type:(id)arg3;
 - (unsigned long long)textView:(id)arg1 lineEndingForReadingSelectionFromPasteboard:(id)arg2 type:(id)arg3;
@@ -56,9 +57,14 @@ struct _NSRange {
 - (void)diffSessionWillScrapeDiffResults:(id)arg1;
 @end
 
+@protocol DVTFilteringMenuDelegate <NSMenuDelegate>
+- (void)filterItems:(id)arg1 inMenu:(id)arg2 forSearchString:(id)arg3;
+@end
+
 @protocol DVTFindBarFindable
 
 @optional
+- (struct _NSRange)selectedRangeForFindBar:(id)arg1;
 - (id)startingLocationForFindBar:(id)arg1 findingBackwards:(BOOL)arg2;
 - (void)dvtFindBar:(id)arg1 didUpdateCurrentResult:(id)arg2;
 - (void)dvtFindBar:(id)arg1 didUpdateResults:(id)arg2;
@@ -68,6 +74,11 @@ struct _NSRange {
 @property(readonly) DVTStackBacktrace *invalidationBacktrace;
 @property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (void)invalidate;
+@end
+
+@protocol DVTInvalidation_New <DVTInvalidation>
+@property(retain) DVTStackBacktrace *creationBacktrace;
+- (void)primitiveInvalidate;
 @end
 
 @protocol DVTMessageBubbleAnnotationDelegate <DVTTextAnnotationDelegate>
@@ -91,6 +102,7 @@ struct _NSRange {
 - (struct CGRect)expressionFrameForExpression:(id)arg1;
 
 @optional
+@property(readonly, nonatomic) NSString *selectedText;
 @property(readonly) DVTSourceExpression *quickHelpExpression;
 - (void)unregisterMouseOverExpressionObserver:(id)arg1;
 - (void)registerMouseOverExpressionObserver:(id)arg1;
@@ -118,10 +130,8 @@ struct _NSRange {
 
 @optional
 - (id)textViewWillReturnPrintJobTitle:(id)arg1;
-- (id)cursorForAltTemporaryLink;
 - (void)textViewDidScroll:(id)arg1;
 - (void)setupGutterContextMenuWithMenu:(id)arg1;
-- (void)setupTextViewContextMenuWithMenu:(id)arg1;
 - (void)tokenizableItemsForItemAtRealRange:(struct _NSRange)arg1 completionBlock:(id)arg2;
 - (void)textViewDidFinishAnimatingScroll:(id)arg1;
 - (void)textViewDidLoadAnnotationProviders:(id)arg1;
@@ -156,6 +166,25 @@ struct _NSRange {
 - (void)didClickAnnotation:(id)arg1 inTextSidebarView:(id)arg2 event:(id)arg3;
 @end
 
+@protocol DVTTextCompletionItem <NSObject>
+@property(readonly) BOOL notRecommended;
+@property double priority;
+@property(readonly) NSImage *icon;
+@property(readonly) NSAttributedString *descriptionText;
+@property(readonly) NSString *parentText;
+@property(readonly) NSString *completionText;
+@property(readonly) NSString *displayType;
+@property(readonly) NSString *displayText;
+@property(readonly) NSString *name;
+
+@optional
+@property(readonly) NSImage *highlightedStatusIcon;
+@property(readonly) NSImage *statusIcon;
+@property(readonly) NSArray *additionalCompletions;
+@property(readonly) int completionItemStyle;
+- (void)infoViewControllerWithWidth:(double)arg1 context:(id)arg2 completionBlock:(id)arg3;
+@end
+
 @protocol DVTTextFindable <NSObject>
 - (id)findStringMatchingDescriptor:(id)arg1 backwards:(BOOL)arg2 from:(id)arg3 to:(id)arg4;
 
@@ -167,6 +196,7 @@ struct _NSRange {
 - (BOOL)replaceFindResults:(id)arg1 withString:(id)arg2 withError:(id *)arg3;
 
 @optional
+- (BOOL)replaceFindResults:(id)arg1 inSelection:(struct _NSRange)arg2 withString:(id)arg3 withError:(id *)arg4;
 - (BOOL)replaceTextWithContentsOfURL:(id)arg1 error:(id *)arg2;
 @end
 
@@ -189,8 +219,14 @@ struct _NSRange {
 - (void)setValue:(id)arg1 forOverridingBuildSettingKey:(id)arg2 sourceCodeBuildFileReference:(id)arg3;
 - (id)valueForBuildSettingKey:(id)arg1 sourceCodeBuildFileReferences:(id)arg2;
 - (void)setValue:(id)arg1 forBuildSettingKey:(id)arg2 sourceCodeBuildFileReference:(id)arg3;
+- (id)linkedBinaries;
+- (id)allProjectHeaderFiles;
+- (id)allPrivateHeaderFiles;
+- (id)allPublicHeaderFiles;
+- (id)allBuildFileReferences;
 - (id)sourceCodeBuildFileReferences;
 - (void)convertToUseARC;
+- (void)convertToUseModernObjCSyntax;
 - (BOOL)canConvertToUseARC;
 - (void)convertToBuild64bitOnly;
 - (void)convertToUseClang;
@@ -302,6 +338,11 @@ struct _NSRange {
 - (id)supportedSourceCodeLanguagesForSourceCodeGeneration;
 @end
 
+@protocol IDESourceControlLogDetailDelegate <NSObject>
+- (id)viewWindow;
+- (void)compareToPrevious;
+@end
+
 @protocol IDESourceEditorViewControllerHost <NSObject>
 
 @optional
@@ -321,6 +362,7 @@ struct _NSRange {
 - (void)symbolsForExpression:(id)arg1 inQueue:(struct dispatch_queue_s *)arg2 completionBlock:(id)arg3;
 
 @optional
+- (BOOL)isLocationInFunctionOrMethodBody:(id)arg1;
 - (id)importStringInExpression:(id)arg1;
 @end
 
@@ -364,6 +406,20 @@ struct _NSRange {
 - (Class)superclass;
 - (unsigned long long)hash;
 - (BOOL)isEqual:(id)arg1;
+
+@optional
+- (id)debugDescription;
+@end
+
+@protocol NSPopoverDelegate <NSObject>
+
+@optional
+- (void)popoverDidClose:(id)arg1;
+- (void)popoverWillClose:(id)arg1;
+- (void)popoverDidShow:(id)arg1;
+- (void)popoverWillShow:(id)arg1;
+- (id)detachableWindowForPopover:(id)arg1;
+- (BOOL)popoverShouldClose:(id)arg1;
 @end
 
 @protocol NSPrintPanelAccessorizing
@@ -415,6 +471,7 @@ struct _NSRange {
 - (void)textView:(id)arg1 doubleClickedOnCell:(id)arg2 inRect:(struct CGRect)arg3;
 - (void)textView:(id)arg1 clickedOnCell:(id)arg2 inRect:(struct CGRect)arg3;
 - (BOOL)textView:(id)arg1 clickedOnLink:(id)arg2;
+- (id)textView:(id)arg1 willShowSharingServicePicker:(id)arg2 forItems:(id)arg3;
 - (id)textView:(id)arg1 URLForContentsOfTextAttachment:(id)arg2 atIndex:(unsigned long long)arg3;
 - (id)textView:(id)arg1 didCheckTextInRange:(struct _NSRange)arg2 types:(unsigned long long)arg3 options:(id)arg4 results:(id)arg5 orthography:(id)arg6 wordCount:(long long)arg7;
 - (id)textView:(id)arg1 willCheckTextInRange:(struct _NSRange)arg2 options:(id)arg3 types:(unsigned long long *)arg4;
@@ -442,6 +499,16 @@ struct _NSRange {
 - (BOOL)validateUserInterfaceItem:(id)arg1;
 @end
 
+@protocol __ARCLiteIndexedSubscripting__
+- (void)setObject:(id)arg1 atIndexedSubscript:(unsigned long long)arg2;
+- (id)objectAtIndexedSubscript:(unsigned long long)arg1;
+@end
+
+@protocol __ARCLiteKeyedSubscripting__
+- (void)setObject:(id)arg1 forKeyedSubscript:(id)arg2;
+- (id)objectForKeyedSubscript:(id)arg1;
+@end
+
 @interface _IDESourceCodeDocumentPrintHelper : NSObject
 {
     NSLayoutManager *_layoutManager;
@@ -450,7 +517,14 @@ struct _NSRange {
 
 @property(retain) NSWindow *window; // @synthesize window=_window;
 @property(retain) NSLayoutManager *layoutManager; // @synthesize layoutManager=_layoutManager;
+- (void)dealloc;
 - (void)finalize;
+
+@end
+
+@interface _IDEVersionEditor_PrivateSourceCodeDocument : IDESourceCodeDocument
+{
+}
 
 @end
 
@@ -467,6 +541,8 @@ struct _NSRange {
     IDEGeneratedContentStatusContext *_generatedContentStatusContext;
     BOOL _generatesContent;
     id <DVTObservingToken> _generatedContentProviderDisplayNameObserver;
+    id <DVTObservingToken> _indexDidIndexWorkspaceObserver;
+    id <DVTObservingToken> _indexDidChangeObserver;
     unsigned long long _lineEndings;
     unsigned long long _textEncoding;
     NSMutableArray *_printContextInfo;
@@ -539,12 +615,13 @@ struct _NSRange {
 - (void)textStorageDidProcessEditing:(id)arg1;
 - (void)updateChangeCount:(unsigned long long)arg1;
 - (BOOL)replaceTextWithContentsOfURL:(id)arg1 error:(id *)arg2;
+- (BOOL)replaceFindResults:(id)arg1 inSelection:(struct _NSRange)arg2 withString:(id)arg3 withError:(id *)arg4;
 - (BOOL)replaceFindResults:(id)arg1 withString:(id)arg2 withError:(id *)arg3;
+- (BOOL)replaceFindResults:(id)arg1 withString:(id)arg2 inSelection:(struct _NSRange)arg3 withError:(id *)arg4;
 - (id)findStringMatchingDescriptor:(id)arg1 backwards:(BOOL)arg2 from:(id)arg3 to:(id)arg4;
 - (id)documentLocationFromCharacterRange:(struct _NSRange)arg1;
 - (struct _NSRange)characterRangeFromDocumentLocation:(id)arg1;
 - (id)updatedLocationFromLocation:(id)arg1 toTimestamp:(double)arg2;
-- (void)_indexDidChange:(id)arg1;
 - (void)prefetchNodeTypesExtraLines:(unsigned long long)arg1 upDirection:(BOOL)arg2 withContext:(id)arg3;
 - (void)initialPrefetchNodeTypesForLineRange:(struct _NSRange)arg1 withContext:(id)arg2;
 - (void)_prefetchNodeTypesForLineRange:(struct _NSRange)arg1 withContext:(id)arg2;
@@ -591,9 +668,6 @@ struct _NSRange {
 - (void)setSdefSupport_editorSettings:(id)arg1;
 - (id)sdefSupport_editorSettings;
 - (id)objectSpecifier;
-
-// Remaining properties
-@property unsigned long long supportedMatchingOptions;
 
 @end
 
@@ -644,9 +718,12 @@ struct _NSRange {
     id _blueprintDidChangeNotificationObservingToken;
     id _buildOperationOutputFilesObserver;
     id _textStorageDidProcessEndingObserver;
+    id <DVTObservingToken> _sourceCodeDocumentWillSaveObserver;
+    id <DVTObservingToken> _sourceCodeDocumentDidSaveObserver;
+    id <DVTObservingToken> _indexDidChangeObserver;
     IDESourceCodeEditorAnnotationProvider *_annotationProvider;
     IDEAnalyzerResultsExplorer *_analyzerResultsExplorer;
-    DVTScopeBarController *_analyzerResultsScopeBar;
+    DVTScopeBarController *_analyzerResultsScopeBar_dvtWeak;
     IDENoteAnnotationExplorer *_noteAnnotationExplorer;
     IDESingleFileProcessingToolbarController *_singleFileProcessingToolbarController;
     NSView *_emptyView;
@@ -662,7 +739,7 @@ struct _NSRange {
     struct _NSRange _lastEditedCharRange;
     DVTTextDocumentLocation *_continueToHereDocumentLocation;
     DVTTextDocumentLocation *_continueToLineDocumentLocation;
-    IDEViewController<IDESourceEditorViewControllerHost> *_hostViewController;
+    IDEViewController<IDESourceEditorViewControllerHost> *_hostViewController_dvtWeak;
     struct {
         unsigned int wantsDidScroll:1;
         unsigned int wantsDidFinishAnimatingScroll:1;
@@ -683,7 +760,6 @@ struct _NSRange {
 + (long long)version;
 + (void)configureStateSavingObjectPersistenceByName:(id)arg1;
 @property(readonly) IDESingleFileProcessingToolbarController *singleFileProcessingToolbarController; // @synthesize singleFileProcessingToolbarController=_singleFileProcessingToolbarController;
-@property __weak DVTScopeBarController *analyzerResultsScopeBar; // @synthesize analyzerResultsScopeBar=_analyzerResultsScopeBar;
 @property(readonly) IDEAnalyzerResultsExplorer *analyzerResultsExplorer; // @synthesize analyzerResultsExplorer=_analyzerResultsExplorer;
 @property(retain, nonatomic) DVTSourceExpression *mouseOverExpression; // @synthesize mouseOverExpression=_mouseOverExpression;
 @property(retain, nonatomic) DVTSourceExpression *selectedExpression; // @synthesize selectedExpression=_selectedExpression;
@@ -728,9 +804,11 @@ struct _NSRange {
 - (BOOL)expressionContainsExecutableCode:(id)arg1;
 - (BOOL)isExpressionFunctionOrMethodCall:(id)arg1;
 - (BOOL)isExpressionInFunctionOrMethodBody:(id)arg1;
+- (BOOL)isLocationInFunctionOrMethodBody:(id)arg1;
 - (BOOL)isExpressionFunctionOrMethodDefinition:(id)arg1;
 - (BOOL)isExpressionWithinComment:(id)arg1;
 - (void)symbolsForExpression:(id)arg1 inQueue:(struct dispatch_queue_s *)arg2 completionBlock:(id)arg3;
+@property(readonly, nonatomic) NSString *selectedText;
 @property(readonly, nonatomic) struct CGRect currentSelectionFrame;
 - (void)_invalidateExpressions;
 - (void)_invalidateSelectionExpression;
@@ -763,7 +841,7 @@ struct _NSRange {
 - (id)fixableDiagnosticAnnotationsInScope;
 - (id)_diagnosticAnnotationsInScopeFixableOnly:(BOOL)arg1;
 - (id)_diagnosticAnnotationsInRange:(struct _NSRange)arg1 fixableOnly:(BOOL)arg2;
-- (void)_searchDocumentationForSelectedText:(id)arg1;
+- (void)_showDocumentationForSelectedSymbol:(id)arg1;
 - (void)showQuickHelp:(id)arg1;
 - (void)continueToCurrentLine:(id)arg1;
 - (void)continueToHere:(id)arg1;
@@ -815,7 +893,6 @@ struct _NSRange {
 - (void)textViewDidLoadAnnotationProviders:(id)arg1;
 - (id)annotationContextForTextView:(id)arg1;
 - (id)syntaxColoringContextForTextView:(id)arg1;
-- (void)_indexDidChange:(id)arg1;
 - (BOOL)textView:(id)arg1 shouldChangeTextInRange:(struct _NSRange)arg2 replacementString:(id)arg3;
 - (void)setupTextViewContextMenuWithMenu:(id)arg1;
 - (void)setupGutterContextMenuWithMenu:(id)arg1;
@@ -825,7 +902,9 @@ struct _NSRange {
 - (void)addVisualization:(id)arg1 fadeIn:(BOOL)arg2 completionBlock:(id)arg3;
 @property(readonly) NSArray *visualizations;
 - (id)pathCell:(id)arg1 menuItemForNavigableItem:(id)arg2 defaultMenuItem:(id)arg3;
+- (BOOL)pathCell:(id)arg1 shouldInitiallyShowMenuSearch:(id)arg2;
 - (BOOL)pathCell:(id)arg1 shouldSeparateDisplayOfChildItemsForItem:(id)arg2;
+- (struct _NSRange)selectedRangeForFindBar:(id)arg1;
 - (id)startingLocationForFindBar:(id)arg1 findingBackwards:(BOOL)arg2;
 - (void)dvtFindBar:(id)arg1 didUpdateCurrentResult:(id)arg2;
 - (void)dvtFindBar:(id)arg1 didUpdateResults:(id)arg2;
@@ -841,15 +920,18 @@ struct _NSRange {
 - (void)_doInitialSetup;
 - (void)_liveIssuesPreferencesUpdatedInvalidateDiagnosticController:(BOOL)arg1;
 - (void)_blueprintDidChangeForSourceCodeEditor:(id)arg1;
-- (void)_endObservingDiagnosticItemsAndSessionInProgress;
-- (void)_startObservingDiagnosticItemsAndSessionInProgress;
-- (void)invalidate;
+- (void)_endObservingDiagnosticItems;
+- (void)_startObservingDiagnosticItems;
+- (void)primitiveInvalidate;
+- (void)selectDocumentLocations:(id)arg1 highlightSelection:(BOOL)arg2;
+- (void)selectAndHighlightDocumentLocations:(id)arg1;
 - (void)selectDocumentLocations:(id)arg1;
 - (void)navigateToAnnotationWithRepresentedObject:(id)arg1 wantsIndicatorAnimation:(BOOL)arg2 exploreAnnotationRepresentedObject:(id)arg3;
 - (id)currentSelectedDocumentLocations;
 - (id)_currentSelectedLandmarkItem;
 - (void)setCurrentSelectedItems:(id)arg1;
 - (id)currentSelectedItems;
+- (void)_refreshCurrentSelectedItemsIfNeeded;
 - (BOOL)_isCurrentSelectedItemsValid;
 @property __weak IDEViewController<IDESourceEditorViewControllerHost> *hostViewController;
 @property(readonly) IDESourceCodeEditorAnnotationProvider *annotationProvider; // @synthesize annotationProvider=_annotationProvider;
@@ -857,6 +939,7 @@ struct _NSRange {
 @property(readonly) IDESourceCodeDocument *sourceCodeDocument;
 - (void)loadView;
 - (id)initWithNibName:(id)arg1 bundle:(id)arg2 document:(id)arg3;
+@property __weak DVTScopeBarController *analyzerResultsScopeBar;
 
 // Remaining properties
 @property(readonly) DVTStackBacktrace *invalidationBacktrace;
@@ -872,54 +955,28 @@ struct _NSRange {
 
 @end
 
-@interface IDETextCompletionHeadersInWorkspaceStrategy : DVTTextCompletionStrategy
-{
-    id _queryObservationToken;
-    id _lastQuery;
-}
-
-- (id)completionItemsForDocumentLocation:(id)arg1 context:(id)arg2 areDefinitive:(char *)arg3;
-- (void)prepareForDocumentLocation:(id)arg1 context:(id)arg2;
-- (id)_cachedHeaderCompletionsForWorkspace:(id)arg1;
-- (void)_updateHeaderCompletionsForWorkspace:(id)arg1;
-- (id)_headersQueryForWorkspace:(id)arg1;
-
-@end
-
 @interface IDETextCompletionHeadersInSearchPathStrategy : DVTTextCompletionStrategy
 {
-    id _headerFileSearchContext;
-    NSArray *_userHeaderSearchPaths;
-    NSArray *_systemHeaderSearchPaths;
-    NSFileManager *_fileManager;
 }
 
 - (id)completionItemsForDocumentLocation:(id)arg1 context:(id)arg2 areDefinitive:(char *)arg3;
-- (id)_completionItemsFromSubPath:(id)arg1 includerURL:(id)arg2 usingUserPaths:(BOOL)arg3 context:(id)arg4;
+- (id)_completionItemsFromSubPath:(id)arg1 includerURL:(id)arg2 usingUserPaths:(BOOL)arg3 userHeaderSearchPaths:(id)arg4 systemHeaderSearchPaths:(id)arg5 headerMappedHeaders:(id)arg6 alwaysSearchUserPaths:(BOOL)arg7 context:(id)arg8;
+- (id)_uniqueCompletionItemsFromHeaderMappedHeaders:(id)arg1;
 - (id)_uniqueCompletionItemsAtPath:(id)arg1 withBasePriority:(long long)arg2;
-- (id)_fileManager;
-- (BOOL)alwaysSearchUserPaths;
-- (id)userHeaderSearchPaths;
-- (id)systemHeaderSearchPaths;
-- (id)headerFileSearchContext;
 
 @end
 
 @interface IDETextCompletionFrameworksStrategy : DVTTextCompletionStrategy
 {
-    id _headerFileSearchContext;
-    NSArray *_frameworkSearchPaths;
 }
 
 - (id)completionItemsForDocumentLocation:(id)arg1 context:(id)arg2 areDefinitive:(char *)arg3;
-- (id)_completionItemsFromSubPath:(id)arg1;
+- (id)_completionItemsFromSubPath:(id)arg1 frameworkHeaderSearchPaths:(id)arg2;
 - (id)_uniqueCompletionItemsAtPath:(id)arg1 insideFramework:(BOOL)arg2 privateHeaders:(BOOL)arg3;
-- (id)frameworkSearchPaths;
-- (id)headerFileSearchContext;
 
 @end
 
-@interface IDESourceCodeComparisonEditor : IDEComparisonEditor <DVTFindBarFindable>
+@interface IDESourceCodeComparisonEditor : IDEComparisonEditor <DVTFindBarFindable, IDEOpenQuicklyJumpToSupport>
 {
     NSDictionary *_previouslyRestoredStateDictionary;
 }
@@ -928,6 +985,8 @@ struct _NSRange {
 + (void)configureStateSavingObjectPersistenceByName:(id)arg1;
 + (id)keyPathsForValuesAffectingKeyTextView;
 - (void)find:(id)arg1;
+- (id)currentEditorContext;
+- (id)documentLocationForOpenQuicklyQuery:(id)arg1;
 - (id)startingLocationForFindBar:(id)arg1 findingBackwards:(BOOL)arg2;
 - (void)dvtFindBar:(id)arg1 didUpdateCurrentResult:(id)arg2;
 - (void)dvtFindBar:(id)arg1 didUpdateResults:(id)arg2;
@@ -938,14 +997,18 @@ struct _NSRange {
 @property(readonly) DVTSourceTextView *keyTextView;
 - (void)_updateViewBasedOnSubmode;
 - (struct CGRect)overlayFrameForView:(id)arg1;
+- (BOOL)pathCell:(id)arg1 shouldInitiallyShowMenuSearch:(id)arg2;
 - (BOOL)pathCell:(id)arg1 shouldSeparateDisplayOfChildItemsForItem:(id)arg2;
 
 @end
 
 @interface IDEAnalyzerResultsExplorer : DVTViewController <DVTScopeBarContentController, DVTMessageBubbleAnnotationDelegate>
 {
+    NSImageView *_iconImageView;
     NSPopUpButton *_stepsPopupButton;
     NSSegmentedControl *_navSegmentedControl;
+    NSArrayController *_stepMessagesController;
+    id <DVTObservingToken> _stepsPoupButtonWillPopUpObservingToken;
     NSMutableArray *_stepAnnotations;
     IDESourceCodeEditor *_editor;
     IDEActivityLogAnalyzerResultMessage *_analyzerMessage;
@@ -974,6 +1037,7 @@ struct _NSRange {
 @property(readonly) BOOL canShowNextStep;
 - (void)setCurrentStepIssue:(id)arg1;
 @property(readonly) double preferredViewHeight;
+- (void)viewWillUninstall;
 - (void)viewDidInstall;
 - (void)awakeFromNib;
 - (id)initWithEditor:(id)arg1;
@@ -993,7 +1057,7 @@ struct _NSRange {
 
 @interface IDEAnalyzerResultsVisualization : DVTTextVisualization
 {
-    NSMapTable *_controlFlowPathsByStep;
+    DVTMapTable *_controlFlowPathsByStep;
     struct CGRect _cachedBounds;
     IDEAnalyzerResultsExplorer *_explorer;
 }
@@ -1144,12 +1208,12 @@ struct _NSRange {
     id <DVTObservingToken> _editorLiveIssuesPrefObserver;
     id <DVTObservingToken> _issueObservingToken;
     id _issueCoalescingObserver;
-    id _workspaceLiveSourceIssuesEnabledObserver;
+    id <DVTObservingToken> _workspaceLiveSourceIssuesEnabledObserver;
     id <DVTObservingToken> _buildOperationToken;
     IDEBuildOperation *_buildOperation;
     DVTHUDPopUpController *_hudPopUpController;
-    id <DVTObservingToken> _hudPopUpControllerCloseToken;
-    id <DVTObservingToken> _hudPopUpControllerResignKeyToken;
+    id _hudPopUpControllerCloseToken;
+    id _hudPopUpControllerResignKeyToken;
     BOOL _applyingFixItItems;
     BOOL _wasAutoCompletionEnabled;
     BOOL _liveSourceIssuesEnabled;
@@ -1170,7 +1234,7 @@ struct _NSRange {
 - (void)showFixItForDiagnosticMessage:(id)arg1 diagnosticAnnotation:(id)arg2 inTextView:(id)arg3;
 - (void)applyFixItItemsForFixableDiagnosticItems:(id)arg1 diagnosticAnnotation:(id)arg2 inTextView:(id)arg3 animate:(BOOL)arg4;
 - (void)_applyFixItItemsForFixableDiagnosticItems:(id)arg1 diagnosticAnnotation:(id)arg2 inTextView:(id)arg3 animate:(BOOL)arg4 updateFixItInfo:(BOOL)arg5;
-- (void)hideFixItHints;
+- (void)closeFixItHints;
 - (void)providerWillUninstall;
 - (id)initWithContext:(id)arg1;
 - (void)_liveIssuesPrefsChanged;
@@ -1269,8 +1333,10 @@ struct _NSRange {
     struct _NSRange _previewRange;
     IDESourceCodeDocument *_sourceCodeDocument;
     DVTSourceTextView *_textView;
+    IDEDiagnosticAnnotation *_diagnosticAnnotation;
     IDEDiagnosticActivityLogMessage *_diagnosticItem;
     BOOL _userAcceptedSession;
+    BOOL _changingSelection;
     NSTextField *_typeTextField;
     NSImageView *_titleIconImageView;
     NSTextField *_titleTextField;
@@ -1282,7 +1348,7 @@ struct _NSRange {
 }
 
 + (id)keyPathsForValuesAffectingDiagnosticItem;
-@property(retain, nonatomic) IDEDiagnosticActivityLogMessage *diagnosticItem; // @synthesize diagnosticItem=_diagnosticItem;
+@property(retain) IDEDiagnosticAnnotation *diagnosticAnnotation; // @synthesize diagnosticAnnotation=_diagnosticAnnotation;
 @property BOOL userAcceptedSession; // @synthesize userAcceptedSession=_userAcceptedSession;
 @property(retain) DVTSourceTextView *textView; // @synthesize textView=_textView;
 @property(retain) IDESourceCodeDocument *sourceCodeDocument; // @synthesize sourceCodeDocument=_sourceCodeDocument;
@@ -1296,6 +1362,7 @@ struct _NSRange {
 - (void)beginInlinePreviewing;
 - (void)loadView;
 @property(readonly) NSArray *selectedFixableDiagnosticItems;
+@property(retain, nonatomic) IDEDiagnosticActivityLogMessage *diagnosticItem;
 - (id)initWithNibName:(id)arg1 bundle:(id)arg2;
 
 @end
@@ -1327,6 +1394,7 @@ struct _NSRange {
 - (id)currentSelectedDocumentLocations;
 - (id)currentSelectedItems;
 - (void)blameController:(id)arg1 didEncounterError:(id)arg2;
+- (void)goToBASE:(id)arg1;
 - (void)blameController:(id)arg1 showRevision:(id)arg2;
 - (void)blameController:(id)arg1 diffAgainstRevision:(id)arg2;
 - (void)blameController:(id)arg1 compareToRevision:(id)arg2;
@@ -1334,6 +1402,7 @@ struct _NSRange {
 - (void)hidePrimaryPlaceholder;
 - (void)showPrimaryPlaceholder;
 - (void)comparisonEditor:(id)arg1 didReplacePrimaryDocument:(id)arg2;
+- (void)comparisonEditor:(id)arg1 willReplacePrimaryDocument:(id)arg2;
 - (void)_createBlameController;
 - (id)_sourceControlDocumentLocationFromComparisonEditorPrimaryDocumentLocation;
 - (void)_observeBlameControllerLoading;
@@ -1342,7 +1411,7 @@ struct _NSRange {
 - (void)_completeSetUpWithEditor:(id)arg1;
 - (void)_syncStructureDocument;
 - (id)_fileTextSettings;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)willBeRemovedFromComparisonEditor;
 - (void)viewDidInstall;
 - (void)showEmptyPrimaryEditor:(id)arg1;
@@ -1388,14 +1457,13 @@ struct _NSRange {
     id <DVTObservingToken> _blameObserver;
     id _blameInfoPanelDidShowObserver;
     id _blameInfoPanelDidHideObserver;
-    NSString *_infoPanelRevision;
 }
 
 + (id)annotationProviderForContext:(id)arg1 error:(id *)arg2;
 - (id)_createAnnotationForItem:(id)arg1;
-- (id)_annotationThemeWithHighlight:(BOOL)arg1;
+- (id)_annotationThemeWithHighlight:(BOOL)arg1 forSelected:(BOOL)arg2;
 - (void)_createAnnotations;
-- (void)_updateThemeForInfoPanel;
+- (void)_updateThemeForInfoPanelFromSender:(id)arg1;
 - (id)initWithContext:(id)arg1;
 
 @end
@@ -1421,9 +1489,10 @@ struct _NSRange {
 - (void)hidePrimaryPlaceholder;
 - (void)showPrimaryPlaceholder;
 - (void)comparisonEditor:(id)arg1 didReplacePrimaryDocument:(id)arg2;
+- (void)comparisonEditor:(id)arg1 willReplacePrimaryDocument:(id)arg2;
 - (void)_syncStructureDocument;
 - (id)_fileTextSettings;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)viewDidInstall;
 - (void)loadView;
 @property(retain) IDEEditor *primaryEditor; // @synthesize primaryEditor=_primaryEditor;
@@ -1475,15 +1544,23 @@ struct _NSRange {
     id <DVTObservingToken> _responderToken;
     id <DVTObservingToken> _statsObservationToken;
     id <DVTObservingToken> _conflictResolutionDidCompleteObserver;
+    id <DVTObservingToken> _interactiveCommitDidCompleteObserver;
+    id _resignKeyWindowNotificationObserver;
+    id _becomeKeyWindowNotificationObserver;
     NSDictionary *_previouslyRestoredStateDictionary;
     id _primaryEditorSetupObservationToken;
     id _secondaryEditorSetupObservationToken;
-    IDESourceControlConflictMergeData *_previousMergeData;
+    IDESourceControlMergeData *_previousMergeData;
     unsigned long long _documentLoadCount;
     BOOL _showingPrimaryDocumentStructure;
     BOOL _firstResults;
+    BOOL _canSelectPrevious;
+    BOOL _canSelectNext;
+    unsigned long long _selectedIndex;
 }
 
++ (BOOL)automaticallyNotifiesObserversOfCanSelectNext;
++ (BOOL)automaticallyNotifiesObserversOfCanSelectPrevious;
 + (id)logAspect;
 + (id)keyPathsForValuesAffectingCurrentSelectedDocumentLocations;
 + (id)keyPathsForValuesAffectingCurrentSelectedItems;
@@ -1518,15 +1595,29 @@ struct _NSRange {
 - (double)splitView:(id)arg1 constrainMinCoordinate:(double)arg2 ofSubviewAt:(long long)arg3;
 - (void)splitViewDidResizeSubviews:(id)arg1;
 - (void)textViewDidScroll:(id)arg1;
+- (void)_updateCanSelectDiffs;
 - (void)textViewDidFinishAnimatingScroll:(id)arg1;
 - (void)textViewDidLoadAnnotationProviders:(id)arg1;
 - (id)annotationContextForTextView:(id)arg1;
+- (void)offsetCurrentSelectedIndexBy:(long long)arg1;
+- (void)setCanSelectNext:(BOOL)arg1;
+- (BOOL)canSelectNext;
+- (void)setCanSelectPrevious:(BOOL)arg1;
+- (BOOL)canSelectPrevious;
+- (void)setDifferenceMenu:(id)arg1;
+- (void)explainRevertSelectedDifferenceAlertDidEnd:(id)arg1 returnCode:(long long)arg2 contextInfo:(void *)arg3;
+- (void)revertSelectedDifference;
+- (BOOL)canRevertSelectedDifference;
+- (void)copyDiff;
+- (BOOL)canCopyDiff;
+- (void)rightMouseUp:(id)arg1;
+- (void)rightMouseDown:(id)arg1;
 - (void)showEmptySecondaryEditor:(id)arg1;
 - (void)showEmptyPrimaryEditor:(id)arg1;
 - (void)_willOpenSpecifier:(id)arg1;
 - (void)viewWillUninstall;
 - (void)viewDidInstall;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)loadView;
 - (void)_syncStructureDocument;
 - (void)_initializeDiffSession;
@@ -1535,23 +1626,28 @@ struct _NSRange {
 - (void)_saveMergeState;
 - (void)_resetMergeState;
 - (id)_windowForError;
-@property(readonly) IDESourceControlConflictMergeData *previousMergeData;
+- (BOOL)_documentIsTemporaryDocument;
+@property(readonly) IDESourceControlMergeData *previousMergeData;
+- (id)mergeController;
 @property(retain) DVTDiffSession *diffSession;
 @property(retain) IDEEditor *secondaryEditor; // @synthesize secondaryEditor=_secondaryEditor;
 @property(retain) IDEEditor *primaryEditor; // @synthesize primaryEditor=_primaryEditor;
 @property(readonly) DVTSourceTextView *secondaryTextView;
 @property(readonly) DVTSourceTextView *primaryTextView;
 - (id)keyEditor;
+- (void)keyDown:(id)arg1;
+- (BOOL)validateMenuItem:(id)arg1;
+- (void)comparisonContextMenu_revertSelectedDiffDescriptor:(id)arg1;
+- (void)comparisonContextMenu_toggleIgnoreWhitespace:(id)arg1;
 - (void)comparisonContextMenu_copyDiff:(id)arg1;
 
 @end
 
-@interface IDEBlameAnnotationViewController : DVTViewController
+@interface IDEBlameAnnotationViewController : DVTViewController <NSPopoverDelegate, IDESourceControlLogDetailDelegate>
 {
     IDEBlameAnnotationBorderedView *_borderedView;
     NSView *_primaryView;
     NSTextField *_messageTextField;
-    NSTextField *_revisionTextField;
     NSTextField *_dateTextField;
     IDEBlameAnnotationAgeBarView *_ageBar;
     NSButton *_actionButton;
@@ -1560,39 +1656,50 @@ struct _NSRange {
     double _relativeAge;
     NSNib *_nibUsedForLoading;
     IDESourceCodeBlameController *_blameController;
-    id <DVTObservingToken> _editorTextViewBoundsChangedObserver;
-    IDEBlameDetailPopUpController *_popUpWindowController;
+    NSPopover *_logPopover;
     id _popUpWindowDidResignToken;
     id _blameShowInfoPanelObserver;
     id _blameHideInfoPanelObserver;
     NSPopUpButton *_detailPopUpButton;
     NSTextField *_committerTextField;
+    IDESourceControlLogDetailViewController *_detailController;
+    long long _trackingTag;
+    BOOL _uncommitted;
 }
 
++ (id)keyPathsForValuesAffectingDisplayLogItemDate;
++ (id)keyPathsForValuesAffectingDisplayLogItemAuthorName;
 + (id)keyPathsForValuesAffectingDisplayLogItemMessage;
 + (id)annotationHighlightGradient;
++ (id)annotationActiveHighlightGradient;
 + (double)defaultWidth;
 + (id)_fontWithDefaultMessageFontSize;
 + (double)_defaultMessageFontSize;
 + (id)defaultViewNibName;
+@property BOOL uncommitted; // @synthesize uncommitted=_uncommitted;
 @property(retain) IDESourceCodeBlameController *blameController; // @synthesize blameController=_blameController;
 @property long long fontSize; // @synthesize fontSize=_fontSize;
 @property(retain) IDEBlameAnnotationAgeBarView *ageBar; // @synthesize ageBar=_ageBar;
-@property(retain) NSTextField *revisionTextField; // @synthesize revisionTextField=_revisionTextField;
 @property(retain) NSButton *actionButton; // @synthesize actionButton=_actionButton;
 @property(retain) NSTextField *messageTextField; // @synthesize messageTextField=_messageTextField;
 @property(retain) IDEBlameAnnotationBorderedView *borderedView; // @synthesize borderedView=_borderedView;
 @property(retain) NSView *primaryView; // @synthesize primaryView=_primaryView;
 - (void)_layoutView;
+- (void)mouseExited:(id)arg1;
+- (void)mouseEntered:(id)arg1;
 - (void)goToDiff:(id)arg1;
 - (void)goToCompare:(id)arg1;
 - (void)goToRevision:(id)arg1;
-- (void)_cleanUpPopUpWindowClose:(BOOL)arg1;
+- (void)popoverDidClose:(id)arg1;
+- (void)popoverWillClose:(id)arg1;
 - (void)showBlameMenu:(id)arg1;
+- (id)viewWindow;
 - (void)showInfoPanel;
 - (void)compareToCurrentRevision;
 - (void)compareToPrevious;
 @property double relativeAge; // @synthesize relativeAge=_relativeAge;
+- (id)displayLogItemDate;
+- (id)displayLogItemAuthorName;
 - (id)displayLogItemMessage;
 - (void)viewWillUninstall;
 - (void)viewDidInstall;
@@ -1652,8 +1759,10 @@ struct _NSRange {
 @interface IDEBlameAnnotationAgeBarView : NSView
 {
     double _relativeAge;
+    BOOL _isUncommitted;
 }
 
+@property BOOL isUncommitted; // @synthesize isUncommitted=_isUncommitted;
 @property double relativeAge; // @synthesize relativeAge=_relativeAge;
 - (void)drawRect:(struct CGRect)arg1;
 - (BOOL)isOpaque;
@@ -1692,13 +1801,17 @@ struct _NSRange {
     id <DVTObservingToken> _sourceControlLocalStatusToken;
     BOOL _loading;
     BOOL _isBlameAvailableForRevision;
+    BOOL _showBaseButton;
     BOOL _blameItemsAreValid;
     BOOL _editorTextViewBoundsChanged;
+    NSString *_selectedRevision;
 }
 
+@property(retain) NSString *selectedRevision; // @synthesize selectedRevision=_selectedRevision;
 @property BOOL editorTextViewBoundsChanged; // @synthesize editorTextViewBoundsChanged=_editorTextViewBoundsChanged;
 @property(readonly) NSString *genericUnavailabilityDescription; // @synthesize genericUnavailabilityDescription=_genericUnavailabilityDescription;
 @property(readonly) NSString *specificUnavailabilityDescription; // @synthesize specificUnavailabilityDescription=_specificUnavailabilityDescription;
+@property(readonly) BOOL showBaseButton; // @synthesize showBaseButton=_showBaseButton;
 @property BOOL isBlameAvailableForRevision; // @synthesize isBlameAvailableForRevision=_isBlameAvailableForRevision;
 @property(retain) id <IDESourceCodeBlameControllerDelegate> delegate; // @synthesize delegate=_delegate;
 @property(readonly) double newestTime; // @synthesize newestTime=_newestTime;
@@ -1743,27 +1856,39 @@ struct _NSRange {
 - (void)setupPreview;
 - (void)setupDocument;
 - (BOOL)_setupSliceView:(id)arg1 forLocations:(id)arg2 focusOnLocation:(long long)arg3 inDocument:(id)arg4;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (id)sliceHeightLayoutManagersForPreviewTextStorage;
 - (id)sliceHeightLayoutManagersForOriginalTextStorage;
 
 @end
 
-@interface IDESourceCodeEditorContainerView : DVTLayoutView_ML
+@interface IDESourceCodeEditorContainerView : DVTLayoutView_ML <DVTInvalidation_New>
 {
     IDESourceCodeEditor *_editor;
     IDEViewController *_toolbarViewController;
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
+@property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
+- (void)primitiveInvalidate;
 - (void)showToolbarWithViewController:(id)arg1;
 - (void)didCompleteLayout;
+- (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 
 @end
 
 @interface IDEDiagnosticIssueProvider : IDEIssueProvider
 {
     NSMutableSet *openDocumentFilePaths;
-    NSMapTable *openDocFilePathToDiagnosticObserverMap;
+    DVTMapTable *openDocFilePathToDiagnosticObserverMap;
     NSMutableSet *_filePathsWithIssues;
     id <DVTObservingToken> _blueprintsObserver;
     id <DVTObservingToken> kvoEditorDocumentsToken;
@@ -1782,14 +1907,14 @@ struct _NSRange {
 - (void)_stopObservingDiagnosticItemsWithFilePath:(id)arg1 removeIssues:(BOOL)arg2;
 - (void)_startObservingDiagnosticItemsWithSourceDocument:(id)arg1;
 - (void)_rebuildIssuesForFilePath:(id)arg1 withDiagnosticItems:(id)arg2 sourceDocument:(id)arg3;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (id)initWithIssueManager:(id)arg1 extension:(id)arg2;
 - (void)_updatedLiveIssuePrefs;
 - (void)_setIssues:(id)arg1 forFilePath:(id)arg2;
 
 @end
 
-@interface IDESourceCodeNavigationRequest : NSObject <DVTInvalidation>
+@interface IDESourceCodeNavigationRequest : NSObject <DVTInvalidation_New, DVTFilteringMenuDelegate>
 {
     IDESourceCodeEditor *_sourceEditor;
     NSPopUpButtonCell *_symbolPopUpCell;
@@ -1805,19 +1930,24 @@ struct _NSRange {
     id _navigationProgressBlock;
     NSMutableArray *_debugAsyncRequestsLog;
     DVTPerformanceMetric *_performanceMetric;
-    DVTStackBacktrace *_invalidationBacktrace;
-    BOOL _isInvalidated;
     BOOL _didStart;
     BOOL _didFinish;
     BOOL _didScheduleJumpToDestination;
     BOOL _gotPermissionToJumpWhenReady;
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
 + (id)_performanceLogAspect;
 + (id)_navigationLogAspect;
 + (struct dispatch_queue_s *)_indexQueriesSharedQueue;
 + (id)keyPathsForValuesAffectingReadyToDisambiguateOccurrences;
 + (id)keyPathsForValuesAffectingReadyToJumpToDestination;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 @property BOOL gotPermissionToJumpWhenReady; // @synthesize gotPermissionToJumpWhenReady=_gotPermissionToJumpWhenReady;
 @property(readonly) int navigationEventBehavior; // @synthesize navigationEventBehavior=_navigationEventBehavior;
@@ -1828,15 +1958,20 @@ struct _NSRange {
 @property(readonly) DVTTextDocumentLocation *startLocation; // @synthesize startLocation=_startLocation;
 @property(readonly) IDESourceCodeEditor *sourceEditor; // @synthesize sourceEditor=_sourceEditor;
 - (id)debuggingStateString;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)filterItems:(id)arg1 inMenu:(id)arg2 forSearchString:(id)arg3;
 - (BOOL)_destinationLocationForImportedFileInExpression:(id)arg1 inQueue:(struct dispatch_queue_s *)arg2 completionBlock:(id)arg3;
 - (void)_symbolPopUpAction:(id)arg1;
 - (void)_disambiguateAndJumpToResolvedSymbolOccurrences;
 - (id)_superMethod:(id)arg1 expression:(id)arg2 forIndex:(id)arg3;
-- (id)_allMethodsMatchingMethod:(id)arg1 expression:(id)arg2 forIndex:(id)arg3;
+- (id)_allMethodsMatchingMethods:(id)arg1 expression:(id)arg2 forIndex:(id)arg3;
 - (void)_symbolOccurrencesForExpression:(id)arg1 includeCurrentLoc:(BOOL)arg2 onlyCurrentDeclarator:(BOOL)arg3 inQueue:(struct dispatch_queue_s *)arg4 completionBlock:(id)arg5;
-- (void)_searchForMore:(id)arg1;
+- (BOOL)_looksLikeASetter:(id)arg1;
+- (void)_searchForMoreInSymbolNavigator:(id)arg1;
+- (void)_searchForMoreInFindNavigator:(id)arg1;
 - (void)_indicateComplete;
 - (void)_indicateProgress;
 - (void)_indicateSymbolNotFound;
@@ -1868,35 +2003,42 @@ struct _NSRange {
 
 @end
 
-@interface IDESourceCodeAdjustNodeTypesRequest : NSObject <DVTInvalidation>
+@interface IDESourceCodeAdjustNodeTypesRequest : NSObject <DVTInvalidation_New>
 {
     IDESourceCodeDocument *_document;
-    IDESourceCodeEditor *_editor;
+    IDESourceCodeEditor *_editor_dvtWeak;
     IDEIndex *_workspaceIndex;
     id _completionBlock;
     struct _NSRange _dirtyCharacterRange;
     id <DVTObservingToken> _completionObserver;
     double _lastRescheduleTimestamp;
     DVTPerformanceMetric *_perfMetric;
-    DVTStackBacktrace *_invalidationBacktrace;
-    BOOL _isInvalidated;
     BOOL _started;
     BOOL _triggeredByEditing;
+    BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
++ (BOOL)automaticallyNotifiesObserversOfValue;
 + (id)_indexQueriesOperationQueue;
 + (void)initialize;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 @property(readonly) struct _NSRange dirtyCharacterRange; // @synthesize dirtyCharacterRange=_dirtyCharacterRange;
 @property BOOL started; // @synthesize started=_started;
 @property(readonly) IDEIndex *workspaceIndex; // @synthesize workspaceIndex=_workspaceIndex;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (void)_processFoundSymbolResults:(id)arg1;
 - (void)_batchProcessDirtyRange;
 - (void)addSourceModelItem:(id)arg1;
 - (id)initWithDocument:(id)arg1 editor:(id)arg2 workspaceIndex:(id)arg3 completionBlock:(id)arg4;
 - (id)description;
+@property __weak IDESourceCodeEditor *editor;
 
 @end
 
@@ -1918,39 +2060,6 @@ struct _NSRange {
 - (void)setCurrentNoteItem:(id)arg1;
 - (void)_clearAnnotations;
 - (id)initWithEditor:(id)arg1;
-
-@end
-
-@interface IDEBlameDetailViewController : DVTHUDPopUpContentViewController
-{
-    NSTextField *_commitDateField;
-    NSTextField *_revisionField;
-    NSImageView *_imageView;
-    NSScrollView *_descriptionScrollView;
-    NSTextView *_descriptionTextView;
-    NSSegmentedControl *_nextPreviousControl;
-    DVTBorderedView *_containerBorderedView;
-    DVTBorderedView *_topBorderedView;
-    IDESourceControlNameTokenView *_nameTokenView;
-    IDESourceCodeBlameItem *_blameItem;
-    IDEBlameAnnotationViewController *_annotationViewController;
-}
-
-@property(readonly) IDESourceCodeBlameItem *blameItem; // @synthesize blameItem=_blameItem;
-- (void)updateContent;
-- (void)viewDidInstall;
-- (void)loadView;
-- (id)displayDate;
-- (void)compareToPreviousRevision:(id)arg1;
-- (id)initWithBlameItem:(id)arg1 annotationViewController:(id)arg2;
-
-@end
-
-@interface IDEBlameDetailPopUpController : DVTHUDPopUpController
-{
-}
-
-- (void)showWindowPointingAtLocation:(struct CGPoint)arg1 orientation:(unsigned long long)arg2;
 
 @end
 
@@ -1983,17 +2092,24 @@ struct _NSRange {
 
 @end
 
-@interface IDESourceCodeHelpNavigationRequest : NSObject <DVTInvalidation>
+@interface IDESourceCodeHelpNavigationRequest : NSObject <DVTInvalidation_New>
 {
     unsigned long long _clickCount;
     BOOL _isInvalidated;
+    BOOL _isInvalidating;
     DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 @property unsigned long long clickCount; // @synthesize clickCount=_clickCount;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 
 @end
 
@@ -2032,7 +2148,7 @@ struct _NSRange {
 - (void)refresh:(id)arg1;
 - (void)viewDidInstall;
 - (void)loadView;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (id)initWithEditor:(id)arg1 processedFileAttributes:(id)arg2;
 
 @end
@@ -2111,8 +2227,8 @@ struct _NSRange {
 @interface IDESingleFileProcessingItemGroup : NSObject
 {
     NSMutableArray *_singleFileProcessingItems;
-    NSMapTable *_workspaceToItemMapTable;
-    NSMapTable *_workspaceToInvalidationObserverTable;
+    DVTMapTable *_workspaceToItemMapTable;
+    DVTMapTable *_workspaceToInvalidationObserverTable;
     DVTFileDataType *_type;
     NSString *_name;
     Class _contentProviderClass;
@@ -2193,6 +2309,72 @@ struct _NSRange {
 - (id)completionItemsForDocumentLocation:(id)arg1 context:(id)arg2 areDefinitive:(char *)arg3;
 - (id)_classCompletionItemsForDocumentLocation:(id)arg1 context:(id)arg2 areDefinitive:(char *)arg3;
 - (void)prepareForDocumentLocation:(id)arg1 context:(id)arg2;
+
+@end
+
+@interface IDEFilePathTextCompletionItem : DVTStringTextCompletionItem <DVTTextCompletionItem>
+{
+    DVTFilePath *_filePath;
+}
+
+@property(copy) DVTFilePath *filePath; // @synthesize filePath=_filePath;
+@property(readonly) NSImage *icon;
+- (id)initWithName:(id)arg1 filePath:(id)arg2;
+
+// Remaining properties
+@property(readonly) NSArray *additionalCompletions;
+@property(readonly) int completionItemStyle;
+@property(readonly) NSString *completionText;
+@property(readonly) NSAttributedString *descriptionText;
+@property(readonly) NSString *displayText;
+@property(readonly) NSString *displayType;
+@property(readonly) NSImage *highlightedStatusIcon;
+@property(readonly) NSString *name;
+@property(readonly) BOOL notRecommended;
+@property(readonly) NSString *parentText;
+@property double priority;
+@property(readonly) NSImage *statusIcon;
+
+@end
+
+@interface IDESourceCodeCallerGeniusResult : NSObject
+{
+    IDEIndexSymbolOccurrence *_calleeSymbolOccurrence;
+    IDEIndexSymbol *_callerSymbol;
+}
+
+- (id)ideModelObjectTypeIdentifier;
+- (id)navigableItem_documentType;
+- (id)navigableItem_contentDocumentLocation;
+- (id)navigableItem_image;
+- (id)navigableItem_name;
+- (id)description;
+- (id)initWithCalleeSymbolOccurrence:(id)arg1 inSymbolForCaller:(id)arg2;
+
+@end
+
+@interface IDESourceCodeCallerGeniusResultNavigableItem : IDEFileNavigableItem
+{
+}
+
+- (id)fileURL;
+- (id)contentDocumentLocation;
+- (id)name;
+- (id)documentType;
+- (id)image;
+- (id)_geniusResult;
+
+@end
+
+@interface IDESourceCodeCallersCalleesGeniusResultsFinder : IDEIndexGeniusResultsFinder
+{
+}
+
++ (Class)editorDocumentClass;
++ (id)methodOrFunctionLocationAt:(unsigned long long)arg1 inDocument:(id)arg2;
++ (id)_methodOrFunctionDefinitionSourceLandmarkItemForSourceLandmarkItem:(id)arg1;
++ (id)_methodOrFunctionSourceLandmarkItemForSourceLandmarkItem:(id)arg1;
+- (BOOL)_getUpdateGeniusResultsPhaseOneBlock:(id *)arg1 phaseTwoBlock:(void)arg2 phaseThreeBlock:(id *)arg3;
 
 @end
 

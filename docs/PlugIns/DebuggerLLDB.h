@@ -10,50 +10,13 @@ struct Breakpoint;
 
 struct BreakpointLocation;
 
-struct DBGLLDBPThreadMutex {
-    struct _opaque_pthread_mutex_t {
-        long long __sig;
-        char __opaque[56];
-    } m_mutex;
-};
-
 struct Debugger;
 
 struct Error;
 
+struct ExecutionContextRef;
+
 struct InputReader;
-
-struct IntrusiveSharingPtr<lldb_private::Breakpoint> {
-    struct Breakpoint *_field1;
-};
-
-struct IntrusiveSharingPtr<lldb_private::BreakpointLocation> {
-    struct BreakpointLocation *_field1;
-};
-
-struct IntrusiveSharingPtr<lldb_private::Debugger> {
-    struct Debugger *ptr_;
-};
-
-struct IntrusiveSharingPtr<lldb_private::Module> {
-    struct Module *ptr_;
-};
-
-struct IntrusiveSharingPtr<lldb_private::Process> {
-    struct Process *ptr_;
-};
-
-struct IntrusiveSharingPtr<lldb_private::StackFrame> {
-    struct StackFrame *ptr_;
-};
-
-struct IntrusiveSharingPtr<lldb_private::Target> {
-    struct Target *ptr_;
-};
-
-struct IntrusiveSharingPtr<lldb_private::Thread> {
-    struct Thread *ptr_;
-};
 
 struct Module;
 
@@ -64,11 +27,11 @@ struct NSObject {
 struct Process;
 
 struct SBBreakpoint {
-    struct IntrusiveSharingPtr<lldb_private::Breakpoint> _field1;
+    struct shared_ptr<lldb_private::Breakpoint> _field1;
 };
 
 struct SBBreakpointLocation {
-    struct IntrusiveSharingPtr<lldb_private::BreakpointLocation> _field1;
+    struct shared_ptr<lldb_private::BreakpointLocation> _field1;
 };
 
 struct SBBroadcaster;
@@ -76,7 +39,7 @@ struct SBBroadcaster;
 struct SBCommunication;
 
 struct SBDebugger {
-    struct IntrusiveSharingPtr<lldb_private::Debugger> m_opaque_sp;
+    struct shared_ptr<lldb_private::Debugger> m_opaque_sp;
 };
 
 struct SBError {
@@ -84,58 +47,50 @@ struct SBError {
 };
 
 struct SBFrame {
-    struct IntrusiveSharingPtr<lldb_private::StackFrame> m_opaque_sp;
+    struct shared_ptr<lldb_private::ExecutionContextRef> m_opaque_sp;
 };
 
 struct SBInputReader {
-    struct SharingPtr<lldb_private::InputReader> m_opaque_sp;
+    struct shared_ptr<lldb_private::InputReader> m_opaque_sp;
     void *m_callback_function;
     void *m_callback_baton;
 };
 
 struct SBModule {
-    struct IntrusiveSharingPtr<lldb_private::Module> m_opaque_sp;
+    struct shared_ptr<lldb_private::Module> m_opaque_sp;
 };
 
 struct SBProcess {
-    struct IntrusiveSharingPtr<lldb_private::Process> m_opaque_sp;
+    struct weak_ptr<lldb_private::Process> m_opaque_wp;
 };
 
 struct SBTarget {
-    struct IntrusiveSharingPtr<lldb_private::Target> m_opaque_sp;
+    struct shared_ptr<lldb_private::Target> m_opaque_sp;
 };
 
 struct SBThread {
-    struct IntrusiveSharingPtr<lldb_private::Thread> m_opaque_sp;
+    struct shared_ptr<lldb_private::ExecutionContextRef> m_opaque_sp;
 };
 
 struct SBValue {
-    struct SharingPtr<lldb_private::ValueObject> m_opaque_sp;
+    struct shared_ptr<(null)<anonymous>::ValueImpl> m_opaque_sp;
 };
 
 struct SBValueList {
     struct auto_ptr<lldb_private::ValueObjectList> m_opaque_ap;
 };
 
-struct SharingPtr<lldb_private::InputReader> {
-    struct InputReader *ptr_;
-    struct shared_count *cntrl_;
-};
-
-struct SharingPtr<lldb_private::ValueObject> {
-    struct ValueObject *ptr_;
-    struct shared_count *cntrl_;
-};
-
-struct StackFrame;
-
 struct Target;
 
-struct Thread;
-
-struct ValueObject;
+struct ValueImpl;
 
 struct ValueObjectList;
+
+struct _Sp_counted_base<2>;
+
+struct __shared_count<2> {
+    struct _Sp_counted_base<2> *_M_pi;
+};
 
 struct auto_ptr<lldb::SBBroadcaster> {
     struct SBBroadcaster *_M_ptr;
@@ -153,15 +108,60 @@ struct auto_ptr<lldb_private::ValueObjectList> {
     struct ValueObjectList *_M_ptr;
 };
 
-struct shared_count;
+struct shared_ptr<(null)<anonymous>::ValueImpl> {
+    struct ValueImpl *_M_ptr;
+    struct __shared_count<2> _M_refcount;
+};
+
+struct shared_ptr<lldb_private::Breakpoint> {
+    struct Breakpoint *_field1;
+    struct __shared_count<2> _field2;
+};
+
+struct shared_ptr<lldb_private::BreakpointLocation> {
+    struct BreakpointLocation *_field1;
+    struct __shared_count<2> _field2;
+};
+
+struct shared_ptr<lldb_private::Debugger> {
+    struct Debugger *_M_ptr;
+    struct __shared_count<2> _M_refcount;
+};
+
+struct shared_ptr<lldb_private::ExecutionContextRef> {
+    struct ExecutionContextRef *_M_ptr;
+    struct __shared_count<2> _M_refcount;
+};
+
+struct shared_ptr<lldb_private::InputReader> {
+    struct InputReader *_M_ptr;
+    struct __shared_count<2> _M_refcount;
+};
+
+struct shared_ptr<lldb_private::Module> {
+    struct Module *_M_ptr;
+    struct __shared_count<2> _M_refcount;
+};
+
+struct shared_ptr<lldb_private::Target> {
+    struct Target *_M_ptr;
+    struct __shared_count<2> _M_refcount;
+};
+
+struct weak_ptr<lldb_private::Process> {
+    struct Process *_M_ptr;
+    struct __weak_count<2> {
+        struct _Sp_counted_base<2> *_M_pi;
+    } _M_refcount;
+};
 
 #pragma mark -
 
 /*
  * File: /Applications/Xcode.app/Contents/PlugIns/DebuggerLLDB.ideplugin/Contents/MacOS/DebuggerLLDB
- * UUID: C21B278D-C26B-3D7A-9C5A-574B8236F068
+ * UUID: 94012701-4103-3F72-BEE2-813EBE009706
  * Arch: Intel x86-64 (x86_64)
- *       Current version: 1185.0.0, Compatibility version: 1.0.0
+ *       Current version: 2083.0.0, Compatibility version: 1.0.0
  *       Minimum Mac OS X version: 10.7.0
  *
  *       Objective-C Garbage Collection: Required
@@ -170,21 +170,17 @@ struct shared_count;
  */
 
 @protocol DBGDebugSessionBreakpointDelegate
+- (BOOL)deleteWatchpoint:(id)arg1;
 - (void)activationStateChanged:(BOOL)arg1 forBreakpoints:(id)arg2;
 - (BOOL)deleteBreakpoint:(id)arg1;
 - (BOOL)createBreakpoint:(id)arg1;
 @end
 
 @protocol DBGDebugSessionBreakpointLocationDelegate
+- (void)watchpointEnablementChanged:(id)arg1;
 - (void)breakpointEnablementChanged:(id)arg1;
 - (void)breakpointIgnoreCount:(id)arg1;
 - (void)breakpointConditionChanged:(id)arg1;
-@end
-
-@protocol DBGLLDBAsyncAction
-- (id)description;
-- (void)cancel;
-- (void)execute;
 @end
 
 @protocol DBGStackFrameDelegate <NSObject>
@@ -195,6 +191,11 @@ struct shared_count;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace;
 @property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (void)invalidate;
+@end
+
+@protocol DVTInvalidation_New <DVTInvalidation>
+@property(retain) DVTStackBacktrace *creationBacktrace;
+- (void)primitiveInvalidate;
 @end
 
 @protocol IDEConsoleAdaptorDelegateProtocol
@@ -224,6 +225,19 @@ struct shared_count;
 - (Class)superclass;
 - (unsigned long long)hash;
 - (BOOL)isEqual:(id)arg1;
+
+@optional
+- (id)debugDescription;
+@end
+
+@protocol __ARCLiteIndexedSubscripting__
+- (void)setObject:(id)arg1 atIndexedSubscript:(unsigned long long)arg2;
+- (id)objectAtIndexedSubscript:(unsigned long long)arg1;
+@end
+
+@protocol __ARCLiteKeyedSubscripting__
+- (void)setObject:(id)arg1 forKeyedSubscript:(id)arg2;
+- (id)objectForKeyedSubscript:(id)arg1;
 @end
 
 // Not exported
@@ -244,31 +258,41 @@ struct shared_count;
 @end
 
 // Not exported
-@interface DBGLLDBProcess : DBGProcess <DVTInvalidation>
+@interface DBGLLDBProcess : DBGProcess <DVTInvalidation_New>
 {
     struct SBProcess _lldbProcess;
     NSMutableArray *_previousDBGThreads;
     BOOL _needSharedLibraryUpdate;
     BOOL _isDoingAsyncAttach;
-    DVTStackBacktrace *_invalidationBacktrace;
     BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 @property BOOL isDoingAsyncAttach; // @synthesize isDoingAsyncAttach=_isDoingAsyncAttach;
 @property BOOL needSharedLibraryUpdate; // @synthesize needSharedLibraryUpdate=_needSharedLibraryUpdate;
 - (id).cxx_construct;
 - (void).cxx_destruct;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (BOOL)_isExcpetionBreakpoint:(unsigned long long)arg1;
 - (void)_updateDBGThreadStateAndStopReason:(id)arg1 fromLLDBThread:(struct SBThread)arg2;
 - (void)clearThreadAndStackStates;
 - (id)currentThreadFromLLDB;
+- (void)_readMemoryAtAddress:(unsigned long long)arg1 numberOfBytes:(unsigned long long)arg2 dataToReadInto:(id)arg3 shouldCancel:(id)arg4 resultHandler:(id)arg5;
+- (id)readMemoryAtAddress:(unsigned long long)arg1 numberOfBytes:(unsigned long long)arg2 resultHandler:(id)arg3;
 - (void)rawMemoryDataForAddressExpression:(id)arg1 numberOfBytes:(unsigned long long)arg2 resultHandler:(id)arg3;
 - (id)updateThreadListAndGetCurrentThread:(id *)arg1;
 - (struct SBThread)_currentLLDBThread;
 - (void)updateSharedLibraries;
+- (void)invalidatePreviousThreadsFromNewThreads:(id)arg1;
 - (id)initWithDebugSession:(id)arg1 lldbProcess:(struct SBProcess)arg2;
 
 @end
@@ -289,7 +313,7 @@ struct shared_count;
 - (void)requestUnsuspend;
 - (void)requestSuspend;
 - (id)currentStackFrame;
-- (void)requestStackFrames:(unsigned long long)arg1 resultHandler:(id)arg2;
+- (void)requestStackFrames:(unsigned long long)arg1 resultQueue:(struct dispatch_queue_s *)arg2 resultHandler:(id)arg3;
 - (BOOL)refreshStackFrames;
 - (id)_getFramesFromLLDB:(unsigned long long)arg1;
 - (void)_updateStackFramesInMainThread:(id)arg1;
@@ -310,6 +334,7 @@ struct shared_count;
     NSArray *_registers;
     DVTStackBacktrace *_invalidationBacktrace;
     BOOL _isInvalidated;
+    DVTDispatchLock *_invalidationLock;
 }
 
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
@@ -324,16 +349,18 @@ struct shared_count;
 - (void)stackFrame:(id)arg1 requestDisassembly:(id)arg2;
 - (id)lldbSession;
 - (id)disassemble;
-- (void)getRegistersFromLLDB;
-- (void)getFileStaticsFromLLDB;
-- (void)getLocalsFromLLDB;
-- (void)getArgumentsFromLLDB;
-- (id)evaluateExpression:(const char *)arg1;
+- (void)_getRegistersFromLLDBOnSessionThread;
+- (void)_getFileStaticsFromLLDBOnSessionThread;
+- (void)_getLocalsFromLLDBOnSessionThread;
+- (void)_getArgumentsFromLLDBOnSessionThread;
+- (id)_evaluateExpressionOnSessionThread:(id)arg1;
+- (void)_getDataValueForExpressionOnSessionThread:(id)arg1 onQueue:(struct dispatch_queue_s *)arg2 withResultBlock:(id)arg3;
 - (void)requestDataValueForExpression:(id)arg1 atBlockStartAddress:(id)arg2 onQueue:(struct dispatch_queue_s *)arg3 withResultBlock:(id)arg4;
-- (id)_fixExpressionCast:(id)arg1;
-- (void)requestDataValueForSymbol:(id)arg1 atLocation:(id)arg2 onQueue:(struct dispatch_queue_s *)arg3 withResultBlock:(id)arg4;
-- (id)findSymbol:(id)arg1 atLocation:(id)arg2;
+- (void)requestDataValueForSymbol:(id)arg1 symbolKind:(id)arg2 atLocation:(id)arg3 onQueue:(struct dispatch_queue_s *)arg4 withResultBlock:(id)arg5;
+- (id)_findSymbolWithName:(id)arg1 symbolKind:(id)arg2 atLocation:(id)arg3;
 - (void)getFrameVariables;
+@property(readonly) BOOL isSessionThread;
+- (void)_setReturnValueFromInitIfNecessary;
 - (id)initWithParentThread:(id)arg1 frameNumber:(id)arg2 framePointer:(id)arg3 name:(id)arg4 lldbFrame:(struct SBFrame)arg5;
 
 @end
@@ -343,72 +370,85 @@ struct shared_count;
 {
     DBGLLDBDataValue *_parent;
     DBGLLDBDataType *_dbgStaticType;
-    DBGLLDBStackFrame *_frame;
     struct SBValue _lldbValueObject;
-    NSArray *_childValues;
+    NSMutableArray *_childValues;
+    BOOL _childValuesCountValid;
+    unsigned long long _numChildren;
     NSString *_name_str;
     NSString *_value_str;
     NSString *_summary_str;
     NSString *_expr_path_str;
-    unsigned int _value_has_changed:2;
-    unsigned int _old_value_has_changed:2;
-    unsigned int _summary_has_changed:2;
-    unsigned int _dyntype_has_changed:2;
-    unsigned int _is_pointer_type:2;
-    unsigned int _in_scope:2;
-    unsigned int _requested_value:1;
-    unsigned int _requested_summary:1;
-    unsigned int _requested_children:1;
-    int _num_children;
+    BOOL _value_has_changed;
+    BOOL _in_scope;
+    BOOL _hasChildValues;
+    BOOL _requested_children;
+    BOOL _requestedSummary;
+    BOOL _treatSummaryAsValue;
     DVTStackBacktrace *_invalidationBacktrace;
     BOOL _isInvalidated;
 }
 
-+ (int)dynamicValueType;
 + (id)dataValueFormatForLLDBFormat:(int)arg1;
-+ (id)invalid;
++ (int)dynamicValueType;
 + (void)initialize;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
+- (id)parent;
+@property BOOL treatSummaryAsValue; // @synthesize treatSummaryAsValue=_treatSummaryAsValue;
+- (id)staticType;
+@property BOOL childValuesCountValid; // @synthesize childValuesCountValid=_childValuesCountValid;
+@property(nonatomic) NSArray *childValues; // @synthesize childValues=_childValues;
+- (BOOL)hasChildValues;
+- (BOOL)inScope;
+@property(copy, nonatomic) NSString *summary; // @synthesize summary=_summary_str;
+- (BOOL)valueHasChanged;
 - (id).cxx_construct;
 - (void).cxx_destruct;
 @property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (void)invalidate;
 - (void)_updateValueFormatsForStackFrame:(id)arg1;
 - (void)_persistValueFormat:(id)arg1 stackFrame:(id)arg2;
-- (id)_contextNameForFormatsWithExpression:(id)arg1 stackFrame:(id)arg2;
+- (id)_contextNameForFormatsWithStackFrame:(id)arg1;
 - (id)_contextNameForStackFrame:(id)arg1;
+- (void)watch;
+- (id)realName;
+- (BOOL)wantsToProvideSummary;
+- (id)_createNSStringForCString:(const char *)arg1;
+- (id)description;
+- (id)_lldbValueObjectDescription;
+- (id)_lldbValueDescription;
+- (id)lldbDescription;
 - (void)setFormat:(id)arg1;
 - (void)_primitiveSetFormat:(id)arg1;
 - (id)format;
 - (const char *)valueAsCString;
-- (const char *)summaryAsCString;
-- (const char *)typeAsCString;
-- (void)getValuesFromLLDB;
-- (unsigned long long)indexOfChildValueWithName:(id)arg1;
-- (BOOL)childValuesCountValid;
-- (id)childValues;
-- (BOOL)hasChildValues;
-- (void)clear;
-- (BOOL)isPointer;
-- (BOOL)inScope;
-- (void)privateSetSummary:(id)arg1;
-- (id)summary;
+- (void)_childValueDidFault:(id)arg1 childIndex:(unsigned long long)arg2;
+- (void)_fetchChildValuesFromLLDBOnSessionThreadIfNecessary;
+- (void)_setChildValuesToArrayOfPlaceholdersIfNecessary;
+- (void)_fetchSummaryFromLLDBOnSessionThreadIfNecessary;
 - (id)value;
-- (id)name;
-- (id)parent;
+@property(copy, nonatomic) NSString *name; // @synthesize name=_name_str;
 - (BOOL)dynamicTypeHasChanged;
 - (BOOL)summaryHasChanged;
-- (BOOL)valueHasChanged;
-- (void)setValueHasChanged:(BOOL)arg1;
 - (void)setValue:(id)arg1;
 - (id)blockStartAddress;
-- (id)staticType;
 - (id)expressionPath;
-- (id)copyWithZone:(struct _NSZone *)arg1;
-- (id)_lldbValueString;
+@property(readonly) BOOL shouldUsePlaceholderChildDataValues;
+@property(readonly) BOOL isSessionThread;
+@property(readonly) DBGLLDBStackFrame *lldbStackFrame;
 - (id)initWithLLDBValueObject:(struct SBValue)arg1 forStackFrame:(id)arg2 withParent:(id)arg3;
-@property(readonly) NSString *description;
-- (id)init;
+
+@end
+
+// Not exported
+@interface DBGLLDBChildPlaceholderDataValue : DBGLLDBDataValue
+{
+    DBGLLDBDataValue *_parentDataValue;
+    unsigned long long _childIndex;
+    BOOL _hasFaulted;
+}
+
+- (id)value;
+- (id)_initWithParentDataValue:(id)arg1 childIndex:(unsigned long long)arg2;
 
 @end
 
@@ -418,105 +458,104 @@ struct shared_count;
     struct SBDebugger m_debugger;
     NSFileHandle *_consoleAdaptorDebuggerInputFile;
     IDEConsoleAdaptor *_consoleAdaptorDebugger;
-    IDEPseudoTerminal *_targetPty;
+    IDEConsoleAdaptor *_consoleAdaptorTarget;
     DBGLLDBSession *_debugSession;
     struct auto_ptr<lldb::SBCommunication> m_lldb_comm_ap;
     BOOL _terminateCalled;
     struct SBInputReader m_console_reader;
     NSString *m_prompt;
     struct dispatch_queue_s *_executeLLDBCommandQueue;
+    DVTDispatchLock *_lifeCycleLock;
 }
 
 + (void)initialize;
-@property(readonly) IDEConsoleAdaptor *consoleAdaptorDebugger; // @synthesize consoleAdaptorDebugger=_consoleAdaptorDebugger;
+@property(readonly) BOOL terminateCalled; // @synthesize terminateCalled=_terminateCalled;
+@property(readonly) IDEConsoleAdaptor *consoleAdaptorTarget; // @synthesize consoleAdaptorTarget=_consoleAdaptorTarget;
 - (id).cxx_construct;
 - (void).cxx_destruct;
 - (void)terminate;
 - (void)start;
-- (struct SBProcess)_doRegularDebugWithTarget:(struct SBTarget)arg1 debugServerFD:(int)arg2 errTargetString:(id)arg3;
+- (struct SBProcess)_doRegularDebugWithTarget:(struct SBTarget)arg1 usingDebugServer:(BOOL)arg2 errTargetString:(id)arg3;
 - (void)_reportTarget:(id)arg1 failedToLaunchError:(struct SBError)arg2;
 - (struct SBProcess)_doAttachWithTarget:(struct SBTarget)arg1 childPID:(unsigned long long *)arg2;
-- (int)_getDebugServerFD;
 - (id)executableArguments;
 - (id)parseConsoleOutputFromOriginalOutput:(id)arg1;
 - (id)parseConsoleInputFromOriginalInput:(id)arg1;
 - (void)sendSTDIN:(id)arg1;
 - (void)_executeLLDBCommands:(id)arg1;
-- (void)_threadOrFrameChanged;
 - (BOOL)consoleInputReaderIsActive;
 - (void)resetPrompt:(const char *)arg1;
 - (void)clearPrompt;
 - (void)refreshPrompt;
-- (void)createDebuggerConsole;
+- (void)_createDebuggerConsoleAdaptor;
 - (void)setFinishedRunning;
 - (void)_cleanUp;
+- (void)_logToConsoleForUserActions:(id)arg1;
 - (id)initWithExtensionIdentifier:(id)arg1 launchSession:(id)arg2;
 
 @end
 
 // Not exported
-@interface DBGLLDBSession : DBGDebugSession <DVTInvalidation, IDEConsoleAdaptorDelegateProtocol, DBGDebugSessionBreakpointDelegate, DBGDebugSessionBreakpointLocationDelegate>
+@interface DBGLLDBSession : DBGDebugSession <DVTInvalidation_New, IDEConsoleAdaptorDelegateProtocol, DBGDebugSessionBreakpointDelegate, DBGDebugSessionBreakpointLocationDelegate>
 {
     struct SBTarget _lldbTarget;
-    DBGLLDBProcess *_dbgLLDBProcess;
     struct auto_ptr<lldb::SBBroadcaster> _broadcasterAP;
-    struct DBGLLDBPThreadMutex _resumeActionsMutex;
+    BOOL _isTracingOnDeviceAndTargetGotJetsam;
     NSMutableArray *_resumeActions;
-    struct DBGLLDBPThreadMutex _asyncActionsMutex;
-    NSMutableArray *_asyncActions;
+    NSMutableArray *_threadActions;
+    DVTDispatchLock *_actionsLock;
     struct _opaque_pthread_t {
         long long _field1;
         struct __darwin_pthread_handler_rec *_field2;
         char _field3[1168];
     } *_sessionThread;
-    NSString *_introspection_dylib_image_path;
-    unsigned int _introspection_dylib_image_token;
-    BOOL _introspection_dylib_pending;
-    BOOL _introspection_dylib_loaded;
-    BOOL _supportsUnicharDataFormatters;
-    DVTStackBacktrace *_invalidationBacktrace;
+    BOOL _isLongRunningConsoleCommand;
+    struct dispatch_queue_s *_isLongRunningConsoleCommandQueue;
     BOOL _isInvalidated;
+    BOOL _isInvalidating;
+    DVTStackBacktrace *_invalidationBacktrace;
+    DVTStackBacktrace *_creationBacktrace;
 }
 
++ (BOOL)automaticallyNotifiesObserversOfValue;
++ (void)initialize;
+@property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
-@property BOOL supportsUnicharDataFormatters; // @synthesize supportsUnicharDataFormatters=_supportsUnicharDataFormatters;
-@property BOOL introspection_dylib_pending; // @synthesize introspection_dylib_pending=_introspection_dylib_pending;
-@property BOOL introspection_dylib_loaded; // @synthesize introspection_dylib_loaded=_introspection_dylib_loaded;
-@property(readonly) DBGLLDBProcess *lldbProcess; // @synthesize lldbProcess=_dbgLLDBProcess;
+@property BOOL isTracingOnDeviceAndTargetGotJetsam; // @synthesize isTracingOnDeviceAndTargetGotJetsam=_isTracingOnDeviceAndTargetGotJetsam;
 - (id).cxx_construct;
 - (void).cxx_destruct;
-@property(readonly, nonatomic, getter=isValid) BOOL valid;
+- (void)primitiveInvalidate;
 - (void)invalidate;
+- (void)_invalidate;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 - (id)logSuffix;
+- (id)dbgLLDBProcess;
+- (BOOL)supportsSteppingIntoCallSymbol;
 - (BOOL)supportsWatchpoints;
-- (void)loadIntrospectionDylibIfNeeded;
-- (id)fetchPathToInstrospectionSupportDyLib;
+- (void)terminateCurrentDebuggerCommandIfNeeded;
 - (id)supportedDataValueFormatsForDataValue:(id)arg1;
 - (BOOL)consoleShouldTrackInputHistory;
 - (void)loadDebugSymbolsForSharedLibrary:(id)arg1;
 - (void)breakpointEnablementChanged:(id)arg1;
 - (void)breakpointIgnoreCount:(id)arg1;
 - (void)breakpointConditionChanged:(id)arg1;
+- (void)watchpointEnablementChanged:(id)arg1;
 - (void)activationStateChanged:(BOOL)arg1 forBreakpoints:(id)arg2;
-- (void)enableBreakpoint:(id)arg1;
-- (void)disableBreakpoint:(id)arg1;
 - (BOOL)deleteBreakpoint:(id)arg1;
 - (void)_handleBreakpointLocationRemovedEventFromLLDB:(struct SBBreakpointLocation)arg1;
 - (void)_handleBreakpointLocationAddedEventFromLLDB:(struct SBBreakpointLocation)arg1;
 - (void)_handleBreakpointRemovedEventFromLLDB:(struct SBBreakpoint)arg1;
 - (void)_handleBreakpointAddedEventFromLLDB:(struct SBBreakpoint)arg1;
+- (BOOL)deleteWatchpoint:(id)arg1;
 - (struct SBBreakpoint)_createBreakpointFromAddressBreakpoint:(id)arg1;
 - (struct SBBreakpoint)_createBreakpointFromExceptionBreakpoint:(id)arg1;
 - (struct SBBreakpoint)_createBreakpointFromSymbolicBreakpoint:(id)arg1;
 - (struct SBBreakpoint)_createBreakpointFromFileBreakpoint:(id)arg1;
 - (BOOL)createBreakpoint:(id)arg1;
+- (id)commandsExpectingExpressions;
 - (void)_delayedSetThreadsNil;
-- (id)getNextControlAction;
-- (unsigned long long)pendingAsyncActionCount;
-- (unsigned long long)pendingControlActionCount;
-- (id)getNextAsyncAction;
-- (void)cancelAllAsyncActions;
-- (void)appendAsyncAction:(id)arg1;
+- (BOOL)handleNextActionWithState:(int *)arg1 withRunPending:(char *)arg2;
+- (void)addSessionThreadAction:(id)arg1;
 - (void)completeString:(id)arg1 resultHandler:(id)arg2;
 - (void)printDescriptionOfDataValueToConsole:(id)arg1 runAllThreads:(BOOL)arg2;
 - (id)requestDataContainerForSymbol:(id)arg1 atLocation:(id)arg2;
@@ -526,6 +565,8 @@ struct shared_count;
 - (void)requestMovePCInStackFrame:(id)arg1 toLineNumber:(unsigned long long)arg2;
 - (BOOL)supportsPCAnnotationDragging;
 - (BOOL)supportsMultiplePCAnnotation;
+- (void)_threadOrFrameChanged;
+- (void)executeDebuggerCommand:(id)arg1 threadID:(unsigned long long)arg2 frameID:(unsigned long long)arg3;
 - (void)requestContinueToLocation:(id)arg1 inContext:(struct NSObject *)arg2;
 - (void)requestStepIntoCallSymbol:(id)arg1 atLocation:(id)arg2 inContext:(struct NSObject *)arg3;
 - (void)requestStepOverSuspendOtherThreads:(struct NSObject *)arg1;
@@ -538,9 +579,11 @@ struct shared_count;
 - (void)requestStepIntoInstruction:(struct NSObject *)arg1;
 - (void)requestStepInSuspendOtherThreads:(struct NSObject *)arg1;
 - (void)requestStepIn:(struct NSObject *)arg1;
-- (void)appendProcessControlAction:(int)arg1 scope:(int)arg2 thread:(id)arg3 arg:(unsigned long long)arg4 location:(id)arg5;
+- (void)_appendProcessControlAction:(int)arg1 scope:(int)arg2 arg:(unsigned long long)arg3 location:(id)arg4;
+- (void)_appendProcessControlAction:(int)arg1 scope:(int)arg2 arg:(unsigned long long)arg3;
 - (BOOL)currentThreadIsSessionThread;
-- (void)trackProcess:(id)arg1;
+- (void)trackProcess;
+- (void)_setLoggingCallback;
 - (void)setTarget:(struct SBTarget)arg1;
 @property(readonly) DBGLLDBLauncher *launcher;
 - (id)navigableItem_name;
@@ -582,43 +625,6 @@ struct shared_count;
 @end
 
 // Not exported
-@interface DBGLLDBAsyncActionExpr : NSObject <DBGLLDBAsyncAction>
-{
-    DBGLLDBStackFrame *_frame;
-    NSString *_expression;
-    struct dispatch_queue_s *_queue;
-    id _block;
-}
-
-- (id)description;
-- (void)execute;
-- (void)cancel;
-- (id)initWithStackFrame:(id)arg1 usingExpression:(id)arg2 onQueue:(struct dispatch_queue_s *)arg3 withResultBlock:(id)arg4;
-
-@end
-
-// Not exported
-@interface DBGLLDBAsyncActionCallSelector : NSObject <DBGLLDBAsyncAction>
-{
-    id _object;
-    SEL _selector;
-    id _obj_arg0;
-    id _obj_arg1;
-    unsigned int _num_args;
-    BOOL _call_on_cancel;
-}
-
-- (void)setCallOnCancel:(BOOL)arg1;
-- (id)description;
-- (void)execute;
-- (void)cancel;
-- (id)initWithObject:(id)arg1 andSelector:(SEL)arg2 withObject:(id)arg3 withObject:(id)arg4;
-- (id)initWithObject:(id)arg1 andSelector:(SEL)arg2 withObject:(id)arg3;
-- (id)initWithObject:(id)arg1 andSelector:(SEL)arg2;
-
-@end
-
-// Not exported
 @interface DBGLLDBMemoryManager : NSObject
 {
     id _workspaceClosedNotificationObserver;
@@ -630,6 +636,13 @@ struct shared_count;
 - (void)_invalidate;
 - (id)_initInternal;
 - (id)init;
+
+@end
+
+// Not exported
+@interface _DBGDebuggerLLDBBundlePrivateClassForFindingBundle : NSObject
+{
+}
 
 @end
 

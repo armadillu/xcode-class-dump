@@ -25,9 +25,9 @@ struct CGSize {
 
 /*
  * File: /Applications/Xcode.app/Contents/PlugIns/IDESymbolNavigator.ideplugin/Contents/MacOS/IDESymbolNavigator
- * UUID: A15EE932-A090-3A6A-B17C-509CE31ADFF5
+ * UUID: 7538FD4B-3707-363C-9AC4-415AA3A49C04
  * Arch: Intel x86-64 (x86_64)
- *       Current version: 1170.0.0, Compatibility version: 1.0.0
+ *       Current version: 2053.0.0, Compatibility version: 1.0.0
  *       Minimum Mac OS X version: 10.7.0
  *
  *       Objective-C Garbage Collection: Required
@@ -47,6 +47,7 @@ struct CGSize {
 - (struct CGRect)expressionFrameForExpression:(id)arg1;
 
 @optional
+@property(readonly, nonatomic) NSString *selectedText;
 @property(readonly) DVTSourceExpression *quickHelpExpression;
 - (void)unregisterMouseOverExpressionObserver:(id)arg1;
 - (void)registerMouseOverExpressionObserver:(id)arg1;
@@ -71,6 +72,7 @@ struct CGSize {
 - (void)symbolsForExpression:(id)arg1 inQueue:(struct dispatch_queue_s *)arg2 completionBlock:(id)arg3;
 
 @optional
+- (BOOL)isLocationInFunctionOrMethodBody:(id)arg1;
 - (id)importStringInExpression:(id)arg1;
 @end
 
@@ -98,6 +100,19 @@ struct CGSize {
 - (Class)superclass;
 - (unsigned long long)hash;
 - (BOOL)isEqual:(id)arg1;
+
+@optional
+- (id)debugDescription;
+@end
+
+@protocol __ARCLiteIndexedSubscripting__
+- (void)setObject:(id)arg1 atIndexedSubscript:(unsigned long long)arg2;
+- (id)objectAtIndexedSubscript:(unsigned long long)arg1;
+@end
+
+@protocol __ARCLiteKeyedSubscripting__
+- (void)setObject:(id)arg1 forKeyedSubscript:(id)arg2;
+- (id)objectForKeyedSubscript:(id)arg1;
 @end
 
 @interface IDESymbolNavigatorFilterPredicate : NSPredicate <NSCopying>
@@ -204,7 +219,7 @@ struct CGSize {
 - (BOOL)isCurrentGeneration:(unsigned long long)arg1;
 @property(readonly) unsigned long long currentGeneration; // @dynamic currentGeneration;
 - (BOOL)delegateFirstResponder;
-- (void)invalidate;
+- (void)primitiveInvalidate;
 - (void)viewWillUninstall;
 - (void)viewDidInstall;
 - (id)initWithNibName:(id)arg1 bundle:(id)arg2;
@@ -216,6 +231,7 @@ struct CGSize {
 @property(readonly) DVTStackBacktrace *invalidationBacktrace;
 @property(readonly) NSMutableSet *mutableExpandedItems; // @dynamic mutableExpandedItems;
 @property(readonly) DVTSourceExpression *quickHelpExpression;
+@property(readonly, nonatomic) NSString *selectedText;
 @property(readonly, nonatomic, getter=isValid) BOOL valid;
 
 @end
@@ -264,6 +280,7 @@ struct CGSize {
 @property(readonly) IDEIndexSymbol *symbol; // @synthesize symbol=_symbol;
 - (void)fetchSymbols:(id)arg1 generation:(unsigned long long)arg2 lastOperation:(id)arg3;
 - (void)cancelOperations;
+- (BOOL)childrenNeedUpdating;
 - (BOOL)hasChildren;
 - (id)ideModelObjectTypeIdentifier;
 - (id)navigableItem_documentType;
@@ -276,31 +293,12 @@ struct CGSize {
 
 @end
 
-@interface IDESymbolNavigatorClassSymbol : NSObject
+@interface IDESymbolNavigatorClassSymbol : IDESymbolNavigatorContainerSymbol
 {
-    NSOperationQueue *_queue;
-    unsigned long long _generation;
-    IDESymbolNavigator *_navigator;
-    IDEIndexClassSymbol *_symbol;
-    NSArray *_children;
-    NSMutableArray *_newChildren;
-    DVTDispatchLock *_accessLock;
-    BOOL _needsChildrenRefresh;
 }
 
-@property(readonly) IDEIndexClassSymbol *symbol; // @synthesize symbol=_symbol;
 - (id)ideModelObjectTypeIdentifier;
-- (id)navigableItem_documentType;
-- (id)navigableItem_contentDocumentLocation;
-- (id)navigableItem_image;
-- (id)navigableItem_name;
-- (void)fetchSymbols:(id)arg1 generation:(unsigned long long)arg2 lastOperation:(id)arg3;
-- (void)cancelOperations;
-- (id)children;
-- (id)loadChildrenWithOperation:(id)arg1;
-- (BOOL)hasChildren;
-- (unsigned long long)hash;
-- (BOOL)isEqual:(id)arg1;
+- (id)loadChildren;
 - (id)initWithClassSymbol:(id)arg1 operationQueue:(id)arg2 generation:(unsigned long long)arg3 symbolNavigator:(id)arg4;
 
 @end
@@ -312,7 +310,7 @@ struct CGSize {
     NSArray *_newChildren;
     NSString *_subtitle;
     unsigned long long _generation;
-    IDESymbolNavigator *_navigator;
+    IDESymbolNavigator *_navigator_dvtWeak;
 }
 
 - (id)navigableItem_image;
@@ -332,6 +330,7 @@ struct CGSize {
 - (id)navigableItem_name;
 @property(readonly) BOOL isInProject;
 - (id)initWithOperationQueue:(id)arg1 generation:(unsigned long long)arg2 symbolNavigator:(id)arg3;
+@property __weak IDESymbolNavigator *navigator;
 
 @end
 
@@ -427,90 +426,49 @@ struct CGSize {
 
 @end
 
-@interface IDESymbolNavigatorProtocolSymbol : NSObject
+@interface IDESymbolNavigatorProtocolSymbol : IDESymbolNavigatorContainerSymbol
 {
-    NSOperationQueue *_queue;
-    unsigned long long _generation;
-    IDESymbolNavigator *_navigator;
-    IDEIndexProtocolSymbol *_symbol;
-    NSArray *_children;
-    NSMutableArray *_newChildren;
-    DVTDispatchLock *_accessLock;
-    BOOL _needsChildrenRefresh;
 }
 
-@property(readonly) IDEIndexProtocolSymbol *symbol; // @synthesize symbol=_symbol;
 - (id)ideModelObjectTypeIdentifier;
-- (id)navigableItem_documentType;
-- (id)navigableItem_contentDocumentLocation;
-- (id)navigableItem_image;
-- (id)navigableItem_name;
-- (void)fetchSymbols:(id)arg1 generation:(unsigned long long)arg2 lastOperation:(id)arg3;
-- (void)cancelOperations;
-- (id)children;
-- (id)loadChildrenWithOperation:(id)arg1;
-- (BOOL)hasChildren;
-- (unsigned long long)hash;
-- (BOOL)isEqual:(id)arg1;
+- (id)loadChildren;
 - (id)initWithProtocolSymbol:(id)arg1 operationQueue:(id)arg2 generation:(unsigned long long)arg3 symbolNavigator:(id)arg4;
 
 @end
 
-@interface IDESymbolNavigatorCategorySymbol : NSObject
+@interface IDESymbolNavigatorCategorySymbol : IDESymbolNavigatorContainerSymbol
 {
-    NSOperationQueue *_queue;
-    unsigned long long _generation;
-    IDESymbolNavigator *_navigator;
-    IDEIndexCategorySymbol *_symbol;
-    NSArray *_children;
-    NSMutableArray *_newChildren;
-    DVTDispatchLock *_accessLock;
-    BOOL _needsChildrenRefresh;
 }
 
-@property(readonly) IDEIndexCategorySymbol *symbol; // @synthesize symbol=_symbol;
 - (id)ideModelObjectTypeIdentifier;
-- (id)navigableItem_documentType;
-- (id)navigableItem_contentDocumentLocation;
-- (id)navigableItem_image;
-- (id)navigableItem_name;
-- (void)fetchSymbols:(id)arg1 generation:(unsigned long long)arg2 lastOperation:(id)arg3;
-- (void)cancelOperations;
-- (id)children;
-- (id)loadChildrenWithOperation:(id)arg1;
-- (BOOL)hasChildren;
-- (unsigned long long)hash;
-- (BOOL)isEqual:(id)arg1;
+- (id)loadChildren;
 - (id)initWithCategorySymbol:(id)arg1 operationQueue:(id)arg2 generation:(unsigned long long)arg3 symbolNavigator:(id)arg4;
 
 @end
 
-@interface IDESymbolNavigatorContainerSymbol : NSObject
+@interface IDESymbolNavigatorContainerSymbol : IDESymbolNavigatorSymbol
 {
     NSOperationQueue *_queue;
     unsigned long long _generation;
-    IDESymbolNavigator *_navigator;
-    IDEIndexContainerSymbol *_symbol;
+    IDESymbolNavigator *_navigator_dvtWeak;
     NSArray *_children;
-    NSString *_cachedName;
     DVTDispatchLock *_accessLock;
-    BOOL _needsChildrenRefresh;
+    BOOL _isCanceled;
+    BOOL _isLoading;
 }
 
-@property(readonly) IDEIndexContainerSymbol *symbol; // @synthesize symbol=_symbol;
 - (id)ideModelObjectTypeIdentifier;
-- (id)navigableItem_documentType;
-- (id)navigableItem_contentDocumentLocation;
-- (id)navigableItem_image;
-- (id)navigableItem_name;
 - (void)fetchSymbols:(id)arg1 generation:(unsigned long long)arg2 lastOperation:(id)arg3;
-- (void)cancelOperations;
 - (id)children;
-- (void)loadChildrenWithOperation:(id)arg1;
+- (void)loadChildrenWithOperation:(id)arg1 fetchingSymbols:(id)arg2;
+- (id)loadChildren;
+- (BOOL)childrenNeedUpdating;
+- (void)addNavSymbolsForSymbols:(id)arg1 toMutableArray:(id)arg2;
 - (BOOL)hasChildren;
-- (unsigned long long)hash;
-- (BOOL)isEqual:(id)arg1;
+- (BOOL)isCanceled;
+- (void)cancelOperations;
 - (id)initWithContainerSymbol:(id)arg1 operationQueue:(id)arg2 generation:(unsigned long long)arg3 symbolNavigator:(id)arg4;
+@property __weak IDESymbolNavigator *navigator;
 
 @end
 
